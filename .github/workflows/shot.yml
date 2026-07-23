@@ -68,17 +68,27 @@ jobs:
               "bhajans":  "/play/library",
           }
 
-          def call(ep, body):
+          def raw(ep, body):
               rq = urllib.request.Request(
                   f"{API}/{ep}", data=json.dumps(body).encode(),
                   headers={"Authorization": f"Bearer {CF}", "Content-Type": "application/json"})
-              try:
-                  with urllib.request.urlopen(rq, timeout=180) as r:
-                      return r.read()
-              except urllib.error.HTTPError as e:
-                  detail = e.read().decode()[:900]
-                  print(f"  ✗ {ep} HTTP {e.code}: {detail}", flush=True)
-                  return None
+              with urllib.request.urlopen(rq, timeout=180) as r:
+                  return r.read()
+
+          def call(ep, body):
+              """Пробуем как есть; на 400 — ещё раз без необязательных ключей."""
+              for attempt in range(2):
+                  try:
+                      return raw(ep, body)
+                  except urllib.error.HTTPError as e:
+                      detail = e.read().decode()[:900]
+                      print(f"  ✗ {ep} HTTP {e.code}: {detail}", flush=True)
+                      if e.code == 400 and attempt == 0 and "waitForTimeout" in body:
+                          body = {k: v for k, v in body.items() if k != "waitForTimeout"}
+                          print("  ↻ повтор без waitForTimeout", flush=True); continue
+                      return None
+                  except Exception as e:
+                      print(f"  ✗ {ep} {type(e).__name__}: {e}", flush=True); return None
 
           geom, failed = {}, []
           for name in WANT:
@@ -127,8 +137,10 @@ jobs:
           if not geom and failed:
               sys.exit("Browser Rendering недоступен — проверь право токена")
           PY
+          echo "rc=$?" >> out/log.txt
 
       - name: Положить в ветку shots
+        if: always()
         run: |
           git config user.name "Billions X"; git config user.email "ceo@billionsx.com"
           STAMP=$(date -u +%Y%m%d-%H%M)
