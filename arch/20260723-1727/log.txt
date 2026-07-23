@@ -1,7 +1,0 @@
-ключ /__shot синхронизирован с D1
-— root: /play
-  ✗ both HTTP 500: shot error: Maximum call stack size exceeded
-  ✗ both HTTP 500: shot error: Unable to create new browser: code: 429: message: Rate limit exceeded
-  ✗ both HTTP 500: shot error: Maximum call stack size exceeded
-НЕ СНЯТО: ['root']
-rc=0
