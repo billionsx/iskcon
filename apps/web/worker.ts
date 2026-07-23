@@ -2114,6 +2114,20 @@ export default {
         await page.setViewport({ width: w, height: h, deviceScaleFactor: dpr });
         await page.goto(`https://${SITE_HOST}${path}`, { waitUntil: "networkidle0", timeout: 45000 });
         await new Promise((r) => setTimeout(r, wait));
+        // Диагностика: куда мы реально попали (защита зоны умеет подменять
+        // страницу молча) и ожил ли SPA.
+        const meta = await page.evaluate(() => ({
+          href: location.href, title: document.title,
+          bodyLen: (document.body?.innerText || "").length,
+          head: (document.body?.innerText || "").slice(0, 200),
+          amx: !!document.querySelector(".amx"),
+          scripts: document.querySelectorAll("script").length,
+        }));
+        if (fmt === "meta") {
+          return new Response(JSON.stringify(meta, null, 1), {
+            headers: { "Content-Type": "application/json; charset=utf-8", "Cache-Control": "no-store" },
+          });
+        }
         if (fmt === "geom") {
           const geom = await page.evaluate((list: string[]) => {
             const out: Record<string, Array<Record<string, number | string>>> = {};
@@ -2134,7 +2148,7 @@ export default {
             }
             return out;
           }, sels);
-          return new Response(JSON.stringify(geom, null, 1), {
+          return new Response(JSON.stringify({ __meta: meta, ...geom }, null, 1), {
             headers: { "Content-Type": "application/json; charset=utf-8", "Cache-Control": "no-store" },
           });
         }
