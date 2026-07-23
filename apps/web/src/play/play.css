@@ -665,4 +665,10 @@ body:has(.amx) { background: #000 !important; overflow: hidden !important; }
 .amx-showcase-i article p:nth-of-type(2) { -webkit-line-clamp: 3; }
 
 /* Съёмочный режим: сканер должен видеть конечное состояние, а не кадр анимации */
-.amx.shot *, .amx.shot *::before, .amx.shot *::after { animation: none !important; transition: none !important; }
+/* Съёмочный режим: анимации не ОТКЛЮЧАЕМ, а ускоряем до мгновенных. Полное
+   отключение оставляло слои в НАЧАЛЬНОЙ позиции (плеер уезжал за экран и в
+   кадр не попадал) — нужен конечный кадр, а не отсутствие движения. */
+.amx.shot *, .amx.shot *::before, .amx.shot *::after {
+  animation-duration: .001s !important; animation-delay: 0s !important;
+  transition-duration: .001s !important; transition-delay: 0s !important;
+}

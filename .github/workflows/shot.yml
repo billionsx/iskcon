@@ -80,7 +80,7 @@ jobs:
           }
 
           def shot(path, fmt, extra=""):
-              u = (f"{BASE}/__shot?path={urllib.parse.quote(path, safe='/?=&')}"
+              u = (f"{BASE}/__shot?path={urllib.parse.quote(path, safe='/')}"  # & и ? кодируем: иначе хвост пути становился параметрами самого /__shot
                    f"&w=393&h=852&dpr=3&wait=2500&fmt={fmt}{extra}")
               # 1010 = защита Cloudflare по сигнатуре клиента: python-urllib
               # блокируется на входе, до воркера. Представляемся браузером.
