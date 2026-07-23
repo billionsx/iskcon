@@ -82,7 +82,14 @@ jobs:
           def shot(path, fmt, extra=""):
               u = (f"{BASE}/__shot?path={urllib.parse.quote(path, safe='/?=&')}"
                    f"&w=393&h=852&dpr=3&wait=2500&fmt={fmt}{extra}")
-              rq = urllib.request.Request(u, headers={"x-shot-key": KEY})
+              # 1010 = защита Cloudflare по сигнатуре клиента: python-urllib
+              # блокируется на входе, до воркера. Представляемся браузером.
+              rq = urllib.request.Request(u, headers={
+                  "x-shot-key": KEY,
+                  "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 "
+                                "(KHTML, like Gecko) Chrome/126.0 Safari/537.36",
+                  "Accept": "*/*", "Accept-Language": "ru,en;q=0.8",
+              })
               for a in range(3):
                   try:
                       with urllib.request.urlopen(rq, timeout=120) as r:
