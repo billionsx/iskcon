@@ -1,9 +1,0 @@
-ТОКЕН: жив, статус=active (accounts/d5cbe19470dc38599873eabfe148e6d1/tokens/verify)
-длина ключа: 53, префикс: cfat_
-— root: https://brajs.com/play
-  ✗ screenshot HTTP 401: {"result":null,"success":false,"errors":[{"code":10000,"message":"Authentication error"}],"messages":[]}
-  ✗ scrape HTTP 401: {"result":null,"success":false,"errors":[{"code":10000,"message":"Authentication error"}],"messages":[]}
-НЕ СНЯТО: ['root']
-Browser Rendering недоступен — проверь право токена
-rc=1
-rc=0
