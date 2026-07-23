@@ -108,19 +108,20 @@ jobs:
               path = STATES.get(name)
               if not path: print(f"  ? неизвестное состояние {name}"); continue
               print(f"— {name}: {path}", flush=True)
-              png = shot(path, "png")
-              if png and png[:4] == b"\x89PNG":
-                  open(f"out/{name}.png", "wb").write(png)
-                  print(f"  ✓ кадр {len(png)//1024} КБ", flush=True)
-              else:
-                  failed.append(name)
-              g = shot(path, "geom", "&sel=" + urllib.parse.quote(SEL))
-              if g:
-                  try:
-                      geom[name] = json.loads(g.decode())
-                      print(f"  ✓ геометрия: {len(geom[name])} селекторов", flush=True)
-                  except Exception as e:
-                      print("  ! геометрия не разобралась:", e, g[:200], flush=True)
+              raw = shot(path, "both", "&sel=" + urllib.parse.quote(SEL))
+              if not raw:
+                  failed.append(name); continue
+              try:
+                  d = json.loads(raw.decode())
+              except Exception as e:
+                  print("  ! ответ не разобрался:", e, raw[:200], flush=True)
+                  failed.append(name); continue
+              import base64 as _b
+              open(f"out/{name}.png", "wb").write(_b.b64decode(d["png"]))
+              geom[name] = {"__meta": d.get("__meta"), **(d.get("geom") or {})}
+              m = d.get("__meta") or {}
+              print(f"  ✓ кадр {len(d['png'])*3//4096} КБ · где: {m.get('href')} · "
+                    f"amx={m.get('amx')} текста={m.get('bodyLen')} · селекторов={len(d.get('geom') or {})}", flush=True)
 
           json.dump(geom, open("out/geometry.json", "w"), ensure_ascii=False, indent=1)
           print("НЕ СНЯТО:", failed if failed else "—")

@@ -2153,6 +2153,33 @@ export default {
           });
         }
         const png = await page.screenshot({ type: "png" });
+        if (fmt === "both") {
+          // Один запуск браузера на кадр И геометрию: у Browser Rendering лимит
+          // на НОВЫЕ экземпляры в минуту, два запроса подряд ловили 429.
+          const geom = await page.evaluate((list: string[]) => {
+            const out: Record<string, Array<Record<string, number | string>>> = {};
+            for (const s of list) {
+              const nodes = Array.from(document.querySelectorAll(s)).slice(0, 12);
+              if (!nodes.length) continue;
+              out[s] = nodes.map((n) => {
+                const r = (n as HTMLElement).getBoundingClientRect();
+                const cs = getComputedStyle(n as HTMLElement);
+                return {
+                  left: +r.left.toFixed(2), top: +r.top.toFixed(2),
+                  width: +r.width.toFixed(2), height: +r.height.toFixed(2),
+                  fontSize: cs.fontSize, lineHeight: cs.lineHeight,
+                  letterSpacing: cs.letterSpacing, fontWeight: cs.fontWeight,
+                  color: cs.color, text: ((n as HTMLElement).innerText || "").slice(0, 40),
+                };
+              });
+            }
+            return out;
+          }, sels);
+          const b64 = btoa(String.fromCharCode(...new Uint8Array(png as ArrayBuffer)));
+          return new Response(JSON.stringify({ __meta: meta, geom, png: b64 }), {
+            headers: { "Content-Type": "application/json; charset=utf-8", "Cache-Control": "no-store" },
+          });
+        }
         return new Response(png as ArrayBuffer, {
           headers: { "Content-Type": "image/png", "Cache-Control": "no-store" },
         });
