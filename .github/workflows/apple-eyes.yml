@@ -1,0 +1,70 @@
+name: apple-eyes
+
+# ДЕПАРТАМЕНТ APPLE EYES · ЗКН-Д030 · устав: apple-eyes/CONSTITUTION.md
+#
+# Автономная разведка стандартов Apple: дозор официальных источников,
+# хроника изменений, детектор iOS 27, суд (selftest на живых нарушениях),
+# советник-отчёт по apps/web. Хроника коммитится В РЕПОЗИТОРИЙ — это
+# основной канал наблюдаемости (логи Actions из песочницы не читаются).
+#
+# Своя concurrency-группа → ЗКН-Ф024 (гейт расписаний) не задет.
+# Коммит делает встроенный токен → чужие воркфлоу не триггерятся (ЗКН-Ф022).
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "apple-eyes/**"
+      - ".github/workflows/apple-eyes.yml"
+  schedule:
+    - cron: "43 5 * * 1"   # понедельник — полный обход
+    - cron: "43 5 * * 4"   # четверг — резервный слот (GH-кроны роняют слоты)
+  workflow_dispatch:
+
+concurrency:
+  group: apple-eyes
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+  issues: write
+
+jobs:
+  eyes:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: "Суд — selftest (живые нарушения в обе стороны)"
+        run: python3 apple-eyes/bin/apple_eyes.py selftest
+
+      - name: "Разведка — дозор источников Apple"
+        run: python3 apple-eyes/bin/apple_eyes.py crawl
+
+      - name: "Дозор iOS 27"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: python3 apple-eyes/bin/apple_eyes.py ios27 --issue-on-detect
+
+      - name: "Советник — отчёт по адаптеру iskcon (не блокирует)"
+        run: |
+          python3 apple-eyes/bin/apple_eyes.py lint --adapter iskcon --mode report \
+            --out apple-eyes/registry/state/report-iskcon.md > /dev/null || true
+          head -3 apple-eyes/registry/state/report-iskcon.md
+
+      - name: "Хроника — коммит состояния в репозиторий"
+        run: |
+          git config user.name "apple-eyes"
+          git config user.email "ceo@billionsx.com"
+          git add apple-eyes/registry
+          if git diff --cached --quiet; then
+            echo "изменений нет — хроника чиста"
+            exit 0
+          fi
+          git commit -m "apple-eyes: хроника разведки"
+          for i in 1 2 3 4; do
+            git push && exit 0
+            git pull --rebase && sleep 3
+          done
+          git push
