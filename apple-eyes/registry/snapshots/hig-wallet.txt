@@ -1,0 +1,7 @@
+# Wallet | Apple Developer Documentation
+# https://developer.apple.com/design/human-interface-guidelines/wallet
+# снято: 2026-07-23 08:47 UTC
+
+
+
+Wallet | Apple Developer Documentation

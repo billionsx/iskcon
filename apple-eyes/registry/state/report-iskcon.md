@@ -1,0 +1,124 @@
+# APPLE EYES · отчёт линта · адаптер `iskcon` · режим report
+Файлов просмотрено: 117 · правила: AE1, AE2, AE3, AE4, AE6 · находок: 113
+
+## AE1 · 14
+- `apps/web/src/music/music.css:109` — фон #FFFFFF вне лестницы поверхностей (#000000 → #1C1C1E → #2C2C2E)
+- `apps/web/src/music/music.css:190` — фон #F4EFDF вне лестницы поверхностей (#000000 → #1C1C1E → #2C2C2E)
+- `apps/web/src/music/music.css:220` — фон #F5F5F7 вне лестницы поверхностей (#000000 → #1C1C1E → #2C2C2E)
+- `apps/web/src/music/music.css:231` — фон #F5F5F7 вне лестницы поверхностей (#000000 → #1C1C1E → #2C2C2E)
+- `apps/web/src/music/music.css:241` — фон #F5F5F7 вне лестницы поверхностей (#000000 → #1C1C1E → #2C2C2E)
+- `apps/web/src/music/music.css:393` — фон #F4EFDF вне лестницы поверхностей (#000000 → #1C1C1E → #2C2C2E)
+- `apps/web/src/music/music.css:468` — фон #232325 вне лестницы поверхностей (#000000 → #1C1C1E → #2C2C2E)
+- `apps/web/src/play/play.css:109` — фон #FFFFFF вне лестницы поверхностей (#000000 → #1C1C1E → #2C2C2E)
+- `apps/web/src/play/play.css:190` — фон #F4EFDF вне лестницы поверхностей (#000000 → #1C1C1E → #2C2C2E)
+- `apps/web/src/play/play.css:220` — фон #F5F5F7 вне лестницы поверхностей (#000000 → #1C1C1E → #2C2C2E)
+- `apps/web/src/play/play.css:231` — фон #F5F5F7 вне лестницы поверхностей (#000000 → #1C1C1E → #2C2C2E)
+- `apps/web/src/play/play.css:241` — фон #F5F5F7 вне лестницы поверхностей (#000000 → #1C1C1E → #2C2C2E)
+- `apps/web/src/play/play.css:393` — фон #F4EFDF вне лестницы поверхностей (#000000 → #1C1C1E → #2C2C2E)
+- `apps/web/src/play/play.css:468` — фон #232325 вне лестницы поверхностей (#000000 → #1C1C1E → #2C2C2E)
+
+## AE2 · 54
+- `apps/web/src/music/music.css:46` — box-shadow: на чёрном холсте теней нет — глубина = ступень поверхности
+- `apps/web/src/music/music.css:86` — box-shadow: на чёрном холсте теней нет — глубина = ступень поверхности
+- `apps/web/src/music/music.css:92` — box-shadow: на чёрном холсте теней нет — глубина = ступень поверхности
+- `apps/web/src/music/music.css:220` — box-shadow: на чёрном холсте теней нет — глубина = ступень поверхности
+- `apps/web/src/music/music.css:230` — box-shadow: на чёрном холсте теней нет — глубина = ступень поверхности
+- `apps/web/src/music/music.css:287` — box-shadow: на чёрном холсте теней нет — глубина = ступень поверхности
+- `apps/web/src/music/music.css:325` — box-shadow: на чёрном холсте теней нет — глубина = ступень поверхности
+- `apps/web/src/music/music.css:343` — box-shadow: на чёрном холсте теней нет — глубина = ступень поверхности
+- `apps/web/src/music/music.css:356` — box-shadow: на чёрном холсте теней нет — глубина = ступень поверхности
+- `apps/web/src/music/music.css:371` — box-shadow: на чёрном холсте теней нет — глубина = ступень поверхности
+- `apps/web/src/music/music.css:379` — box-shadow: на чёрном холсте теней нет — глубина = ступень поверхности
+- `apps/web/src/music/music.css:408` — box-shadow: на чёрном холсте теней нет — глубина = ступень поверхности
+- `apps/web/src/music/music.css:412` — box-shadow: на чёрном холсте теней нет — глубина = ступень поверхности
+- `apps/web/src/music/music.css:423` — box-shadow: на чёрном холсте теней нет — глубина = ступень поверхности
+- `apps/web/src/music/music.css:427` — box-shadow: на чёрном холсте теней нет — глубина = ступень поверхности
+- `apps/web/src/music/music.css:433` — box-shadow: на чёрном холсте теней нет — глубина = ступень поверхности
+- `apps/web/src/music/music.css:434` — box-shadow: на чёрном холсте теней нет — глубина = ступень поверхности
+- `apps/web/src/music/music.css:469` — box-shadow: на чёрном холсте теней нет — глубина = ступень поверхности
+- `apps/web/src/music/music.css:551` — box-shadow: на чёрном холсте теней нет — глубина = ступень поверхности
+- `apps/web/src/music/music.css:589` — box-shadow: на чёрном холсте теней нет — глубина = ступень поверхности
+- `apps/web/src/play/play.css:46` — box-shadow: на чёрном холсте теней нет — глубина = ступень поверхности
+- `apps/web/src/play/play.css:86` — box-shadow: на чёрном холсте теней нет — глубина = ступень поверхности
+- `apps/web/src/play/play.css:92` — box-shadow: на чёрном холсте теней нет — глубина = ступень поверхности
+- `apps/web/src/play/play.css:220` — box-shadow: на чёрном холсте теней нет — глубина = ступень поверхности
+- `apps/web/src/play/play.css:230` — box-shadow: на чёрном холсте теней нет — глубина = ступень поверхности
+- `apps/web/src/play/play.css:287` — box-shadow: на чёрном холсте теней нет — глубина = ступень поверхности
+- `apps/web/src/play/play.css:325` — box-shadow: на чёрном холсте теней нет — глубина = ступень поверхности
+- `apps/web/src/play/play.css:343` — box-shadow: на чёрном холсте теней нет — глубина = ступень поверхности
+- `apps/web/src/play/play.css:356` — box-shadow: на чёрном холсте теней нет — глубина = ступень поверхности
+- `apps/web/src/play/play.css:371` — box-shadow: на чёрном холсте теней нет — глубина = ступень поверхности
+- `apps/web/src/play/play.css:379` — box-shadow: на чёрном холсте теней нет — глубина = ступень поверхности
+- `apps/web/src/play/play.css:408` — box-shadow: на чёрном холсте теней нет — глубина = ступень поверхности
+- `apps/web/src/play/play.css:412` — box-shadow: на чёрном холсте теней нет — глубина = ступень поверхности
+- `apps/web/src/play/play.css:423` — box-shadow: на чёрном холсте теней нет — глубина = ступень поверхности
+- `apps/web/src/play/play.css:427` — box-shadow: на чёрном холсте теней нет — глубина = ступень поверхности
+- `apps/web/src/play/play.css:433` — box-shadow: на чёрном холсте теней нет — глубина = ступень поверхности
+- `apps/web/src/play/play.css:434` — box-shadow: на чёрном холсте теней нет — глубина = ступень поверхности
+- `apps/web/src/play/play.css:469` — box-shadow: на чёрном холсте теней нет — глубина = ступень поверхности
+- `apps/web/src/play/play.css:551` — box-shadow: на чёрном холсте теней нет — глубина = ступень поверхности
+- `apps/web/src/play/play.css:589` — box-shadow: на чёрном холсте теней нет — глубина = ступень поверхности
+- `apps/web/src/ui/globals.css:431` — box-shadow: на чёрном холсте теней нет — глубина = ступень поверхности
+- `apps/web/src/ui/globals.css:448` — box-shadow: на чёрном холсте теней нет — глубина = ступень поверхности
+- `apps/web/src/ui/globals.css:453` — box-shadow: на чёрном холсте теней нет — глубина = ступень поверхности
+- `apps/web/src/ui/globals.css:654` — box-shadow: на чёрном холсте теней нет — глубина = ступень поверхности
+- `apps/web/src/ui/globals.css:709` — box-shadow: на чёрном холсте теней нет — глубина = ступень поверхности
+- `apps/web/src/ui/globals.css:744` — box-shadow: на чёрном холсте теней нет — глубина = ступень поверхности
+- `apps/web/src/ui/globals.css:819` — box-shadow: на чёрном холсте теней нет — глубина = ступень поверхности
+- `apps/web/src/ui/globals.css:841` — box-shadow: на чёрном холсте теней нет — глубина = ступень поверхности
+- `apps/web/src/ui/globals.css:853` — box-shadow: на чёрном холсте теней нет — глубина = ступень поверхности
+- `apps/web/src/ui/globals.css:917` — box-shadow: на чёрном холсте теней нет — глубина = ступень поверхности
+- `apps/web/src/AccountScreen.tsx:104` — box-shadow: на чёрном холсте теней нет — глубина = ступень поверхности
+- `apps/web/src/AccountScreen.tsx:106` — box-shadow: на чёрном холсте теней нет — глубина = ступень поверхности
+- `apps/web/src/dhama/DhamaMap.tsx:83` — box-shadow: на чёрном холсте теней нет — глубина = ступень поверхности
+- `apps/web/src/main.tsx:163` — box-shadow: на чёрном холсте теней нет — глубина = ступень поверхности
+
+## AE3 · 2
+- `apps/web/src/music/music.css:34` — border-radius 14.0px > 12pt без формы суперэллипса (clip-path:path / corner-shape)
+- `apps/web/src/play/play.css:34` — border-radius 14.0px > 12pt без формы суперэллипса (clip-path:path / corner-shape)
+
+## AE4 · 43
+- `apps/web/src/music/music.css:73` — letter-spacing -0.43px — крышка поправки ±0.4px; роль задаётся в em
+- `apps/web/src/music/music.css:101` — letter-spacing -0.45px — крышка поправки ±0.4px; роль задаётся в em
+- `apps/web/src/music/music.css:174` — letter-spacing -0.45px — крышка поправки ±0.4px; роль задаётся в em
+- `apps/web/src/music/music.css:200` — letter-spacing -0.45px — крышка поправки ±0.4px; роль задаётся в em
+- `apps/web/src/music/music.css:216` — letter-spacing -0.43px — крышка поправки ±0.4px; роль задаётся в em
+- `apps/web/src/music/music.css:224` — letter-spacing -0.5px — крышка поправки ±0.4px; роль задаётся в em
+- `apps/web/src/music/music.css:228` — letter-spacing -1.0px — крышка поправки ±0.4px; роль задаётся в em
+- `apps/web/src/music/music.css:229` — letter-spacing -0.5px — крышка поправки ±0.4px; роль задаётся в em
+- `apps/web/src/music/music.css:236` — letter-spacing -0.43px — крышка поправки ±0.4px; роль задаётся в em
+- `apps/web/src/music/music.css:256` — letter-spacing -0.43px — крышка поправки ±0.4px; роль задаётся в em
+- `apps/web/src/music/music.css:269` — letter-spacing -0.43px — крышка поправки ±0.4px; роль задаётся в em
+- `apps/web/src/music/music.css:270` — letter-spacing -0.43px — крышка поправки ±0.4px; роль задаётся в em
+- `apps/web/src/music/music.css:295` — letter-spacing -0.43px — крышка поправки ±0.4px; роль задаётся в em
+- `apps/web/src/music/music.css:375` — letter-spacing -0.43px — крышка поправки ±0.4px; роль задаётся в em
+- `apps/web/src/music/music.css:380` — letter-spacing -0.43px — крышка поправки ±0.4px; роль задаётся в em
+- `apps/web/src/music/music.css:384` — letter-spacing -0.43px — крышка поправки ±0.4px; роль задаётся в em
+- `apps/web/src/music/music.css:409` — letter-spacing -0.43px — крышка поправки ±0.4px; роль задаётся в em
+- `apps/web/src/music/music.css:435` — letter-spacing -0.43px — крышка поправки ±0.4px; роль задаётся в em
+- `apps/web/src/music/music.css:592` — letter-spacing -0.45px — крышка поправки ±0.4px; роль задаётся в em
+- `apps/web/src/music/music.css:593` — letter-spacing -0.43px — крышка поправки ±0.4px; роль задаётся в em
+- `apps/web/src/play/play.css:60` — letter-spacing -1.0px — крышка поправки ±0.4px; роль задаётся в em
+- `apps/web/src/play/play.css:73` — letter-spacing -0.43px — крышка поправки ±0.4px; роль задаётся в em
+- `apps/web/src/play/play.css:101` — letter-spacing -0.45px — крышка поправки ±0.4px; роль задаётся в em
+- `apps/web/src/play/play.css:174` — letter-spacing -0.45px — крышка поправки ±0.4px; роль задаётся в em
+- `apps/web/src/play/play.css:200` — letter-spacing -0.45px — крышка поправки ±0.4px; роль задаётся в em
+- `apps/web/src/play/play.css:216` — letter-spacing -0.43px — крышка поправки ±0.4px; роль задаётся в em
+- `apps/web/src/play/play.css:224` — letter-spacing -0.5px — крышка поправки ±0.4px; роль задаётся в em
+- `apps/web/src/play/play.css:228` — letter-spacing -1.0px — крышка поправки ±0.4px; роль задаётся в em
+- `apps/web/src/play/play.css:229` — letter-spacing -0.5px — крышка поправки ±0.4px; роль задаётся в em
+- `apps/web/src/play/play.css:236` — letter-spacing -0.43px — крышка поправки ±0.4px; роль задаётся в em
+- `apps/web/src/play/play.css:256` — letter-spacing -0.43px — крышка поправки ±0.4px; роль задаётся в em
+- `apps/web/src/play/play.css:269` — letter-spacing -0.43px — крышка поправки ±0.4px; роль задаётся в em
+- `apps/web/src/play/play.css:270` — letter-spacing -0.43px — крышка поправки ±0.4px; роль задаётся в em
+- `apps/web/src/play/play.css:295` — letter-spacing -0.43px — крышка поправки ±0.4px; роль задаётся в em
+- `apps/web/src/play/play.css:375` — letter-spacing -0.43px — крышка поправки ±0.4px; роль задаётся в em
+- `apps/web/src/play/play.css:380` — letter-spacing -0.43px — крышка поправки ±0.4px; роль задаётся в em
+- `apps/web/src/play/play.css:384` — letter-spacing -0.43px — крышка поправки ±0.4px; роль задаётся в em
+- `apps/web/src/play/play.css:409` — letter-spacing -0.43px — крышка поправки ±0.4px; роль задаётся в em
+- `apps/web/src/play/play.css:435` — letter-spacing -0.43px — крышка поправки ±0.4px; роль задаётся в em
+- `apps/web/src/play/play.css:592` — letter-spacing -0.45px — крышка поправки ±0.4px; роль задаётся в em
+- `apps/web/src/play/play.css:593` — letter-spacing -0.43px — крышка поправки ±0.4px; роль задаётся в em
+- `apps/web/src/play/play.css:621` — letter-spacing -0.43px — крышка поправки ±0.4px; роль задаётся в em
+- `apps/web/src/ui/globals.css:803` — letter-spacing -0.5px — крышка поправки ±0.4px; роль задаётся в em
+

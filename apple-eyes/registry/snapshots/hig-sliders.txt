@@ -1,0 +1,7 @@
+# Sliders | Apple Developer Documentation
+# https://developer.apple.com/design/human-interface-guidelines/sliders
+# снято: 2026-07-23 08:46 UTC
+
+
+
+Sliders | Apple Developer Documentation
