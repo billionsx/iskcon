@@ -1,7 +1,7 @@
 # знание · `hig-toolbars`
 Источник: https://developer.apple.com/design/human-interface-guidelines/toolbars
 Домены мандата: панели, меню
-Нормативных положений: 33 (детерминированная выжимка, не пересказ)
+Нормативных положений: 34 (детерминированная выжимка, не пересказ)
 
 
 ## без раздела
@@ -16,6 +16,7 @@
 - Avoid applying a similar color to toolbar item labels and content layer backgrounds.
 - If your app already has bright, colorful content in the content layer, prefer using the default monochromatic appearance of toolbars.
 - Prefer using standard components in a toolbar.
+- If you need to create a custom component, ensure that its corner radius is also concentric with the bar’s corners.
 - Don’t title windows with your app name.
 - Use the standard Back and Close buttons.
 - Prefer the standard symbols for each, and don’t use a text label that says Back or Close .

@@ -1,7 +1,7 @@
 # знание · `hig-buttons`
 Источник: https://developer.apple.com/design/human-interface-guidelines/buttons
 Домены мандата: плашки, капсулы
-Нормативных положений: 56 (детерминированная выжимка, не пересказ)
+Нормативных положений: 58 (детерминированная выжимка, не пересказ)
 
 
 ## без раздела
@@ -18,6 +18,7 @@
 - If you want to highlight the preferred or most likely option in a set, use a more prominent button style for that option and a less prominent style for the remaining ones.
 - Avoid applying a similar color to button labels and content layer backgrounds.
 - If your app already has bright, colorful content in the content layer, prefer using the default monochromatic appearance of button labels.
+- Ensure that each button clearly communicates its purpose.
 - If it makes sense to use an icon in your button, consider using an existing or customized .
 - To use text, write a few words that succinctly describe what the button does.
 - Using , consider starting the label with a verb to help convey the button’s action — for example, a button that lets people add items to their shopping cart might use the label “Add to Cart.”
@@ -55,6 +56,7 @@
 - Also, it’s usually best to avoid displaying small or mini buttons in a vertical stack or horizontal row.
 - Specifically, prefer the rounded-rectangle shape in a vertical stack of buttons and prefer the capsule shape in a horizontal row of buttons.
 - Use standard controls to take advantage of the audible feedback sounds people already know.
+- When you place a button inline with content, it gains a material effect that contrasts with the background to ensure legibility.
 - Use a toolbar to place buttons in the corners.
 - Prefer buttons that span the width of the screen for primary actions in your app.
 - If two buttons must share the same horizontal space, use the same height for both, and use images or short text titles for each button’s content.

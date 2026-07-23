@@ -1,7 +1,7 @@
 # знание · `hig-menus`
 Источник: https://developer.apple.com/design/human-interface-guidelines/menus
 Домены мандата: динамичные-меню
-Нормативных положений: 31 (детерминированная выжимка, не пересказ)
+Нормативных положений: 32 (детерминированная выжимка, не пересказ)
 
 
 ## без раздела
@@ -26,6 +26,7 @@
 - It generally works well to use the repeated term — in this case, Sort by — in the menu item’s label to help people predict the contents of the submenu.
 - Make sure a submenu remains available even when its nested menu items are unavailable.
 - Prefer using a submenu to indenting menu items.
+- Menu items often represent attributes or objects that people can turn on or off.
 - If you want to avoid listing a separate menu item for each state, it can be efficient to create a single, toggled menu item that communicates the current state and lets people change it.
 - People expect to use the same interactions to navigate your menus as they use for navigating other menus on the device.
 - Make sure your menus remain easy to open and read on all platforms you support.

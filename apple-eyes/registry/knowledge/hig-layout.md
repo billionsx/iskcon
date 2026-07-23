@@ -1,20 +1,23 @@
 # знание · `hig-layout`
 Источник: https://developer.apple.com/design/human-interface-guidelines/layout
 Домены мандата: расстояния, минимализм, кроссплатформенность
-Нормативных положений: 39 (детерминированная выжимка, не пересказ)
+Нормативных положений: 42 (детерминированная выжимка, не пересказ)
 
 
 ## без раздела
 - People expect familiar relationships between controls and content to help them use and discover your app’s features, and designing the layout to take advantage of this makes your app feel at home on the platform.
 - For example, you might use negative space, background shapes, colors, materials, or separator lines to show when elements are related and to separate information into distinct areas.
+- When you do so, ensure that content and controls remain clearly distinct.
 - People want to view the most important information right away, so don’t obscure it by crowding it with nonessential details.
 - Make sure backgrounds and full-screen artwork extend to the edges of the display.
+- Also ensure that scrollable layouts continue all the way to the bottom and the sides of the device screen.
 - When your content doesn’t span the full window, use a background extension view to provide the appearance of content behind the control layer on either side of the screen, such as beneath the sidebar or inspector.
 - Instead of a background, use a scroll edge effect to provide a transition between content and the control area.
 - Depending on the platform, you might use a , or display parts of items to hint that people can reveal additional content by interacting with the view, such as by scrolling.
 - Make controls easier to use by providing enough space around them and grouping them in logical sections.
 - If unrelated controls are too close together — or if other content crowds them — they can be difficult for people to tell apart or understand what they do, which can make your app or game hard to use.
 - Using SwiftUI or Auto Layout can help you ensure that your interface adapts dynamically to these traits and other context changes; if you don’t use these tools, you need to use alternative methods to do the work.
+- You can help ensure an adaptable interface by respecting system-defined safe areas, margins, and guides (where available) and specifying layout modifiers to fine-tune the placement of views in your interface.
 - To support Dynamic Type in your Unity-based game, use Apple’s accessibility plug-in (for developer guidance, see ).
 - You can streamline the testing process by first testing versions of your experience that use the largest and the smallest layouts.
 - For example, if your iOS app or game supports landscape mode, you can use the simulator to make sure your layouts look great whether the device rotates left or right.

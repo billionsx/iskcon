@@ -1,7 +1,7 @@
 # знание · `design-awards`
 Источник: https://developer.apple.com/design/awards/
 Домены мандата: UI/UX, эталоны
-Нормативных положений: 12 (детерминированная выжимка, не пересказ)
+Нормативных положений: 13 (детерминированная выжимка, не пересказ)
 
 
 ## без раздела
@@ -15,5 +15,6 @@
 - With interactions that require no reading and effortless swipe-to-move controls, this joyful garden lets kids plant seeds, cook meals, and harvest vegetables with minimal guidance.
 - What’s especially impressive is how the game mechanics gradually mirror the narrative: The often frantic mini-games are designed to make its themes feel visceral, a clever way to convey a feeling that words can’t always capture.
 - Lente Cuenen, Netherlands Sound Games iOS, iPadOS Origin stories don’t get much better than this: This cozy cleanup game about restoring polluted waterways was created by Lente Cuenen, a solo developer who lives on a houseboat and is passionate about ecological causes.
+- (Not Boring) Camera Not Boring Software LLC, United States iOS, iPadOS Once again, the (Not Boring) team has mastered the secret behind its big, bold designs: Ensure the products excel in all other areas too.
 - SILT Spiral Circus, United Kingdom Snapbreak Games iOS, iPadOS With a haunting monochrome art style that makes stunning use of light and shadow, SILT practically leaps off the screen.
 - Terms of Use Privacy Policy Agreements and Guidelines

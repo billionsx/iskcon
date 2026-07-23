@@ -1,7 +1,7 @@
 # знание · `hig-wallet`
 Источник: https://developer.apple.com/design/human-interface-guidelines/wallet
 Домены мандата: apple-wallet
-Нормативных положений: 67 (детерминированная выжимка, не пересказ)
+Нормативных положений: 71 (детерминированная выжимка, не пересказ)
 
 
 ## без раздела
@@ -9,6 +9,7 @@
 - For frequent, predictable actions like checking in for a flight, you can add passes in the background after a person grants a one-time authorization, so they don’t need to tap an Add to Apple Wallet button each time.
 - If people decline your suggestion, don’t ask them again.
 - If your app generates multiple passes, like boarding passes for a multi-connection flight, add all passes at once so people don’t have to add each one individually.
+- To help ensure the system hides passes appropriately, set the expiration date, relevant date, and voided properties of each pass correctly; for developer guidance, see .
 - Always get permission before deleting passes from Wallet.
 - Ideally, passes automatically appear when they’re needed so people don’t have to manually locate them.
 - Physical passes don’t typically change, but a digital pass can reflect changes as they happen.
@@ -21,6 +22,7 @@
 - Use the rest of the pass front for information people need quick access to.
 - Place details people don’t need often on the additional pass information sheet.
 - Use brand colors and visual elements like images, icons, and full-art backgrounds to help people recognize your pass at a glance.
+- Ensure sufficient contrast between background and text colors.
 - Use language that works on any device.
 - Passes can appear on multiple devices, so use text that makes sense everywhere.
 - Use semantic tags for airline boarding passes; use pass fields for all other transit types.
@@ -37,6 +39,7 @@
 - You can use your app icon or design a separate one.
 - Avoid inner drop shadows on logo artwork.
 - The system automatically applies rounded corners, so you don’t need to round them.
+- Because text can appear over strip images, ensure sufficient contrast between your text and the image.
 - Avoid embedding text in the strip image.
 - Thumbnails are square — use rounded corners on your artwork and export as a transparent PNG.
 - The schema defines the properties you use to provide order data like product descriptions, order status, contact information, and shipping and pickup details, including estimated arrival dates, addresses, tracking numbers, and pickup instructions.
@@ -70,5 +73,6 @@
 - Choose the system-provided verification button that matches your use case and the visual design of your app.
 - The system provides the following button labels to support various use cases: All button labels are also available in a multiline variant that the system automatically uses when horizontal space is constrained.
 - The verification button always uses white letters on a black background.
+- You can choose the style that includes a light outline if you need to ensure that the button contrasts well with a dark background in your app.
 - In addition, you can use the property to adjust the verification button’s corners to match other related buttons in your interface.
 - People can add your pass to their Apple Watch even if you don’t create a watch-specific app, so it’s important to understand how your pass can look on the device.

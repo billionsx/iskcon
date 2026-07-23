@@ -1,7 +1,7 @@
 # знание · `hig-split-views`
 Источник: https://developer.apple.com/design/human-interface-guidelines/split-views
 Домены мандата: архитектура, суб-приложения, кроссплатформенность
-Нормативных положений: 17 (детерминированная выжимка, не пересказ)
+Нормативных положений: 18 (детерминированная выжимка, не пересказ)
 
 
 ## без раздела
@@ -9,6 +9,7 @@
 - It’s common to use a split view to display a for navigation, where the leading pane lists the top-level items or collections in an app, and the secondary and optional tertiary panes can present child collections and item details.
 - Rarely, you might also use a split view to provide groups of functionality that supplement the primary view — for example, Keynote in macOS uses split view panes to present the slide navigator, the presenter notes, and the inspector pane in areas that surround the main slide canvas.
 - Prefer using a split view in a regular — not a compact — environment.
+- In particular, ensure that it’s possible to navigate between the various panes in a logical way.
 - Set reasonable defaults for minimum and maximum pane sizes.
 - If people can resize the panes in your app’s split view, make sure to use sizes that keep the divider visible.
 - If a pane gets too small, the divider can seem to disappear, becoming difficult to use.

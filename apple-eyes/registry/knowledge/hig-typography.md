@@ -1,7 +1,7 @@
 # знание · `hig-typography`
 Источник: https://developer.apple.com/design/human-interface-guidelines/typography
 Домены мандата: кернинг, шрифты
-Нормативных положений: 51 (детерминированная выжимка, не пересказ)
+Нормативных положений: 54 (детерминированная выжимка, не пересказ)
 
 
 ## без раздела
@@ -25,11 +25,14 @@
 - To produce an accurate interface mockup of an interface that uses the variable system fonts, you don’t have to choose a discrete optical size at certain point sizes, but you might need to adjust the tracking.
 - Make sure custom fonts are legible.
 - While using a custom font, be guided by the recommended minimum font sizes for various styles and weights in .
+- System fonts automatically support Dynamic Type (where available) and respond when people turn on accessibility features, such as Bold Text.
 - If you use a custom font, make sure it implements the same behaviors.
 - In a Unity-based game, you can use to support Dynamic Type.
 - If the plug-in isn’t appropriate for your game, be sure to let players adjust text size in other ways.
+- Dynamic Type is a system-level feature in iOS, iPadOS, tvOS, visionOS, and watchOS that lets people adjust the size of visible text on their device to ensure readability and comfort.
 - To support Dynamic Type in Unity-based games, use .
 - Make sure your app’s layout adapts to all font sizes.
+- On iPhone or iPad, turn on Larger Accessibility Text Sizes in Settings > Accessibility > Display & Text Size > Larger Text, and confirm that your app remains comfortably readable.
 - If you use interface icons to communicate important information, make sure they’re easy to view at larger font sizes too.
 - When you use , you get icons that scale automatically with Dynamic Type size changes.
 - Keep text truncation to a minimum as font size increases.

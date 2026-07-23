@@ -32,8 +32,10 @@
 - 1.4.4 Apps may only display DUI checkpoints that are published by law enforcement agencies, and should never encourage drunk driving or other reckless behavior such as excessive speed.
 - 1.4.5 Apps should not urge customers to participate in activities (like bets, challenges, etc.) or use their devices in a way that risks physical harm to themselves or others.
 - Make sure your app and its Support URL include an easy way to contact you; this is particularly important for apps that may be used in the classroom.
+- Also ensure that Wallet passes include valid contact information from the issuer and are signed with a dedicated certificate assigned to the brand or trademark owner of the pass.
 - 1.7 Reporting Criminal Activity Apps for reporting alleged criminal activity must involve local law enforcement, and can only be offered in countries or regions where such involvement is active.
 - Make sure your app has been tested on-device for bugs and stability before you submit it, and include demo account info (and turn on your back-end service!) if your app includes a login.
+- Ensure the demo mode exhibits your app’s full features and functionality.
 - (b) If you offer in-app purchases in your app, make sure they are complete, up-to-date, visible to the reviewer and functional.
 - 2.2 Beta Testing Demos, betas, and trial versions of your app don’t belong on the App Store – use TestFlight instead.
 - Any app submitted for beta distribution via TestFlight should be intended for public distribution and should comply with the App Review Guidelines.
@@ -59,6 +61,7 @@
 - Make sure your app metadata is focused on the app itself and its experience.
 - Don’t include irrelevant information.
 - 2.3.11 Apps you submit for pre-order on the App Store must be complete and deliverable as submitted.
+- Ensure that the app you ultimately release is not materially different from what you advertise while the app is in a pre-order state.
 - change business models), you should restart your pre-order sales.
 - 2.3.12 Apps must clearly describe new features and product changes in their “What’s New” text.
 - Simple bug fixes, security updates, and performance improvements may rely on a generic description, but more significant changes must be listed in the notes.
@@ -98,6 +101,7 @@
 - For example, apps should not block links out to other apps or other features that users would expect to work a certain way.
 - 2.5.11 SiriKit and Shortcuts (i) Apps integrating SiriKit and Shortcuts should only sign up for intents they can handle without the support of an additional app and that users would expect from the stated functionality.
 - For example, if your app is a meal planning app, you should not incorporate an intent to start a workout, even if the app shares integration with a fitness app.
+- (ii) Ensure that the vocabulary and phrases in your plist pertains to your app and the Siri functionality of the intents the app has registered for.
 - Aliases must relate directly to your app or company name and should not be generic terms or include third-party app names or services.
 - (iii) Resolve the Siri request or Shortcut in the most direct way possible and do not insert ads or other marketing between the request and its fulfillment.
 - Only request a disambiguation when required to complete the task (e.g.
@@ -121,7 +125,3 @@
 - Apps may not use their own mechanisms to unlock content or functionality, such as license keys, augmented reality markers, QR codes, cryptocurrencies and cryptocurrency wallets, etc.
 - Apps may use in-app purchase currencies to enable customers to “tip” the developer or digital content providers in the app.
 - Any credits or in-game currencies purchased via in-app purchase may not expire, and you should make sure you have a restore mechanism for any restorable in-app purchases.
-- Apps offering “loot boxes” or other mechanisms that provide randomized virtual items for purchase must disclose the odds of receiving each type of item to customers prior to purchase.
-- Physical gift cards that are sold within an app and then mailed to customers may use payment methods other than in-app purchase.
-- Apps may use in-app purchase to sell and sell services related to non-fungible tokens (NFTs), such as minting, listing, and transferring.
-- These entitlements are not required for developers to include buttons, external links, or other calls to action in their United States storefront apps.

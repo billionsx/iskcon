@@ -1,12 +1,13 @@
 # знание · `hig-dark-mode`
 Источник: https://developer.apple.com/design/human-interface-guidelines/dark-mode
 Домены мандата: цвет, тени
-Нормативных положений: 18 (детерминированная выжимка, не пересказ)
+Нормативных положений: 19 (детерминированная выжимка, не пересказ)
 
 
 ## без раздела
 - In Dark Mode, the system uses a dark color palette for all screens, views, menus, and controls, and may also use greater perceptual contrast to make foreground content stand out against the darker backgrounds.
 - Avoid offering an app-specific appearance setting.
+- Ensure that your app looks good in both appearance modes.
 - Test your content to make sure that it remains comfortably legible in both appearance modes.
 - For example, it can make sense for an app that supports immersive media viewing to use a permanently dark appearance that lets the UI recede and helps people focus on the media.
 - Avoid using hard-coded color values or colors that don’t adapt.

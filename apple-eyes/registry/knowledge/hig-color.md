@@ -1,7 +1,7 @@
 # знание · `hig-color`
 Источник: https://developer.apple.com/design/human-interface-guidelines/color
 Домены мандата: цвет, градиенты
-Нормативных положений: 46 (детерминированная выжимка, не пересказ)
+Нормативных положений: 48 (детерминированная выжимка, не пересказ)
 
 
 ## без раздела
@@ -11,6 +11,7 @@
 - Use color consistently throughout your interface, especially when you use it to help communicate information like status or interactivity.
 - For example, if you use your brand color to indicate that a borderless button is interactive, using the same or similar color to stylize noninteractive text is confusing.
 - Make sure all your app’s colors work well in light, dark, and increased contrast contexts.
+- vary subtly depending on the system appearance, adjusting to ensure proper color differentiation and contrast for text, symbols, and other elements.
 - When possible, use system colors, which already define variants for all these contexts.
 - If you define a custom color, make sure to supply light and dark variants, and an increased contrast option for each variant that provides a significantly higher amount of visual differentiation.
 - Adjust app colors to provide an optimal viewing experience in the majority of use cases.
@@ -30,6 +31,7 @@
 - If your app features colorful backgrounds or visually rich content, prefer a monochromatic appearance for toolbars and tab bars, or choose an accent color with sufficient visual differentiation.
 - Make sure your interface maintains sufficient contrast by avoiding overlap of similar colors in the content layer and controls when possible.
 - Although colorful content might intermittently scroll underneath controls, make sure its default or resting state — like the top of a screen of scrollable content — maintains clear legibility.
+- Color profiles help ensure that your app’s colors appear as intended on different displays.
 - Use wide color to enhance the visual experience on compatible displays.
 - As a result, photos and videos that use wide color are more lifelike, and visual data and status indicators that use wide color can be more meaningful.
 - When appropriate, use the Display P3 color profile at 16 bits per pixel (per channel) and export images in PNG format.

@@ -1,10 +1,11 @@
 # знание · `fonts`
 Источник: https://developer.apple.com/fonts/
 Домены мандата: шрифты, кернинг
-Нормативных положений: 44 (детерминированная выжимка, не пересказ)
+Нормативных положений: 45 (детерминированная выжимка, не пересказ)
 
 
 ## без раздела
+- Across all Apple products, the size-specific outlines and dynamic tracking ensure optimal legibility at every point size and screen resolution.
 - Numbers have proportional widths by default, so they feel harmonious and naturally spaced within the time and data-centric interfaces people use every day.
 - Download SF Hebrew Human Interface Guidelines Read the Human Interface Guidelines to learn how to use these fonts in your apps on Apple platforms.
 - Watch session videos Frameworks and tools Use the latest frameworks in Xcode to integrate dynamic text handling and typesetting capabilities into your app.

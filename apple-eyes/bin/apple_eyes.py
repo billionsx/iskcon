@@ -331,7 +331,7 @@ def cmd_selftest(root: Path) -> int:
         r_d1 = digest_mod.build(tmp)
         kn = (reg / "knowledge" / "fixture-page.md").read_text(encoding="utf-8")
         check("нормативное извлечено, декоративное отброшено",
-              "44x44 pt" in kn and "Avoid pairing" in kn and "Decorative flourishes" not in kn)
+              "44x44 pt" in kn and "Avoid pairing" in kn and "Reduce Motion" in kn and "Decorative flourishes" not in kn)
         r_d2 = digest_mod.build(tmp)
         check("знание детерминировано: повторный прогон без изменений",
               r_d1["changed"] == ["fixture-page"] and r_d2["changed"] == []

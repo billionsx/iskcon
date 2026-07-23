@@ -1,7 +1,7 @@
 # знание · `hig-live-activities`
 Источник: https://developer.apple.com/design/human-interface-guidelines/live-activities
 Домены мандата: динамические-острова
-Нормативных положений: 62 (детерминированная выжимка, не пересказ)
+Нормативных положений: 69 (детерминированная выжимка, не пересказ)
 
 
 ## без раздела
@@ -16,8 +16,10 @@
 - Don’t use the entire app icon.
 - Don’t add elements to your app that draw attention to the Dynamic Island.
 - Your Live Activity appears in the Dynamic Island while your app isn’t in use, and other items can appear in the Dynamic Island when your app is open.
+- Ensure text is easy to read.
 - Use large, heavier-weight text — a medium weight or higher.
 - Use small text sparingly and make sure key information is legible at a glance.
+- Ensure they look great everywhere by using the values in as guidance and providing appropriately sized content.
 - Adjust element size and placement for efficient use of space.
 - Use familiar layouts for custom views and layouts.
 - Templates with default system margins and recommended text sizes are available in .
@@ -47,9 +49,14 @@
 - Instead of creating separate Live Activities people need to jump between to track different events, prefer a single Live Activity that uses a dynamic layout and rotates through events.
 - Always end a Live Activity immediately when the task or event ends, and consider setting a custom dismissal time.
 - Use the compact presentation to show dynamic, up-to-date information that’s essential to the Live Activity and easy to understand.
+- Ensure unified information and design of the compact presentations in the Dynamic Island.
 - Though the TrueDepth camera separates the leading and trailing elements, design them to read as a single piece of information, and use consistent color and typography to help create a connection between both elements.
+- Keep content as narrow as possible and ensure it’s snug against the TrueDepth camera.
 - Try not to obscure key information in the status bar, and don’t add padding between content and the TrueDepth camera.
 - Maintain a balanced layout with similarly sized views for both leading and trailing elements; for example, use shortened units or less precise data to maintain appropriate width and balance.
+- Ensure both leading and trailing elements link to the same screen.
+- Ensure that your Live Activity is recognizable in the minimal presentation.
+- Ensure information and layouts expand predictably when the Live Activity expands.
 - Arrange content close to the TrueDepth camera, and try to avoid leaving too much room around it to use space more efficiently and to help diminish the camera’s presence.
 - Don’t replicate notification layouts.
 - To make a Live Activity fit a custom Lock Screen aesthetic while remaining legible, use custom background or tint colors and opacity sparingly.

@@ -1,7 +1,7 @@
 # знание · `liquid-glass-adoption`
 Источник: https://developer.apple.com/documentation/technologyoverviews/adopting-liquid-glass
 Домены мандата: liquid-glass, свечение, стекло-движение
-Нормативных положений: 38 (детерминированная выжимка, не пересказ)
+Нормативных положений: 41 (детерминированная выжимка, не пересказ)
 
 
 ## без раздела
@@ -10,7 +10,9 @@
 - Any custom backgrounds and appearances you use in these elements might overlay or interfere with Liquid Glass or other effects that the system provides, such as the scroll edge effect.
 - Make sure to check any custom backgrounds in elements like split views, tab bars, and toolbars.
 - Prefer to remove custom effects and let the system determine the background appearance, especially for the following elements: Test your interface with a variety of display and accessibility settings.
+- For example, people can choose a preferred look for Liquid Glass in their device’s settings, or turn on accessibility settings that reduce transparency or motion in the interface.
 - If you use standard components from system frameworks, this experience adapts automatically.
+- Ensure you test your app’s custom elements, colors, and animations with different configurations of these settings.
 - Avoid overusing Liquid Glass effects.
 - Keep elements centered to avoid clipping.
 - If you use standard controls from system frameworks and don’t hard-code their layout metrics, your app adopts changes to shapes and sizes automatically when you rebuild your app with the latest version of Xcode.
@@ -18,6 +20,7 @@
 - Be judicious with your use of in controls and navigation so they stay legible.
 - Prefer to use standard spacing metrics instead of overriding them, and avoid overcrowding or layering Liquid Glass elements on top of each other.
 - If you use a custom bar with elements like controls, text, or icons that have content scrolling beneath them, you can register those views to use a scroll edge effect with these APIs: Consider aligning the shape of controls with other rounded elements throughout the interface.
+- Ensure that you clearly separate your content from navigation elements, like tab bars and sidebars, to establish a distinct functional layer above the content layer.
 - You can use the following standard system APIs for split views to build these types of layouts with minimal code: Check content safe areas for sidebars and inspectors.
 - If you have these types of components in your app’s navigation structure, audit the safe area compatibility of content next to the sidebar and inspector to help make sure underlying content is peeking through appropriately.
 - This effect is perfect for creating a full, edge-to-edge content experience in apps that use split views, such as for hero images on product pages.

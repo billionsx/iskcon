@@ -1,7 +1,7 @@
 # знание · `hig-app-icons`
 Источник: https://developer.apple.com/design/human-interface-guidelines/app-icons
 Домены мандата: иконки, динамические-иконки
-Нормативных положений: 28 (детерминированная выжимка, не пересказ)
+Нормативных положений: 30 (детерминированная выжимка, не пересказ)
 
 
 ## без раздела
@@ -10,6 +10,7 @@
 - You use your favorite design tool to craft the individual foreground layers of your app icon.
 - Prefer clearly defined edges in foreground layers.
 - To ensure system-drawn highlights and shadows look best, avoid soft and feathered edges on foreground layer shapes.
+- If you choose a gradient for your background layer, ensure that it responds well to system lighting effects.
 - If you do import a background layer, make sure it’s full-bleed and opaque.
 - Prefer vector graphics when bringing layers into Icon Composer.
 - For mesh gradients and raster artwork, prefer PNG format because it’s a lossless image format.
@@ -30,6 +31,7 @@
 - Avoid creating one someone might mistake for another app.
 - Alternate app icons in iOS and iPadOS require their own dark, clear, and tinted variants.
 - As with your default app icon, all alternate and variant icons are subject to app review and must adhere to the .
+- Include a safe zone to ensure the system doesn’t crop your content.
 - To ensure that your icon’s content is always visible, keep a safe zone around it.
 - Avoid adding a shape that’s intended to look like a hole or concave area to the background layer.
 - Avoid using black for your icon’s background.

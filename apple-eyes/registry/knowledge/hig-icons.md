@@ -1,7 +1,7 @@
 # знание · `hig-icons`
 Источник: https://developer.apple.com/design/human-interface-guidelines/icons
 Домены мандата: иконки
-Нормативных положений: 27 (детерминированная выжимка, не пересказ)
+Нормативных положений: 28 (детерминированная выжимка, не пересказ)
 
 
 ## без раздела
@@ -10,6 +10,7 @@
 - Both interface icons and symbols use black and clear colors to define their shapes; the system can apply other colors to the black areas in each image.
 - In general, icons work best when they use familiar visual metaphors that are directly related to the actions they initiate or content they represent.
 - Whether you use only custom icons or mix custom and system-provided ones, all interface icons in your app need to use a consistent size, level of detail, stroke thickness (or weight), and perspective.
+- Depending on the visual weight of an icon, you may need to adjust its dimensions to ensure that it appears visually consistent with other icons.
 - You don’t need to provide selected and unselected appearances for an icon that’s used in standard system components such as toolbars, tab bars, and buttons.
 - Prefer depicting gender-neutral human figures and avoid images that might be hard to recognize across different cultures or languages.
 - If you need to display individual characters in your icon, be sure to localize them.

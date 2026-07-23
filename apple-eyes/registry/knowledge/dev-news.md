@@ -10,6 +10,7 @@
 - For significant changes, developers should use the Significant Change API under the PermissionKit framework.
 - Next steps Review documentation and implement the following: Declared Age Range API Significant Change API under PermissionKit New age rating property type in StoreKit App Store server notification Use Apple’s sandbox testing environment to validate that the APIs have been implemented correctly.
 - And make sure to build and test with Xcode 26.5 to take advantage of the advancements in the latest SDKs.
+- Please ensure your responses to the age rating questionnaire in App Store Connect accurately reflect your app’s content.
 - Vietnam To align with Article 38 of Vietnam Decree 147, apps available on the App Store in Vietnam will require a region-specific age rating.
 - These adjustments are made using publicly available exchange rate information from reputable financial media (e.g., The Wall Street Journal) or financial companies (e.g., Bloomberg) to help make sure prices for apps and In-App Purchases stay consistent across all storefronts.
 - A new app version must be submitted to initiate the license verification process.
@@ -21,6 +22,7 @@
 - And make sure to build and test with Xcode 26.5 beta to take advantage of the advancements in the latest SDKs.
 - These apps may require registration or authorization from regulatory bodies, such as the U.S.
 - Existing apps distributed in these regions that meet either of the criteria above must provide a status by early 2027.
+- Cohort data is aggregated to ensure user privacy.
 - This new guide in App Store Connect Help enables you to develop a data-driven strategy and understand App Store tools and features you can use to grow your business.
 - The commission rate for standard Apple In-App Purchase and paid app transactions will be 25%.
 - Currently, the rate is 30%.
@@ -51,6 +53,7 @@
 - As a reminder, registering a notification endpoint allows Apple to send you important updates about the people who use your app and their account status, including: Changes in email forwarding preferences.
 - When you receive these notifications, you should immediately update any data associated with the account change in the app, as well as any necessary server infrastructure, to give people more control of the personal data they’ve shared.
 - Account change guidance Account changes are directly related to privacy and control for the user and their personal data, and confirming account changes should be straightforward and transparent.
+- For account email forwarding changes: Ensure any displayed user data affected by the account change matches the change event in the notification payload.
 - Note: Always follow applicable legal requirements for storing and retaining user account information and for handling account changes and deletions.
 - Once this law goes into effect, users located in Texas who create a new Apple Account will be required to confirm whether they are 18 years or older.
 - All new Apple Accounts for users under the age of 18 will be required to join a Family Sharing group , and parents or guardians will need to provide consent for all App Store downloads, app purchases, and transactions using Apple's In-App Purchase system by the minor.
@@ -92,6 +95,7 @@
 - As always, you can change the prices of your apps, In‑App Purchases, and auto‑renewable subscriptions at any time.
 - Additional upcoming changes Beginning August 4: All auto-renewable subscription price increases in Austria, Germany, and Poland will require customers to consent to the new price for their subscription to continue renewing.
 - Price increases scheduled with a start date on or after August 4: All customers must consent to the new price.
+- To help ensure a smooth transition, we recommend avoiding scheduling price increases with a start date between August 2 and August 4.
 - And to take advantage of the advancements in the latest SDKs, make sure to build and test with Xcode 16.3.
 - Beginning April 24, 2025, apps uploaded to App Store Connect must be built with Xcode 16 or later using an SDK for iOS 18, iPadOS 18, tvOS 18, visionOS 2, or watchOS 11.
 - At this time, you don’t have to update your keys unless you want to take advantage of the new capabilities.
@@ -105,6 +109,7 @@
 - Your app playground doesn’t need to be intricate — it should be experienced within 3 minutes or less.
 - Developers can apply to use the Advanced Commerce API to support eligible App Store business models and more flexibly manage their In-App Purchases within their app.
 - If your app performs on-device receipt validation, update your app to support certificates that use the SHA-256 algorithm; alternatively, use the AppTransaction and Transaction APIs to verify App Store transactions.
+- In order to maintain uninterrupted service, you’ll need to ensure that your production servers support one or more of the designated six ciphers before February 4, 2025.
 - And to take advantage of the advancements in the latest SDKs, make sure to build and test with Xcode 16.2.
 - Meet the winners Updated Apple Developer Program License Agreement now available December 6, 2024 Attachment 2 of the Apple Developer Program License Agreement has been amended to specify requirements for use of the In-App Purchase API.
 - Make sure your apps and games are up to date and ready.
@@ -120,8 +125,3 @@
 - At this time, you don’t need to update the APNs SSL provider certificates issued to you by Apple.
 - Where required by local regulations, regional ratings will appear alongside Apple global age ratings.
 - Starting April 2025, apps uploaded to App Store Connect must be built with SDKs for iOS 18, iPadOS 18, tvOS 18, visionOS 2, or watchOS 11.
-- These adjustments are made using publicly available exchange rate information from financial data providers to help make sure prices for apps and In-App Purchases stay consistent across all storefronts.
-- As always, you can change the prices of your apps, In‑App Purchases, and auto‑renewable subscriptions at any time.
-- Please note these new dates and requirements: October 16, 2024 : Trader status will be required to submit app updates.
-- We’re introducing updated terms that will apply this fall for developers with apps in the European Union storefronts of the App Store that use the StoreKit External Purchase Link Entitlement.
-- These communications must provide accurate information regarding the digital goods or services available for purchase.

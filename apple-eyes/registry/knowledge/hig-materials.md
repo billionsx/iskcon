@@ -1,7 +1,7 @@
 # знание · `hig-materials`
 Источник: https://developer.apple.com/design/human-interface-guidelines/materials
 Домены мандата: liquid-glass, размытие, полупрозрачность, многослойность
-Нормативных положений: 29 (детерминированная выжимка, не пересказ)
+Нормативных положений: 32 (детерминированная выжимка, не пересказ)
 
 
 ## без раздела
@@ -9,6 +9,7 @@
 - Instead, use for elements in the content layer, such as app backgrounds.
 - Use Liquid Glass effects sparingly.
 - Only use clear Liquid Glass for components that appear over visually rich backgrounds.
+- The appearance of these variants can differ in response to certain system settings, like if people choose a preferred look for Liquid Glass in their device’s settings, or turn on accessibility settings that reduce transparency or increase contrast in the interface.
 - Most system components use this variant.
 - Use the regular variant when background content might create legibility issues, or when components have a significant amount of text, such as alerts, sidebars, or popovers.
 - Use this variant for components that float above media backgrounds — such as photos and videos — to create a more immersive content experience.
@@ -19,6 +20,7 @@
 - Choose materials and effects based on semantic meaning and recommended usage.
 - Avoid selecting a material or effect based on the apparent color it imparts to your interface, because system settings can change its appearance and behavior.
 - Instead, match the material or vibrancy style to your specific use case.
+- Help ensure legibility by using vibrant colors on top of materials.
 - When you use system-defined vibrant colors, you don’t need to worry about colors seeming too dark, bright, saturated, or low contrast in different contexts.
 - Regardless of the material you choose, use vibrant colors on top of it.
 - In addition to Liquid Glass, iOS and iPadOS continue to provide four standard materials — ultra-thin, thin, regular (default), and thick — which you can use in the content layer to help create visual distinction.
@@ -30,6 +32,7 @@
 - In visionOS, windows generally use an unmodifiable system-defined material called glass that helps people stay grounded by letting light, the current Environment, virtual content, and objects in people’s surroundings show through.
 - Prefer translucency to opaque colors in windows.
 - Use the following examples for guidance.
+- To ensure foreground content remains legible when it displays on top of a material, visionOS applies vibrancy to text, symbols, and fills.
 - Use for descriptive text like footnotes and subtitles.
 - Use for inactive elements, and only when text doesn’t need high legibility.
 - Use materials to provide context in a full-screen modal view.
