@@ -32,7 +32,9 @@ jobs:
 
       - name: Снять кадры и геометрию
         env:
-          CF: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          # Отдельный токен сканера (только Browser Rendering). Пока его нет —
+          # падаем на общий, чтобы конвейер не ломался.
+          CF: ${{ secrets.CF_SHOT_TOKEN || secrets.CLOUDFLARE_API_TOKEN }}
           STATES: ${{ inputs.states }}
           BASE: ${{ inputs.base }}
         run: |
