@@ -416,3 +416,11 @@
 - появились: The 27 platform releases – June 2026 · Xcode 27 · Performance and analysis · Apple Intelligence and Machine Learning · Siri, Intents, and Spotlight · Foundation Models · Core AI · Evaluations · SwiftUI · UIKit · AppKit · SwiftData
 - объём текста: 39 → 13629 зн.
 
+### 2026-07-23 18:47 UTC · `hig-accessibility` · первый снимок
+- https://developer.apple.com/design/human-interface-guidelines/accessibility
+- домены мандата: динамика, эффекты, анимация, доступность
+
+### 2026-07-23 18:47 UTC · `swiftui-animation` · первый снимок
+- https://developer.apple.com/documentation/swiftui/animation
+- домены мандата: динамика, анимация, спринги
+

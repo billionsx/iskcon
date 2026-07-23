@@ -55,8 +55,10 @@
 - [`hig-sheets`](hig-sheets.md) · положений: 19
 
 ## анимация
+- [`hig-accessibility`](hig-accessibility.md) · положений: 43
 - [`hig-motion`](hig-motion.md) · положений: 16
 - [`hig-progress-indicators`](hig-progress-indicators.md) · положений: 9
+- [`swiftui-animation`](swiftui-animation.md) · положений: 0
 - [`wwdc-videos`](wwdc-videos.md) · положений: 1
 
 ## архитектура
@@ -83,6 +85,10 @@
 ## графики
 - [`hig-charting-data`](hig-charting-data.md) · положений: 14
 
+## динамика
+- [`hig-accessibility`](hig-accessibility.md) · положений: 43
+- [`swiftui-animation`](swiftui-animation.md) · положений: 0
+
 ## динамические-иконки
 - [`hig-app-icons`](hig-app-icons.md) · положений: 28
 
@@ -93,6 +99,9 @@
 ## динамичные-меню
 - [`hig-menus`](hig-menus.md) · положений: 31
 - [`hig-tab-bars`](hig-tab-bars.md) · положений: 22
+
+## доступность
+- [`hig-accessibility`](hig-accessibility.md) · положений: 43
 
 ## жесты
 - [`hig-gestures`](hig-gestures.md) · положений: 39
@@ -186,6 +195,9 @@
 ## свечение
 - [`liquid-glass-adoption`](liquid-glass-adoption.md) · положений: 38
 
+## спринги
+- [`swiftui-animation`](swiftui-animation.md) · положений: 0
+
 ## стекло-движение
 - [`hig-designing-visionos`](hig-designing-visionos.md) · положений: 13
 - [`liquid-glass-adoption`](liquid-glass-adoption.md) · положений: 38
@@ -218,5 +230,6 @@
 - [`design-awards`](design-awards.md) · положений: 12
 
 ## эффекты
+- [`hig-accessibility`](hig-accessibility.md) · положений: 43
 - [`hig-motion`](hig-motion.md) · положений: 16
 
