@@ -4,10 +4,5 @@
   ✗ geom HTTP 500: shot error: Unable to create new browser: code: 429: message: Rate limit exceeded
   ✗ geom HTTP 500: shot error: Unable to create new browser: code: 429: message: Rate limit exceeded
   ✗ geom HTTP 500: shot error: Unable to create new browser: code: 429: message: Rate limit exceeded
-— player: /play?shot=player&book=bg&ch=1
-  ✓ кадр 23 КБ
-  ✗ geom HTTP 500: shot error: Unable to create new browser: code: 429: message: Rate limit exceeded
-  ✗ geom HTTP 500: shot error: Unable to create new browser: code: 429: message: Rate limit exceeded
-  ✗ geom HTTP 500: shot error: Unable to create new browser: code: 429: message: Rate limit exceeded
 НЕ СНЯТО: —
 rc=0
