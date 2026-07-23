@@ -38,77 +38,28 @@ jobs:
       - name: Зависимости
         run: pip install "internetarchive>=3.5" >/dev/null
 
-      - name: Дамп D1
+      - name: Дамп D1 (wrangler export)
         env:
-          CF: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: d5cbe19470dc38599873eabfe148e6d1
         run: |
           set +e
-          python3 - <<'PY' 2>&1 | tee d1-dump.log
-          import gzip, json, os, time, urllib.error, urllib.request
-
-          CF   = os.environ["CF"]
-          ACCT = "d5cbe19470dc38599873eabfe148e6d1"
-          DB   = "6226aded-dd03-4e74-977f-9cd0b509e73d"
-          ROOT = f"https://api.cloudflare.com/client/v4/accounts/{ACCT}/d1/database/{DB}"
-          H    = {"Authorization": f"Bearer {CF}", "Content-Type": "application/json"}
-
-          def post(url, body):
-              rq = urllib.request.Request(url, data=json.dumps(body).encode(), headers=H)
-              with urllib.request.urlopen(rq, timeout=180) as r:
-                  return json.loads(r.read().decode())
-
-          def query(sql):
-              return post(ROOT + "/query", {"sql": sql})["result"][0]["results"]
-
-          # 1) Штатный export D1: отдаёт ссылку на полный SQL-дамп (схема+данные).
-          url, bookmark = None, None
-          try:
-              for _ in range(60):
-                  body = {"output_format": "polling"}
-                  if bookmark: body["current_bookmark"] = bookmark
-                  r = post(ROOT + "/export", body)
-                  res = r.get("result") or {}
-                  if res.get("signed_url"):
-                      url = res["signed_url"]; break
-                  bookmark = res.get("at_bookmark") or bookmark
-                  time.sleep(5)
-          except urllib.error.HTTPError as e:
-              print("export API недоступен:", e.code, e.read().decode()[:300])
-
-          if url:
-              with urllib.request.urlopen(url, timeout=600) as r, gzip.open("d1.sql.gz", "wb") as w:
-                  n = 0
-                  while True:
-                      chunk = r.read(1 << 20)
-                      if not chunk: break
-                      w.write(chunk); n += len(chunk)
-              print(f"✓ export D1: {n/1048576:.1f} МБ (несжатых)")
-          else:
-              # 2) Запасной путь: таблица за таблицей через query.
-              print("↻ запасной дамп через query")
-              tabs = [t["name"] for t in query(
-                  "SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%' AND name NOT LIKE '_cf_%'")]
-              with gzip.open("d1.sql.gz", "wt", encoding="utf-8") as w:
-                  for t in tabs:
-                      ddl = query(f"SELECT sql FROM sqlite_master WHERE name='{t}'")
-                      if ddl and ddl[0].get("sql"): w.write(ddl[0]["sql"].rstrip(";") + ";\n")
-                      off, total = 0, 0
-                      while True:
-                          rows = query(f"SELECT * FROM \"{t}\" LIMIT 500 OFFSET {off}")
-                          if not rows: break
-                          for row in rows:
-                              cols = ",".join(f'"{c}"' for c in row)
-                              vals = ",".join("NULL" if v is None else
-                                              (str(v) if isinstance(v, (int, float)) else
-                                               "'" + str(v).replace("'", "''") + "'") for v in row.values())
-                              w.write(f'INSERT INTO "{t}" ({cols}) VALUES ({vals});\n')
-                          off += len(rows); total += len(rows)
-                          if len(rows) < 500: break
-                      print(f"  {t}: {total}")
-              print("✓ запасной дамп готов")
-          PY
-          test -s d1.sql.gz || { echo "ДАМП ПУСТ — прерываю"; exit 1; }
-          ls -lh d1.sql.gz
+          # База 337 МБ: единственный вменяемый путь — штатный export D1.
+          # wrangler сам ведёт опрос задания и докачивает файл.
+          npx --yes wrangler@latest d1 export iskcon-db --remote --output=d1.sql 2>&1 | tee d1-dump.log
+          RC=${PIPESTATUS[0]}
+          echo "rc=$RC" >> d1-dump.log
+          if [ ! -s d1.sql ]; then
+            echo "ДАМП ПУСТ — прерываю" | tee -a d1-dump.log
+            exit 1
+          fi
+          # контроль вменяемости: дамп должен содержать ключевые таблицы
+          for T in verses entities katha_tracks prayers; do
+            grep -qi "\"\?$T\"\?" d1.sql || echo "ВНИМАНИЕ: в дампе не найдена таблица $T" | tee -a d1-dump.log
+          done
+          wc -c d1.sql | tee -a d1-dump.log
+          gzip -9 -f d1.sql
+          ls -lh d1.sql.gz | tee -a d1-dump.log
 
       - name: Бандл репозитория
         run: |
