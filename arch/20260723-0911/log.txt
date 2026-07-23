@@ -1,9 +1,0 @@
-ключ /__shot синхронизирован с D1
-— root: /play
-  ✓ кадр 23 КБ · где: https://brajs.com/play · amx=False текста=25 · селекторов=0
-— player: /play?shot=player&book=bg&ch=1
-  ✗ both HTTP 500: shot error: Unable to create new browser: code: 429: message: Rate limit exceeded
-  ✗ both HTTP 500: shot error: Unable to create new browser: code: 429: message: Rate limit exceeded
-  ✗ both HTTP 500: shot error: Unable to create new browser: code: 429: message: Rate limit exceeded
-НЕ СНЯТО: ['player']
-rc=0
