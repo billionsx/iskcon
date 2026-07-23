@@ -37,7 +37,8 @@ jobs:
           BASE: ${{ inputs.base }}
         run: |
           mkdir -p out
-          python3 - <<'PY'
+          set +e
+          python3 - <<'PY' 2>&1 | tee out/log.txt
           import base64, json, os, sys, urllib.error, urllib.request
 
           CF   = os.environ["CF"]
@@ -137,6 +138,7 @@ jobs:
           if not geom and failed:
               sys.exit("Browser Rendering недоступен — проверь право токена")
           PY
+          echo "rc=${PIPESTATUS[0]}" >> out/log.txt
           echo "rc=$?" >> out/log.txt
 
       - name: Положить в ветку shots
