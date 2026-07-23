@@ -2112,7 +2112,8 @@ export default {
         browser = await puppeteer.launch(env.BROWSER);
         const page = await browser.newPage();
         await page.setViewport({ width: w, height: h, deviceScaleFactor: dpr });
-        await page.goto(`https://${SITE_HOST}${path}`, { waitUntil: "networkidle0", timeout: 45000 });
+        await page.setExtraHTTPHeaders({ "x-shot-key": given });
+        await page.goto(`${url.origin}${path}`, { waitUntil: "networkidle0", timeout: 45000 });
         await new Promise((r) => setTimeout(r, wait));
         // Диагностика: куда мы реально попали (защита зоны умеет подменять
         // страницу молча) и ожил ли SPA.
@@ -2199,7 +2200,19 @@ export default {
     // Теперь по умолчанию редиректится всё, что не канон. Исключение одно:
     // служебный workers.dev, на котором деплой мгновенно проверяет свежесть
     // бандла (шаг 16) — 301 сорвал бы проверку.
-    if ((url.hostname !== SITE_HOST && !isServiceHost(url.hostname)) || url.protocol === "http:") {
+    // СЪЁМКА. Безголовый браузер ходит по workers.dev: зона brajs.com отвечает
+    // датацентровым IP «1010» и вместо приложения отдаёт страницу блокировки —
+    // именно её мы и сняли первым кадром. Все запросы съёмки (документ, скрипты,
+    // стили) несут x-shot-key; при валидном ключе канонизацию пропускаем, иначе
+    // страница уехала бы 301-м обратно на защищённый домен.
+    const shotHdr = request.headers.get("x-shot-key");
+    let shotOk = false;
+    if (shotHdr) {
+      const kr = await env.DB.prepare(`SELECT value FROM app_config WHERE key = 'shot_token' LIMIT 1`)
+        .first<{ value: string }>().catch(() => null);
+      shotOk = !!kr?.value && kr.value === shotHdr;
+    }
+    if (!shotOk && ((url.hostname !== SITE_HOST && !isServiceHost(url.hostname)) || url.protocol === "http:")) {
       url.hostname = SITE_HOST;
       url.protocol = "https:";
       url.port = "";
