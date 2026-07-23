@@ -28,14 +28,14 @@
 ## hig
 - [`design-resources`](design-resources.md) · положений: 10
 - [`dev-news`](dev-news.md) · положений: 120
-- [`doc-updates`](doc-updates.md) · положений: 0
+- [`doc-updates`](doc-updates.md) · положений: 30
 - [`hig-index`](hig-index.md) · положений: 0
 - [`hig-whats-new`](hig-whats-new.md) · положений: 16
 
 ## ios27
 - [`apple-newsroom-rss`](apple-newsroom-rss.md) · положений: 0
 - [`dev-news`](dev-news.md) · положений: 120
-- [`doc-updates`](doc-updates.md) · положений: 0
+- [`doc-updates`](doc-updates.md) · положений: 30
 - [`hig-whats-new`](hig-whats-new.md) · положений: 16
 - [`ios-landing`](ios-landing.md) · положений: 5
 - [`ios-release-notes`](ios-release-notes.md) · положений: 0
@@ -46,7 +46,7 @@
 
 ## liquid-glass
 - [`hig-materials`](hig-materials.md) · положений: 29
-- [`liquid-glass-adoption`](liquid-glass-adoption.md) · положений: 0
+- [`liquid-glass-adoption`](liquid-glass-adoption.md) · положений: 38
 
 ## popup
 - [`app-review-guidelines`](app-review-guidelines.md) · положений: 120
@@ -184,11 +184,11 @@
 - [`app-store-marketing`](app-store-marketing.md) · положений: 108
 
 ## свечение
-- [`liquid-glass-adoption`](liquid-glass-adoption.md) · положений: 0
+- [`liquid-glass-adoption`](liquid-glass-adoption.md) · положений: 38
 
 ## стекло-движение
 - [`hig-designing-visionos`](hig-designing-visionos.md) · положений: 13
-- [`liquid-glass-adoption`](liquid-glass-adoption.md) · положений: 0
+- [`liquid-glass-adoption`](liquid-glass-adoption.md) · положений: 38
 
 ## суб-приложения
 - [`hig-split-views`](hig-split-views.md) · положений: 17

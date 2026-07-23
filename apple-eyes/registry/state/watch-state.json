@@ -45,7 +45,7 @@
    "h3: Events"
   ],
   "last_changed": "2026-07-23 18:08 UTC",
-  "last_checked": "2026-07-23 18:24 UTC",
+  "last_checked": "2026-07-23 18:37 UTC",
   "last_modified": "",
   "route": "html",
   "sha": "de354a1f239bc559f35daa29a2c49d8c11617cb522a8e134f63bfde0245a1a98",
@@ -123,7 +123,7 @@
    "h3: Association with Apple"
   ],
   "last_changed": "2026-07-23 17:37 UTC",
-  "last_checked": "2026-07-23 18:23 UTC",
+  "last_checked": "2026-07-23 18:36 UTC",
   "last_modified": "Tue, 31 Mar 2026 20:38:04 GMT",
   "route": "html",
   "sha": "f456c02b68f335ed6d82161c318fa3e0a5f509a5c0497e3f1f357af1a189808c",
@@ -139,7 +139,7 @@
   "etag": "",
   "headings": [],
   "last_changed": "2026-07-23 17:37 UTC",
-  "last_checked": "2026-07-23 18:23 UTC",
+  "last_checked": "2026-07-23 18:36 UTC",
   "last_modified": "Thu, 23 Jul 2026 13:02:22 GMT",
   "route": "html",
   "sha": "be23f79f124816f9bb2b6d0b0b428f52b5555278d805c84d735f81783a9326b3",
@@ -216,7 +216,7 @@
    "h3: Games"
   ],
   "last_changed": "2026-07-23 18:09 UTC",
-  "last_checked": "2026-07-23 18:24 UTC",
+  "last_checked": "2026-07-23 18:37 UTC",
   "last_modified": "",
   "route": "html",
   "sha": "fdf62c0ad65b9447d382f8772dc2ee0239aeea82d234d08679bfd217045cbbd6",
@@ -278,7 +278,7 @@
    "h3: Events"
   ],
   "last_changed": "2026-07-23 08:47 UTC",
-  "last_checked": "2026-07-23 18:23 UTC",
+  "last_checked": "2026-07-23 18:36 UTC",
   "last_modified": "",
   "route": "html",
   "sha": "eaa3d5a9c0f761c12776616b798370a8e6ebe7f8a4945a73fa56675f56200892",
@@ -355,8 +355,8 @@
    "h2: Next steps for apps distributed in Texas"
   ],
   "last_changed": "2026-07-23 08:47 UTC",
-  "last_checked": "2026-07-23 18:23 UTC",
-  "last_modified": "Thu, 23 Jul 2026 18:22:35 GMT",
+  "last_checked": "2026-07-23 18:36 UTC",
+  "last_modified": "Thu, 23 Jul 2026 18:34:32 GMT",
   "route": "html",
   "sha": "d53a876c1c1d6ed55c23ae07a4aa3dbd573ffd06f157677959abedca8d9d1806",
   "text_len": 106767,
@@ -365,7 +365,7 @@
  },
  "dev-news-rss": {
   "etag": "",
-  "last_checked": "2026-07-23 18:23 UTC",
+  "last_checked": "2026-07-23 18:36 UTC",
   "last_modified": "",
   "note": "500",
   "url": "https://developer.apple.com/news/rss/news.rss"
@@ -375,14 +375,36 @@
    "ios27",
    "hig"
   ],
-  "etag": "abf17eae25bad3bb259b39dbf05591d6",
-  "headings": [],
-  "last_changed": "2026-07-23 08:47 UTC",
-  "last_checked": "2026-07-23 18:23 UTC",
+  "etag": "W/\"7dc76a41938a763db6144f61804d30fe\"",
+  "headings": [
+   "The 27 platform releases – June 2026",
+   "Xcode 27",
+   "Performance and analysis",
+   "Apple Intelligence and Machine Learning",
+   "Siri, Intents, and Spotlight",
+   "Foundation Models",
+   "Core AI",
+   "Evaluations",
+   "SwiftUI",
+   "UIKit",
+   "AppKit",
+   "SwiftData",
+   "Privacy and Security",
+   "Graphics and Media",
+   "Health",
+   "Apple Pay, Passes, and Commerce",
+   "Platform services",
+   "Release notes",
+   "Technology and frameworks",
+   "Past releases"
+  ],
+  "last_changed": "2026-07-23 18:36 UTC",
+  "last_checked": "2026-07-23 18:36 UTC",
   "last_modified": "",
-  "sha": "8f6fdf07635c8d7678d6bf5bc75dd47d8aa8523b5fa49873df66c3861e1f0f70",
-  "text_len": 39,
-  "title": "Updates | Apple Developer Documentation",
+  "route": "docc",
+  "sha": "d92705b4ae0edfa1871f144c1d73732683b0bd9b12f0bd2323778d249d2d5539",
+  "text_len": 13629,
+  "title": "Updates",
   "url": "https://developer.apple.com/documentation/updates/"
  },
  "fonts": {
@@ -440,7 +462,7 @@
    "h3: Events"
   ],
   "last_changed": "2026-07-23 08:46 UTC",
-  "last_checked": "2026-07-23 18:22 UTC",
+  "last_checked": "2026-07-23 18:35 UTC",
   "last_modified": "Fri, 30 Jan 2026 23:10:21 GMT",
   "sha": "1fdb1271cb328f4d062b563f8c1066ae60ef3e35aede43f478b958c8160ea933",
   "text_len": 30182,
@@ -467,7 +489,7 @@
    "Change log"
   ],
   "last_changed": "2026-07-23 17:36 UTC",
-  "last_checked": "2026-07-23 18:22 UTC",
+  "last_checked": "2026-07-23 18:35 UTC",
   "last_modified": "",
   "route": "docc",
   "sha": "0e8fb6116c3bdfd44ebe92d5c21c5d33642b7179bddd3c55de5ebd5e43277238",
@@ -499,7 +521,7 @@
    "Change log"
   ],
   "last_changed": "2026-07-23 17:36 UTC",
-  "last_checked": "2026-07-23 18:22 UTC",
+  "last_checked": "2026-07-23 18:35 UTC",
   "last_modified": "",
   "route": "docc",
   "sha": "cb75c8bcafd5e9197aced1340bfd97a7d3bb934051fc38749a608ad29e2329c7",
@@ -541,7 +563,7 @@
    "Change log"
   ],
   "last_changed": "2026-07-23 17:37 UTC",
-  "last_checked": "2026-07-23 18:22 UTC",
+  "last_checked": "2026-07-23 18:36 UTC",
   "last_modified": "",
   "route": "docc",
   "sha": "5610082c974faf6a134188110a42beb33e47c149275733ef51dca5476a9c2d67",
@@ -575,7 +597,7 @@
    "Change log"
   ],
   "last_changed": "2026-07-23 17:36 UTC",
-  "last_checked": "2026-07-23 18:22 UTC",
+  "last_checked": "2026-07-23 18:35 UTC",
   "last_modified": "",
   "route": "docc",
   "sha": "a693e65bdc63e632fe849ceeef5fa1854bbd809655c59c012c47a7b5730a405d",
@@ -601,7 +623,7 @@
    "Change log"
   ],
   "last_changed": "2026-07-23 17:37 UTC",
-  "last_checked": "2026-07-23 18:23 UTC",
+  "last_checked": "2026-07-23 18:36 UTC",
   "last_modified": "",
   "route": "docc",
   "sha": "2626c074d55626f731c05975894e1748abc1b82f2d48059aa7e64c9a9ed1bf63",
@@ -638,7 +660,7 @@
    "Change log"
   ],
   "last_changed": "2026-07-23 17:35 UTC",
-  "last_checked": "2026-07-23 18:21 UTC",
+  "last_checked": "2026-07-23 18:34 UTC",
   "last_modified": "",
   "route": "docc",
   "sha": "9ddfc8c66030648851da9b7677dd9c4231eaa945d7c0ba2de0d675506f7ceee3",
@@ -666,7 +688,7 @@
    "Change log"
   ],
   "last_changed": "2026-07-23 17:36 UTC",
-  "last_checked": "2026-07-23 18:21 UTC",
+  "last_checked": "2026-07-23 18:34 UTC",
   "last_modified": "",
   "route": "docc",
   "sha": "67d4ea1c496a3a6cf07b5f2a3f22993cbe511dc5d11fc7e2fd207aff7da6c376",
@@ -687,7 +709,7 @@
    "Videos"
   ],
   "last_changed": "2026-07-23 17:37 UTC",
-  "last_checked": "2026-07-23 18:23 UTC",
+  "last_checked": "2026-07-23 18:36 UTC",
   "last_modified": "",
   "route": "docc",
   "sha": "fc173ae2340ae26fe63ce3cdc0d4f4a856dac7a62f052e7164c61308ee3cb954",
@@ -708,7 +730,7 @@
    "Videos"
   ],
   "last_changed": "2026-07-23 17:37 UTC",
-  "last_checked": "2026-07-23 18:23 UTC",
+  "last_checked": "2026-07-23 18:36 UTC",
   "last_modified": "",
   "route": "docc",
   "sha": "2b559f724907762c3af8af3234593a3da0de6689270966106481504ab8edb9fa",
@@ -731,7 +753,7 @@
    "Change log"
   ],
   "last_changed": "2026-07-23 17:38 UTC",
-  "last_checked": "2026-07-23 18:23 UTC",
+  "last_checked": "2026-07-23 18:36 UTC",
   "last_modified": "",
   "route": "docc",
   "sha": "94e2c57abc778d4a7cc382692e150c96d91c9ae87cc6d3f038aeaa2b17ba14f5",
@@ -754,7 +776,7 @@
    "Change log"
   ],
   "last_changed": "2026-07-23 17:37 UTC",
-  "last_checked": "2026-07-23 18:23 UTC",
+  "last_checked": "2026-07-23 18:36 UTC",
   "last_modified": "",
   "route": "docc",
   "sha": "8775e1318c5541bcaf202c362aebf7f60dd59c07bd565fe0800764716c1bde83",
@@ -777,7 +799,7 @@
    "Change log"
   ],
   "last_changed": "2026-07-23 17:37 UTC",
-  "last_checked": "2026-07-23 18:22 UTC",
+  "last_checked": "2026-07-23 18:36 UTC",
   "last_modified": "",
   "route": "docc",
   "sha": "f6be8e77c7989d32b0f3521a8ab0adc3ad6c780886e0ef088a832ecf8a55768b",
@@ -810,7 +832,7 @@
    "Change log"
   ],
   "last_changed": "2026-07-23 17:36 UTC",
-  "last_checked": "2026-07-23 18:22 UTC",
+  "last_checked": "2026-07-23 18:35 UTC",
   "last_modified": "",
   "route": "docc",
   "sha": "053ecd4e01a936d4f1c9064b688f059de75e12d65ece2377cc7d9c899b961e2c",
@@ -845,7 +867,7 @@
    "Change log"
   ],
   "last_changed": "2026-07-23 17:36 UTC",
-  "last_checked": "2026-07-23 18:22 UTC",
+  "last_checked": "2026-07-23 18:35 UTC",
   "last_modified": "",
   "route": "docc",
   "sha": "e38c110bc7b1119aafa1a3f3cd8a1662163072cf2c3bc1fcc83e22d756afd1bc",
@@ -875,7 +897,7 @@
    "Change log"
   ],
   "last_changed": "2026-07-23 17:36 UTC",
-  "last_checked": "2026-07-23 18:22 UTC",
+  "last_checked": "2026-07-23 18:35 UTC",
   "last_modified": "",
   "route": "docc",
   "sha": "2f88300d534615e685244062fd181abbdce7037c8a0f2d676df2d85a26785d8b",
@@ -909,7 +931,7 @@
    "Change log"
   ],
   "last_changed": "2026-07-23 17:36 UTC",
-  "last_checked": "2026-07-23 18:22 UTC",
+  "last_checked": "2026-07-23 18:35 UTC",
   "last_modified": "",
   "route": "docc",
   "sha": "51d1ec63d6216f324d05dcc6a76c68d8d69e5ba78f880db3822cd5b232b17911",
@@ -929,7 +951,7 @@
    "New and updated"
   ],
   "last_changed": "2026-07-23 17:35 UTC",
-  "last_checked": "2026-07-23 18:21 UTC",
+  "last_checked": "2026-07-23 18:34 UTC",
   "last_modified": "",
   "route": "docc",
   "sha": "80d165c1cfac35382bb4cffb0f46381058acba589c6450cc5d1525da530642d7",
@@ -968,7 +990,7 @@
    "Change log"
   ],
   "last_changed": "2026-07-23 17:36 UTC",
-  "last_checked": "2026-07-23 18:21 UTC",
+  "last_checked": "2026-07-23 18:35 UTC",
   "last_modified": "",
   "route": "docc",
   "sha": "7d9cd7d5c86fcbfb9b263fff292e36eb1a85fd7ebb2ad3821bd80f24d2fe5aa5",
@@ -1016,7 +1038,7 @@
    "Change log"
   ],
   "last_changed": "2026-07-23 17:36 UTC",
-  "last_checked": "2026-07-23 18:22 UTC",
+  "last_checked": "2026-07-23 18:35 UTC",
   "last_modified": "",
   "route": "docc",
   "sha": "abb434f177767861b0efb9e9edc2eb750c71dcafe8ab6a5d96c56fa644512697",
@@ -1048,7 +1070,7 @@
    "Change log"
   ],
   "last_changed": "2026-07-23 17:35 UTC",
-  "last_checked": "2026-07-23 18:21 UTC",
+  "last_checked": "2026-07-23 18:34 UTC",
   "last_modified": "",
   "route": "docc",
   "sha": "b8a2b286c9d6d9641a9449bdb8d79708649d819c994fa9fa24a7eae5f229b042",
@@ -1077,7 +1099,7 @@
    "Change log"
   ],
   "last_changed": "2026-07-23 17:36 UTC",
-  "last_checked": "2026-07-23 18:22 UTC",
+  "last_checked": "2026-07-23 18:35 UTC",
   "last_modified": "",
   "route": "docc",
   "sha": "4cff9f2cc767ba04a2c946211e0ed7869f521528eb54415d889e01a22d183e40",
@@ -1106,7 +1128,7 @@
    "Change log"
   ],
   "last_changed": "2026-07-23 17:36 UTC",
-  "last_checked": "2026-07-23 18:22 UTC",
+  "last_checked": "2026-07-23 18:35 UTC",
   "last_modified": "",
   "route": "docc",
   "sha": "b2dc8a62a7c54d099734fa6072ff4b2b60da78c66a4cfd2e0d3bfafdae8598c3",
@@ -1138,7 +1160,7 @@
    "Change log"
   ],
   "last_changed": "2026-07-23 17:36 UTC",
-  "last_checked": "2026-07-23 18:22 UTC",
+  "last_checked": "2026-07-23 18:35 UTC",
   "last_modified": "",
   "route": "docc",
   "sha": "15ac9730ed2a8f38ccd8a39f02f0cdb11ede4f9352f127a3a49555b181888c79",
@@ -1165,7 +1187,7 @@
    "Change log"
   ],
   "last_changed": "2026-07-23 17:37 UTC",
-  "last_checked": "2026-07-23 18:23 UTC",
+  "last_checked": "2026-07-23 18:36 UTC",
   "last_modified": "",
   "route": "docc",
   "sha": "87ea986c057910d62c765d4db148602d88414dafc883d5b6cb23858228ec71d3",
@@ -1188,7 +1210,7 @@
    "Developer documentation"
   ],
   "last_changed": "2026-07-23 17:36 UTC",
-  "last_checked": "2026-07-23 18:22 UTC",
+  "last_checked": "2026-07-23 18:35 UTC",
   "last_modified": "",
   "route": "docc",
   "sha": "6ca8b3e10b74b135881a7ca7feb181cbeb13c1d06b6501c8966067189a420c84",
@@ -1214,7 +1236,7 @@
    "Change log"
   ],
   "last_changed": "2026-07-23 17:37 UTC",
-  "last_checked": "2026-07-23 18:23 UTC",
+  "last_checked": "2026-07-23 18:36 UTC",
   "last_modified": "",
   "route": "docc",
   "sha": "8ea86cb422f40519df1384bbb4546fbd06206bec05ebf5e83bdb5012f0196482",
@@ -1237,7 +1259,7 @@
    "Change log"
   ],
   "last_changed": "2026-07-23 17:36 UTC",
-  "last_checked": "2026-07-23 18:22 UTC",
+  "last_checked": "2026-07-23 18:35 UTC",
   "last_modified": "",
   "route": "docc",
   "sha": "a04e401cc86d547a541392ecd0643d6977ec982f3f8e674d55c40e334a40afd5",
@@ -1265,7 +1287,7 @@
    "Change log"
   ],
   "last_changed": "2026-07-23 17:36 UTC",
-  "last_checked": "2026-07-23 18:22 UTC",
+  "last_checked": "2026-07-23 18:35 UTC",
   "last_modified": "",
   "route": "docc",
   "sha": "1a3ac887201749c2c72680563696636c96ec4dd1d7a9282f96d17a00b9d170fb",
@@ -1291,7 +1313,7 @@
    "Change log"
   ],
   "last_changed": "2026-07-23 17:36 UTC",
-  "last_checked": "2026-07-23 18:22 UTC",
+  "last_checked": "2026-07-23 18:35 UTC",
   "last_modified": "",
   "route": "docc",
   "sha": "ec5adf91f3aa26f1933408a3e0f04ff80af0d90647a3d442be5e9db7725660b9",
@@ -1322,7 +1344,7 @@
    "Change log"
   ],
   "last_changed": "2026-07-23 17:37 UTC",
-  "last_checked": "2026-07-23 18:23 UTC",
+  "last_checked": "2026-07-23 18:36 UTC",
   "last_modified": "",
   "route": "docc",
   "sha": "6ab0712178ec361072c2c096febab74287b0c9b8c535f4d900cea99b8b73bdbf",
@@ -1343,7 +1365,7 @@
    "Developer documentation"
   ],
   "last_changed": "2026-07-23 17:37 UTC",
-  "last_checked": "2026-07-23 18:23 UTC",
+  "last_checked": "2026-07-23 18:36 UTC",
   "last_modified": "",
   "route": "docc",
   "sha": "18c7dd2db959ac0a3dcd625698d760a37bb67d2dafaed14ff29c197c21b284c2",
@@ -1371,7 +1393,7 @@
    "Change log"
   ],
   "last_changed": "2026-07-23 17:36 UTC",
-  "last_checked": "2026-07-23 18:22 UTC",
+  "last_checked": "2026-07-23 18:35 UTC",
   "last_modified": "",
   "route": "docc",
   "sha": "9f4faa666379640a866bbd8be332b682b709eb0891f3f15d6da973f21005cdab",
@@ -1397,7 +1419,7 @@
    "Change log"
   ],
   "last_changed": "2026-07-23 17:37 UTC",
-  "last_checked": "2026-07-23 18:23 UTC",
+  "last_checked": "2026-07-23 18:36 UTC",
   "last_modified": "",
   "route": "docc",
   "sha": "95d4f4aab9371d345eb12588d5402dde3069b6dc346a7f46cd85a80de1d1fc39",
@@ -1425,7 +1447,7 @@
    "Change log"
   ],
   "last_changed": "2026-07-23 17:37 UTC",
-  "last_checked": "2026-07-23 18:23 UTC",
+  "last_checked": "2026-07-23 18:36 UTC",
   "last_modified": "",
   "route": "docc",
   "sha": "116b53512ca6e8dc94a83b4e60568fe6d4cfcdf9342c8b6d00043f079a708814",
@@ -1458,7 +1480,7 @@
    "Change log"
   ],
   "last_changed": "2026-07-23 17:37 UTC",
-  "last_checked": "2026-07-23 18:23 UTC",
+  "last_checked": "2026-07-23 18:36 UTC",
   "last_modified": "",
   "route": "docc",
   "sha": "15ac9730ed2a8f38ccd8a39f02f0cdb11ede4f9352f127a3a49555b181888c79",
@@ -1503,7 +1525,7 @@
    "Change log"
   ],
   "last_changed": "2026-07-23 17:36 UTC",
-  "last_checked": "2026-07-23 18:21 UTC",
+  "last_checked": "2026-07-23 18:34 UTC",
   "last_modified": "",
   "route": "docc",
   "sha": "ed10163280ef90cc3ccf2ba23d034ef07d5b6a3fdec0b9c6c2efe649e4ed2faa",
@@ -1549,7 +1571,7 @@
    "Change log"
   ],
   "last_changed": "2026-07-23 17:36 UTC",
-  "last_checked": "2026-07-23 18:22 UTC",
+  "last_checked": "2026-07-23 18:35 UTC",
   "last_modified": "",
   "route": "docc",
   "sha": "ac4f476bd9966b678dc06541da39205c29e1a2aafc5dbfe16221d487475605f1",
@@ -1593,7 +1615,7 @@
    "h3: Events"
   ],
   "last_changed": "2026-07-23 08:46 UTC",
-  "last_checked": "2026-07-23 18:21 UTC",
+  "last_checked": "2026-07-23 18:34 UTC",
   "last_modified": "Thu, 09 Jul 2026 20:31:34 GMT",
   "sha": "73e1e3ba98a4a9bb50a9c4e22d0d82f80e620e40bf0183706bc65831047d1983",
   "text_len": 53814,
@@ -1642,7 +1664,7 @@
    "Change log"
   ],
   "last_changed": "2026-07-23 17:36 UTC",
-  "last_checked": "2026-07-23 18:22 UTC",
+  "last_checked": "2026-07-23 18:35 UTC",
   "last_modified": "",
   "route": "docc",
   "sha": "cfeadcf922b0656baf60c3673cd58040c911c2f4a73bfb8385009e7a930d4258",
@@ -1700,7 +1722,7 @@
    "h3: Events"
   ],
   "last_changed": "2026-07-23 08:47 UTC",
-  "last_checked": "2026-07-23 18:23 UTC",
+  "last_checked": "2026-07-23 18:36 UTC",
   "last_modified": "Thu, 09 Jul 2026 20:31:34 GMT",
   "sha": "749bc7554bcc911b5114f1984047ca41e5c09990191dd47633e100518b0db251",
   "text_len": 9974,
@@ -1711,14 +1733,27 @@
   "domains": [
    "ios27"
   ],
-  "etag": "2b2bee34a9c20c14842f1bd1e74eee09",
-  "headings": [],
-  "last_changed": "2026-07-23 08:47 UTC",
-  "last_checked": "2026-07-23 18:23 UTC",
+  "etag": "W/\"395860d326d461584735d892dc49f249\"",
+  "headings": [
+   "Overview",
+   "Bug Reporting",
+   "iOS & iPadOS 27",
+   "iOS & iPadOS 26",
+   "iOS & iPadOS 18",
+   "iOS & iPadOS 17",
+   "iOS & iPadOS 16",
+   "iOS & iPadOS 15",
+   "iOS & iPadOS 14",
+   "iOS & iPadOS 13",
+   "iOS 12"
+  ],
+  "last_changed": "2026-07-23 18:36 UTC",
+  "last_checked": "2026-07-23 18:36 UTC",
   "last_modified": "",
-  "sha": "85e5ef645011c9ff1838825e27598817f638b76e929a3b8e41a0f7aba8668841",
-  "text_len": 58,
-  "title": "iOS & iPadOS Release Notes | Apple Developer Documentation",
+  "route": "docc",
+  "sha": "57c20aef79eb843710ff965ef512db2d70563ddd9a796b9ac873c887fe0cfe10",
+  "text_len": 2588,
+  "title": "iOS & iPadOS Release Notes",
   "url": "https://developer.apple.com/documentation/ios-ipados-release-notes"
  },
  "ios27-landing": {
@@ -1789,7 +1824,7 @@
    "h4: Build a responsive camera app that launches quickly"
   ],
   "last_changed": "2026-07-23 18:08 UTC",
-  "last_checked": "2026-07-23 18:23 UTC",
+  "last_checked": "2026-07-23 18:37 UTC",
   "last_modified": "Thu, 09 Jul 2026 20:31:34 GMT",
   "route": "html",
   "sha": "8d3950065f980982e11e71bf5074da6566b990498ee5db11033438da7a58822f",
@@ -1848,7 +1883,7 @@
    "h3: Events"
   ],
   "last_changed": "2026-07-23 08:47 UTC",
-  "last_checked": "2026-07-23 18:23 UTC",
+  "last_checked": "2026-07-23 18:36 UTC",
   "last_modified": "Wed, 22 Jul 2026 16:25:41 GMT",
   "sha": "c1a87537530976c6d2f34b1e800123566f617bd3800ff7ff4569418033d6181a",
   "text_len": 10771,
@@ -1861,14 +1896,27 @@
    "свечение",
    "стекло-движение"
   ],
-  "etag": "230a4b884df676840a6f3e54851c3ec2",
-  "headings": [],
-  "last_changed": "2026-07-23 08:46 UTC",
-  "last_checked": "2026-07-23 18:21 UTC",
+  "etag": "W/\"61f866bc3f4b03654e850ebfc794f731\"",
+  "headings": [
+   "Overview",
+   "See your app with Liquid Glass",
+   "Visual refresh",
+   "App icons",
+   "Controls",
+   "Navigation",
+   "Menus and toolbars",
+   "Windows and modals",
+   "Organization and layout",
+   "Search",
+   "Platform considerations"
+  ],
+  "last_changed": "2026-07-23 18:34 UTC",
+  "last_checked": "2026-07-23 18:34 UTC",
   "last_modified": "",
-  "sha": "01b6af98289e0be0733f78fce5c987fbcb120a3f3bd054ad0e2274d39543f8bb",
-  "text_len": 53,
-  "title": "Adopting Liquid Glass | Apple Developer Documentation",
+  "route": "docc",
+  "sha": "98f4dc35bb1a57da18a153c67ce72985a4f9c3f7e19e760fa2a64391626c4a74",
+  "text_len": 17716,
+  "title": "Adopting Liquid Glass",
   "url": "https://developer.apple.com/documentation/technologyoverviews/adopting-liquid-glass"
  },
  "sf-symbols": {
@@ -1914,7 +1962,7 @@
    "h3: Events"
   ],
   "last_changed": "2026-07-23 08:46 UTC",
-  "last_checked": "2026-07-23 18:22 UTC",
+  "last_checked": "2026-07-23 18:35 UTC",
   "last_modified": "",
   "route": "html",
   "sha": "a4c6cf6f067c6d97968dbbadcb0f56055a2e1cc1e6366b1fa134f577f349bbe2",
@@ -1966,7 +2014,7 @@
    "h3: Events"
   ],
   "last_changed": "2026-07-23 18:08 UTC",
-  "last_checked": "2026-07-23 18:23 UTC",
+  "last_checked": "2026-07-23 18:37 UTC",
   "last_modified": "",
   "route": "html",
   "sha": "a4c6cf6f067c6d97968dbbadcb0f56055a2e1cc1e6366b1fa134f577f349bbe2",
@@ -2011,8 +2059,8 @@
    "h3: Events"
   ],
   "last_changed": "2026-07-23 18:09 UTC",
-  "last_checked": "2026-07-23 18:24 UTC",
-  "last_modified": "Thu, 23 Jul 2026 18:24:05 GMT",
+  "last_checked": "2026-07-23 18:37 UTC",
+  "last_modified": "Thu, 23 Jul 2026 18:33:32 GMT",
   "route": "html",
   "sha": "b1233b8793b6780d76e88928487bb5f4eef845d9aa86e8e9c0b077bdb02e60ad",
   "text_len": 9164,

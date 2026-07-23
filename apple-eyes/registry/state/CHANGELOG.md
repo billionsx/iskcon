@@ -398,3 +398,21 @@
 - https://developer.apple.com/videos/wwdc2026/
 - домены мандата: ios27, анимация, Liquid Glass
 
+### 2026-07-23 18:34 UTC · `liquid-glass-adoption` · ИЗМЕНЕНИЕ
+- https://developer.apple.com/documentation/technologyoverviews/adopting-liquid-glass
+- домены мандата: liquid-glass, свечение, стекло-движение
+- появились: Overview · See your app with Liquid Glass · Visual refresh · App icons · Controls · Navigation · Menus and toolbars · Windows and modals · Organization and layout · Search · Platform considerations
+- объём текста: 53 → 17716 зн.
+
+### 2026-07-23 18:36 UTC · `ios-release-notes` · ИЗМЕНЕНИЕ
+- https://developer.apple.com/documentation/ios-ipados-release-notes
+- домены мандата: ios27
+- появились: Overview · Bug Reporting · iOS & iPadOS 27 · iOS & iPadOS 26 · iOS & iPadOS 18 · iOS & iPadOS 17 · iOS & iPadOS 16 · iOS & iPadOS 15 · iOS & iPadOS 14 · iOS & iPadOS 13 · iOS 12
+- объём текста: 58 → 2588 зн.
+
+### 2026-07-23 18:36 UTC · `doc-updates` · ИЗМЕНЕНИЕ
+- https://developer.apple.com/documentation/updates/
+- домены мандата: ios27, hig
+- появились: The 27 platform releases – June 2026 · Xcode 27 · Performance and analysis · Apple Intelligence and Machine Learning · Siri, Intents, and Spotlight · Foundation Models · Core AI · Evaluations · SwiftUI · UIKit · AppKit · SwiftData
+- объём текста: 39 → 13629 зн.
+
