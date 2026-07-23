@@ -449,6 +449,25 @@
     "кроссплатформенность",
     "TV"
    ]
+  },
+  {
+   "id": "ios27-landing",
+   "url": "https://developer.apple.com/ios/whats-new/",
+   "kind": "html",
+   "domains": [
+    "ios27"
+   ],
+   "enrolled": "2026-07-23 17:38 UTC"
+  },
+  {
+   "id": "sf-symbols-8",
+   "url": "https://developer.apple.com/sf-symbols/",
+   "kind": "html",
+   "domains": [
+    "ios27",
+    "иконки"
+   ],
+   "enrolled": "2026-07-23 17:38 UTC"
   }
  ]
 }
