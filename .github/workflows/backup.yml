@@ -127,7 +127,8 @@ jobs:
       - name: Отчёт в ветку shots (канал для агента)
         if: always()
         run: |
-          mkdir -p _rep && cp d1-dump.log ia.log docs/backups/latest.json _rep/ 2>/dev/null || true
+          mkdir -p _rep
+          for f in d1-dump.log ia.log docs/backups/latest.json; do [ -f "$f" ] && cp "$f" _rep/ || true; done
           git config user.name "Billions X"; git config user.email "ceo@billionsx.com"
           git fetch origin shots -q || true
           git checkout -B shots origin/shots 2>/dev/null || git checkout --orphan shots
