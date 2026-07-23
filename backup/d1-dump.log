@@ -1,23 +1,19 @@
-↻ запасной дамп через query
-Traceback (most recent call last):
-  File "<stdin>", line 43, in <module>
-  File "<stdin>", line 15, in query
-  File "<stdin>", line 11, in post
-  File "/usr/lib/python3.12/urllib/request.py", line 215, in urlopen
-    return opener.open(url, data, timeout)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/usr/lib/python3.12/urllib/request.py", line 521, in open
-    response = meth(req, response)
-               ^^^^^^^^^^^^^^^^^^^
-  File "/usr/lib/python3.12/urllib/request.py", line 630, in http_response
-    response = self.parent.error(
-               ^^^^^^^^^^^^^^^^^^
-  File "/usr/lib/python3.12/urllib/request.py", line 559, in error
-    return self._call_chain(*args)
-           ^^^^^^^^^^^^^^^^^^^^^^^
-  File "/usr/lib/python3.12/urllib/request.py", line 492, in _call_chain
-    result = func(*args)
-             ^^^^^^^^^^^
-  File "/usr/lib/python3.12/urllib/request.py", line 639, in http_error_default
-    raise HTTPError(req.full_url, code, msg, hdrs, fp)
-urllib.error.HTTPError: HTTP Error 500: Internal Server Error
+
+ ⛅️ wrangler 4.113.0
+────────────────────
+Resource location: remote 
+
+? ⚠️ This process may take some time, during which your D1 database will be unavailable to serve queries.
+  Ok to proceed?
+🤖 Using fallback value in non-interactive context: yes
+🌀 Executing on remote database iskcon-db (6226aded-dd03-4e74-977f-9cd0b509e73d):
+├ Creating export
+│
+
+[31m✘ [41;31m[[41;97mERROR[41;31m][0m [1mD1 Export error: cannot export databases with Virtual Tables (fts5)[0m
+
+
+[32mIf you think this is a bug then please create an issue at https://github.com/cloudflare/workers-sdk/issues/new/choose[0m
+🪵  Logs were written to "/home/runner/.config/.wrangler/logs/wrangler-2026-07-23_08-17-35_451.log"
+rc=1
+ДАМП ПУСТ — прерываю
