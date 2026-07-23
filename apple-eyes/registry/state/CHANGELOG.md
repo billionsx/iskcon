@@ -378,3 +378,23 @@
 - AE2 расширен на свечение (text-shadow / drop-shadow): вскрыто 1 скрытое нарушение в apps/web → база 54→55
 - расширение зрения правила ≠ регресс кода; с этой точки AE2 снова только вниз
 
+### 2026-07-23 18:08 UTC · `ios27-landing` · первый снимок
+- https://developer.apple.com/ios/whats-new/
+- домены мандата: ios27
+
+### 2026-07-23 18:08 UTC · `sf-symbols-8` · первый снимок
+- https://developer.apple.com/sf-symbols/
+- домены мандата: ios27, иконки
+
+### 2026-07-23 18:08 UTC · `app-review-guidelines` · первый снимок
+- https://developer.apple.com/app-store/review/guidelines/
+- домены мандата: маркетинг, рейтинги, отзывы, popup, геймификация
+
+### 2026-07-23 18:09 UTC · `design-awards` · первый снимок
+- https://developer.apple.com/design/awards/
+- домены мандата: UI/UX, эталоны
+
+### 2026-07-23 18:09 UTC · `wwdc-videos` · первый снимок
+- https://developer.apple.com/videos/wwdc2026/
+- домены мандата: ios27, анимация, Liquid Glass
+
