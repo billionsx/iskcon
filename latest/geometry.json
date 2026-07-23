@@ -412,5 +412,429 @@
     "text": ""
    }
   ]
+ },
+ "book": {
+  "__meta": {
+   "href": "https://iskcon-web.ceo-5cb.workers.dev/play/book/bg",
+   "title": "ISKCON ONE LOVE. ИСККОН.",
+   "bodyLen": 751,
+   "head": "Бхагавад-гита как она есть\nЕго Божественная Милость Абхай Чаранаравинда Бхактиведанта Свами Шрила Прабхупада, Ачарья-основатель Международного общества сознания Кришны, ИСККОН\nСлушать\nЧитать\nТекст\nС к",
+   "amx": true,
+   "scripts": 1
+  },
+  ".amx": [
+   {
+    "left": 0,
+    "top": 0,
+    "width": 393,
+    "height": 852,
+    "fontSize": "16px",
+    "lineHeight": "normal",
+    "letterSpacing": "normal",
+    "fontWeight": "400",
+    "color": "rgb(255, 255, 255)",
+    "text": "Бхагавад-гита как она есть\nЕго Божествен"
+   }
+  ],
+  ".amx-dock": [
+   {
+    "left": 0,
+    "top": 713,
+    "width": 393,
+    "height": 139,
+    "fontSize": "16px",
+    "lineHeight": "normal",
+    "letterSpacing": "normal",
+    "fontWeight": "400",
+    "color": "rgb(255, 255, 255)",
+    "text": "Not Playing\nКниги\nЛекции\nКиртаны\nБхаджан"
+   }
+  ],
+  "[data-amx-mini]": [
+   {
+    "left": 21,
+    "top": 713,
+    "width": 351,
+    "height": 48,
+    "fontSize": "16px",
+    "lineHeight": "normal",
+    "letterSpacing": "normal",
+    "fontWeight": "400",
+    "color": "rgb(255, 255, 255)",
+    "text": "Not Playing"
+   }
+  ],
+  ".m-art": [
+   {
+    "left": 28,
+    "top": 719,
+    "width": 36,
+    "height": 36,
+    "fontSize": "16px",
+    "lineHeight": "normal",
+    "letterSpacing": "normal",
+    "fontWeight": "400",
+    "color": "rgba(235, 235, 245, 0.75)",
+    "text": ""
+   }
+  ],
+  ".amx-capsule": [
+   {
+    "left": 20,
+    "top": 451,
+    "width": 172,
+    "height": 50,
+    "fontSize": "17px",
+    "lineHeight": "normal",
+    "letterSpacing": "-0.43px",
+    "fontWeight": "600",
+    "color": "rgb(250, 45, 75)",
+    "text": "Слушать"
+   },
+   {
+    "left": 201,
+    "top": 451,
+    "width": 172,
+    "height": 50,
+    "fontSize": "17px",
+    "lineHeight": "normal",
+    "letterSpacing": "-0.43px",
+    "fontWeight": "600",
+    "color": "rgb(250, 45, 75)",
+    "text": "Читать"
+   }
+  ],
+  ".amx-chip": [
+   {
+    "left": 71.83,
+    "top": 515,
+    "width": 76.44,
+    "height": 35,
+    "fontSize": "15px",
+    "lineHeight": "normal",
+    "letterSpacing": "normal",
+    "fontWeight": "500",
+    "color": "rgb(0, 0, 0)",
+    "text": "Текст"
+   },
+   {
+    "left": 156.27,
+    "top": 515,
+    "width": 164.89,
+    "height": 35,
+    "fontSize": "15px",
+    "lineHeight": "normal",
+    "letterSpacing": "normal",
+    "fontWeight": "500",
+    "color": "rgb(255, 255, 255)",
+    "text": "С комментарием"
+   }
+  ],
+  ".amx-row": [
+   {
+    "left": 0,
+    "top": 568,
+    "width": 393,
+    "height": 49.33,
+    "fontSize": "16px",
+    "lineHeight": "normal",
+    "letterSpacing": "normal",
+    "fontWeight": "400",
+    "color": "rgb(255, 255, 255)",
+    "text": "1\nОбзор армий на поле битвы Курукшетра"
+   },
+   {
+    "left": 0,
+    "top": 617.33,
+    "width": 393,
+    "height": 49.33,
+    "fontSize": "16px",
+    "lineHeight": "normal",
+    "letterSpacing": "normal",
+    "fontWeight": "400",
+    "color": "rgb(255, 255, 255)",
+    "text": "2\nКраткое изложение «Бхагавад-гиты»"
+   },
+   {
+    "left": 0,
+    "top": 666.66,
+    "width": 393,
+    "height": 49.33,
+    "fontSize": "16px",
+    "lineHeight": "normal",
+    "letterSpacing": "normal",
+    "fontWeight": "400",
+    "color": "rgb(255, 255, 255)",
+    "text": "3\nКарма-йога"
+   },
+   {
+    "left": 0,
+    "top": 715.98,
+    "width": 393,
+    "height": 49.33,
+    "fontSize": "16px",
+    "lineHeight": "normal",
+    "letterSpacing": "normal",
+    "fontWeight": "400",
+    "color": "rgb(255, 255, 255)",
+    "text": "4\nТрансцендентное знание"
+   },
+   {
+    "left": 0,
+    "top": 765.31,
+    "width": 393,
+    "height": 49.33,
+    "fontSize": "16px",
+    "lineHeight": "normal",
+    "letterSpacing": "normal",
+    "fontWeight": "400",
+    "color": "rgb(255, 255, 255)",
+    "text": "5\nКарма-йога — деятельность в сознании К"
+   },
+   {
+    "left": 0,
+    "top": 814.64,
+    "width": 393,
+    "height": 49.33,
+    "fontSize": "16px",
+    "lineHeight": "normal",
+    "letterSpacing": "normal",
+    "fontWeight": "400",
+    "color": "rgb(255, 255, 255)",
+    "text": "6\nДхьяна-йога"
+   },
+   {
+    "left": 0,
+    "top": 863.97,
+    "width": 393,
+    "height": 49.33,
+    "fontSize": "16px",
+    "lineHeight": "normal",
+    "letterSpacing": "normal",
+    "fontWeight": "400",
+    "color": "rgb(255, 255, 255)",
+    "text": "7\nЗнание об Абсолюте"
+   },
+   {
+    "left": 0,
+    "top": 913.3,
+    "width": 393,
+    "height": 49.33,
+    "fontSize": "16px",
+    "lineHeight": "normal",
+    "letterSpacing": "normal",
+    "fontWeight": "400",
+    "color": "rgb(255, 255, 255)",
+    "text": "8\nДостижение обители Всевышнего"
+   },
+   {
+    "left": 0,
+    "top": 962.63,
+    "width": 393,
+    "height": 49.33,
+    "fontSize": "16px",
+    "lineHeight": "normal",
+    "letterSpacing": "normal",
+    "fontWeight": "400",
+    "color": "rgb(255, 255, 255)",
+    "text": "9\nСамое сокровенное знание"
+   },
+   {
+    "left": 0,
+    "top": 1011.95,
+    "width": 393,
+    "height": 49.33,
+    "fontSize": "16px",
+    "lineHeight": "normal",
+    "letterSpacing": "normal",
+    "fontWeight": "400",
+    "color": "rgb(255, 255, 255)",
+    "text": "10\nВеликолепие Абсолюта"
+   },
+   {
+    "left": 0,
+    "top": 1061.28,
+    "width": 393,
+    "height": 49.33,
+    "fontSize": "16px",
+    "lineHeight": "normal",
+    "letterSpacing": "normal",
+    "fontWeight": "400",
+    "color": "rgb(255, 255, 255)",
+    "text": "11\nВселенская форма"
+   },
+   {
+    "left": 0,
+    "top": 1110.61,
+    "width": 393,
+    "height": 49.33,
+    "fontSize": "16px",
+    "lineHeight": "normal",
+    "letterSpacing": "normal",
+    "fontWeight": "400",
+    "color": "rgb(255, 255, 255)",
+    "text": "12\nПреданное служение"
+   }
+  ],
+  ".r-num": [
+   {
+    "left": 20,
+    "top": 582.66,
+    "width": 41.33,
+    "height": 20,
+    "fontSize": "17px",
+    "lineHeight": "normal",
+    "letterSpacing": "normal",
+    "fontWeight": "400",
+    "color": "rgba(235, 235, 245, 0.62)",
+    "text": "1"
+   },
+   {
+    "left": 20,
+    "top": 631.98,
+    "width": 41.33,
+    "height": 20,
+    "fontSize": "17px",
+    "lineHeight": "normal",
+    "letterSpacing": "normal",
+    "fontWeight": "400",
+    "color": "rgba(235, 235, 245, 0.62)",
+    "text": "2"
+   },
+   {
+    "left": 20,
+    "top": 681.31,
+    "width": 41.33,
+    "height": 20,
+    "fontSize": "17px",
+    "lineHeight": "normal",
+    "letterSpacing": "normal",
+    "fontWeight": "400",
+    "color": "rgba(235, 235, 245, 0.62)",
+    "text": "3"
+   },
+   {
+    "left": 20,
+    "top": 730.64,
+    "width": 41.33,
+    "height": 20,
+    "fontSize": "17px",
+    "lineHeight": "normal",
+    "letterSpacing": "normal",
+    "fontWeight": "400",
+    "color": "rgba(235, 235, 245, 0.62)",
+    "text": "4"
+   },
+   {
+    "left": 20,
+    "top": 779.97,
+    "width": 41.33,
+    "height": 20,
+    "fontSize": "17px",
+    "lineHeight": "normal",
+    "letterSpacing": "normal",
+    "fontWeight": "400",
+    "color": "rgba(235, 235, 245, 0.62)",
+    "text": "5"
+   },
+   {
+    "left": 20,
+    "top": 829.3,
+    "width": 41.33,
+    "height": 20,
+    "fontSize": "17px",
+    "lineHeight": "normal",
+    "letterSpacing": "normal",
+    "fontWeight": "400",
+    "color": "rgba(235, 235, 245, 0.62)",
+    "text": "6"
+   },
+   {
+    "left": 20,
+    "top": 878.63,
+    "width": 41.33,
+    "height": 20,
+    "fontSize": "17px",
+    "lineHeight": "normal",
+    "letterSpacing": "normal",
+    "fontWeight": "400",
+    "color": "rgba(235, 235, 245, 0.62)",
+    "text": "7"
+   },
+   {
+    "left": 20,
+    "top": 927.95,
+    "width": 41.33,
+    "height": 20,
+    "fontSize": "17px",
+    "lineHeight": "normal",
+    "letterSpacing": "normal",
+    "fontWeight": "400",
+    "color": "rgba(235, 235, 245, 0.62)",
+    "text": "8"
+   },
+   {
+    "left": 20,
+    "top": 977.28,
+    "width": 41.33,
+    "height": 20,
+    "fontSize": "17px",
+    "lineHeight": "normal",
+    "letterSpacing": "normal",
+    "fontWeight": "400",
+    "color": "rgba(235, 235, 245, 0.62)",
+    "text": "9"
+   },
+   {
+    "left": 20,
+    "top": 1026.61,
+    "width": 41.33,
+    "height": 20,
+    "fontSize": "17px",
+    "lineHeight": "normal",
+    "letterSpacing": "normal",
+    "fontWeight": "400",
+    "color": "rgba(235, 235, 245, 0.62)",
+    "text": "10"
+   },
+   {
+    "left": 20,
+    "top": 1075.94,
+    "width": 41.33,
+    "height": 20,
+    "fontSize": "17px",
+    "lineHeight": "normal",
+    "letterSpacing": "normal",
+    "fontWeight": "400",
+    "color": "rgba(235, 235, 245, 0.62)",
+    "text": "11"
+   },
+   {
+    "left": 20,
+    "top": 1125.27,
+    "width": 41.33,
+    "height": 20,
+    "fontSize": "17px",
+    "lineHeight": "normal",
+    "letterSpacing": "normal",
+    "fontWeight": "400",
+    "color": "rgba(235, 235, 245, 0.62)",
+    "text": "12"
+   }
+  ],
+  ".amx-cir": [
+   {
+    "left": 17,
+    "top": 14,
+    "width": 44,
+    "height": 44,
+    "fontSize": "16px",
+    "lineHeight": "normal",
+    "letterSpacing": "normal",
+    "fontWeight": "400",
+    "color": "rgb(255, 255, 255)",
+    "text": ""
+   }
+  ]
  }
 }
