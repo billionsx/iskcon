@@ -56,6 +56,7 @@ FOUNDER_MANDATE = {
     "автономность": "Статья 46 · Переносимость",
     "самоулучшение без ИИ": "Статья 48 · Три контура",
     "iOS 27 автообновление": "Статья 40 · Рельсы",
+    "динамика": "Статья 21.1 · Динамика", "эффекты": "Статья 22.1 · Эффекты",
 }
 
 
@@ -235,7 +236,7 @@ def cmd_attach(root: Path, project: str, report_glob: list, strict_glob: list) -
         "allow_extra": [],
         "sizes_extra": [],
         "report": {"globs": report_glob,
-                   "rules": ["AE1", "AE2", "AE3", "AE4", "AE5", "AE6", "AE7", "AE8", "AE9", "AE10", "AE11", "AE12"]},
+                   "rules": ["AE1", "AE2", "AE3", "AE4", "AE5", "AE6", "AE7", "AE8", "AE9", "AE10", "AE11", "AE12", "AE13"]},
         "strict": {"globs": strict_glob, "rules": ["AE2", "AE3", "AE4", "AE6", "AE7"]},
         "radius_extra": [],
         "_порядок": "новый проект начинает с report; правило переводится в strict, когда его долг = 0",
@@ -351,15 +352,15 @@ def cmd_selftest(root: Path) -> int:
         shutil.rmtree(tmp, ignore_errors=True)
 
     print("SELFTEST · исполнительная власть (AE7–AE11)")
-    adapter = {"strict": {"globs": ["bad.css"], "rules": ["AE7", "AE8", "AE9", "AE10", "AE11", "AE12"]},
+    adapter = {"strict": {"globs": ["bad.css"], "rules": ["AE7", "AE8", "AE9", "AE10", "AE11", "AE12", "AE13"]},
                "allow_extra": [], "sizes_extra": [], "radius_extra": []}
     got7 = {r for r, *_ in lint_mod.run(root, adapter, tokens, "strict", fx)["findings"]}
-    check("ломаю → красный: bad.css даёт AE7..AE12", {"AE7", "AE8", "AE9", "AE10", "AE11", "AE12"} <= got7)
+    check("ломаю → красный: bad.css даёт AE7..AE13", {"AE7", "AE8", "AE9", "AE10", "AE11", "AE12", "AE13"} <= got7)
     adapter["strict"]["globs"] = ["good.css"]
-    check("чиню → зелёный: good.css чист по AE7..AE12",
+    check("чиню → зелёный: good.css чист по AE7..AE13 (Reduce Motion уважен)",
           not lint_mod.run(root, adapter, tokens, "strict", fx)["findings"])
     adapter["strict"]["globs"] = ["commented.css"]
-    check("нарушители AE7..AE12 в комментарии не считаются",
+    check("нарушители AE7..AE13 в комментарии не считаются",
           not lint_mod.run(root, adapter, tokens, "strict", fx)["findings"])
 
     print("SELFTEST · храповик советника")

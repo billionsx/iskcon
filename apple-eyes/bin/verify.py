@@ -50,6 +50,10 @@ def run(root: Path) -> dict:
         ("ст. 41", "суперэллипс 2.5–2.6, порог >12", "2.5–2.6" in const
              and tk["geometry"]["superellipse_n"] == [2.5, 2.6]
              and float(g["corner_form_required_above_pt"]) == 12),
+        ("ст. 21.1", "леджер динамики 200–320/100/160/300–350",
+             all(x in const for x in ("200–320", "100", "160", "300–350"))
+             and mo["view_change_ms"] == [200, 320] and float(mo["tab_crossfade_ms"]) == 100
+             and float(mo["menu_exit_ms"]) == 160 and mo["release_spring_ms"] == [300, 350]),
         ("ст. 8", "доли крышки 0.714/0.750/0.950", all(s in const for s in ("0.714", "0.750", "0.950"))
              and (ty["cap_height_fraction"]["caps_digits"], ty["cap_height_fraction"]["ascending"],
                   ty["cap_height_fraction"]["descending"]) == (0.714, 0.75, 0.95)),
@@ -73,6 +77,12 @@ def run(root: Path) -> dict:
     sym_kn = _kn(root, "sf-symbols") + _kn(root, "hig-icons")
     row("Б", "ст. 11", "SF Symbols как родной язык знаков",
         "ПОДТВЕРЖДЕНО ЗНАНИЕМ" if "SF Symbols" in sym_kn else "БАЗА")
+    mot_kn = _kn(root, "hig-motion") + _kn(root, "hig-accessibility")
+    row("Б", "ст. 22.1", "Reduce Motion — обязанность (текст Apple)",
+        "ПОДТВЕРЖДЕНО ЗНАНИЕМ" if re.search(r"reduc\w+ motion", mot_kn, re.I)
+        else "ДОЗОР ДОБАВЛЕН — ждёт обхода")
+    row("Б", "ст. 21.1", "прерываемость движения — предписание Apple",
+        "ПОДТВЕРЖДЕНО ЗНАНИЕМ" if "wait for an animation" in mot_kn else "БАЗА")
     for art, claim in (("ст. 18", "лестница меток .60/.30/.18"), ("ст. 10", "шаг ⅓pt, сетки нет")):
         row("Б", art, claim, "БАЗА", "📐 замер первичен; текстом Apple не публикует")
 

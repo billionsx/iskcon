@@ -39,6 +39,10 @@ APPLE EYES · ИСПОЛНИТЕЛЬНАЯ ВЛАСТЬ. Переносимый 
   AE12 НАЖАТИЕ     переход в :active не длиннее press_response_ms_max —
                    нажатие отвечает ≤120 мс (LAW_MUSIC §5), дольше =
                    мёртвая рука под пальцем.
+  AE13 ДВИЖЕНИЕ-   проект с длинным движением обязан уважать Reduce Motion:
+       ДОСТУПНОСТЬ хоть один @media (prefers-reduced-motion) в охвате —
+                   канон Apple (HIG Motion/Accessibility): не все могут или
+                   хотят переживать движение. Правило проектного уровня.
 
 Отступы правилом НЕ проверяются — ключевой замер: точечной сетки НЕТ,
 шаг CSS = ⅓pt при @3x; «линт сетки отступов» противоречил бы измерениям.
@@ -98,6 +102,7 @@ def run(root: Path, adapter: dict, tokens: dict, mode: str, project_root: Path) 
     press_max = float(tokens.get("motion", {}).get("press_response_ms_max", 120))
 
     findings, files_n = [], 0
+    first_long, has_prm = None, False
     for g in globs:
         for fp in sorted(glob.glob(str(project_root / g), recursive=True)):
             p = Path(fp)
@@ -175,6 +180,18 @@ def run(root: Path, adapter: dict, tokens: dict, mode: str, project_root: Path) 
                     if rad_ladder and v not in rad_ladder:
                         findings.append(("AE11", rel, _line_of(t, m.start()),
                                          f"border-radius {v:g}px вне измеренной лестницы {sorted(rad_ladder)}"))
+            if "AE13" in rules:
+                if "prefers-reduced-motion" in t.lower():
+                    has_prm = True
+                if first_long is None:
+                    for m in MOTION.finditer(t):
+                        v = m.group(1).lower()
+                        if "var(" in v:
+                            continue
+                        dur = max((float(x) * (1000 if u == "s" else 1) for x, u in MS.findall(v)), default=0)
+                        if dur >= min_ms:
+                            first_long = (rel, _line_of(t, m.start()))
+                            break
             if "AE12" in rules:
                 for m in ACTIVE_BLOCK.finditer(t):
                     body = m.group(1)
@@ -184,6 +201,10 @@ def run(root: Path, adapter: dict, tokens: dict, mode: str, project_root: Path) 
                     if dur > press_max:
                         findings.append(("AE12", rel, _line_of(t, m.start()),
                                          f":active отвечает {dur:g}ms — нажатие обязано ответить ≤{press_max:g}ms (мёртвая рука)"))
+
+    if "AE13" in rules and first_long and not has_prm:
+        findings.append(("AE13", first_long[0], first_long[1],
+                         "в охвате есть движение ≥%gms, но нет ни одного @media (prefers-reduced-motion) — Reduce Motion обязателен (HIG Motion)" % min_ms))
 
     return {"mode": mode, "files": files_n, "findings": findings, "rules": rules}
 

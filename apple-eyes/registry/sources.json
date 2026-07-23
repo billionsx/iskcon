@@ -502,6 +502,27 @@
     "анимация",
     "Liquid Glass"
    ]
+  },
+  {
+   "id": "hig-accessibility",
+   "url": "https://developer.apple.com/design/human-interface-guidelines/accessibility",
+   "kind": "docc",
+   "domains": [
+    "динамика",
+    "эффекты",
+    "анимация",
+    "доступность"
+   ]
+  },
+  {
+   "id": "swiftui-animation",
+   "url": "https://developer.apple.com/documentation/swiftui/animation",
+   "kind": "docc",
+   "domains": [
+    "динамика",
+    "анимация",
+    "спринги"
+   ]
   }
  ]
 }
