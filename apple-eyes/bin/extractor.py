@@ -85,6 +85,41 @@ def extract(html: str) -> dict:
     }
 
 
+def extract_docc(raw: str) -> dict:
+    """DocC-JSON (данные, которыми питается JS-клиент HIG) → тот же вид,
+    что extract(). Детерминированный обход дерева: heading/text/codeVoice
+    в порядке документа. Без ИИ — только структура формата."""
+    import json as _json
+    d = _json.loads(raw)
+    title = _norm(str(((d.get("metadata") or {}).get("title")) or ""))
+    heads, chunks = [], []
+
+    def walk(node):
+        if isinstance(node, dict):
+            t = node.get("type")
+            if t == "heading" and node.get("text"):
+                h = _norm(str(node["text"]))
+                heads.append(h)
+                chunks.append("\n## " + h + "\n")
+            elif t in ("text", "codeVoice") and node.get("text") is not None:
+                chunks.append(str(node["text"]))
+            for k in ("primaryContentSections", "sections", "content",
+                      "inlineContent", "items", "abstract", "chapters"):
+                if k in node:
+                    walk(node[k])
+        elif isinstance(node, list):
+            for x in node:
+                walk(x)
+
+    walk(d)
+    body = re.sub(r"[ \t]+", " ", " ".join(chunks))
+    text = "\n".join(_norm(ln) if not ln.startswith("## ") else ln
+                     for ln in body.replace(" \n## ", "\n## ").split("\n"))
+    text = re.sub(r"\n{3,}", "\n\n", text).strip()
+    return {"title": title, "headings": heads, "text": text,
+            "sha": hashlib.sha256(text.encode("utf-8")).hexdigest()}
+
+
 def heading_diff(old: list, new: list) -> dict:
     """Что появилось / исчезло на уровне заголовков — язык хроники."""
     o, n = set(old or []), set(new or [])

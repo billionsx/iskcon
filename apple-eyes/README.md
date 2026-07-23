@@ -30,3 +30,12 @@ python3 apple-eyes/bin/apple_eyes.py lint --adapter iskcon --mode report
 
 Порядок принуждения: новый проект начинает с `report`; правило
 переводится в `strict`, когда его долг в проекте равен нулю (устав §4).
+
+## Дополнительные органы
+
+    apple_eyes.py digest                 # знание: нормативная выжимка из снимков
+    apple_eyes.py probe                  # пробы iOS 27: вербовка оживших страниц
+    apple_eyes.py lint --adapter X --mode report \
+        --ratchet registry/state/ae-baseline.json   # храповик: долг только падает
+
+Правила: AE1–AE11. Знание: `registry/knowledge/`. Продукты: `registry/standards/products/`.

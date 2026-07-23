@@ -29,7 +29,59 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from extractor import extract, heading_diff  # noqa: E402
+from extractor import extract, extract_docc, heading_diff  # noqa: E402
+
+
+def docc_data_urls(page_url: str) -> list:
+    """Кандидаты DocC-данных для страницы документации Apple.
+    Порядок фиксирован; берётся первый живой JSON."""
+    from urllib.parse import urlparse
+    p = urlparse(page_url)
+    path = p.path.rstrip("/")
+    return [f"{p.scheme}://{p.netloc}/tutorials/data{path}.json",
+            f"{p.scheme}://{p.netloc}{path}.json"]
+
+
+def probe(root: Path, fixtures: Path = None, delay: float = None) -> dict:
+    """Пробы iOS 27: вежливо проверяет страницы-кандидаты (registry/ios27-probes.json);
+    404 терпит молча, живая страница ВЕРБУЕТСЯ в sources.json + хроника.
+    Автоматика вербует ИСТОЧНИКИ и знание — числа базы по-прежнему только замером."""
+    delay = DELAY if delay is None else delay
+    reg = root / "registry"
+    pf = reg / "ios27-probes.json"
+    if not pf.exists():
+        return {"checked": 0, "enrolled": []}
+    probes = json.loads(pf.read_text(encoding="utf-8"))["probes"]
+    src_f = reg / "sources.json"
+    data = json.loads(src_f.read_text(encoding="utf-8"))
+    have = {s["id"] for s in data["sources"]}
+    enrolled, checked = [], 0
+    for pr in probes:
+        pid = pr["id"]
+        if pid in have:
+            continue
+        checked += 1
+        if fixtures is not None:
+            fx = fixtures / f"{_slug(pid)}.html"
+            alive = fx.exists() and len(fx.read_text(encoding="utf-8")) > 200
+        else:
+            try:
+                req = urllib.request.Request(pr["url"], headers={"User-Agent": UA, "Accept": "*/*"})
+                with urllib.request.urlopen(req, timeout=25) as r:
+                    alive = r.status == 200 and len(r.read(4000)) > 500
+            except Exception:
+                alive = False
+            time.sleep(delay)
+        if alive:
+            data["sources"].append({"id": pid, "url": pr["url"], "kind": pr.get("kind", "html"),
+                                    "domains": pr.get("domains", ["ios27"]), "enrolled": _now()})
+            enrolled.append(pid)
+    if enrolled:
+        src_f.write_text(json.dumps(data, ensure_ascii=False, indent=1), encoding="utf-8")
+        with (reg / "state" / "CHANGELOG.md").open("a", encoding="utf-8") as f:
+            f.write(f"### {_now()} · пробы iOS 27\n- ожили и завербованы в дозор: "
+                    + " · ".join(f"`{e}`" for e in enrolled) + "\n\n")
+    return {"checked": checked, "enrolled": enrolled}
 
 UA = "AppleEyes/1.0 (+https://github.com/billionsx/iskcon; standards change-watch; ceo@billionsx.com)"
 TIMEOUT = 25
@@ -101,18 +153,37 @@ def crawl(root: Path, fixtures: Path = None, limit: int = 0, delay: float = DELA
     for src in sources:
         sid, url = src["id"], src["url"]
         prev = state.get(sid, {})
+        route = "html"
         if fixtures is not None:
-            fx = fixtures / f"{_slug(sid)}.html"
-            if not fx.exists():
+            fxj = fixtures / f"{_slug(sid)}.json"
+            fxh = fixtures / f"{_slug(sid)}.html"
+            if fxj.exists():
+                status, html, etag, lm, route = 200, fxj.read_text(encoding="utf-8"), "", "", "docc"
+            elif fxh.exists():
+                status, html, etag, lm = 200, fxh.read_text(encoding="utf-8"), "", ""
+            else:
                 continue
-            status, html, etag, lm = 200, fx.read_text(encoding="utf-8"), "", ""
         else:
             if not robots.allowed(url):
                 errors.append((sid, "robots-disallow"))
                 state[sid] = {**prev, "url": url, "last_checked": _now(), "note": "robots-disallow"}
                 continue
-            status, html, etag, lm = _fetch(url, prev)
-            time.sleep(delay)
+            status, html = 0, ""
+            if src.get("kind") == "docc":
+                # HIG рендерится клиентским JS: HTML — скорлупка ~200 байт.
+                # Данные страницы лежат рядом в DocC-JSON — берём их.
+                for du in docc_data_urls(url):
+                    status, html, etag, lm = _fetch(du, prev if prev.get("route") == "docc" else {})
+                    time.sleep(delay)
+                    if status == 200 and html.lstrip()[:1] == "{":
+                        route = "docc"
+                        break
+                    if status == 304:
+                        route = "docc"
+                        break
+            if route != "docc":
+                status, html, etag, lm = _fetch(url, prev)
+                time.sleep(delay)
 
         rec = {"url": url, "last_checked": _now(),
                "etag": etag or prev.get("etag", ""), "last_modified": lm or prev.get("last_modified", "")}
@@ -125,7 +196,15 @@ def crawl(root: Path, fixtures: Path = None, limit: int = 0, delay: float = DELA
             state[sid] = {**prev, **rec, "note": str(status)}
             continue
 
-        ex = extract(html)
+        if route == "docc":
+            try:
+                ex = extract_docc(html)
+            except Exception:
+                ex = extract(html)
+                route = "html"
+        else:
+            ex = extract(html)
+        rec["route"] = route
         if ex["sha"] == prev.get("sha"):
             state[sid] = {**prev, **rec}
             unchanged += 1

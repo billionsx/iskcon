@@ -15,6 +15,7 @@ on:
     branches: [main]
     paths:
       - "apple-eyes/**"
+      - "apps/web/src/**"           # храповик ловит долг там, где он рождается
       - ".github/workflows/apple-eyes.yml"
   schedule:
     - cron: "43 5 * * 1"   # понедельник — полный обход
@@ -39,19 +40,44 @@ jobs:
       - name: "Суд — selftest (живые нарушения в обе стороны)"
         run: python3 apple-eyes/bin/apple_eyes.py selftest
 
+      - name: "Что за событие: веб-пуш без правок департамента → без сети"
+        id: kind
+        run: |
+          NET=yes
+          if [ "${{ github.event_name }}" = "push" ]; then
+            git fetch --deepen=1 -q || true
+            if ! git diff --name-only HEAD^ HEAD 2>/dev/null | grep -qE '^(apple-eyes/|\.github/workflows/apple-eyes\.yml)'; then
+              NET=no
+            fi
+          fi
+          echo "net=$NET" >> "$GITHUB_OUTPUT"
+          echo "сеть: $NET"
+
       - name: "Разведка — дозор источников Apple"
+        if: steps.kind.outputs.net == 'yes'
         run: python3 apple-eyes/bin/apple_eyes.py crawl
 
       - name: "Дозор iOS 27"
+        if: steps.kind.outputs.net == 'yes'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: python3 apple-eyes/bin/apple_eyes.py ios27 --issue-on-detect
 
-      - name: "Советник — отчёт по адаптеру iskcon (не блокирует)"
+      - name: "Пробы iOS 27 — вербовка оживших страниц (устав §7.3)"
+        if: steps.kind.outputs.net == 'yes'
+        run: python3 apple-eyes/bin/apple_eyes.py probe
+
+      - name: "Знание — нормативная выжимка из снимков (устав §7.2)"
+        if: steps.kind.outputs.net == 'yes'
+        run: python3 apple-eyes/bin/apple_eyes.py digest
+
+      - name: "Советник + храповик — долг iskcon может только падать (§7.4)"
         run: |
           python3 apple-eyes/bin/apple_eyes.py lint --adapter iskcon --mode report \
-            --out apple-eyes/registry/state/report-iskcon.md > /dev/null || true
+            --out apple-eyes/registry/state/report-iskcon.md \
+            --ratchet apple-eyes/registry/state/ae-baseline.json > /tmp/lint.out || { cat /tmp/lint.out; exit 1; }
           head -3 apple-eyes/registry/state/report-iskcon.md
+          tail -5 /tmp/lint.out
 
       - name: "Хроника — коммит состояния в репозиторий"
         run: |

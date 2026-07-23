@@ -24,6 +24,21 @@ APPLE EYES · ИСПОЛНИТЕЛЬНАЯ ВЛАСТЬ. Переносимый 
   AE6 ДВОЙНИК      известные тёплые двойники запрещены: #8E8E8E вместо
                    rgba(235,235,245,.60) даёт систематический сдвиг тепла
                    по всему интерфейсу (TOKENS §2).
+  AE7 СТЕКЛО       backdrop-filter с blur() обязан нести saturate() в том же
+                   значении — стекло Apple это размытие+насыщение, голый blur
+                   даёт мутную серость, не материал (LAW_MUSIC §стекло).
+  AE8 КИНЕТИКА     движение ≥ min_ms_for_curve не ходит на дефолтных
+                   ease/linear — длинному движению положена измеренная кривая
+                   (383 мс · cubic-bezier(.32,.72,0,1), LAW_MUSIC §5).
+  AE9 ПРОЗРАЧНОСТЬ standalone opacity только из лестницы (канон меток iOS
+                   .60/.30/.18 + измеренное стекло .05/.06/.09).
+  AE10 СТЕК        font-family начинается с системного стека (-apple-system /
+                   system-ui / SF Pro) — подмена первой позиции ломает метрики.
+  AE11 РАДИУС      border-radius из измеренной лестницы (советник: чужой
+                   радиус — чужая геометрия).
+
+Отступы правилом НЕ проверяются — ключевой замер: точечной сетки НЕТ,
+шаг CSS = ⅓pt при @3x; «линт сетки отступов» противоречил бы измерениям.
 
 Режимы: strict — любое error-нарушение = exit 1; report — только отчёт.
 """
@@ -50,6 +65,11 @@ RADIUS = re.compile(r"border-radius\s*:\s*([\d.]+)px", re.I)
 SUPER = re.compile(r"clip-path\s*:\s*path\(|corner-shape", re.I)
 LSPX = re.compile(r"letter-spacing\s*:\s*(-?[\d.]+)px", re.I)
 FSIZE = re.compile(r"font-size\s*:\s*([\d.]+)px", re.I)
+BACKDROP = re.compile(r"backdrop-filter\s*:\s*([^;}\n]+)", re.I)
+MOTION = re.compile(r"\b(?:transition|animation)\s*:\s*([^;}\n]+)", re.I)
+MS = re.compile(r"([\d.]+)\s*(ms|s)\b")
+OPACITY = re.compile(r"(?<![-\w])opacity\s*:\s*(0?\.\d+|[01])(?![\d.])", re.I)
+FFAM = re.compile(r"font-family\s*:\s*([^;}\n]+)", re.I)
 
 
 def _line_of(text: str, pos: int) -> int:
@@ -65,6 +85,12 @@ def run(root: Path, adapter: dict, tokens: dict, mode: str, project_root: Path) 
     cap = float(tokens["typography"]["tracking_cap_px"])
     rad_lim = float(tokens["geometry"]["corner_form_required_above_pt"])
     sizes = {float(s) for s in tokens["typography"]["role_sizes_pt"]} | {float(s) for s in adapter.get("sizes_extra", [])}
+    op_l = tokens.get("opacity_ladder", {})
+    op_allow = [float(v) for v in op_l.get("allow", [])]
+    op_tol = float(op_l.get("tolerance", 0.005))
+    min_ms = float(tokens.get("motion", {}).get("min_ms_for_curve", 200))
+    rad_ladder = {float(v) for v in tokens["geometry"].get("radius_ladder_pt", [])} | {float(v) for v in adapter.get("radius_extra", [])}
+    stack_head = tuple(s.lower() for s in tokens["typography"].get("font_stack_head", []))
 
     findings, files_n = [], 0
     for g in globs:
@@ -109,6 +135,41 @@ def run(root: Path, adapter: dict, tokens: dict, mode: str, project_root: Path) 
                 for c, why in forb.items():
                     for m in re.finditer(re.escape(c), t, re.I):
                         findings.append(("AE6", rel, _line_of(t, m.start()), why))
+            if "AE7" in rules:
+                for m in BACKDROP.finditer(t):
+                    v = m.group(1)
+                    if "blur(" in v.lower() and "saturate(" not in v.lower() and "var(" not in v.lower():
+                        findings.append(("AE7", rel, _line_of(t, m.start()),
+                                         "backdrop-filter: blur без saturate — стекло это размытие+насыщение, не мутная серость"))
+            if "AE8" in rules:
+                for m in MOTION.finditer(t):
+                    v = m.group(1).lower()
+                    if "var(" in v:
+                        continue
+                    dur = max((float(x) * (1000 if u == "s" else 1) for x, u in MS.findall(v)), default=0)
+                    if dur >= min_ms and re.search(r"(?<![-\w])(ease|linear)(?![-\w(])", v):
+                        findings.append(("AE8", rel, _line_of(t, m.start()),
+                                         f"движение {dur:g}ms на дефолтной кривой — от {min_ms:g}ms положена измеренная (383ms · cubic-bezier(.32,.72,0,1))"))
+            if "AE9" in rules:
+                for m in OPACITY.finditer(t):
+                    v = float(m.group(1))
+                    if not any(abs(v - a) <= op_tol for a in op_allow):
+                        findings.append(("AE9", rel, _line_of(t, m.start()),
+                                         f"opacity {v:g} вне лестницы {op_allow} (метки iOS + измеренное стекло)"))
+            if "AE10" in rules:
+                for m in FFAM.finditer(t):
+                    v = m.group(1).strip().strip("'\"").lower()
+                    if v.startswith(("var(", "inherit", "monospace")):
+                        continue
+                    if stack_head and not v.startswith(stack_head):
+                        findings.append(("AE10", rel, _line_of(t, m.start()),
+                                         f"font-family не начинается с системного стека {list(stack_head)} — подмена первой позиции ломает метрики и трекинг"))
+            if "AE11" in rules:
+                for m in RADIUS.finditer(t):
+                    v = float(m.group(1))
+                    if rad_ladder and v not in rad_ladder:
+                        findings.append(("AE11", rel, _line_of(t, m.start()),
+                                         f"border-radius {v:g}px вне измеренной лестницы {sorted(rad_ladder)}"))
 
     return {"mode": mode, "files": files_n, "findings": findings, "rules": rules}
 
