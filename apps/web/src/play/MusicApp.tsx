@@ -6,6 +6,7 @@ import "./play.css";
 import { I, Menu, MItem, MQuick, ScrollCtx, mutate, storeNow, useStore, shuffled } from "./core";
 import { ALL_SONGS, Song } from "./data";
 import { FullPlayer, MiniPlayer, PlayerProvider, usePlayer } from "./player";
+import { usePlayer as useCore } from "../player/store";
 import {
   FindScreen, GenreScreen, HomeScreen, HubScreen, LinksScreen, NewScreen,
   BookScreen, PlistScreen, RadioScreen, SearchTab, ShowScreen, SongsScreen,
@@ -105,6 +106,28 @@ function Shell() {
     else if (acc.current < -14) setSc(false);
   };
   const [plOpen, setPlOpen] = useState(false);
+
+  /* СЪЁМОЧНЫЙ РЕЖИМ (?shot=…). Даёт сканеру детерминированное состояние:
+     ?shot=player&book=bg&ch=1 — открытый плеер на конкретной главе,
+     ?shot=mini — только мини. Плюс класс .shot глушит все анимации, чтобы
+     кадр не поймал середину полёта (обложка 345, а не 267 на полпути). */
+  const core = useCore();
+  const shotDone = useRef(false);
+  useEffect(() => {
+    if (shotDone.current) return;
+    const q = new URLSearchParams(window.location.search);
+    const shot = q.get("shot");
+    if (!shot) return;
+    shotDone.current = true;
+    document.querySelector(".amx")?.classList.add("shot");
+    const book = q.get("book") || "bg";
+    const ch = Number(q.get("ch") || "1");
+    if (shot === "player" || shot === "mini") {
+      core.playChapter(book, ch, "plain");
+      if (shot === "player") setPlOpen(true);
+    }
+  }, [core]);
+
   const [menu, setMenu] = useState<{ at: { x: number; y: number }; items: MItem[]; quick?: MQuick[] } | null>(null);
   const [addFor, setAddFor] = useState<string | null>(null);
   const [newPl, setNewPl] = useState<{ pending: string | null } | null>(null);

@@ -1,0 +1,148 @@
+name: shot (глаза — снимок + геометрия прода)
+
+# ГЛАЗА АГЕНТА. Cloudflare Browser Rendering снимает живой прод в формате
+# эталонов Apple (393×852 @3 ⇒ 1179×2556 — байт в байт IMG_2336…2382), плюс
+# /scrape отдаёт точные рамки элементов. Результат кладётся в ветку `shots`,
+# откуда песочница агента читает через raw.githubusercontent (единственный
+# разрешённый ей канал). Ветка отдельная, чтобы бинарь не попадал в main и не
+# ломал храповик tracked_big_binary.
+
+on:
+  workflow_dispatch:
+    inputs:
+      states:
+        description: "Состояния через запятую: root,book,player,mini,lectures,kirtans,bhajans"
+        default: "root,book,player"
+      base:
+        description: "База"
+        default: "https://brajs.com"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: shot
+  cancel-in-progress: false
+
+jobs:
+  shoot:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Снять кадры и геометрию
+        env:
+          CF: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          STATES: ${{ inputs.states }}
+          BASE: ${{ inputs.base }}
+        run: |
+          mkdir -p out
+          python3 - <<'PY'
+          import base64, json, os, sys, urllib.error, urllib.request
+
+          CF   = os.environ["CF"]
+          ACCT = "d5cbe19470dc38599873eabfe148e6d1"
+          API  = f"https://api.cloudflare.com/client/v4/accounts/{ACCT}/browser-rendering"
+          BASE = os.environ.get("BASE") or "https://brajs.com"
+          WANT = [s.strip() for s in (os.environ.get("STATES") or "root").split(",") if s.strip()]
+
+          # Экран iPhone 16: 393×852 pt при @3 = 1179×2556 px — формат эталонов.
+          VIEWPORT = {"width": 393, "height": 852, "deviceScaleFactor": 3}
+
+          SEL = [
+              ".amx", ".amx-frame", ".amx-top", ".amx-h1", ".amx-h2",
+              ".amx-showcase-i", ".amx-showcase-i article",
+              ".amx-dock", ".amx-dock .tab", "[data-amx-mini]", ".m-art",
+              ".amx-capsule", ".amx-chip", ".amx-row", ".r-num",
+              ".amx-pl", ".pl-art", ".pl-meta", ".pl-meta .mt", ".pl-meta .ms",
+              ".pl-bar", ".pl-times", ".pl-tr", ".amx-cir",
+          ]
+
+          STATES = {
+              "root":     "/play",
+              "book":     "/play/book/bg",
+              "player":   "/play?shot=player&book=bg&ch=1",
+              "mini":     "/play?shot=mini&book=bg&ch=1",
+              "lectures": "/play/new",
+              "kirtans":  "/play/radio",
+              "bhajans":  "/play/library",
+          }
+
+          def call(ep, body):
+              rq = urllib.request.Request(
+                  f"{API}/{ep}", data=json.dumps(body).encode(),
+                  headers={"Authorization": f"Bearer {CF}", "Content-Type": "application/json"})
+              try:
+                  with urllib.request.urlopen(rq, timeout=180) as r:
+                      return r.read()
+              except urllib.error.HTTPError as e:
+                  detail = e.read().decode()[:900]
+                  print(f"  ✗ {ep} HTTP {e.code}: {detail}", flush=True)
+                  return None
+
+          geom, failed = {}, []
+          for name in WANT:
+              path = STATES.get(name)
+              if not path:
+                  print(f"  ? неизвестное состояние {name}"); continue
+              url = BASE + path
+              print(f"— {name}: {url}", flush=True)
+
+              shot = call("screenshot", {
+                  "url": url,
+                  "viewport": VIEWPORT,
+                  "gotoOptions": {"waitUntil": "networkidle0", "timeout": 45000},
+                  "waitForTimeout": 2500,
+                  "screenshotOptions": {"type": "png", "fullPage": False},
+              })
+              if shot:
+                  open(f"out/{name}.png", "wb").write(shot)
+                  print(f"  ✓ кадр {len(shot)//1024} КБ", flush=True)
+              else:
+                  failed.append(name)
+
+              sc = call("scrape", {
+                  "url": url,
+                  "viewport": VIEWPORT,
+                  "gotoOptions": {"waitUntil": "networkidle0", "timeout": 45000},
+                  "waitForTimeout": 2500,
+                  "elements": [{"selector": s} for s in SEL],
+              })
+              if sc:
+                  data = json.loads(sc.decode())
+                  rows = {}
+                  for blk in (data.get("result") or []):
+                      s = blk.get("selector")
+                      out = []
+                      for r in (blk.get("results") or [])[:12]:
+                          out.append({k: r.get(k) for k in ("left", "top", "width", "height")}
+                                     | {"text": (r.get("text") or "")[:40]})
+                      if out: rows[s] = out
+                  geom[name] = rows
+                  print(f"  ✓ геометрия: {len(rows)} селекторов", flush=True)
+
+          json.dump(geom, open("out/geometry.json", "w"), ensure_ascii=False, indent=1)
+          if failed:
+              print("НЕ СНЯТО:", failed)
+          if not geom and failed:
+              sys.exit("Browser Rendering недоступен — проверь право токена")
+          PY
+
+      - name: Положить в ветку shots
+        run: |
+          git config user.name "Billions X"; git config user.email "ceo@billionsx.com"
+          STAMP=$(date -u +%Y%m%d-%H%M)
+          git fetch origin shots || true
+          git checkout -B shots $( git rev-parse --verify origin/shots >/dev/null 2>&1 && echo origin/shots || echo "" ) 2>/dev/null || git checkout --orphan shots
+          git rm -rq --cached . 2>/dev/null || true
+          find . -maxdepth 1 ! -name . ! -name .git ! -name out -exec rm -rf {} + 2>/dev/null || true
+          mkdir -p latest "arch/$STAMP"
+          cp out/* latest/ 2>/dev/null || true
+          cp out/* "arch/$STAMP/" 2>/dev/null || true
+          rm -rf out
+          # держим не больше 20 съёмок
+          ls -1d arch/*/ 2>/dev/null | sort | head -n -20 | xargs -r rm -rf
+          echo "Снимки прода: latest/ — свежие, arch/ — история. Ветка служебная." > README.md
+          git add -A && git commit -q -m "shot $STAMP" || echo "нет изменений"
+          git push -f origin shots
+          echo "raw: https://raw.githubusercontent.com/billionsx/iskcon/shots/latest/"
