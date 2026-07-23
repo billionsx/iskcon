@@ -14,8 +14,8 @@ on:
         description: "Состояния через запятую: root,book,player,mini,lectures,kirtans,bhajans"
         default: "root,book,player"
       base:
-        description: "База"
-        default: "https://brajs.com"
+        description: "База: workers.dev не закрыт защитой зоны (1010), в отличие от brajs.com"
+        default: "https://iskcon-web.ceo-5cb.workers.dev"
 
 permissions:
   contents: write
@@ -45,7 +45,7 @@ jobs:
           CF   = os.environ["CF"]; KEY = os.environ["SHOT_KEY"]
           ACCT = "d5cbe19470dc38599873eabfe148e6d1"
           DBID = "6226aded-dd03-4e74-977f-9cd0b509e73d"
-          BASE = (os.environ.get("BASE") or "https://brajs.com").rstrip("/")
+          BASE = (os.environ.get("BASE") or "https://iskcon-web.ceo-5cb.workers.dev").rstrip("/")
           WANT = [s.strip() for s in (os.environ.get("STATES") or "root").split(",") if s.strip()]
 
           # 1) Синхронизируем ключ доступа к /__shot: секрет GitHub — источник
