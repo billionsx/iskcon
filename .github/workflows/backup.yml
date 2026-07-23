@@ -38,27 +38,81 @@ jobs:
       - name: Зависимости
         run: pip install "internetarchive>=3.5" >/dev/null
 
-      - name: Дамп D1 (wrangler export)
+      - name: Дамп D1 (потабличный)
         env:
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          CLOUDFLARE_ACCOUNT_ID: d5cbe19470dc38599873eabfe148e6d1
+          CF: ${{ secrets.CLOUDFLARE_API_TOKEN }}
         run: |
           set +e
-          # База 337 МБ: единственный вменяемый путь — штатный export D1.
-          # wrangler сам ведёт опрос задания и докачивает файл.
-          npx --yes wrangler@latest d1 export iskcon-db --remote --output=d1.sql 2>&1 | tee d1-dump.log
+          # ВАЖНО: штатный `d1 export` на этой базе НЕВОЗМОЖЕН — Cloudflare
+          # отказывает: «cannot export databases with Virtual Tables (fts5)».
+          # У нас шесть таблиц verse_fts*. Поэтому дампим потаблично через
+          # query API, а FTS пропускаем: это производный индекс, он строится
+          # заново из verses/verse_texts после восстановления.
+          python3 - <<'PY' 2>&1 | tee d1-dump.log
+          import gzip, json, os, time, urllib.error, urllib.request
+
+          CF   = os.environ["CF"]
+          ACCT = "d5cbe19470dc38599873eabfe148e6d1"
+          DB   = "6226aded-dd03-4e74-977f-9cd0b509e73d"
+          URL  = f"https://api.cloudflare.com/client/v4/accounts/{ACCT}/d1/database/{DB}/query"
+          H    = {"Authorization": f"Bearer {CF}", "Content-Type": "application/json"}
+          PAGE = 800
+
+          def q(sql, tries=4):
+              for a in range(tries):
+                  try:
+                      rq = urllib.request.Request(URL, data=json.dumps({"sql": sql}).encode(), headers=H)
+                      with urllib.request.urlopen(rq, timeout=120) as r:
+                          return json.loads(r.read().decode())["result"][0]["results"]
+                  except urllib.error.HTTPError as e:
+                      body = e.read().decode()[:300]
+                      print(f"  ! HTTP {e.code} {body}", flush=True)
+                      if a == tries - 1: raise
+                      time.sleep(3 * (a + 1))
+                  except Exception as e:
+                      print(f"  ! {type(e).__name__}: {e}", flush=True)
+                      if a == tries - 1: raise
+                      time.sleep(3 * (a + 1))
+
+          rows = q("SELECT name, sql FROM sqlite_master WHERE type='table' "
+                   "AND name NOT LIKE 'sqlite_%' AND name NOT LIKE '_cf_%' ORDER BY name")
+          skip = lambda n: n.startswith("verse_fts")
+          tabs = [(r["name"], r.get("sql")) for r in rows]
+          print(f"таблиц всего: {len(tabs)}; пропускаем FTS: {[n for n,_ in tabs if skip(n)]}", flush=True)
+
+          def lit(v):
+              if v is None: return "NULL"
+              if isinstance(v, bool): return "1" if v else "0"
+              if isinstance(v, (int, float)): return repr(v)
+              return "'" + str(v).replace("'", "''") + "'"
+
+          counts, t0 = {}, time.time()
+          with gzip.open("d1.sql.gz", "wt", encoding="utf-8") as w:
+              w.write("PRAGMA foreign_keys=OFF;\nBEGIN TRANSACTION;\n")
+              for name, ddl in tabs:
+                  if skip(name):
+                      counts[name] = "skipped:fts"; continue
+                  if ddl: w.write(ddl.rstrip(";") + ";\n")
+                  off = total = 0
+                  while True:
+                      part = q(f'SELECT * FROM "{name}" LIMIT {PAGE} OFFSET {off}')
+                      if not part: break
+                      cols = ",".join(f'"{c}"' for c in part[0])
+                      for r in part:
+                          w.write(f'INSERT INTO "{name}" ({cols}) VALUES ({",".join(lit(v) for v in r.values())});\n')
+                      off += len(part); total += len(part)
+                      if len(part) < PAGE: break
+                  counts[name] = total
+                  print(f"  {name}: {total}", flush=True)
+              w.write("COMMIT;\n")
+          json.dump(counts, open("d1-counts.json", "w"), ensure_ascii=False, indent=1)
+          print(f"✓ дамп готов за {time.time()-t0:.0f} c; строк всего: "
+                f"{sum(v for v in counts.values() if isinstance(v,int))}", flush=True)
+          PY
           RC=${PIPESTATUS[0]}
           echo "rc=$RC" >> d1-dump.log
-          if [ ! -s d1.sql ]; then
-            echo "ДАМП ПУСТ — прерываю" | tee -a d1-dump.log
-            exit 1
-          fi
-          # контроль вменяемости: дамп должен содержать ключевые таблицы
-          for T in verses entities katha_tracks prayers; do
-            grep -qi "\"\?$T\"\?" d1.sql || echo "ВНИМАНИЕ: в дампе не найдена таблица $T" | tee -a d1-dump.log
-          done
-          wc -c d1.sql | tee -a d1-dump.log
-          gzip -9 -f d1.sql
+          [ "$RC" = "0" ] || exit 1
+          test -s d1.sql.gz || { echo "ДАМП ПУСТ — прерываю" | tee -a d1-dump.log; exit 1; }
           ls -lh d1.sql.gz | tee -a d1-dump.log
 
       - name: Бандл репозитория
@@ -106,7 +160,7 @@ jobs:
                 "collection": "opensource", "mediatype": "data",
                 "subject": ["iskcon", "backup", "d1", "git"]}
           item = s.get_item(ident)
-          files = [f"d1-{stamp}.sql.gz", f"repo-{stamp}.bundle.gz", "docs/backups/latest.json"]
+          files = [f"d1-{stamp}.sql.gz", f"repo-{stamp}.bundle.gz", "docs/backups/latest.json", "d1-counts.json"]
           r = item.upload(files, metadata=md, retries=3, verbose=True)
           ok = all(getattr(x, "status_code", 200) in (200, 201) for x in (r or []))
           print(("✓ выгружено: " if ok else "✗ проблемы при выгрузке: ") + f"https://archive.org/details/{ident}")
@@ -128,7 +182,7 @@ jobs:
         if: always()
         run: |
           mkdir -p _rep
-          for f in d1-dump.log ia.log docs/backups/latest.json; do [ -f "$f" ] && cp "$f" _rep/ || true; done
+          for f in d1-dump.log ia.log d1-counts.json docs/backups/latest.json; do [ -f "$f" ] && cp "$f" _rep/ || true; done
           git config user.name "Billions X"; git config user.email "ceo@billionsx.com"
           git fetch origin shots -q || true
           git checkout -B shots origin/shots 2>/dev/null || git checkout --orphan shots
