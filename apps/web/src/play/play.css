@@ -653,9 +653,9 @@ body:has(.amx) { background: #000 !important; overflow: hidden !important; }
 .amx .amx-row .r-num { width: 41.33px; flex: 0 0 41.33px; text-align: center; font-size: 17px; color: var(--g2); font-variant-numeric: tabular-nums; }
 
 /* Витрина книг слайдером (первый экран «Книги») */
-.amx-showcase { display: flex; align-items: flex-start; gap: 12px; overflow-x: auto; scroll-snap-type: x mandatory; padding: 0 20px 6px; scrollbar-width: none; -webkit-overflow-scrolling: touch; }
+.amx-showcase { display: flex; align-items: flex-start; gap: 12px; overflow-x: auto; scroll-snap-type: x mandatory; scroll-padding-left: 20px; padding: 0 20px 6px; scrollbar-width: none; -webkit-overflow-scrolling: touch; }  /* scroll-padding: без него привязка прокрутки съедала левую врезку — витрина вставала в край (замер: x=0 вместо 20) */
 .amx-showcase::-webkit-scrollbar { display: none; }
-.amx-showcase-i { flex: 0 0 353px; max-width: calc(100% - 40px); scroll-snap-align: start; display: flex; }
+.amx-showcase-i { flex: 0 0 100%; scroll-snap-align: start; display: flex; }  /* 100% = ширина контента полосы = кадр − 40 = 353 на 393. max-width в процентах считался от УЖЕ обрезанного бокса и давал 313 (замер) */
 /* ВКК держит родную пропорцию 4:5, как в основном приложении. Чтобы длинный
    текст (полное имя автора + аннотация) не выдавливал заголовок в ряд действий,
    он усекается по строкам — как усекает Apple, а не растягивает карточку. */
