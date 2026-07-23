@@ -93,6 +93,21 @@ jobs:
                   except Exception as e:
                       print(f"  ✗ {ep} {type(e).__name__}: {e}", flush=True); return None
 
+          # ПРЕДПОЛЁТ: жив ли токен и есть ли у него право на рендеринг.
+          # Различаем два разных диагноза, которые оба дают 401 на съёмке:
+          #   токен мёртв/не тот  ≠  токен жив, но без Browser Rendering.
+          for probe in (f"https://api.cloudflare.com/client/v4/accounts/{ACCT}/tokens/verify",
+                        "https://api.cloudflare.com/client/v4/user/tokens/verify"):
+              try:
+                  rq = urllib.request.Request(probe, headers={"Authorization": f"Bearer {CF}"})
+                  with urllib.request.urlopen(rq, timeout=30) as r:
+                      d = json.loads(r.read().decode())
+                      print(f"ТОКЕН: жив, статус={(d.get('result') or {}).get('status')} ({probe.split('/v4/')[1]})", flush=True)
+                      break
+              except urllib.error.HTTPError as e:
+                  print(f"ТОКЕН: {probe.split('/v4/')[1]} → HTTP {e.code} {e.read().decode()[:200]}", flush=True)
+          print(f"длина ключа: {len(CF)}, префикс: {CF[:5]}", flush=True)
+
           geom, failed = {}, []
           for name in WANT:
               path = STATES.get(name)
