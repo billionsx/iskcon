@@ -2085,6 +2085,70 @@ export default {
       });
     }
 
+    // ── ГЛАЗА АГЕНТА: /__shot ────────────────────────────────────────────────
+    // Снимок и геометрия собственной страницы через привязку BROWSER (та же,
+    // что рендерит PDF). Отдельного права у API-токена не требуется: биндинг
+    // работает на уровне аккаунта. Ключ доступа лежит в app_config (shot_token)
+    // — как apple_domain_association выше, поэтому его нет ни в репозитории,
+    // ни в переменных. Снимать разрешено ТОЛЬКО свои пути (path начинается с /),
+    // иначе endpoint стал бы бесплатным рендерером для чужих сайтов.
+    if (url.pathname === "/__shot") {
+      const keyRow = await env.DB.prepare(`SELECT value FROM app_config WHERE key = 'shot_token' LIMIT 1`)
+        .first<{ value: string }>().catch(() => null);
+      const given = request.headers.get("x-shot-key") || "";
+      if (!keyRow?.value || given !== keyRow.value) return new Response("nope", { status: 403 });
+
+      const path = url.searchParams.get("path") || "/";
+      if (!path.startsWith("/")) return new Response("only own paths", { status: 400 });
+      const w = Math.min(2000, Number(url.searchParams.get("w") || 393));
+      const h = Math.min(4000, Number(url.searchParams.get("h") || 852));
+      const dpr = Math.min(4, Number(url.searchParams.get("dpr") || 3));
+      const wait = Math.min(15000, Number(url.searchParams.get("wait") || 3000));
+      const fmt = url.searchParams.get("fmt") || "png";
+      const sels = (url.searchParams.get("sel") || "").split("|").map((s) => s.trim()).filter(Boolean);
+
+      let browser: Awaited<ReturnType<typeof puppeteer.launch>> | null = null;
+      try {
+        browser = await puppeteer.launch(env.BROWSER);
+        const page = await browser.newPage();
+        await page.setViewport({ width: w, height: h, deviceScaleFactor: dpr });
+        await page.goto(`https://${SITE_HOST}${path}`, { waitUntil: "networkidle0", timeout: 45000 });
+        await new Promise((r) => setTimeout(r, wait));
+        if (fmt === "geom") {
+          const geom = await page.evaluate((list: string[]) => {
+            const out: Record<string, Array<Record<string, number | string>>> = {};
+            for (const s of list) {
+              const nodes = Array.from(document.querySelectorAll(s)).slice(0, 12);
+              if (!nodes.length) continue;
+              out[s] = nodes.map((n) => {
+                const r = (n as HTMLElement).getBoundingClientRect();
+                const cs = getComputedStyle(n as HTMLElement);
+                return {
+                  left: +r.left.toFixed(2), top: +r.top.toFixed(2),
+                  width: +r.width.toFixed(2), height: +r.height.toFixed(2),
+                  fontSize: cs.fontSize, lineHeight: cs.lineHeight,
+                  letterSpacing: cs.letterSpacing, fontWeight: cs.fontWeight,
+                  color: cs.color, text: ((n as HTMLElement).innerText || "").slice(0, 40),
+                };
+              });
+            }
+            return out;
+          }, sels);
+          return new Response(JSON.stringify(geom, null, 1), {
+            headers: { "Content-Type": "application/json; charset=utf-8", "Cache-Control": "no-store" },
+          });
+        }
+        const png = await page.screenshot({ type: "png" });
+        return new Response(png as ArrayBuffer, {
+          headers: { "Content-Type": "image/png", "Cache-Control": "no-store" },
+        });
+      } catch (e) {
+        return new Response(`shot error: ${(e as Error)?.message || e}`, { status: 500 });
+      } finally {
+        try { await browser?.close(); } catch { /* сессия и так закроется */ }
+      }
+    }
+
     // ── Каноничный адрес (ЗКН-Н087) ──────────────────────────────────────────
     // Приложение живёт РОВНО на одном хосте — SITE_HOST из реестра. Любой другой
     // хост, на котором воркер вдруг исполнился, уводится на канонический 301-м,

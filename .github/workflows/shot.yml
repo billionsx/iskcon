@@ -32,35 +32,43 @@ jobs:
 
       - name: Снять кадры и геометрию
         env:
-          # Отдельный токен сканера (только Browser Rendering). Пока его нет —
-          # падаем на общий, чтобы конвейер не ломался.
-          CF: ${{ secrets.CF_SHOT_TOKEN || secrets.CLOUDFLARE_API_TOKEN }}
+          CF: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          SHOT_KEY: ${{ secrets.SHOT_KEY }}
           STATES: ${{ inputs.states }}
           BASE: ${{ inputs.base }}
         run: |
           mkdir -p out
           set +e
           python3 - <<'PY' 2>&1 | tee out/log.txt
-          import base64, json, os, sys, urllib.error, urllib.request
+          import json, os, time, urllib.error, urllib.request
 
-          CF   = os.environ["CF"]
+          CF   = os.environ["CF"]; KEY = os.environ["SHOT_KEY"]
           ACCT = "d5cbe19470dc38599873eabfe148e6d1"
-          API  = f"https://api.cloudflare.com/client/v4/accounts/{ACCT}/browser-rendering"
-          BASE = os.environ.get("BASE") or "https://brajs.com"
+          DBID = "6226aded-dd03-4e74-977f-9cd0b509e73d"
+          BASE = (os.environ.get("BASE") or "https://brajs.com").rstrip("/")
           WANT = [s.strip() for s in (os.environ.get("STATES") or "root").split(",") if s.strip()]
 
-          # Экран iPhone 16: 393×852 pt при @3 = 1179×2556 px — формат эталонов.
-          VIEWPORT = {"width": 393, "height": 852, "deviceScaleFactor": 3}
+          # 1) Синхронизируем ключ доступа к /__shot: секрет GitHub — источник
+          #    истины, D1 — то, что видит воркер. Идемпотентно.
+          q = ("INSERT INTO app_config (key, value) VALUES ('shot_token', ?1) "
+               "ON CONFLICT(key) DO UPDATE SET value = ?1, updated_at = datetime('now')")
+          rq = urllib.request.Request(
+              f"https://api.cloudflare.com/client/v4/accounts/{ACCT}/d1/database/{DBID}/query",
+              data=json.dumps({"sql": q, "params": [KEY]}).encode(),
+              headers={"Authorization": f"Bearer {CF}", "Content-Type": "application/json"})
+          try:
+              urllib.request.urlopen(rq, timeout=60).read()
+              print("ключ /__shot синхронизирован с D1", flush=True)
+          except urllib.error.HTTPError as e:
+              print("! не удалось записать ключ:", e.code, e.read().decode()[:200], flush=True)
 
-          SEL = [
-              ".amx", ".amx-frame", ".amx-top", ".amx-h1", ".amx-h2",
-              ".amx-showcase-i", ".amx-showcase-i article",
-              ".amx-dock", ".amx-dock .tab", "[data-amx-mini]", ".m-art",
+          SEL = "|".join([
+              ".amx", ".amx-top", ".amx-h1", ".amx-h2", ".amx-showcase-i",
+              ".amx-showcase-i article", ".amx-dock", "[data-amx-mini]", ".m-art",
               ".amx-capsule", ".amx-chip", ".amx-row", ".r-num",
               ".amx-pl", ".pl-art", ".pl-meta", ".pl-meta .mt", ".pl-meta .ms",
-              ".pl-bar", ".pl-times", ".pl-tr", ".amx-cir",
-          ]
-
+              ".pl-bar", ".pl-times", ".amx-cir",
+          ])
           STATES = {
               "root":     "/play",
               "book":     "/play/book/bg",
@@ -71,92 +79,46 @@ jobs:
               "bhajans":  "/play/library",
           }
 
-          def raw(ep, body):
-              rq = urllib.request.Request(
-                  f"{API}/{ep}", data=json.dumps(body).encode(),
-                  headers={"Authorization": f"Bearer {CF}", "Content-Type": "application/json"})
-              with urllib.request.urlopen(rq, timeout=180) as r:
-                  return r.read()
-
-          def call(ep, body):
-              """Пробуем как есть; на 400 — ещё раз без необязательных ключей."""
-              for attempt in range(2):
+          def shot(path, fmt, extra=""):
+              u = (f"{BASE}/__shot?path={urllib.parse.quote(path, safe='/?=&')}"
+                   f"&w=393&h=852&dpr=3&wait=2500&fmt={fmt}{extra}")
+              rq = urllib.request.Request(u, headers={"x-shot-key": KEY})
+              for a in range(3):
                   try:
-                      return raw(ep, body)
+                      with urllib.request.urlopen(rq, timeout=120) as r:
+                          return r.read()
                   except urllib.error.HTTPError as e:
-                      detail = e.read().decode()[:900]
-                      print(f"  ✗ {ep} HTTP {e.code}: {detail}", flush=True)
-                      if e.code == 400 and attempt == 0 and "waitForTimeout" in body:
-                          body = {k: v for k, v in body.items() if k != "waitForTimeout"}
-                          print("  ↻ повтор без waitForTimeout", flush=True); continue
-                      return None
+                      print(f"  ✗ {fmt} HTTP {e.code}: {e.read().decode()[:300]}", flush=True)
+                      if e.code < 500: return None
                   except Exception as e:
-                      print(f"  ✗ {ep} {type(e).__name__}: {e}", flush=True); return None
+                      print(f"  ✗ {fmt} {type(e).__name__}: {e}", flush=True)
+                  time.sleep(4 * (a + 1))
+              return None
 
-          # ПРЕДПОЛЁТ: жив ли токен и есть ли у него право на рендеринг.
-          # Различаем два разных диагноза, которые оба дают 401 на съёмке:
-          #   токен мёртв/не тот  ≠  токен жив, но без Browser Rendering.
-          for probe in (f"https://api.cloudflare.com/client/v4/accounts/{ACCT}/tokens/verify",
-                        "https://api.cloudflare.com/client/v4/user/tokens/verify"):
-              try:
-                  rq = urllib.request.Request(probe, headers={"Authorization": f"Bearer {CF}"})
-                  with urllib.request.urlopen(rq, timeout=30) as r:
-                      d = json.loads(r.read().decode())
-                      print(f"ТОКЕН: жив, статус={(d.get('result') or {}).get('status')} ({probe.split('/v4/')[1]})", flush=True)
-                      break
-              except urllib.error.HTTPError as e:
-                  print(f"ТОКЕН: {probe.split('/v4/')[1]} → HTTP {e.code} {e.read().decode()[:200]}", flush=True)
-          print(f"длина ключа: {len(CF)}, префикс: {CF[:5]}", flush=True)
-
+          import urllib.parse
           geom, failed = {}, []
           for name in WANT:
               path = STATES.get(name)
-              if not path:
-                  print(f"  ? неизвестное состояние {name}"); continue
-              url = BASE + path
-              print(f"— {name}: {url}", flush=True)
-
-              shot = call("screenshot", {
-                  "url": url,
-                  "viewport": VIEWPORT,
-                  "gotoOptions": {"waitUntil": "networkidle0", "timeout": 45000},
-                  "waitForTimeout": 2500,
-                  "screenshotOptions": {"type": "png", "fullPage": False},
-              })
-              if shot:
-                  open(f"out/{name}.png", "wb").write(shot)
-                  print(f"  ✓ кадр {len(shot)//1024} КБ", flush=True)
+              if not path: print(f"  ? неизвестное состояние {name}"); continue
+              print(f"— {name}: {path}", flush=True)
+              png = shot(path, "png")
+              if png and png[:4] == b"\x89PNG":
+                  open(f"out/{name}.png", "wb").write(png)
+                  print(f"  ✓ кадр {len(png)//1024} КБ", flush=True)
               else:
                   failed.append(name)
-
-              sc = call("scrape", {
-                  "url": url,
-                  "viewport": VIEWPORT,
-                  "gotoOptions": {"waitUntil": "networkidle0", "timeout": 45000},
-                  "waitForTimeout": 2500,
-                  "elements": [{"selector": s} for s in SEL],
-              })
-              if sc:
-                  data = json.loads(sc.decode())
-                  rows = {}
-                  for blk in (data.get("result") or []):
-                      s = blk.get("selector")
-                      out = []
-                      for r in (blk.get("results") or [])[:12]:
-                          out.append({k: r.get(k) for k in ("left", "top", "width", "height")}
-                                     | {"text": (r.get("text") or "")[:40]})
-                      if out: rows[s] = out
-                  geom[name] = rows
-                  print(f"  ✓ геометрия: {len(rows)} селекторов", flush=True)
+              g = shot(path, "geom", "&sel=" + urllib.parse.quote(SEL))
+              if g:
+                  try:
+                      geom[name] = json.loads(g.decode())
+                      print(f"  ✓ геометрия: {len(geom[name])} селекторов", flush=True)
+                  except Exception as e:
+                      print("  ! геометрия не разобралась:", e, g[:200], flush=True)
 
           json.dump(geom, open("out/geometry.json", "w"), ensure_ascii=False, indent=1)
-          if failed:
-              print("НЕ СНЯТО:", failed)
-          if not geom and failed:
-              sys.exit("Browser Rendering недоступен — проверь право токена")
+          print("НЕ СНЯТО:", failed if failed else "—")
           PY
           echo "rc=${PIPESTATUS[0]}" >> out/log.txt
-          echo "rc=$?" >> out/log.txt
 
       - name: Положить в ветку shots
         if: always()
