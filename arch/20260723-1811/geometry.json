@@ -66,10 +66,10 @@
   ],
   ".amx-showcase-i": [
    {
-    "left": 0,
+    "left": 20,
     "top": 133,
-    "width": 313,
-    "height": 391.25,
+    "width": 353,
+    "height": 441.25,
     "fontSize": "16px",
     "lineHeight": "normal",
     "letterSpacing": "normal",
@@ -78,10 +78,10 @@
     "text": "1 / 7\nБхагавад-гита\nкак она есть\nBhagava"
    },
    {
-    "left": 325,
+    "left": 385,
     "top": 133,
-    "width": 313,
-    "height": 391.25,
+    "width": 353,
+    "height": 441.25,
     "fontSize": "16px",
     "lineHeight": "normal",
     "letterSpacing": "normal",
@@ -90,10 +90,10 @@
     "text": "1 / 20\nШри Чайтанья-\nчаритамрита\nНектар "
    },
    {
-    "left": 650,
+    "left": 750,
     "top": 133,
-    "width": 313,
-    "height": 391.25,
+    "width": 353,
+    "height": 441.25,
     "fontSize": "16px",
     "lineHeight": "normal",
     "letterSpacing": "normal",
@@ -102,10 +102,10 @@
     "text": "1 / 25\nШримад-\nБхагаватам\nЗрелый плод др"
    },
    {
-    "left": 975,
+    "left": 1115,
     "top": 133,
-    "width": 313,
-    "height": 391.25,
+    "width": 353,
+    "height": 441.25,
     "fontSize": "16px",
     "lineHeight": "normal",
     "letterSpacing": "normal",
@@ -114,10 +114,10 @@
     "text": "1 / 1\nНектар\nпреданности\nBhakti-rasāmṛta"
    },
    {
-    "left": 1300,
+    "left": 1480,
     "top": 133,
-    "width": 313,
-    "height": 391.25,
+    "width": 353,
+    "height": 441.25,
     "fontSize": "16px",
     "lineHeight": "normal",
     "letterSpacing": "normal",
@@ -126,10 +126,10 @@
     "text": "1 / 1\nШри\nИшопанишад\nŚrī Īśopaniṣad·Мант"
    },
    {
-    "left": 1625,
+    "left": 1845,
     "top": 133,
-    "width": 313,
-    "height": 391.25,
+    "width": 353,
+    "height": 441.25,
     "fontSize": "16px",
     "lineHeight": "normal",
     "letterSpacing": "normal",
@@ -138,10 +138,10 @@
     "text": "1 / 1\nНектар\nнаставлений\nUpadeśāmṛta·Нас"
    },
    {
-    "left": 1950,
+    "left": 2210,
     "top": 133,
-    "width": 313,
-    "height": 391.25,
+    "width": 353,
+    "height": 441.25,
     "fontSize": "16px",
     "lineHeight": "normal",
     "letterSpacing": "normal",
@@ -150,10 +150,10 @@
     "text": "1 / 1\nНа пути\nк Кришне\nOn the Way to Kṛṣ"
    },
    {
-    "left": 2275,
+    "left": 2575,
     "top": 133,
-    "width": 313,
-    "height": 391.25,
+    "width": 353,
+    "height": 441.25,
     "fontSize": "16px",
     "lineHeight": "normal",
     "letterSpacing": "normal",
@@ -162,10 +162,10 @@
     "text": "1 / 1\nРаджа-видья\nRāja-vidyā·Царь знания"
    },
    {
-    "left": 2600,
+    "left": 2940,
     "top": 133,
-    "width": 313,
-    "height": 391.25,
+    "width": 353,
+    "height": 441.25,
     "fontSize": "16px",
     "lineHeight": "normal",
     "letterSpacing": "normal",
@@ -174,10 +174,10 @@
     "text": "1 / 1\nПуть\nк совершенству\nThe Path of Pe"
    },
    {
-    "left": 2925,
+    "left": 3305,
     "top": 133,
-    "width": 313,
-    "height": 391.25,
+    "width": 353,
+    "height": 441.25,
     "fontSize": "16px",
     "lineHeight": "normal",
     "letterSpacing": "normal",
@@ -186,10 +186,10 @@
     "text": "1 / 1\nПо ту сторону\nрождения и смерти\nBe"
    },
    {
-    "left": 3250,
+    "left": 3670,
     "top": 133,
-    "width": 313,
-    "height": 391.25,
+    "width": 353,
+    "height": 441.25,
     "fontSize": "16px",
     "lineHeight": "normal",
     "letterSpacing": "normal",
@@ -198,10 +198,10 @@
     "text": "1 / 1\nСовершенство\nйоги\nThe Perfection o"
    },
    {
-    "left": 3575,
+    "left": 4035,
     "top": 133,
-    "width": 313,
-    "height": 391.25,
+    "width": 353,
+    "height": 441.25,
     "fontSize": "16px",
     "lineHeight": "normal",
     "letterSpacing": "normal",
@@ -212,10 +212,10 @@
   ],
   ".amx-showcase-i article": [
    {
-    "left": 0,
+    "left": 20,
     "top": 133,
-    "width": 313,
-    "height": 391.25,
+    "width": 353,
+    "height": 441.25,
     "fontSize": "16px",
     "lineHeight": "normal",
     "letterSpacing": "normal",
@@ -224,10 +224,10 @@
     "text": "1 / 7\nБхагавад-гита\nкак она есть\nBhagava"
    },
    {
-    "left": 325,
+    "left": 385,
     "top": 133,
-    "width": 313,
-    "height": 391.25,
+    "width": 353,
+    "height": 441.25,
     "fontSize": "16px",
     "lineHeight": "normal",
     "letterSpacing": "normal",
@@ -236,10 +236,10 @@
     "text": "1 / 20\nШри Чайтанья-\nчаритамрита\nНектар "
    },
    {
-    "left": 650,
+    "left": 750,
     "top": 133,
-    "width": 313,
-    "height": 391.25,
+    "width": 353,
+    "height": 441.25,
     "fontSize": "16px",
     "lineHeight": "normal",
     "letterSpacing": "normal",
@@ -248,10 +248,10 @@
     "text": "1 / 25\nШримад-\nБхагаватам\nЗрелый плод др"
    },
    {
-    "left": 975,
+    "left": 1115,
     "top": 133,
-    "width": 313,
-    "height": 391.25,
+    "width": 353,
+    "height": 441.25,
     "fontSize": "16px",
     "lineHeight": "normal",
     "letterSpacing": "normal",
@@ -260,10 +260,10 @@
     "text": "1 / 1\nНектар\nпреданности\nBhakti-rasāmṛta"
    },
    {
-    "left": 1300,
+    "left": 1480,
     "top": 133,
-    "width": 313,
-    "height": 391.25,
+    "width": 353,
+    "height": 441.25,
     "fontSize": "16px",
     "lineHeight": "normal",
     "letterSpacing": "normal",
@@ -272,10 +272,10 @@
     "text": "1 / 1\nШри\nИшопанишад\nŚrī Īśopaniṣad·Мант"
    },
    {
-    "left": 1625,
+    "left": 1845,
     "top": 133,
-    "width": 313,
-    "height": 391.25,
+    "width": 353,
+    "height": 441.25,
     "fontSize": "16px",
     "lineHeight": "normal",
     "letterSpacing": "normal",
@@ -284,10 +284,10 @@
     "text": "1 / 1\nНектар\nнаставлений\nUpadeśāmṛta·Нас"
    },
    {
-    "left": 1950,
+    "left": 2210,
     "top": 133,
-    "width": 313,
-    "height": 391.25,
+    "width": 353,
+    "height": 441.25,
     "fontSize": "16px",
     "lineHeight": "normal",
     "letterSpacing": "normal",
@@ -296,10 +296,10 @@
     "text": "1 / 1\nНа пути\nк Кришне\nOn the Way to Kṛṣ"
    },
    {
-    "left": 2275,
+    "left": 2575,
     "top": 133,
-    "width": 313,
-    "height": 391.25,
+    "width": 353,
+    "height": 441.25,
     "fontSize": "16px",
     "lineHeight": "normal",
     "letterSpacing": "normal",
@@ -308,10 +308,10 @@
     "text": "1 / 1\nРаджа-видья\nRāja-vidyā·Царь знания"
    },
    {
-    "left": 2600,
+    "left": 2940,
     "top": 133,
-    "width": 313,
-    "height": 391.25,
+    "width": 353,
+    "height": 441.25,
     "fontSize": "16px",
     "lineHeight": "normal",
     "letterSpacing": "normal",
@@ -320,10 +320,10 @@
     "text": "1 / 1\nПуть\nк совершенству\nThe Path of Pe"
    },
    {
-    "left": 2925,
+    "left": 3305,
     "top": 133,
-    "width": 313,
-    "height": 391.25,
+    "width": 353,
+    "height": 441.25,
     "fontSize": "16px",
     "lineHeight": "normal",
     "letterSpacing": "normal",
@@ -332,10 +332,10 @@
     "text": "1 / 1\nПо ту сторону\nрождения и смерти\nBe"
    },
    {
-    "left": 3250,
+    "left": 3670,
     "top": 133,
-    "width": 313,
-    "height": 391.25,
+    "width": 353,
+    "height": 441.25,
     "fontSize": "16px",
     "lineHeight": "normal",
     "letterSpacing": "normal",
@@ -344,10 +344,10 @@
     "text": "1 / 1\nСовершенство\nйоги\nThe Perfection o"
    },
    {
-    "left": 3575,
+    "left": 4035,
     "top": 133,
-    "width": 313,
-    "height": 391.25,
+    "width": 353,
+    "height": 441.25,
     "fontSize": "16px",
     "lineHeight": "normal",
     "letterSpacing": "normal",
@@ -413,12 +413,12 @@
    }
   ]
  },
- "book": {
+ "player": {
   "__meta": {
-   "href": "https://iskcon-web.ceo-5cb.workers.dev/play/book/bg",
+   "href": "https://iskcon-web.ceo-5cb.workers.dev/play",
    "title": "ISKCON ONE LOVE. ИСККОН.",
-   "bodyLen": 751,
-   "head": "Бхагавад-гита как она есть\nЕго Божественная Милость Абхай Чаранаравинда Бхактиведанта Свами Шрила Прабхупада, Ачарья-основатель Международного общества сознания Кришны, ИСККОН\nСлушать\nЧитать\nТекст\nС к",
+   "bodyLen": 6183,
+   "head": "Книги\nШрила Прабхупада\n1 / 7\nБхагавад-гита\nкак она есть\nBhagavad-gītā·Песнь Бога\n\nЕго Божественная Милость Абхай Чаранаравинда Бхактиведанта Свами Шрила Прабхупада, Ачарья-основатель Международного об",
    "amx": true,
    "scripts": 1
   },
@@ -433,7 +433,341 @@
     "letterSpacing": "normal",
     "fontWeight": "400",
     "color": "rgb(255, 255, 255)",
-    "text": "Бхагавад-гита как она есть\nЕго Божествен"
+    "text": "Книги\nШрила Прабхупада\n2 / 7\nБхагавад-ги"
+   }
+  ],
+  ".amx-top": [
+   {
+    "left": 0,
+    "top": 10,
+    "width": 393,
+    "height": 58,
+    "fontSize": "16px",
+    "lineHeight": "normal",
+    "letterSpacing": "normal",
+    "fontWeight": "400",
+    "color": "rgb(255, 255, 255)",
+    "text": "Книги"
+   }
+  ],
+  ".amx-h1": [
+   {
+    "left": 20,
+    "top": 19.5,
+    "width": 111.7,
+    "height": 41,
+    "fontSize": "34px",
+    "lineHeight": "41px",
+    "letterSpacing": "-1px",
+    "fontWeight": "700",
+    "color": "rgb(255, 255, 255)",
+    "text": "Книги"
+   }
+  ],
+  ".amx-h2": [
+   {
+    "left": 0,
+    "top": 68,
+    "width": 393,
+    "height": 65,
+    "fontSize": "20px",
+    "lineHeight": "25px",
+    "letterSpacing": "-0.45px",
+    "fontWeight": "700",
+    "color": "rgb(255, 255, 255)",
+    "text": "Шрила Прабхупада"
+   }
+  ],
+  ".amx-showcase-i": [
+   {
+    "left": 20,
+    "top": 133,
+    "width": 353,
+    "height": 441.25,
+    "fontSize": "16px",
+    "lineHeight": "normal",
+    "letterSpacing": "normal",
+    "fontWeight": "400",
+    "color": "rgb(255, 255, 255)",
+    "text": "2 / 7\nБхагавад-гита\nкак она есть\nBhagava"
+   },
+   {
+    "left": 385,
+    "top": 133,
+    "width": 353,
+    "height": 441.25,
+    "fontSize": "16px",
+    "lineHeight": "normal",
+    "letterSpacing": "normal",
+    "fontWeight": "400",
+    "color": "rgb(255, 255, 255)",
+    "text": "2 / 20\nШри Чайтанья-\nчаритамрита\nНектар "
+   },
+   {
+    "left": 750,
+    "top": 133,
+    "width": 353,
+    "height": 441.25,
+    "fontSize": "16px",
+    "lineHeight": "normal",
+    "letterSpacing": "normal",
+    "fontWeight": "400",
+    "color": "rgb(255, 255, 255)",
+    "text": "2 / 25\nШримад-\nБхагаватам\nЗрелый плод др"
+   },
+   {
+    "left": 1115,
+    "top": 133,
+    "width": 353,
+    "height": 441.25,
+    "fontSize": "16px",
+    "lineHeight": "normal",
+    "letterSpacing": "normal",
+    "fontWeight": "400",
+    "color": "rgb(255, 255, 255)",
+    "text": "1 / 1\nНектар\nпреданности\nBhakti-rasāmṛta"
+   },
+   {
+    "left": 1480,
+    "top": 133,
+    "width": 353,
+    "height": 441.25,
+    "fontSize": "16px",
+    "lineHeight": "normal",
+    "letterSpacing": "normal",
+    "fontWeight": "400",
+    "color": "rgb(255, 255, 255)",
+    "text": "1 / 1\nШри\nИшопанишад\nŚrī Īśopaniṣad·Мант"
+   },
+   {
+    "left": 1845,
+    "top": 133,
+    "width": 353,
+    "height": 441.25,
+    "fontSize": "16px",
+    "lineHeight": "normal",
+    "letterSpacing": "normal",
+    "fontWeight": "400",
+    "color": "rgb(255, 255, 255)",
+    "text": "1 / 1\nНектар\nнаставлений\nUpadeśāmṛta·Нас"
+   },
+   {
+    "left": 2210,
+    "top": 133,
+    "width": 353,
+    "height": 441.25,
+    "fontSize": "16px",
+    "lineHeight": "normal",
+    "letterSpacing": "normal",
+    "fontWeight": "400",
+    "color": "rgb(255, 255, 255)",
+    "text": "1 / 1\nНа пути\nк Кришне\nOn the Way to Kṛṣ"
+   },
+   {
+    "left": 2575,
+    "top": 133,
+    "width": 353,
+    "height": 441.25,
+    "fontSize": "16px",
+    "lineHeight": "normal",
+    "letterSpacing": "normal",
+    "fontWeight": "400",
+    "color": "rgb(255, 255, 255)",
+    "text": "1 / 1\nРаджа-видья\nRāja-vidyā·Царь знания"
+   },
+   {
+    "left": 2940,
+    "top": 133,
+    "width": 353,
+    "height": 441.25,
+    "fontSize": "16px",
+    "lineHeight": "normal",
+    "letterSpacing": "normal",
+    "fontWeight": "400",
+    "color": "rgb(255, 255, 255)",
+    "text": "1 / 1\nПуть\nк совершенству\nThe Path of Pe"
+   },
+   {
+    "left": 3305,
+    "top": 133,
+    "width": 353,
+    "height": 441.25,
+    "fontSize": "16px",
+    "lineHeight": "normal",
+    "letterSpacing": "normal",
+    "fontWeight": "400",
+    "color": "rgb(255, 255, 255)",
+    "text": "1 / 1\nПо ту сторону\nрождения и смерти\nBe"
+   },
+   {
+    "left": 3670,
+    "top": 133,
+    "width": 353,
+    "height": 441.25,
+    "fontSize": "16px",
+    "lineHeight": "normal",
+    "letterSpacing": "normal",
+    "fontWeight": "400",
+    "color": "rgb(255, 255, 255)",
+    "text": "1 / 1\nСовершенство\nйоги\nThe Perfection o"
+   },
+   {
+    "left": 4035,
+    "top": 133,
+    "width": 353,
+    "height": 441.25,
+    "fontSize": "16px",
+    "lineHeight": "normal",
+    "letterSpacing": "normal",
+    "fontWeight": "400",
+    "color": "rgb(255, 255, 255)",
+    "text": "1 / 1\nЕщё\nодин шанс\nA Second Chance·Втор"
+   }
+  ],
+  ".amx-showcase-i article": [
+   {
+    "left": 20,
+    "top": 133,
+    "width": 353,
+    "height": 441.25,
+    "fontSize": "16px",
+    "lineHeight": "normal",
+    "letterSpacing": "normal",
+    "fontWeight": "400",
+    "color": "rgb(255, 255, 255)",
+    "text": "2 / 7\nБхагавад-гита\nкак она есть\nBhagava"
+   },
+   {
+    "left": 385,
+    "top": 133,
+    "width": 353,
+    "height": 441.25,
+    "fontSize": "16px",
+    "lineHeight": "normal",
+    "letterSpacing": "normal",
+    "fontWeight": "400",
+    "color": "rgb(255, 255, 255)",
+    "text": "2 / 20\nШри Чайтанья-\nчаритамрита\nНектар "
+   },
+   {
+    "left": 750,
+    "top": 133,
+    "width": 353,
+    "height": 441.25,
+    "fontSize": "16px",
+    "lineHeight": "normal",
+    "letterSpacing": "normal",
+    "fontWeight": "400",
+    "color": "rgb(255, 255, 255)",
+    "text": "2 / 25\nШримад-\nБхагаватам\nЗрелый плод др"
+   },
+   {
+    "left": 1115,
+    "top": 133,
+    "width": 353,
+    "height": 441.25,
+    "fontSize": "16px",
+    "lineHeight": "normal",
+    "letterSpacing": "normal",
+    "fontWeight": "400",
+    "color": "rgb(255, 255, 255)",
+    "text": "1 / 1\nНектар\nпреданности\nBhakti-rasāmṛta"
+   },
+   {
+    "left": 1480,
+    "top": 133,
+    "width": 353,
+    "height": 441.25,
+    "fontSize": "16px",
+    "lineHeight": "normal",
+    "letterSpacing": "normal",
+    "fontWeight": "400",
+    "color": "rgb(255, 255, 255)",
+    "text": "1 / 1\nШри\nИшопанишад\nŚrī Īśopaniṣad·Мант"
+   },
+   {
+    "left": 1845,
+    "top": 133,
+    "width": 353,
+    "height": 441.25,
+    "fontSize": "16px",
+    "lineHeight": "normal",
+    "letterSpacing": "normal",
+    "fontWeight": "400",
+    "color": "rgb(255, 255, 255)",
+    "text": "1 / 1\nНектар\nнаставлений\nUpadeśāmṛta·Нас"
+   },
+   {
+    "left": 2210,
+    "top": 133,
+    "width": 353,
+    "height": 441.25,
+    "fontSize": "16px",
+    "lineHeight": "normal",
+    "letterSpacing": "normal",
+    "fontWeight": "400",
+    "color": "rgb(255, 255, 255)",
+    "text": "1 / 1\nНа пути\nк Кришне\nOn the Way to Kṛṣ"
+   },
+   {
+    "left": 2575,
+    "top": 133,
+    "width": 353,
+    "height": 441.25,
+    "fontSize": "16px",
+    "lineHeight": "normal",
+    "letterSpacing": "normal",
+    "fontWeight": "400",
+    "color": "rgb(255, 255, 255)",
+    "text": "1 / 1\nРаджа-видья\nRāja-vidyā·Царь знания"
+   },
+   {
+    "left": 2940,
+    "top": 133,
+    "width": 353,
+    "height": 441.25,
+    "fontSize": "16px",
+    "lineHeight": "normal",
+    "letterSpacing": "normal",
+    "fontWeight": "400",
+    "color": "rgb(255, 255, 255)",
+    "text": "1 / 1\nПуть\nк совершенству\nThe Path of Pe"
+   },
+   {
+    "left": 3305,
+    "top": 133,
+    "width": 353,
+    "height": 441.25,
+    "fontSize": "16px",
+    "lineHeight": "normal",
+    "letterSpacing": "normal",
+    "fontWeight": "400",
+    "color": "rgb(255, 255, 255)",
+    "text": "1 / 1\nПо ту сторону\nрождения и смерти\nBe"
+   },
+   {
+    "left": 3670,
+    "top": 133,
+    "width": 353,
+    "height": 441.25,
+    "fontSize": "16px",
+    "lineHeight": "normal",
+    "letterSpacing": "normal",
+    "fontWeight": "400",
+    "color": "rgb(255, 255, 255)",
+    "text": "1 / 1\nСовершенство\nйоги\nThe Perfection o"
+   },
+   {
+    "left": 4035,
+    "top": 133,
+    "width": 353,
+    "height": 441.25,
+    "fontSize": "16px",
+    "lineHeight": "normal",
+    "letterSpacing": "normal",
+    "fontWeight": "400",
+    "color": "rgb(255, 255, 255)",
+    "text": "1 / 1\nЕщё\nодин шанс\nA Second Chance·Втор"
    }
   ],
   ".amx-dock": [
@@ -478,354 +812,10 @@
     "text": ""
    }
   ],
-  ".amx-capsule": [
-   {
-    "left": 20,
-    "top": 451,
-    "width": 172,
-    "height": 50,
-    "fontSize": "17px",
-    "lineHeight": "normal",
-    "letterSpacing": "-0.43px",
-    "fontWeight": "600",
-    "color": "rgb(250, 45, 75)",
-    "text": "Слушать"
-   },
-   {
-    "left": 201,
-    "top": 451,
-    "width": 172,
-    "height": 50,
-    "fontSize": "17px",
-    "lineHeight": "normal",
-    "letterSpacing": "-0.43px",
-    "fontWeight": "600",
-    "color": "rgb(250, 45, 75)",
-    "text": "Читать"
-   }
-  ],
-  ".amx-chip": [
-   {
-    "left": 71.83,
-    "top": 515,
-    "width": 76.44,
-    "height": 35,
-    "fontSize": "15px",
-    "lineHeight": "normal",
-    "letterSpacing": "normal",
-    "fontWeight": "500",
-    "color": "rgb(0, 0, 0)",
-    "text": "Текст"
-   },
-   {
-    "left": 156.27,
-    "top": 515,
-    "width": 164.89,
-    "height": 35,
-    "fontSize": "15px",
-    "lineHeight": "normal",
-    "letterSpacing": "normal",
-    "fontWeight": "500",
-    "color": "rgb(255, 255, 255)",
-    "text": "С комментарием"
-   }
-  ],
-  ".amx-row": [
-   {
-    "left": 0,
-    "top": 568,
-    "width": 393,
-    "height": 49.33,
-    "fontSize": "16px",
-    "lineHeight": "normal",
-    "letterSpacing": "normal",
-    "fontWeight": "400",
-    "color": "rgb(255, 255, 255)",
-    "text": "1\nОбзор армий на поле битвы Курукшетра"
-   },
-   {
-    "left": 0,
-    "top": 617.33,
-    "width": 393,
-    "height": 49.33,
-    "fontSize": "16px",
-    "lineHeight": "normal",
-    "letterSpacing": "normal",
-    "fontWeight": "400",
-    "color": "rgb(255, 255, 255)",
-    "text": "2\nКраткое изложение «Бхагавад-гиты»"
-   },
-   {
-    "left": 0,
-    "top": 666.66,
-    "width": 393,
-    "height": 49.33,
-    "fontSize": "16px",
-    "lineHeight": "normal",
-    "letterSpacing": "normal",
-    "fontWeight": "400",
-    "color": "rgb(255, 255, 255)",
-    "text": "3\nКарма-йога"
-   },
-   {
-    "left": 0,
-    "top": 715.98,
-    "width": 393,
-    "height": 49.33,
-    "fontSize": "16px",
-    "lineHeight": "normal",
-    "letterSpacing": "normal",
-    "fontWeight": "400",
-    "color": "rgb(255, 255, 255)",
-    "text": "4\nТрансцендентное знание"
-   },
-   {
-    "left": 0,
-    "top": 765.31,
-    "width": 393,
-    "height": 49.33,
-    "fontSize": "16px",
-    "lineHeight": "normal",
-    "letterSpacing": "normal",
-    "fontWeight": "400",
-    "color": "rgb(255, 255, 255)",
-    "text": "5\nКарма-йога — деятельность в сознании К"
-   },
-   {
-    "left": 0,
-    "top": 814.64,
-    "width": 393,
-    "height": 49.33,
-    "fontSize": "16px",
-    "lineHeight": "normal",
-    "letterSpacing": "normal",
-    "fontWeight": "400",
-    "color": "rgb(255, 255, 255)",
-    "text": "6\nДхьяна-йога"
-   },
-   {
-    "left": 0,
-    "top": 863.97,
-    "width": 393,
-    "height": 49.33,
-    "fontSize": "16px",
-    "lineHeight": "normal",
-    "letterSpacing": "normal",
-    "fontWeight": "400",
-    "color": "rgb(255, 255, 255)",
-    "text": "7\nЗнание об Абсолюте"
-   },
-   {
-    "left": 0,
-    "top": 913.3,
-    "width": 393,
-    "height": 49.33,
-    "fontSize": "16px",
-    "lineHeight": "normal",
-    "letterSpacing": "normal",
-    "fontWeight": "400",
-    "color": "rgb(255, 255, 255)",
-    "text": "8\nДостижение обители Всевышнего"
-   },
-   {
-    "left": 0,
-    "top": 962.63,
-    "width": 393,
-    "height": 49.33,
-    "fontSize": "16px",
-    "lineHeight": "normal",
-    "letterSpacing": "normal",
-    "fontWeight": "400",
-    "color": "rgb(255, 255, 255)",
-    "text": "9\nСамое сокровенное знание"
-   },
-   {
-    "left": 0,
-    "top": 1011.95,
-    "width": 393,
-    "height": 49.33,
-    "fontSize": "16px",
-    "lineHeight": "normal",
-    "letterSpacing": "normal",
-    "fontWeight": "400",
-    "color": "rgb(255, 255, 255)",
-    "text": "10\nВеликолепие Абсолюта"
-   },
-   {
-    "left": 0,
-    "top": 1061.28,
-    "width": 393,
-    "height": 49.33,
-    "fontSize": "16px",
-    "lineHeight": "normal",
-    "letterSpacing": "normal",
-    "fontWeight": "400",
-    "color": "rgb(255, 255, 255)",
-    "text": "11\nВселенская форма"
-   },
-   {
-    "left": 0,
-    "top": 1110.61,
-    "width": 393,
-    "height": 49.33,
-    "fontSize": "16px",
-    "lineHeight": "normal",
-    "letterSpacing": "normal",
-    "fontWeight": "400",
-    "color": "rgb(255, 255, 255)",
-    "text": "12\nПреданное служение"
-   }
-  ],
-  ".r-num": [
-   {
-    "left": 20,
-    "top": 582.66,
-    "width": 41.33,
-    "height": 20,
-    "fontSize": "17px",
-    "lineHeight": "normal",
-    "letterSpacing": "normal",
-    "fontWeight": "400",
-    "color": "rgba(235, 235, 245, 0.62)",
-    "text": "1"
-   },
-   {
-    "left": 20,
-    "top": 631.98,
-    "width": 41.33,
-    "height": 20,
-    "fontSize": "17px",
-    "lineHeight": "normal",
-    "letterSpacing": "normal",
-    "fontWeight": "400",
-    "color": "rgba(235, 235, 245, 0.62)",
-    "text": "2"
-   },
-   {
-    "left": 20,
-    "top": 681.31,
-    "width": 41.33,
-    "height": 20,
-    "fontSize": "17px",
-    "lineHeight": "normal",
-    "letterSpacing": "normal",
-    "fontWeight": "400",
-    "color": "rgba(235, 235, 245, 0.62)",
-    "text": "3"
-   },
-   {
-    "left": 20,
-    "top": 730.64,
-    "width": 41.33,
-    "height": 20,
-    "fontSize": "17px",
-    "lineHeight": "normal",
-    "letterSpacing": "normal",
-    "fontWeight": "400",
-    "color": "rgba(235, 235, 245, 0.62)",
-    "text": "4"
-   },
-   {
-    "left": 20,
-    "top": 779.97,
-    "width": 41.33,
-    "height": 20,
-    "fontSize": "17px",
-    "lineHeight": "normal",
-    "letterSpacing": "normal",
-    "fontWeight": "400",
-    "color": "rgba(235, 235, 245, 0.62)",
-    "text": "5"
-   },
-   {
-    "left": 20,
-    "top": 829.3,
-    "width": 41.33,
-    "height": 20,
-    "fontSize": "17px",
-    "lineHeight": "normal",
-    "letterSpacing": "normal",
-    "fontWeight": "400",
-    "color": "rgba(235, 235, 245, 0.62)",
-    "text": "6"
-   },
-   {
-    "left": 20,
-    "top": 878.63,
-    "width": 41.33,
-    "height": 20,
-    "fontSize": "17px",
-    "lineHeight": "normal",
-    "letterSpacing": "normal",
-    "fontWeight": "400",
-    "color": "rgba(235, 235, 245, 0.62)",
-    "text": "7"
-   },
-   {
-    "left": 20,
-    "top": 927.95,
-    "width": 41.33,
-    "height": 20,
-    "fontSize": "17px",
-    "lineHeight": "normal",
-    "letterSpacing": "normal",
-    "fontWeight": "400",
-    "color": "rgba(235, 235, 245, 0.62)",
-    "text": "8"
-   },
-   {
-    "left": 20,
-    "top": 977.28,
-    "width": 41.33,
-    "height": 20,
-    "fontSize": "17px",
-    "lineHeight": "normal",
-    "letterSpacing": "normal",
-    "fontWeight": "400",
-    "color": "rgba(235, 235, 245, 0.62)",
-    "text": "9"
-   },
-   {
-    "left": 20,
-    "top": 1026.61,
-    "width": 41.33,
-    "height": 20,
-    "fontSize": "17px",
-    "lineHeight": "normal",
-    "letterSpacing": "normal",
-    "fontWeight": "400",
-    "color": "rgba(235, 235, 245, 0.62)",
-    "text": "10"
-   },
-   {
-    "left": 20,
-    "top": 1075.94,
-    "width": 41.33,
-    "height": 20,
-    "fontSize": "17px",
-    "lineHeight": "normal",
-    "letterSpacing": "normal",
-    "fontWeight": "400",
-    "color": "rgba(235, 235, 245, 0.62)",
-    "text": "11"
-   },
-   {
-    "left": 20,
-    "top": 1125.27,
-    "width": 41.33,
-    "height": 20,
-    "fontSize": "17px",
-    "lineHeight": "normal",
-    "letterSpacing": "normal",
-    "fontWeight": "400",
-    "color": "rgba(235, 235, 245, 0.62)",
-    "text": "12"
-   }
-  ],
   ".amx-cir": [
    {
-    "left": 17,
-    "top": 14,
+    "left": 329,
+    "top": 18,
     "width": 44,
     "height": 44,
     "fontSize": "16px",
