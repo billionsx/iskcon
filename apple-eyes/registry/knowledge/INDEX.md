@@ -59,6 +59,7 @@
 - [`hig-motion`](hig-motion.md) · положений: 16
 - [`hig-progress-indicators`](hig-progress-indicators.md) · положений: 9
 - [`swiftui-animation`](swiftui-animation.md) · положений: 0
+- [`swiftui-spring`](swiftui-spring.md) · положений: 1
 - [`wwdc-videos`](wwdc-videos.md) · положений: 1
 
 ## архитектура
@@ -88,6 +89,7 @@
 ## динамика
 - [`hig-accessibility`](hig-accessibility.md) · положений: 53
 - [`swiftui-animation`](swiftui-animation.md) · положений: 0
+- [`swiftui-spring`](swiftui-spring.md) · положений: 1
 
 ## динамические-иконки
 - [`hig-app-icons`](hig-app-icons.md) · положений: 30
@@ -197,6 +199,7 @@
 
 ## спринги
 - [`swiftui-animation`](swiftui-animation.md) · положений: 0
+- [`swiftui-spring`](swiftui-spring.md) · положений: 1
 
 ## стекло-движение
 - [`hig-designing-visionos`](hig-designing-visionos.md) · положений: 13

@@ -424,3 +424,7 @@
 - https://developer.apple.com/documentation/swiftui/animation
 - домены мандата: динамика, анимация, спринги
 
+### 2026-07-24 16:51 UTC · `swiftui-spring` · первый снимок
+- https://developer.apple.com/documentation/swiftui/spring
+- домены мандата: динамика, спринги, анимация
+
