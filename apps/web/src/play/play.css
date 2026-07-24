@@ -672,3 +672,4 @@ body:has(.amx) { background: #000 !important; overflow: hidden !important; }
   animation-duration: .001s !important; animation-delay: 0s !important;
   transition-duration: .001s !important; transition-delay: 0s !important;
 }
+.amx-pl .pl-rate { height: 16px; padding: 0 7px; border-radius: 8px; background: rgba(255,255,255,.16); color: rgba(255,255,255,.8); font-size: 11px; font-weight: 700; font-variant-numeric: tabular-nums; }  /* В2: бейдж скорости между временами — паттерн AM Podcasts */

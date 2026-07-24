@@ -4,7 +4,10 @@
 import React, { createContext, useContext, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { Cover, E, I, Menu, MItem, fmt, menuAt, shuffled, useExit } from "./core";
 import { LYRICS, Song } from "./data";
-import { PlayerProvider as CoreProvider, usePlayer as useCore, type Track as CoreTrack } from "../player/store";
+import { PlayerProvider as CoreProvider, usePlayer as useCore, mediaTrackKey, type Track as CoreTrack } from "../player/store";
+import { HeartIcon } from "../ui/icons";
+import { useFavorite } from "../cardActions";
+import { bookSlug } from "../books";
 
 type P = {
   q: Song[]; idx: number; playing: boolean; pos: number;
@@ -18,6 +21,10 @@ type Api = P & {
   seek: (sec: number) => void; setVol: (v: number) => void;
   toggleShuffle: () => void; cycleRepeat: () => void;
   toggleAutoplay: () => void; toggleAutomix: () => void;
+  /* В2 — функции главного приложения */
+  rate: number; cycleRate: () => void;
+  sleepOn: boolean; setSleep: (v: number | "track" | null) => void;
+  dismiss: () => void; favKey: string; dlUrl: string; textPath: string | null;
 };
 const Ctx = createContext<Api | null>(null);
 export const usePlayer = () => useContext(Ctx)!;
@@ -57,6 +64,17 @@ function Bridge({ children }: { children: React.ReactNode }) {
     cycleRepeat: c.cycleRepeat,
     toggleAutoplay: () => setAp((v) => !v),
     toggleAutomix: () => setAm((v) => !v),
+    rate: c.rate,
+    cycleRate: c.cycleRate,
+    sleepOn: c.sleepAt != null || c.sleepEnd,
+    setSleep: c.setSleep,
+    dismiss: c.dismiss,
+    favKey: c.track ? mediaTrackKey(c.track, c.kind) : "",
+    dlUrl: c.track?.url || "",
+    textPath: c.kind !== "book" ? null
+      : c.track?.chapter == null ? `/${bookSlug(c.book)}`
+      : c.track?.lila ? `/${bookSlug(c.book)}/${c.track.lila}/${c.track.chapter}`
+      : `/${bookSlug(c.book)}/${c.track.chapter}`,
   };
   return <Ctx.Provider value={api}>{children}</Ctx.Provider>;
 }
@@ -318,16 +336,19 @@ export function FullPlayer({ open, onClose, onFav, favOn }: {
     window.addEventListener("pointermove", move); window.addEventListener("pointerup", upH);
   };
 
-  const favNow = favOn(cur);
+  const fav = useFavorite(p.favKey, { t: cur.t, s: cur.a });
+  const favNow = p.favKey ? fav.on : favOn(cur);
+  /* В2: пункты боевого плеера. Скорость циклом, сон вторым меню, скачать. */
+  const [sleepMenu, setSleepMenu] = useState<{ x: number; y: number } | null>(null);
   const menuItems: MItem[] = [
-    { label: "Add to a Playlist", icon: I.listAdd({ s: 22 }), onTap: () => window.dispatchEvent(new CustomEvent("amx:add-to-pl", { detail: cur.id })) },
+    { label: `Скорость · ${p.rate}×`, icon: I.station({ s: 22 }), onTap: p.cycleRate },
+    { label: p.sleepOn ? "Таймер сна · включён" : "Таймер сна", icon: I.info({ s: 22 }),
+      onTap: () => setSleepMenu({ x: 200, y: 240 }) },
     { sep: true },
-    { label: "Create Station", icon: I.station({ s: 22 }) },
-    { sep: true },
-    { label: "Go to Album", sub: `${cur.t} - Single`, icon: I.album({ s: 22 }) },
-    { label: "Go to Artist", sub: cur.a, icon: I.artist({ s: 22 }) },
-    { sep: true },
-    { label: "View Credits", icon: I.info({ s: 22 }) },
+    ...(p.dlUrl ? [{ label: "Скачать запись", icon: I.listAdd({ s: 22 }),
+      onTap: () => { const a = document.createElement("a"); a.href = p.dlUrl; a.download = ""; a.click(); } }] as MItem[] : []),
+    ...(p.textPath ? [{ label: "К тексту", sub: cur.a, icon: I.album({ s: 22 }),
+      onTap: () => { onClose(); window.location.assign(p.textPath!); } }] as MItem[] : []),
     { label: "Share Lyrics", icon: I.quote({ s: 22 }) },
     { sep: true, thick: true },
     { label: "Report a Concern", icon: I.report({ s: 22 }) },
@@ -359,8 +380,8 @@ export function FullPlayer({ open, onClose, onFav, favOn }: {
               <div className="p-s">{cur.a}</div>
             </div>
             <div className="hb">
-              <button className="amx-cir" onClick={() => onFav(cur)}
-                style={favNow ? { color: "var(--red)" } : undefined}>{favNow ? I.starFill({ s: 17 }) : I.star({ s: 17 })}</button>
+              <button className="amx-cir" onClick={() => fav.toggle()}
+                style={favNow ? { color: "var(--red)" } : undefined}><HeartIcon size={17} filled={favNow} /></button>
               <button className="amx-cir" onClick={(e) => setMenu(menuAt(e))}>{I.dots({ s: 18 })}</button>
             </div>
           </div>
@@ -444,7 +465,9 @@ export function FullPlayer({ open, onClose, onFav, favOn }: {
 
         <div className={"pl-prog" + (skD ? " drag" : "")} onPointerDown={(e) => seekFromEvent(e, (r) => p.seek(r * cur.d), setSkD)}>
           <div className="pl-bar"><i style={{ width: `${(p.pos / cur.d) * 100}%` }} /></div>
-          <div className="pl-times"><span>{fmt(p.pos)}</span><span>−{fmt(Math.max(0, cur.d - p.pos))}</span></div>
+          <div className="pl-times"><span>{fmt(p.pos)}</span>
+            {p.rate !== 1 ? <button className="pl-rate" onClick={p.cycleRate}>{p.rate}×</button> : null}
+            <span>−{fmt(Math.max(0, cur.d - p.pos))}</span></div>
         </div>
         <div className="pl-trans">
           <button onClick={p.prev}>{I.prev({ s: 44 })}</button>
@@ -469,11 +492,22 @@ export function FullPlayer({ open, onClose, onFav, favOn }: {
 
       {outSheet ? <OutputSheet onClose={() => setOutSheet(false)} /> : null}
 
+      {sleepMenu ? (
+        <Menu at={sleepMenu}
+          items={[
+            { label: "Выключить", icon: I.x({ s: 22 }), onTap: () => p.setSleep(null) },
+            { sep: true },
+            { label: "Через 15 минут", onTap: () => p.setSleep(15) },
+            { label: "Через 30 минут", onTap: () => p.setSleep(30) },
+            { label: "Через 60 минут", onTap: () => p.setSleep(60) },
+            { label: "После этой записи", onTap: () => p.setSleep("track") },
+          ]} onClose={() => setSleepMenu(null)} />
+      ) : null}
       {menu ? (
         <Menu at={menu}
           quick={[
             { icon: I.plus({ s: 24 }), label: "Add" },
-            { icon: favNow ? I.starF({ s: 24 }) : I.star({ s: 24 }), label: "Favourite", onTap: () => onFav(cur) },
+            { icon: <HeartIcon size={24} filled={favNow} />, label: favNow ? "В избранном" : "В избранное", onTap: () => fav.toggle() },
             { icon: I.share({ s: 24 }), label: "Share" },
           ]}
           items={menuItems} onClose={() => setMenu(null)} />
