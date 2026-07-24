@@ -422,7 +422,7 @@
 .amx-pl.closing, .amx-pl.pre { transform: translateY(104%); border-radius: 40px; }
 .amx-pl .pl-bg { position: absolute; inset: -40px; filter: blur(0px); }
 .amx-pl .pl-in { position: relative; flex: 1; display: flex; flex-direction: column; padding: calc(var(--sat) + 8px) 32px calc(var(--sab) + 14px); }  /* 📐 pl_q15: полоса x32…361, капсулы x32…361.4 — врезка 32 */
-.amx-pl .pl-grab { width: 56px; height: 5px; border-radius: 3px; background: rgba(255,255,255,.32); margin: 6px auto 14px; flex: 0 0 auto; align-self: center; }  /* 📐 паспорт 23.07: грабер мерился x32 — прижимался к врезке; ручка стоит по центру кадра */  /* 📐 pl_q15 y66: 56×5, luma 116 на 52 */
+.amx-pl .pl-grab { width: 56px; height: 5px; border-radius: 3px; background: rgba(255,255,255,.32); margin: 6px auto 14px; flex: 0 0 auto; align-self: center; display: block; }  /* 📐 паспорт 23.07: грабер мерился x32 — прижимался к врезке; ручка стоит по центру кадра */  /* 📐 pl_q15 y66: 56×5, luma 116 на 52 */
 .amx-pl .pl-head { display: flex; align-items: center; gap: 29px; }  /* 📐 арт до 87.7, текст с 117 */
 .amx-pl .pl-head .p-art { width: 56px; height: 56px; border-radius: 8px; box-shadow: 0 8px 26px rgba(0,0,0,.35); flex: 0 0 auto; }  /* 📐 pl_q15: 55.7 при (31.7, 90.7) */
 .amx-pl .pl-head .p-t { font-size: 17px; font-weight: 700; letter-spacing: -.43px; }  /* 📐 IMG_2350: ink 13 ⇒ 17 */

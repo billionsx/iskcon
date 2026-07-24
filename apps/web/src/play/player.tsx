@@ -350,7 +350,7 @@ export function FullPlayer({ open, onClose, onFav, favOn }: {
       }} />
       <div className="pl-in">
         <div onTouchStart={onTS} onTouchMove={onTM} onTouchEnd={onTE}>
-          <button className="pl-grab" onClick={onClose} aria-label="close" />
+          <button className="pl-grab" onClick={onClose} aria-label="close" style={{ display: "block" }} />
           {view === "art" ? null : (
           <div className="pl-head pl-head-anim" key={view}>
             <Cover id={cur.id} cls="p-art" />
