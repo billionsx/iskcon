@@ -379,7 +379,7 @@ export function FullPlayer({ open, onClose, onFav, favOn }: {
           <div className={cls} key={vv}>
           {vv === "art" ? (
             <div style={{ position: "absolute", inset: 0, display: "flex",
-              flexDirection: "column", justifyContent: "flex-start", margin: "0 -8px" }}>  {/* 📐 IMG_1950: обложка 345, врезка 24 (32−8) */}
+              flexDirection: "column", justifyContent: "flex-start", margin: "0 -4px" }}>  {/* 📐 IMG_1950: врезка меты 24. Паспорт 23.07: контейнер видов уже стоит на 28 (pl-mid −4), поэтому здесь −4, а не −8 — иначе мета выезжала на 20 */}
               <Cover id={cur.id} src={cur.cov} cls="pl-art morph" />
               <div className="pl-meta">
                 <div style={{ minWidth: 0, flex: 1 }}>
