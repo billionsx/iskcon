@@ -1,0 +1,3 @@
+{"id": "/documentation/USD", "law": "USD is also an extensible format, allowing apps that use it to create custom schemas to store and load data needed to support custom features."}
+{"id": "/documentation/USD", "law": "Where possible, use or other system-provided frameworks to work with USD."}
+{"id": "/documentation/USD", "law": "USDKit simplifies integration of OpenUSD into your app with a stable API surface, integrates with other system APIs, and does not require building and bundling USD within your app."}

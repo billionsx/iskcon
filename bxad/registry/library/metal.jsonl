@@ -208,3 +208,4 @@
 {"id": "/documentation/Metal/using-metal-to-draw-a-view's-contents", "law": "Because a view’s render pass descriptor might be , you should test to make sure the render pass descriptor object is non- before creating the render pass."}
 {"id": "/documentation/Metal/using-metal-to-draw-a-view's-contents", "law": "In this sample, you don’t encode any drawing commands, so the only thing the render pass does is erase the texture."}
 {"id": "/documentation/Metal/using-metal-to-draw-a-view's-contents", "law": "This method tells Metal that when the command buffer is scheduled for execution, Metal should coordinate with Core Animation to display the texture after rendering completes."}
+{"id": "/documentation/Metal/MTLComputeCommandEncoder", "law": "The following table shows which stage applies to each command: The and commands don’t apply to any stage, which means you can’t use a barrier to wait for all commands in an indirect command buffer to complete."}

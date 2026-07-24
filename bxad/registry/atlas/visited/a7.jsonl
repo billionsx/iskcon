@@ -2,3 +2,5 @@
 {"id": "/documentation/MapKit/searching-displaying-and-navigating-to-places", "sha": "abe7081804b265b468578b52cd3436c05ef9736e6284e139993465f7d88be4a8", "t": "Searching, displaying, and navigating to places", "n": 224, "laws": 0, "ts": "2026-07-24 17:49 UTC"}
 {"id": "/documentation/Metal/drawing-a-triangle-with-metal-4", "sha": "f5d0123a0a8ccd56eb36b3ad22d2ebacb9f5b62924e5794d016c284d963f7b8c", "t": "Drawing a triangle with Metal 4", "n": 11902, "laws": 2, "ts": "2026-07-24 17:50 UTC"}
 {"id": "/documentation/WebKit/building-a-cross-platform-web-browser", "sha": "f25392aae4afee9915f2992a6e004e6ed9545aba7a132f8f1021e4187013db89", "t": "Building a cross-platform web browser", "n": 3621, "laws": 1, "ts": "2026-07-24 17:56 UTC"}
+{"id": "/documentation/MediaIntents", "sha": "b1141b4a50be43932834303bfcb240586eabc39b2a922bbc21dc70da52f18478", "t": "Media Intents", "n": 812, "laws": 3, "ts": "2026-07-24 18:45 UTC"}
+{"id": "/documentation/avkit/avexperiencecontroller", "sha": "843c0dbf7d82cab1be866e78458c94c1bc7585b61c4ae1460f0d8e679cb48092", "t": "AVExperienceController", "n": 809, "laws": 2, "ts": "2026-07-24 19:06 UTC"}

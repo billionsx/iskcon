@@ -1,0 +1,9 @@
+{"id": "/documentation/GameController", "law": "Use Game Controller to support users interacting with your app using a physical or virtual game controller."}
+{"id": "/documentation/GameController", "law": "Users may remap game controller elements in Settings and Preferences, so be sure to display the correct input element in your interface."}
+{"id": "/documentation/GameController", "law": "Letting players use their second-generation Siri Remote as a game controller."}
+{"id": "/documentation/GameController/GCController", "law": "A real controller can be formfitting or can attach closely to a device so players can use controls on both simultaneously."}
+{"id": "/documentation/GameController/GCController", "law": "Use the method to get the currently connected controllers."}
+{"id": "/documentation/GameController/GCController", "law": "If necessary, use the method to connect with wireless controllers."}
+{"id": "/documentation/GameController/GCController", "law": "For single-player games, use the property to get the controller that the player is actively using."}
+{"id": "/documentation/GameController/GCController", "law": "For example, use the property of the profile to get the thumbstick state."}
+{"id": "/documentation/GameController/GCController", "law": "Use the property to set a handler that you implement to process any input values that change in the profile."}

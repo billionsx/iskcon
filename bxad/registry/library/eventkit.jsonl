@@ -18,3 +18,4 @@
 {"id": "/documentation/EventKit/managing-location-based-reminders", "law": "Creating a reminder requires a list, which is a calendar for these items."}
 {"id": "/documentation/EventKit/managing-location-based-reminders", "law": "To use the default radius, set its value to 0."}
 {"id": "/documentation/EventKit/managing-location-based-reminders", "law": "First, the sample app creates an object using , then it sets the and properties, and other properties, such as priority and time zone: The and properties are required and must be set before saving the reminder."}
+{"id": "/documentation/EventKit", "law": "You can use EventKit to set up alarms and create recurring events."}

@@ -5,3 +5,7 @@
 {"id": "/documentation/Vision/tracking-the-user-s-face-in-real-time", "sha": "177d966a7e3bb46f126dd3842ae4aaeb06442a40155a6879b0d406fe9751c5b5", "t": "Tracking the User’s Face in Real Time", "n": 3983, "laws": 4, "ts": "2026-07-24 17:56 UTC"}
 {"id": "/documentation/visionOS/displaying-video-from-connected-devices", "sha": "f1a2827f27c9eb567a770b565227c8a2b9d7943f80a0238afed7aa2ee643961d", "t": "Displaying video from connected devices", "n": 1887, "laws": 3, "ts": "2026-07-24 17:57 UTC"}
 {"id": "/documentation/technologyoverviews/hardware-networking-sensors", "sha": "e90fce8935d569b4e8a06c3836bc9c81cb3d0ee34a1f9c68c8a5f449a5be2244", "t": "Hardware, networking, and sensors", "n": 2075, "laws": 5, "ts": "2026-07-24 17:58 UTC"}
+{"id": "/documentation/AdvancedCommerceAPI", "sha": "3a906eac3a163116e78ae9739c421f0671d5250a79a0c8cdb266016af12a6e08", "t": "Advanced Commerce API", "n": 4023, "laws": 5, "ts": "2026-07-24 18:48 UTC"}
+{"id": "/documentation/ContactsUI", "sha": "ccd1d98fe8c6dfe5832f09252e6bf178b970a25dfded0ca1cca527484edf0b16", "t": "Contacts UI", "n": 718, "laws": 0, "ts": "2026-07-24 18:49 UTC"}
+{"id": "/documentation/CoreAudio", "sha": "9207088c0ef3a73db8b70a03bbc75b70a0bb76a7316caaca08d137bdb8e46da1", "t": "Core Audio", "n": 945, "laws": 1, "ts": "2026-07-24 18:49 UTC"}
+{"id": "/documentation/SwiftUI/View", "sha": "bf88a124014302a506b0d234c5f6e93689cf1debfde423a99e22a17a14dd7278", "t": "View", "n": 1991, "laws": 4, "ts": "2026-07-24 18:57 UTC"}

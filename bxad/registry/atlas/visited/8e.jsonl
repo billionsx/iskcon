@@ -1,1 +1,5 @@
 {"id": "/documentation/technologyoverviews/built-in-intelligence", "sha": "e3c499a411e917ca9169cd1ee83e854ecdb0005bdf6e174d1504c2b98e2dd5ae", "t": "Built-in intelligence", "n": 3015, "laws": 5, "ts": "2026-07-24 17:58 UTC"}
+{"id": "/documentation/QuickLookThumbnailing", "sha": "3f8fe5ce0521b0e6ea9da2ee2d8e0a73e93b20123cf621558ac2dfb66c22d2b8", "t": "Quick Look Thumbnailing", "n": 1545, "laws": 1, "ts": "2026-07-24 18:53 UTC"}
+{"id": "/documentation/avfaudio/avaudiosession/microphoneinjectionmode/none", "sha": "d98d8020b37e313a90482248252c05a115a4579e1a66d7ce8312c56131c1a18f", "t": "AVAudioSession.MicrophoneInjectionMode.none", "n": 96, "laws": 1, "ts": "2026-07-24 19:00 UTC"}
+{"id": "/documentation/avfoundation/avcapturevideodataoutput", "sha": "29e929bfd056ca1c45e9cbf2a507eed27947a591ca47524a701b1c3cc1240e99", "t": "AVCaptureVideoDataOutput", "n": 1623, "laws": 3, "ts": "2026-07-24 19:03 UTC"}
+{"id": "/documentation/avfoundation/avmediaselection", "sha": "423824ee2e161c02293a072060632269134fe6d0ddc7e75f7eb3ef550726b356", "t": "AVMediaSelection", "n": 230, "laws": 0, "ts": "2026-07-24 19:06 UTC"}

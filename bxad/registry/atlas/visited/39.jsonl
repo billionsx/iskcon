@@ -1,3 +1,6 @@
 {"id": "/documentation/ARKit/capturing-body-motion-in-3d", "sha": "0c6c51108b09702d8b1495a5ddcedeeca8a0bbcb7d01ec3d556debea133ed7df", "t": "Capturing Body Motion in 3D", "n": 269, "laws": 1, "ts": "2026-07-24 17:44 UTC"}
 {"id": "/documentation/CoreData/adopting-swiftdata-for-a-core-data-app", "sha": "496418408c35851c4ff286b577b0df5d2de23d3708dcf65969fa4f9fd11ceb27", "t": "Adopting SwiftData for a Core Data app", "n": 6648, "laws": 5, "ts": "2026-07-24 17:47 UTC"}
 {"id": "/documentation/SafariServices/building-and-testing-a-safari-web-extension", "sha": "b240358f6af1eb1466a275ff68de314a8245ff9daa8656f07f35c789d8fc2764", "t": "Building and testing a Safari web extension", "n": 891, "laws": 0, "ts": "2026-07-24 17:52 UTC"}
+{"id": "/documentation/SuggestedActions", "sha": "647250ee47430525f8f6c880538935b6c98dd2bce50415ab21c8fa16a792fe82", "t": "Suggested Actions", "n": 1120, "laws": 1, "ts": "2026-07-24 18:45 UTC"}
+{"id": "/documentation/CreateMLComponents", "sha": "4ce66cdd7faf6ce7051c427037e428513587f24a31cde4cc003e4a56d615f7b3", "t": "Create ML Components", "n": 5753, "laws": 1, "ts": "2026-07-24 18:50 UTC"}
+{"id": "/documentation/ScreenCaptureKit", "sha": "8e25ca55ca60b0082f14fcef3528e5ef50c70dae188fa992241deea12bdbabc8", "t": "ScreenCaptureKit", "n": 2001, "laws": 3, "ts": "2026-07-24 18:53 UTC"}

@@ -1,0 +1,5 @@
+{"id": "/documentation/CoreVideo", "law": "Apps that don’t need to manipulate individual video frames don’t need to use Core Video directly."}
+{"id": "/documentation/CoreVideo/cvpixelbuffer-q2e", "law": "Applications generating frames, compressing or decompressing video, or using Core Image can all make use of Core Video pixel buffers."}
+{"id": "/documentation/CoreVideo/CVBufferSetAttachment(_:_:_:_:)", "law": "To retrieve attachments, use the or functions."}
+{"id": "/documentation/CoreVideo/kCVPixelBufferIOSurfacePropertiesKey", "law": "Provide a value for this key if you want Core Video to use the framework to allocate the pixel buffer."}
+{"id": "/documentation/CoreVideo/kCVPixelBufferIOSurfacePropertiesKey", "law": "Provide an empty dictionary to use the default options."}

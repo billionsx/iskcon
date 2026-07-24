@@ -3,3 +3,6 @@
 {"id": "/documentation/CoreLocation/ranging-for-beacons", "law": "This sample code project configures a device to act as a beacon, and configures a device to use ranging to find surrounding beacons."}
 {"id": "/documentation/CoreLocation/ranging-for-beacons", "law": "Use two iOS devices to run the sample, with one acting as a beacon, and the other ranging for the beacon."}
 {"id": "/documentation/CoreLocation/ranging-for-beacons", "law": "Use a instance to request that authorization, set up the constraint based on the hardcoded UUID, then tell the instance to start monitoring."}
+{"id": "/documentation/CoreLocation", "law": "You use instances of the class to configure, start, and stop the Core Location services."}
+{"id": "/documentation/CoreLocation", "law": "Configuring your app to use location services."}
+{"id": "/documentation/CoreLocation", "law": "Requesting authorization to use location services."}

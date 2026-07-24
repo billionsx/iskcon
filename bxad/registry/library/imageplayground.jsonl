@@ -1,0 +1,3 @@
+{"id": "/documentation/ImagePlayground", "law": "Use the framework to generate custom images using system-supported styles."}
+{"id": "/documentation/ImagePlayground", "law": "Use that information to present a system sheet from your SwiftUI view, or present a system view controller from your UIKit or AppKit interface."}
+{"id": "/documentation/ImagePlayground", "law": "You can also use a programmatic interface to generate images without interactions."}

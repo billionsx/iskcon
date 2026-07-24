@@ -1,1 +1,9 @@
 {"id": "/documentation/HealthKit/building-a-multidevice-workout-app", "sha": "51713b6a94cba4bd88525327e83a78b5b7f1c16fd98db2b632a42b6441459afa", "t": "Building a multidevice workout app", "n": 541, "laws": 0, "ts": "2026-07-24 17:49 UTC"}
+{"id": "/documentation/CoreTelephony", "sha": "4038f537ff7706bb727942b73f2e63ad5bd581afb6004ed984c6c09db20c8194", "t": "Core Telephony", "n": 1637, "laws": 6, "ts": "2026-07-24 18:44 UTC"}
+{"id": "/documentation/ProximityReader", "sha": "126ff45b1505596f0521a2de5e18154b10364a8b2a371167cbbd1e49b9c9db72", "t": "ProximityReader", "n": 2393, "laws": 2, "ts": "2026-07-24 18:45 UTC"}
+{"id": "/documentation/NearbyInteraction", "sha": "a930e2f7ab5e26d03a78f0a9daa697330c725974a53cef4937520c7619a1f1e8", "t": "Nearby Interaction", "n": 4043, "laws": 5, "ts": "2026-07-24 18:52 UTC"}
+{"id": "/documentation/Vision/VNCoreMLRequest", "sha": "5031828da359047a9b42fb721f1d4ad71c6b21ecd0e25fa8272871ebd0c8aaf8", "t": "VNCoreMLRequest", "n": 946, "laws": 2, "ts": "2026-07-24 18:58 UTC"}
+{"id": "/documentation/arkit/accessoryanchor/coordinatespace(for:correction:)", "sha": "8e2fe37542eb716cd65181aa077e2d0e33a4546cef73f39dc6212caed86e10ad", "t": "coordinateSpace(for:correction:)", "n": 107, "laws": 0, "ts": "2026-07-24 18:58 UTC"}
+{"id": "/documentation/avfoundation/setting-up-a-capture-session", "sha": "d95309c8fb326acfc13f085730437203daf03b42048284abbe092b6731445026", "t": "Setting up a capture session", "n": 3060, "laws": 6, "ts": "2026-07-24 19:02 UTC"}
+{"id": "/documentation/avfoundation/avvideocomposition/configuration/spatialvideoconfigurations", "sha": "46e6d561da06c774ebd041302aa9f95976ddb96a7868511375f7223f17bd08d8", "t": "spatialVideoConfigurations", "n": 620, "laws": 1, "ts": "2026-07-24 19:05 UTC"}
+{"id": "/documentation/SwiftUI/Toggle", "sha": "292b7744cec74dc3a32066ef23e0de81c356cd605a584dbc141637b1f7f09588", "t": "Toggle", "n": 1695, "laws": 1, "ts": "2026-07-24 19:08 UTC"}

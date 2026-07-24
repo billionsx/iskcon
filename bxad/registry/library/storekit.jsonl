@@ -30,3 +30,4 @@
 {"id": "/documentation/StoreKit/requesting-app-store-reviews", "law": "A person must pause on the Process Completed scene for a few seconds."}
 {"id": "/documentation/StoreKit/understanding-storekit-workflows", "law": "The design of this sample doesn’t require any special setup, or even the creation of products in App Store Connect; it uses StoreKit Testing in Xcode and the Transaction Manager window in Xcode to test In-App Purchase."}
 {"id": "/documentation/StoreKit/understanding-storekit-workflows", "law": "For more information on the product types that App Store Connect supports, see The transactions this app demonstrates don’t get information from App Store Connect and don’t incur charges."}
+{"id": "/documentation/StoreKit", "law": "Use the StoreKit framework to provide the following features and services for your apps and In-App Purchases: The StoreKit framework also provides functionality for , , , and ."}

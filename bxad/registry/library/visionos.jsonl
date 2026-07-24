@@ -189,3 +189,9 @@
 {"id": "/documentation/visionOS/working-with-generic-spatial-accessories", "law": "Entities parented to an always render at the accessory’s latest pose."}
 {"id": "/documentation/visionOS/working-with-generic-spatial-accessories", "law": "Use when your app needs to choose how and when it reads the accessory’s transform, or when it needs more control over rendering than RealityKit provides."}
 {"id": "/documentation/visionOS/working-with-generic-spatial-accessories", "law": "A non-rendering use case, like a measuring app, would pass to read the raw rotation."}
+{"id": "/documentation/visionOS", "law": "Use visionOS together with familiar tools and technologies to build immersive apps and games for spatial computing."}
+{"id": "/documentation/visionOS", "law": "Developing for visionOS requires a Mac with Apple silicon."}
+{"id": "/documentation/visionOS", "law": "When you want to go beyond the standard gestures, use to create custom gestures."}
+{"id": "/documentation/visionOS/tracking-images-in-3d-space", "law": "Use ARKit’s support for tracking 2D images to place 3D content in a space."}
+{"id": "/documentation/visionOS/tracking-images-in-3d-space", "law": "If you supply one or more reference images in your app’s asset catalog, people can use a real-world copy of that image to place virtual 3D content in your app."}
+{"id": "/documentation/visionOS/tracking-images-in-3d-space", "law": "The following example tracks a set of images loaded from an app’s asset catalog: If you know the real-world dimensions of the images you’re tracking, use the property to improve tracking accuracy."}

@@ -15,3 +15,6 @@
 {"id": "/documentation/AppStoreConnectAPI/uploading-app-previews", "law": "Your app must be in App Store Connect with a version in the “Prepare for Submission” state."}
 {"id": "/documentation/AppStoreConnectAPI/uploading-app-previews", "law": "The App Store Connect API requires the addition of an app preview to an app preview set ."}
 {"id": "/documentation/AppStoreConnectAPI/uploading-app-previews", "law": "Use the upload operations to upload a file, potentially in multiple parts."}
+{"id": "/documentation/AppStoreConnectAPI", "law": "Calls to the API require JSON Web Tokens (JWT) for authorization; you obtain keys to create the tokens from your organization’s App Store Connect account."}
+{"id": "/documentation/AppStoreConnectAPI", "law": "Changes you make using the App Store Connect API affect the production data you use for development and distribution."}
+{"id": "/documentation/AppStoreConnectAPI", "law": "Use these relationships to navigate to the related resources—for example, to find beta testers within specific beta groups in TestFlight."}

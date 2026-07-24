@@ -1,0 +1,2 @@
+{"id": "/documentation/ShaderGraph", "law": "With the control Shader Graph provides over materials, you can create effects that might otherwise require writing Metal shaders."}
+{"id": "/documentation/ShaderGraph", "law": "Some of these nodes are available as standard MaterialX definitions that you can use within your content creation workflow."}

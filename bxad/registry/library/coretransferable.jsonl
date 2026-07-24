@@ -1,0 +1,2 @@
+{"id": "/documentation/CoreTransferable", "law": "Use transferable types for system interactions that move or share data, like the Share button, drag and drop, and copy and paste."}
+{"id": "/documentation/CoreTransferable", "law": "Use types together with system frameworks like SwiftUI — that include types such as and — to share and paste transferable data."}

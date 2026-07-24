@@ -12,3 +12,22 @@
 {"id": "/documentation/groupactivities/drawing_content_in_a_group_session", "law": "First, the sample checks to make sure a doesn’t exist already."}
 {"id": "/documentation/groupactivities/drawing_content_in_a_group_session", "law": "Next, it calls the method to make sure a FaceTime call is active and the system can create group sessions."}
 {"id": "/documentation/groupactivities/drawing_content_in_a_group_session", "law": "To ensure a proper experience, the app gives late joiners the most recent information so all the devices use the same data."}
+{"id": "/documentation/GroupActivities", "law": "When your app’s UI contains shareable activities, adopt the protocol in the objects you use to represent those activities."}
+{"id": "/documentation/GroupActivities", "law": "When a group activity begins, use the object to synchronize your app’s behavior with other participating devices."}
+{"id": "/documentation/GroupActivities", "law": "Your use of the Group Activities framework doesn’t provide Apple with visibility into the content your app shares, or information related to playback of media content in your app, such as where in the content a user starts, pauses, or skips a session."}
+{"id": "/documentation/GroupActivities", "law": "Apple servers facilitating Group Activities sessions don’t know the identity of your app."}
+{"id": "/documentation/GroupActivities/GroupActivity", "law": "In addition to the protocol’s methods and properties, make sure your type includes the information you need to start the activity."}
+{"id": "/documentation/GroupActivities/GroupActivity", "law": "You must use that type to begin the activity."}
+{"id": "/documentation/GroupActivities/GroupActivity", "law": "For example, use it to present the appropriate UI for the activity and to load any required content."}
+{"id": "/documentation/GroupActivities/GroupActivity", "law": "Use the method to get the session and configure your app’s UI."}
+{"id": "/documentation/GroupActivities/GroupActivity", "law": "types must be so that the system can serialize them and send them to other participant’s devices."}
+{"id": "/documentation/GroupActivities/GroupActivity/prepareForActivation()", "law": "Use this value to determine whether to start an activity locally or as a shared experience."}
+{"id": "/documentation/GroupActivities/GroupActivity/sessions()", "law": "Use this method to retrieve new sessions for the current activity."}
+{"id": "/documentation/GroupActivities/GroupActivity/sessions()", "law": "Use a - loop to iterate over the values in the sequence."}
+{"id": "/documentation/GroupActivities/GroupActivity/sessions()", "law": "To avoid blocking your code, perform the iteration from an asynchronous task in your app."}
+{"id": "/documentation/GroupActivities/GroupActivity/sessions()", "law": "The following example shows a typical way to call this method asynchronously: When a new session arrives, use it to prepare your app’s UI for the new activity."}
+{"id": "/documentation/GroupActivities/GroupActivityActivationResult/activationDisabled", "law": "Use the available context to determine the best way to proceed with this action."}
+{"id": "/documentation/GroupActivities/GroupSession", "law": "You use the session object to synchronize your app’s activity-related content, including your app’s UI."}
+{"id": "/documentation/GroupActivities/GroupSession", "law": "You don’t create objects directly."}
+{"id": "/documentation/GroupActivities/GroupSession", "law": "Use the type returned by the method of your activity to retrieve new sessions when they become available."}
+{"id": "/documentation/GroupActivities/GroupSession", "law": "Before the system can create a session object, your app must create a object and activate it."}

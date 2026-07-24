@@ -3,3 +3,5 @@
 {"id": "/documentation/TVServices/mapping-apple-tv-users-to-app-profiles", "law": "To avoid having each user sign in individually, tvOS 16 adds a new Keychain API: ."}
 {"id": "/documentation/TVServices/mapping-apple-tv-users-to-app-profiles", "law": "The method in the shows how to use the above to read the username and password from the Keychain: You can also use the same to save a new item with username and password."}
 {"id": "/documentation/TVServices/supporting-multiple-users-in-your-tvos-app", "law": "You must run this sample code project on a physical device."}
+{"id": "/documentation/TVServices", "law": "Use the TVServices framework to display content prominently on the screen and to speed up user login."}
+{"id": "/documentation/TVServices", "law": "Don’t perform memory-intensive operations from your TVServices app extension."}

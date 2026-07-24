@@ -6,3 +6,8 @@
 {"id": "/documentation/NearbyInteraction/finding-devices-with-precision", "law": "The specific criteria for such estimators are specific to your app’s use case; the following example is one such implementation: Leverage the spatial awareness of ARKit and Apple Ultra Wideband Chips in your app to guide users to a nearby device."}
 {"id": "/documentation/NearbyInteraction/implementing-proximity-based-interactions-between-a-phone-and-watch", "law": "When running on paired devices, both the watch and iPhone must contain an Ultra Wideband chip."}
 {"id": "/documentation/NearbyInteraction/implementing-proximity-based-interactions-between-a-phone-and-watch", "law": "The bundle IDs should be and respectively."}
+{"id": "/documentation/NearbyInteraction", "law": "Use Nearby Interaction in your app to acquire the position of devices with an Ultra Wideband (UWB) chip, such as iPhone 11 or later, Apple Watch, and third-party accessories."}
+{"id": "/documentation/NearbyInteraction", "law": "Apple devices use the high-frequency capabilities of the UWB chip to share their positions in the physical environment and enable fluid, interactive sessions."}
+{"id": "/documentation/NearbyInteraction", "law": "While your app is in the foreground, it can freely use Nearby Interaction to perform ranging between UWB devices."}
+{"id": "/documentation/NearbyInteraction", "law": "Both these forms of background activity require that you enable the appropriate capability in Xcode."}
+{"id": "/documentation/NearbyInteraction", "law": "Avoid using deprecated configuration in your apps."}

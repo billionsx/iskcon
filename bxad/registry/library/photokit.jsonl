@@ -17,3 +17,4 @@
 {"id": "/documentation/PhotoKit/selecting-photos-and-videos-in-ios", "law": "A camera app, photo editing app, or library browsing app needs to use much more of ‘s functionality, but an app that’s only setting a basic profile photo doesn’t need photo library permission."}
 {"id": "/documentation/PhotoKit/selecting-photos-and-videos-in-ios", "law": "An app that only saves photos to the photo library can use the Add Photos Only permission level when requesting authorization."}
 {"id": "/documentation/PhotoKit/selecting-photos-and-videos-in-ios", "law": "Retrieving metadata for an asset doesn’t require special permission."}
+{"id": "/documentation/PhotoKit", "law": "You might use PhotoKit to edit or display a person’s photos, or to manage collections of assets such as albums, Moments, and Shared Albums."}

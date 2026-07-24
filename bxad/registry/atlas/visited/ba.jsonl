@@ -1,1 +1,11 @@
 {"id": "/documentation/MailKit/build-mail-app-extensions", "sha": "ee15296d0828f9966cdbd7280033f334d70bbc5a919ec766bb0b8686d6f59487", "t": "Build Mail App Extensions", "n": 180, "laws": 0, "ts": "2026-07-24 17:49 UTC"}
+{"id": "/documentation/FoundationModels/PrivateCloudComputeLanguageModel", "sha": "9e457ac53b1158d37700bb488a255d8bd9f5b28ad791f69421b6e00aeba9e01e", "t": "PrivateCloudComputeLanguageModel", "n": 997, "laws": 2, "ts": "2026-07-24 18:45 UTC"}
+{"id": "/documentation/Xcode/analyzing-cpu-profiles-with-call-tree-views", "sha": "f860da637e61375f0d420370bc302b52cd15b188b726fad2fce07085abf23665", "t": "Analyzing CPU profiles with call tree views", "n": 8582, "laws": 9, "ts": "2026-07-24 18:46 UTC"}
+{"id": "/documentation/updates/authenticationservices", "sha": "412ac03e13e66f4addd76f0ac1b28fb90bb332a46bc82887c2781ce3de964f0e", "t": "AuthenticationServices updates", "n": 2111, "laws": 6, "ts": "2026-07-24 18:46 UTC"}
+{"id": "/documentation/updates/sirikit", "sha": "1cea4580f09cb4ee8fcca7bb26e4ef3886fd8714c86b52f9a1d953bf722ba38c", "t": "SiriKit updates", "n": 277, "laws": 0, "ts": "2026-07-24 18:47 UTC"}
+{"id": "/documentation/CarPlay", "sha": "5d4d30432f7dca23de212c19149631099b01ad0d9ec26e6d12e1ebf6c6b7cbe7", "t": "CarPlay", "n": 4354, "laws": 3, "ts": "2026-07-24 18:49 UTC"}
+{"id": "/documentation/Dispatch", "sha": "9131d92b33b8ef620d590d3d2955de4baebeef9a27771dfe6beb22b44c05fbb0", "t": "Dispatch", "n": 2543, "laws": 5, "ts": "2026-07-24 18:50 UTC"}
+{"id": "/documentation/GLKit", "sha": "3ad73b390b048e70f4862c1fe77499a149792f364a2f5d4df6811a4017c344fd", "t": "GLKit", "n": 2444, "laws": 5, "ts": "2026-07-24 18:51 UTC"}
+{"id": "/documentation/arkit/arconfiguration/framesemantics-swift.struct/scenedepth", "sha": "c26e6079fc9f22c9aadd6ce6c1693be131f96c5efe77ad9bb03a40d73c1c8713", "t": "sceneDepth", "n": 833, "laws": 1, "ts": "2026-07-24 18:56 UTC"}
+{"id": "/documentation/arkit/arscnviewdelegate/renderer(_:didupdate:for:)", "sha": "c36ee8928f500780e494459feed13597814a75c0dd9b545b029c0e1102c8e747", "t": "renderer(_:didUpdate:for:)", "n": 290, "laws": 0, "ts": "2026-07-24 18:59 UTC"}
+{"id": "/documentation/avfoundation/video-effects", "sha": "525c67a1607994a3103854831cea29534682b246898d1add0703f9e52d656df0", "t": "Video effects", "n": 628, "laws": 0, "ts": "2026-07-24 19:04 UTC"}

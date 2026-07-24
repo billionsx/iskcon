@@ -176,3 +176,68 @@
 {"id": "/documentation/UIKit", "law": "Use UIKit classes only from your app’s main thread or main dispatch queue, unless otherwise indicated in the documentation for those classes."}
 {"id": "/documentation/UIKit", "law": "Avoid using deprecated classes and protocols in your apps."}
 {"id": "/documentation/UIKit/mac-catalyst", "law": "Mac apps built with Mac Catalyst can only use APIs marked as available in Mac Catalyst, such as and ."}
+{"id": "/documentation/UIKit/UICollectionViewCompositionalLayoutSectionProvider", "law": "You use a section provider to create a compositional layout ( ) that has multiple sections with different layouts."}
+{"id": "/documentation/UIKit/UICollectionViewCompositionalLayoutSectionProvider", "law": "You can use this opportunity to adapt the layout to different layout environments by inspecting information about the current layout environment ( ) and using that information to configure each section."}
+{"id": "/documentation/UIKit/UICollectionViewCompositionalLayoutSectionProvider", "law": "In iOS 27 and later, UIKit supports automatic observation tracking inside this closure when reading properties on objects that use the macro."}
+{"id": "/documentation/UIKit/adding-tables-to-attributed-strings", "law": "The following code builds a 2×3 table — two rows and three columns — by creating a cell block for each position and appending a styled paragraph for each cell to the attributed string: The array is ordered from outermost to innermost block."}
+{"id": "/documentation/UIKit/adding-tables-to-attributed-strings", "law": "For example, the following code applies a 2-point blue border to the bottom edge of a cell, leaving the other edges unchanged: Use the values (leading), (trailing), (top), and (bottom)."}
+{"id": "/documentation/UIKit/adding-tables-to-attributed-strings", "law": "To support iOS 26 and earlier, use and to apply a uniform width or color to all edges."}
+{"id": "/documentation/UIKit/adding-tables-to-attributed-strings", "law": "Use when you want your column widths to adapt to the content — for example, a label-value table where short labels sit beside values that vary in length."}
+{"id": "/documentation/UIKit/adding-tables-to-attributed-strings", "law": "If you want consistent, predictable column widths regardless of content length, use , which distributes width based on the explicit values set on the first row of cells."}
+{"id": "/documentation/UIKit/adding-tables-to-attributed-strings", "law": "For example, if your app displays a data grid where each column always occupies one-third of the available width, set each first-row cell to 33 percent and switch to fixed layout:"}
+{"id": "/documentation/UIKit/adding-tables-to-attributed-strings", "law": "The text system reads the paragraph style information embedded in the string to interpret the table structure automatically, so no extra configuration of the view is required: Create and configure tables in attributed strings and display them in a text view."}
+{"id": "/documentation/UIKit/managing-viewport-layout-and-attachment-reuse-in-a-text-view-subclass", "law": "Override any of these methods in your (or in macOS) subclass to customize what happens at each stage: All overrides of viewport layout delegate methods must call , because omitting it breaks layout."}
+{"id": "/documentation/UIKit/managing-viewport-layout-and-attachment-reuse-in-a-text-view-subclass", "law": "Use the registration API to preserve attachment views across layout passes."}
+{"id": "/documentation/UIKit/transitioning-to-the-uikit-scene-based-life-cycle", "law": "Adopting the scene-based life cycle is required."}
+{"id": "/documentation/UIKit/transitioning-to-the-uikit-scene-based-life-cycle", "law": "Beginning in iOS 27, iPadOS 27, Mac Catalyst 27, tvOS 27, and visionOS 27, apps built with the latest SDK must adopt the scene-based life cycle or they fail to launch."}
+{"id": "/documentation/UIKit/transitioning-to-the-uikit-scene-based-life-cycle", "law": "If your app requires dynamic scene configurations — such as customizing scenes based on user activities, or handling different scene roles — implement in your app delegate instead."}
+{"id": "/documentation/UIKit/transitioning-to-the-uikit-scene-based-life-cycle", "law": "For example: Supporting multiple scenes is optional, and may require restructuring your app’s data model to be scene-specific."}
+{"id": "/documentation/UIKit/transitioning-to-the-uikit-scene-based-life-cycle", "law": "If your app adopts scenes for CarPlay, use instead."}
+{"id": "/documentation/UIKit/transitioning-to-the-uikit-scene-based-life-cycle", "law": "If your app doesn’t present custom content on an external display, you don’t need to configure anything for this scene role."}
+{"id": "/documentation/UIKit/UITapGestureRecognizer", "law": "For gesture recognition, the specified number of fingers must tap the view a specified number of times."}
+{"id": "/documentation/UIKit/UITapGestureRecognizer", "law": "Code that handles tap gestures should test for the state of the gesture, for example: Action methods handling this gesture can get the location of the gesture as a whole by calling the method ."}
+{"id": "/documentation/UIKit/UITextView", "law": "Use it when you need to display or edit a body of text, such as the contents of a document."}
+{"id": "/documentation/UIKit/UITextView", "law": "You can also use , , and to apply a single style across all text in the view."}
+{"id": "/documentation/UIKit/UITextView", "law": "To customize the keyboard, use the properties from the protocol, which text views implement."}
+{"id": "/documentation/UIKit/UIView", "law": "The class is a concrete class that you can instantiate and use to display a fixed background color."}
+{"id": "/documentation/UIKit/UIView", "law": "To display labels, images, buttons, and other interface elements commonly found in apps, use the view subclasses that the UIKit framework provides rather than trying to define your own."}
+{"id": "/documentation/UIKit/UIView", "law": "Use Auto Layout to define the rules for resizing and repositioning your views in response to changes in the view hierarchy."}
+{"id": "/documentation/UIKit/UIView", "law": "Use the property to change that behavior."}
+{"id": "/documentation/UIKit/UIView", "law": "The property defines the internal dimensions of the view as it sees them, and its use is almost exclusive to custom drawing code."}
+{"id": "/documentation/UIKit/UIView", "law": "These methods let the system know that it should update the view during the next drawing cycle."}
+{"id": "/documentation/UIKit/UIView", "law": "The following properties of the class are animatable: To animate your changes, create a object and use its handler block to change the values of your view’s properties."}
+{"id": "/documentation/UIKit/UIView", "law": "Manipulations to your app’s user interface must occur on the main thread."}
+{"id": "/documentation/UIKit/UIView", "law": "Thus, you should always call the methods of the class from code running in the main thread of your app."}
+{"id": "/documentation/UIKit/UIView", "law": "The only time this may not be strictly necessary is when creating the view object itself, but all other manipulations should occur on the main thread."}
+{"id": "/documentation/UIKit/UIViewPropertyAnimator", "law": "You can also use a cubic Bezier curve or a spring function to control the timing of the animations."}
+{"id": "/documentation/UIKit/UIViewPropertyAnimator", "law": "If you create your animator using one of the standard initialization methods, you must explicitly start your animations by calling the method."}
+{"id": "/documentation/UIKit/UIViewPropertyAnimator", "law": "If you want to start the animations immediately after the creation of your animator, use the method instead of the standard initializers."}
+{"id": "/documentation/UIKit/UIViewPropertyAnimator", "law": "Use those methods and properties to start, pause, resume, and stop the animations."}
+{"id": "/documentation/UIKit/UIViewPropertyAnimator", "law": "You can also use them to scrub through the animation and change its direction."}
+{"id": "/documentation/UIKit/UIViewPropertyAnimator", "law": "Use the methods and properties of this class to modify the animation blocks themselves and to update the timing information."}
+{"id": "/documentation/UIKit/UIStackView", "law": "To use a stack view, open the Storyboard you wish to edit."}
+{"id": "/documentation/UIKit/UIStackView", "law": "Although a stack view allows you to lay out its contents without using Auto Layout directly, you still need to use Auto Layout to position the stack view itself."}
+{"id": "/documentation/UIKit/UIStackView", "law": "In general, this means pinning at least two adjacent edges of the stack view to define its position."}
+{"id": "/documentation/UIKit/UIStackView", "law": "Unless you use a distribution, the arranged views are sized according to their intrinsic content size."}
+{"id": "/documentation/UIKit/UIStackView", "law": "However, getting the desired layout with this approach requires a couple of additional steps."}
+{"id": "/documentation/UIKit/UIStackView", "law": "Adding an equal width constraint between the image view and the stack view helps ensure the image is sized to fill the available space."}
+{"id": "/documentation/UIKit/UIStackView", "law": "The property determines the minimum spacing between arranged views."}
+{"id": "/documentation/UIKit/UIStackView", "law": "Typically, you use a single stack view to lay out a small number of items."}
+{"id": "/documentation/UIKit/UIStackView", "law": "For example, you can use constraints to set a minimum or maximum height or width for the view."}
+{"id": "/documentation/UIKit/UIStackView", "law": "Be careful to avoid introducing conflicts when adding constraints to views inside a stack view."}
+{"id": "/documentation/UIKit/UIWindowSceneDelegate", "law": "Use your object to manage the life cycle of one instance of your app’s user interface."}
+{"id": "/documentation/UIKit/UIWindowSceneDelegate", "law": "The window scene delegate conforms to the protocol, and you use it to receive notifications when its scene connects to the app, enters the foreground, and so on."}
+{"id": "/documentation/UIKit/UIWindowSceneDelegate", "law": "You also use it to respond to changes in the underlying environment of the scene."}
+{"id": "/documentation/UIKit/UIWindowSceneDelegate", "law": "For example, if the user resizes a scene, use your delegate to make any needed changes to your content to accommodate the new size."}
+{"id": "/documentation/UIKit/UIWindowSceneDelegate", "law": "Don’t create objects directly."}
+{"id": "/documentation/UIKit/UIWindowSceneDelegate", "law": "Additional methods that you use to manage app-specific tasks occurring in a scene."}
+{"id": "/documentation/UIKit/UIViewController/addChild(_:)", "law": "If you override this method, you must call in your implementation."}
+{"id": "/documentation/UIKit/UIViewController/didMove(toParent:)", "law": "If you are implementing your own container view controller, it must call the method of the child view controller after the transition to the new controller is complete or, if there is no transition, immediately after calling the method."}
+{"id": "/documentation/UIKit/UIViewController/present(_:animated:completion:)", "law": "The object on which you call this method may not always be the one that handles the presentation."}
+{"id": "/documentation/UIKit/UIViewController/present(_:animated:completion:)", "law": "For example, a full-screen presentation must be made by a view controller that itself covers the entire screen."}
+{"id": "/documentation/UIKit/UIViewController/transitionCoordinator", "law": "You can use this object to create additional animations and synchronize them with the transition animations."}
+{"id": "/documentation/UIKit/UIViewController/transitionCoordinator", "law": "Container view controllers can override this method but in most cases should not need to."}
+{"id": "/documentation/UIKit/UIViewControllerTransitionCoordinator/animate(alongsideTransition:completion:)", "law": "Use this method to perform animations that aren’t handled by the animator objects themselves."}
+{"id": "/documentation/UIKit/UIViewControllerTransitionCoordinator/animate(alongsideTransition:completion:)", "law": "All of the animations you specify must occur inside the animation context’s container view (or one of its descendants)."}
+{"id": "/documentation/UIKit/UIViewControllerTransitionCoordinator/animate(alongsideTransition:completion:)", "law": "Use the property of the context object to get the container view."}
+{"id": "/documentation/UIKit/UIViewControllerTransitionCoordinator/animate(alongsideTransition:completion:)", "law": "To perform animations in a view that doesn’t descend from the container view, use the method instead."}

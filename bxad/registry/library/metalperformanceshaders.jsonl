@@ -4,3 +4,8 @@
 {"id": "/documentation/MetalPerformanceShaders/training-a-neural-network-with-metal-performance-shaders", "law": "Before you run the sample code project in Xcode: Make sure your Mac is running macOS 10.15 or later."}
 {"id": "/documentation/MetalPerformanceShaders/training-a-neural-network-with-metal-performance-shaders", "law": "Make sure you are running Xcode 11 or later."}
 {"id": "/documentation/MetalPerformanceShaders/training-a-neural-network-with-metal-performance-shaders", "law": "Use an MPS neural network graph to train a simple neural network digit classifier."}
+{"id": "/documentation/MetalPerformanceShaders", "law": "These data-parallel primitives are specially tuned to take advantage of the unique hardware characteristics of each GPU family to ensure optimal performance."}
+{"id": "/documentation/MetalPerformanceShaders/MPSKernelOptions/allowReducedPrecision", "law": "When possible, kernels use a higher-precision data representation internally than the destination storage format to avoid excessive accumulation of computational rounding error in the result."}
+{"id": "/documentation/MetalPerformanceShaders/MPSKernelOptions/allowReducedPrecision", "law": "This option advises the kernel that the destination storage format already has too much precision for what is ultimately required downstream, and the kernel may use reduced precision internally when it determines that a less precise result would yield better performance."}
+{"id": "/documentation/MetalPerformanceShaders/image-filters", "law": "Unfortunately, it is not always possible for kernels to run in place."}
+{"id": "/documentation/MetalPerformanceShaders/image-filters", "law": "To make use of the feature, you will need to write a copy allocator block."}

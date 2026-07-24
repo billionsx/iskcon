@@ -2,3 +2,8 @@
 {"id": "/documentation/RealityKit/docking-a-video-player-in-an-immersive-scene", "sha": "3ee620157d5e7705a9da67a6c7c56111680d5c26d8fb82e98fc8b1edb22126f0", "t": "Docking a video player in an immersive scene", "n": 3190, "laws": 3, "ts": "2026-07-24 17:51 UTC"}
 {"id": "/documentation/TVServices/supporting-multiple-users-in-your-tvos-app", "sha": "6cdb52b303808833e7aaba9656efd5473e76f18732ea0e11f3af1ea267ce618d", "t": "Supporting Multiple Users in Your tvOS App", "n": 212, "laws": 1, "ts": "2026-07-24 17:54 UTC"}
 {"id": "/documentation/UIKit/uikit-catalog-creating-and-customizing-views-and-controls", "sha": "c639cefc35817cce2b30b25f6755be6aa870dab66bfb4f9747db3a653a783b18", "t": "UIKit Catalog: Creating and customizing views and controls", "n": 5724, "laws": 8, "ts": "2026-07-24 17:55 UTC"}
+{"id": "/documentation/updates/hypervisor", "sha": "701ad72a1e231a9a6c703afde866731db17829853d2cc4b5f16ad695912555ea", "t": "Hypervisor updates", "n": 1258, "laws": 2, "ts": "2026-07-24 18:47 UTC"}
+{"id": "/documentation/AVKit", "sha": "9dad8cdc8e1c278d444428fa7577737410dd66ecd1f95d9ee5e7bc73077d2f2c", "t": "AVKit", "n": 2070, "laws": 0, "ts": "2026-07-24 18:48 UTC"}
+{"id": "/documentation/Security", "sha": "119fe831b7abfe7123a87b873ed303dd118c7c301ebe0b1668f84d6a71c2aa53", "t": "Security", "n": 3243, "laws": 6, "ts": "2026-07-24 18:53 UTC"}
+{"id": "/documentation/SceneKit/SCNMaterial/roughness", "sha": "871bcae601b2fdae30de3fa4b4e4ad029e7e618c393536fb207d547721297bba", "t": "roughness", "n": 868, "laws": 0, "ts": "2026-07-24 18:55 UTC"}
+{"id": "/documentation/arkit/argeotrackingconfiguration", "sha": "6a4387a96997213f89ba289ce25eee0e6bef37f53c23dfdfa6a9a33f841106cd", "t": "ARGeoTrackingConfiguration", "n": 3334, "laws": 3, "ts": "2026-07-24 18:59 UTC"}

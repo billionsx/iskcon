@@ -4,3 +4,5 @@
 {"id": "/documentation/WatchConnectivity/transferring-data-with-watch-connectivity", "law": "The reply handler runs asynchronously on a background thread, and returns quickly to avoid timeout."}
 {"id": "/documentation/WatchConnectivity/transferring-data-with-watch-connectivity", "law": "Apps can use to retrieve the number of remaining times."}
 {"id": "/documentation/WatchConnectivity/transferring-data-with-watch-connectivity", "law": "When using Watch Connectivity, apps must complete every background task ( )."}
+{"id": "/documentation/WatchConnectivity", "law": "Use this framework to transfer data between your iOS app and the WatchKit extension of a paired watchOS app."}
+{"id": "/documentation/WatchConnectivity", "law": "You also use this framework to trigger an update to your watchOS app’s complication."}

@@ -1,1 +1,2 @@
 {"id": "/documentation/AlarmKit/scheduling-an-alarm-with-alarmkit", "law": "Because and are optional presentations, this sample doesn’t use them if the alarm only has an state."}
+{"id": "/documentation/AlarmKit", "law": "Use to create custom alarms and timers in your app."}

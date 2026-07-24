@@ -1,0 +1,8 @@
+{"id": "/documentation/Compression", "law": "The framework offers two methods of compression: Buffer compression uses a single-step method for compressing files, making it perfect for use with uncompressed files under 8 MB, or compressed files under 1 MB."}
+{"id": "/documentation/Compression", "law": "To use buffer compression, you compress or decompress the input data with one call to the corresponding function."}
+{"id": "/documentation/Compression", "law": "To use stream compression, you call the compression or decompression function repeatedly to compress or decompress data from a source buffer to a destination buffer."}
+{"id": "/documentation/Compression/compression_algorithm", "law": "Choose an algorithm according to the following guidelines: If speed and compression ratio are important, use ."}
+{"id": "/documentation/Compression/compression_algorithm", "law": "If you require interoperability with non-Apple devices, use ."}
+{"id": "/documentation/Compression/compression_algorithm", "law": "If speed is critical, and you’re willing to sacrifice compression ratio to achieve it, use ."}
+{"id": "/documentation/Compression/compression_algorithm", "law": "If compression ratio is critical, and you can sacrifice speed to achieve it, use ."}
+{"id": "/documentation/Compression/compression_algorithm", "law": "When compression ratio and performance are equally important, use to favor compression ratio and to favor performance."}

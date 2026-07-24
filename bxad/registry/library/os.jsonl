@@ -1,0 +1,3 @@
+{"id": "/documentation/os/OSSignposter", "law": "Signposts allow you to record meaningful information about the duration of your app’s tasks using the same subsystems and categories that you use for logging."}
+{"id": "/documentation/os/OSSignposter", "law": "Use to create signposted intervals in your code, and then use Instruments’ instrument to record those intervals as you run your app and perform the actions to measure."}
+{"id": "/documentation/os/OSSignposter", "law": "also provides functionality to signpost a closure, and to emit individual signposts that don’t have a duration that you can use to highlight points of interest, such as when the user taps a button or performs a specific gesture."}

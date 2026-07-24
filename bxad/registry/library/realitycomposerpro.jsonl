@@ -1,0 +1,2 @@
+{"id": "/documentation/RealityComposerPro", "law": "Systems define a process that acts on every entity with the required components."}
+{"id": "/documentation/RealityComposerPro", "law": "Systems act globally over all entities with the required components — entities that lack the components, such as a tree or a chair, are ignored."}

@@ -1,1 +1,6 @@
 {"id": "/documentation/visionOS/displaying-a-stereoscopic-image-in-visionos", "sha": "0d03a758d67c91fd1d7b6483cf8186a0ca6ee90257d513cb6818eb8a989564bf", "t": "Displaying a stereoscopic image", "n": 1857, "laws": 0, "ts": "2026-07-24 17:57 UTC"}
+{"id": "/documentation/updates/journalingsuggestions", "sha": "e23fa4a1358c3b91063f5ddda14e44c2db5b31225cf2c85323c8a1968e8d6cd1", "t": "Journaling Suggestions updates", "n": 1559, "laws": 1, "ts": "2026-07-24 18:47 UTC"}
+{"id": "/documentation/CoreText", "sha": "6f2470a1c8542a9251f0175d1f7953efc1211644bda4770f63308e94153ef397", "t": "Core Text", "n": 1429, "laws": 2, "ts": "2026-07-24 18:50 UTC"}
+{"id": "/documentation/GameKit", "sha": "81d2be55b389adb611ab5f0da1c36f6b705a5ec3c41ed080fc15264242d0051b", "t": "GameKit", "n": 3922, "laws": 3, "ts": "2026-07-24 18:51 UTC"}
+{"id": "/documentation/arkit/arraycastresult", "sha": "17d38976d0062a0e0a363a51742e097fcde4ec4fff180112e635154b7ff15d7e", "t": "ARRaycastResult", "n": 532, "laws": 2, "ts": "2026-07-24 18:58 UTC"}
+{"id": "/documentation/avkit/avplayerviewcontrollerdelegate/playerviewcontrollerdidstoppictureinpicture(_:)", "sha": "97a8b1c0fcd40e2522605478cf5cebed201592db4bad5e91fa4e7f44af40ba6b", "t": "playerViewControllerDidStopPictureInPicture(_:)", "n": 172, "laws": 1, "ts": "2026-07-24 19:07 UTC"}

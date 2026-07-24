@@ -7,3 +7,4 @@
 {"id": "/documentation/FSKit/building-a-passthrough-file-system", "law": "The implementation of the required is similar."}
 {"id": "/documentation/FSKit/building-a-passthrough-file-system", "law": "Your own implementation is free to implement whichever volume operation protocols you need for your purposes, as long as you implmement the required protocol."}
 {"id": "/documentation/FSKit/building-a-passthrough-file-system", "law": "You can omit any operation protocols you don’t need."}
+{"id": "/documentation/FSKit", "law": "is a simpler file system where containers use only one resource and provide only one volume."}

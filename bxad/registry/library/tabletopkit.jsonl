@@ -9,3 +9,4 @@
 {"id": "/documentation/TabletopKit/implementing-playing-card-overlap-and-physical-characteristics", "law": "Each outer iteration, starting from all points, finds at least one — but often two or three — of the three actual support points, so three outer iterations may be required."}
 {"id": "/documentation/TabletopKit/simulating-dice-rolls-as-a-component-for-your-game", "law": "The class manages the overall game state and coordinates between TabletopKit and the UI: The app uses a volumetric window style with a 2 x 2 x 2 meter default size to provide adequate space for dice interaction."}
 {"id": "/documentation/TabletopKit/simulating-dice-rolls-as-a-component-for-your-game", "law": "The sample uses a hexagonal positioning pattern to ensure dice don’t overlap during group interactions."}
+{"id": "/documentation/TabletopKit", "law": "Create multiplayer spatial games on a virtual table surface and use FaceTime to invite players."}

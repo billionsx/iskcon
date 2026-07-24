@@ -1,2 +1,5 @@
 {"id": "/documentation/BackgroundAssets/downloading-essential-assets-in-the-background", "law": "Before you run the sample code project in Xcode: Configure the WWDC Sessions and WWDC Sessions Background Assets Extension targets to use your Developer team for signing."}
 {"id": "/documentation/BackgroundAssets/downloading-essential-assets-in-the-background", "law": "Fetch the assets your app requires before its first launch using an app extension and the Background Assets framework."}
+{"id": "/documentation/BackgroundAssets", "law": "To use these features: Group your assets into asset packs containing manifest files that specify a download policy and other details."}
+{"id": "/documentation/BackgroundAssets", "law": "Use the Background Assets framework only to download additional assets for your app; don’t use it for any other purposes."}
+{"id": "/documentation/BackgroundAssets", "law": "For example, don’t collect or transmit data to identify a user or device or to perform advertising or advertising measurement."}

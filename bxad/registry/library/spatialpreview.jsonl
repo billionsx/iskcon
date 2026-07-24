@@ -1,0 +1,3 @@
+{"id": "/documentation/SpatialPreview", "law": "Use Spatial Preview to work with spatial content from a macOS app to a connected visionOS device in real time."}
+{"id": "/documentation/SpatialPreview", "law": "is recommended for Spatial Preview because it works without any additional setup."}
+{"id": "/documentation/SpatialPreview", "law": "If you want to use your own OpenUSD library, see the documentation below on how to bridge OpenUSD to ."}

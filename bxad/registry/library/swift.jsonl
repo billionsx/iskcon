@@ -14,3 +14,16 @@
 {"id": "/documentation/swift/updating_an_app_to_use_swift_concurrency", "law": "To ensure that all updates to this property are made on the main thread, place the type on the main actor: Two methods that perform synchronous IO — the and methods — are factored out into a separate actor, which performs these activities away from the main thread."}
 {"id": "/documentation/swift/updating_an_app_to_use_swift_concurrency", "law": "The model type on the main actor must use to call methods on the actor, which allows other work to run on the main thread during the synchronous IO operations."}
 {"id": "/documentation/swift/updating_an_app_to_use_swift_concurrency", "law": "Calls to the object from SwiftUI views don’t require any use of as these views are also on the main actor due to their use of ."}
+{"id": "/documentation/Swift/Codable", "law": "When you use as a type or a generic constraint, it matches any type that conforms to both protocols."}
+{"id": "/documentation/Swift/CheckedContinuation", "law": "You must call a resume method exactly once on every execution path throughout the program."}
+{"id": "/documentation/Swift/CheckedContinuation", "law": "Never resuming leaves the task in a suspended state indefinitely, and leaks any associated resources."}
+{"id": "/documentation/Swift/CheckedContinuation/resume()", "law": "A continuation must be resumed exactly once."}
+{"id": "/documentation/Swift/using-key-value-observing-in-swift", "law": "Key-value observing is a Cocoa programming pattern you use to notify objects about changes to properties of other objects."}
+{"id": "/documentation/Swift/using-key-value-observing-in-swift", "law": "You can only use key-value observing with classes that inherit from ."}
+{"id": "/documentation/Swift/using-key-value-observing-in-swift", "law": "In the example below, the key path refers to the property of : You use the and properties of the instance to see what’s changed about the property you’re observing."}
+{"id": "/documentation/Swift/using-key-value-observing-in-swift", "law": "If you don’t need to know how a property has changed, omit the parameter."}
+{"id": "/documentation/Swift/using-key-value-observing-in-swift", "law": "Objects that are set up to use key-value observing—such as above—notify their observers about property changes."}
+{"id": "/documentation/Swift/withTaskGroup(of:returning:isolation:body:)", "law": "A group always waits for all of its child tasks to complete before it returns."}
+{"id": "/documentation/Swift/withTaskGroup(of:returning:isolation:body:)", "law": "Even canceled tasks must run until completion before this function returns."}
+{"id": "/documentation/Swift/withTaskGroup(of:returning:isolation:body:)", "law": "After this function returns, the task group is always empty."}
+{"id": "/documentation/Swift/withTaskGroup(of:returning:isolation:body:)", "law": "To collect the results of the group’s child tasks, you can use a - - loop: If you need more control or only a few results, you can call directly: Refer to documentation for detailed discussion of semantics shared between all task groups."}

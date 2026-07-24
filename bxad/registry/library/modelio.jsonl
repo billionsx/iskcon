@@ -1,0 +1,10 @@
+{"id": "/documentation/ModelIO", "law": "You can use this framework to import and export assets from and to a variety of industry standard file formats supported by popular authoring tools and game engines."}
+{"id": "/documentation/ModelIO", "law": "You can also use Model I/O to generate or process model and texture data—for example, to create subdivision surfaces, to bake ambient occlusion textures, or to generate light probes."}
+{"id": "/documentation/ModelIO", "law": "Use the class to load these objects from a file or to create a collection of 3D objects for export to a file."}
+{"id": "/documentation/ModelIO", "law": "Use the class to inspect or rearrange a mesh’s vertex and index data format."}
+{"id": "/documentation/ModelIO", "law": "Use classes that adopt the and protocols to minimize the number of times a mesh’s vertex and index data is copied and translated between loading, processing, and rendering on a GPU."}
+{"id": "/documentation/ModelIO", "law": "Use methods (for example, the method) to process a model, generating additional data—such as surface normals, tangent basis vectors, ambient occlusion, or light maps—for use in rendering."}
+{"id": "/documentation/ModelIO", "law": "Use the class and its subclasses to generate procedural textures such as noise, normal maps, and realistic sky boxes."}
+{"id": "/documentation/ModelIO", "law": "Use the class to generate light sources whose illumination is based on the contents of a scene."}
+{"id": "/documentation/ModelIO", "law": "Use the class to work with a volumetric description of a model."}
+{"id": "/documentation/ModelIO", "law": "The and classes describe realistic lighting properties for use in rendering, and the class also supports physically based rendering parameters."}

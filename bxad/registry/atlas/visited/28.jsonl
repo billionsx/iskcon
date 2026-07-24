@@ -2,3 +2,9 @@
 {"id": "/documentation/UIKit/adopting-drag-and-drop-in-a-table-view", "sha": "bb3a117c7bdd1db084e5999490b4b58502cbe48687efc9aac1f81d4b7318a7c8", "t": "Adopting drag and drop in a table view", "n": 2888, "laws": 2, "ts": "2026-07-24 17:54 UTC"}
 {"id": "/documentation/UIKit/integrating-pointer-interactions-into-your-ipad-app", "sha": "66b328271b96ff901b1d1e685f7e9fd56a4cf91d412c5e784e6b0af6ad701b50", "t": "Integrating pointer interactions into your iPad app", "n": 4958, "laws": 5, "ts": "2026-07-24 17:54 UTC"}
 {"id": "/documentation/technotes/tn3102-http3-in-your-app", "sha": "30bba71386e0386d50fdfd2353467cf45275caf88dae795b8b78786ba5d2d3d4", "t": "TN3102: HTTP/3 in your app", "n": 2080, "laws": 3, "ts": "2026-07-24 17:58 UTC"}
+{"id": "/documentation/technotes/tn3137-on-mac-keychains", "sha": "29b976a1e05de885e76439889e38696978bf58f4ac75ba43612104730319a1ab", "t": "TN3137: On Mac keychain APIs and implementations", "n": 7707, "laws": 10, "ts": "2026-07-24 18:43 UTC"}
+{"id": "/documentation/SwiftUI/State()", "sha": "063b6095016cbefcace4e3b245906016f3c30ec844ae1aee4a3c516ad07e801e", "t": "State()", "n": 3457, "laws": 3, "ts": "2026-07-24 18:45 UTC"}
+{"id": "/documentation/AuthenticationServices", "sha": "4f7ec2762c0dba8e996ac81ceb4f327f8160f250e9670080dffcb49a8f1539d7", "t": "Authentication Services", "n": 3740, "laws": 3, "ts": "2026-07-24 18:49 UTC"}
+{"id": "/documentation/RelevanceKit", "sha": "17ad7c1dc21322c2ce98f65e7b2a3a280533726b349a73ae96c6874a2bee5b55", "t": "RelevanceKit", "n": 1831, "laws": 3, "ts": "2026-07-24 18:53 UTC"}
+{"id": "/documentation/XCTest", "sha": "a364820ffc832cef7a953be7924b0ad54905388e6664cf9f92de4fee490c29ea", "t": "XCTest", "n": 1760, "laws": 4, "ts": "2026-07-24 18:54 UTC"}
+{"id": "/documentation/SceneKit/SCNAudioSource", "sha": "ec6405e67052742587b5b08101344098abd28bc2455d8a06b45bdfac7e16df73", "t": "SCNAudioSource", "n": 683, "laws": 1, "ts": "2026-07-24 18:56 UTC"}

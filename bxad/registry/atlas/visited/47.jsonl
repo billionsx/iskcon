@@ -1,0 +1,5 @@
+{"id": "/documentation/updates/usernotifications", "sha": "4426fd9e97ca3fd7f28bf58050e1c3b27be5ed80f86bf85aa50bbdffc0b19339", "t": "User Notifications updates", "n": 382, "laws": 2, "ts": "2026-07-24 18:47 UTC"}
+{"id": "/documentation/HomeKit", "sha": "9c639e5099ac552ea792e7356fd11ed420c9b920935f64e9a4c87ac48fca8517", "t": "HomeKit", "n": 1165, "laws": 0, "ts": "2026-07-24 18:51 UTC"}
+{"id": "/documentation/visionOS", "sha": "a1b92996487d0e892411c0dd13910acbb649b779d4f8c2be6406a87595e9e18e", "t": "visionOS", "n": 5246, "laws": 3, "ts": "2026-07-24 18:55 UTC"}
+{"id": "/documentation/CoreVideo/cvpixelbuffer-q2e", "sha": "4c9f7631630fed6bd914ab920efe64f8fb6d2841ef48c77699176db7308762bf", "t": "CVPixelBuffer", "n": 1861, "laws": 1, "ts": "2026-07-24 18:56 UTC"}
+{"id": "/documentation/avfaudio/capturing-stereo-audio-from-built-in-microphones", "sha": "9064c33f7c0defbc36c607467de210e47756838f3f8a613335af63ad94e9a8e1", "t": "Capturing stereo audio from built-In microphones", "n": 2862, "laws": 4, "ts": "2026-07-24 19:00 UTC"}

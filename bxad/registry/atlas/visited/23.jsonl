@@ -1,1 +1,5 @@
 {"id": "/documentation/Accelerate/training-a-neural-network-to-recognize-digits", "sha": "ca724ab975413322b65c4332c405ab3b3ffaa3bfe382ddff9b02d234b6286df6", "t": "Training a neural network to recognize digits", "n": 7077, "laws": 6, "ts": "2026-07-24 17:46 UTC"}
+{"id": "/documentation/arkit/accessorytrackingprovider/issupported", "sha": "7d6586dd86bfd19bb494a93fa793a0eb11a10f32673704f8a1b3fd79397eda0b", "t": "isSupported", "n": 72, "laws": 0, "ts": "2026-07-24 18:58 UTC"}
+{"id": "/documentation/arkit/imagetrackingprovider", "sha": "84f072fa4cb2e99a3d51e021c7ecf228fec566169fe583c81e7518674a0d5021", "t": "ImageTrackingProvider", "n": 284, "laws": 0, "ts": "2026-07-24 18:59 UTC"}
+{"id": "/documentation/AVFoundation/creating-images-from-a-video-asset", "sha": "c4911a3934d18a7a8d812e129d81e33142061602dde50bd83ea7e2d7eb935787", "t": "Creating images from a video asset", "n": 3814, "laws": 9, "ts": "2026-07-24 19:06 UTC"}
+{"id": "/documentation/AVFoundation/AVContinuityDevice/videoDevices", "sha": "fe0c083dd63c725ef282a5991f403c0599da74ad3cf8d50e2183978d14215749", "t": "videoDevices", "n": 80, "laws": 0, "ts": "2026-07-24 19:07 UTC"}

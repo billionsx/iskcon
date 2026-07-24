@@ -1,2 +1,8 @@
 {"id": "/documentation/Security/constraining-a-tool's-launch-environment", "law": "In Xcode, ensure the Launch Constraints Sample App scheme is selected in the scheme drop-down menu, and choose Product > Run."}
 {"id": "/documentation/Security/constraining-a-tool's-launch-environment", "law": "You use this design pattern to create GUI “wrappers” for command-line tools, such as database administration tools."}
+{"id": "/documentation/Security", "law": "Use the Security framework to protect information, establish trust, and control access to software."}
+{"id": "/documentation/Security", "law": "Ensure the validity of code to be executed for a particular purpose."}
+{"id": "/documentation/Security", "law": "As shown in the image below, you can also use lower level cryptographic resources to create new secure services."}
+{"id": "/documentation/Security", "law": "Always use the highest level API that meets your needs."}
+{"id": "/documentation/Security", "law": "The Security framework is not always your best option."}
+{"id": "/documentation/Security", "law": "Only if your app requires lower level access to security protocol functions would you use the secure transport API directly."}

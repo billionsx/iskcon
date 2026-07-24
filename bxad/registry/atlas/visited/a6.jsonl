@@ -1,2 +1,5 @@
 {"id": "/documentation/CoreAudio/building-an-audio-server-plug-in-and-driver-extension", "sha": "bf2b6c69f35d03002019ee9b2565b7929d08a2cf3d33ec9a9180ba261f47ea0a", "t": "Building an Audio Server Plug-in and Driver Extension", "n": 1838, "laws": 3, "ts": "2026-07-24 17:47 UTC"}
 {"id": "/documentation/visionOS/destination-video", "sha": "e3de0f5c5387c811385f66bf6857a5f6a0ef3569544c0568959f62fd32aedd46", "t": "Destination Video", "n": 8202, "laws": 6, "ts": "2026-07-24 17:57 UTC"}
+{"id": "/documentation/SystemConfiguration", "sha": "f5fb71d243b9cdd195fefe260380f78db19f5e001ad19eafa13fe86a56fc0b24", "t": "System Configuration", "n": 956, "laws": 0, "ts": "2026-07-24 18:53 UTC"}
+{"id": "/documentation/arkit/arconfiguration/framesemantics-swift.property", "sha": "8f6bf53079012f11e458b222c9355d8b84e8049286cd8b5ffc7100e32425c7fa", "t": "frameSemantics", "n": 1534, "laws": 4, "ts": "2026-07-24 18:57 UTC"}
+{"id": "/documentation/avfoundation/avcaptureaudiodataoutput", "sha": "7ed4912b4a2ce289390d5396c7afd3c44c84881dca736c3672f11d335cd83a90", "t": "AVCaptureAudioDataOutput", "n": 434, "laws": 0, "ts": "2026-07-24 19:03 UTC"}

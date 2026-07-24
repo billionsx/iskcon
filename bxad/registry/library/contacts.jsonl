@@ -1,1 +1,11 @@
 {"id": "/documentation/Contacts/accessing-a-person-s-contact-data-using-contacts-and-contactsui", "law": "Before running the sample code project in Xcode, select the sample target, then configure it to use your Developer team for signing."}
+{"id": "/documentation/Contacts", "law": "The contact class is like in that it has a mutable subclass, , you can use to modify contact properties."}
+{"id": "/documentation/Contacts", "law": "Because the contact store methods are synchronous, it’s best practice to use them on background threads."}
+{"id": "/documentation/Contacts", "law": "For example, to fetch contacts that have the name Appleseed , use and pass in ."}
+{"id": "/documentation/Contacts", "law": "You can use to limit the contact properties that you fetch."}
+{"id": "/documentation/Contacts", "law": "To fetch a contact using both a predicate ( ) and a array, use ."}
+{"id": "/documentation/Contacts", "law": "Each operation requires a specific set of contact keys to correctly perform the operation."}
+{"id": "/documentation/Contacts", "law": "Note that the user receives a prompt only the first time an app requests access; all subsequent calls use the existing permissions."}
+{"id": "/documentation/Contacts", "law": "To avoid having your app’s UI main thread block for this access, you can use either the asynchronous method or dispatch your usage to a background thread."}
+{"id": "/documentation/Contacts", "law": "You can either use to check the availability of a single contact key, or to check multiple keys."}
+{"id": "/documentation/Contacts", "law": "When refetching a unified contact, be sure to use its identifier."}

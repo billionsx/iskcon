@@ -8,3 +8,4 @@
 {"id": "/documentation/AudioDriverKit/creating-an-audio-device-driver", "law": "When installation completes, the Driver Manager status in the app displays the message “SimpleAudioDriver has been activated and is ready to use.” At this point, the sample’s audio device is available to Core Audio."}
 {"id": "/documentation/AudioDriverKit/creating-an-audio-device-driver", "law": "To inspect the newly installed device, use the Audio MIDI Setup app ( ), which shows the sine tone’s frequency and sample rate."}
 {"id": "/documentation/AudioDriverKit/creating-an-audio-device-driver", "law": "Then you can use the other buttons in this section to toggle the frequency and sample rate."}
+{"id": "/documentation/AudioDriverKit", "law": "On macOS, use the framework to install and upgrade your driver."}

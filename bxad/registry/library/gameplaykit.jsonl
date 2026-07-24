@@ -1,0 +1,3 @@
+{"id": "/documentation/GameplayKit", "law": "Describe your gameplay by creating classes that adopt the game model protocols, then use those classes with a strategist object to create AI players or suggest moves."}
+{"id": "/documentation/GameplayKit", "law": "Classes that model impassable areas in a game world, for use with Pathfinding and Agents."}
+{"id": "/documentation/GameplayKit", "law": "Generate fields of coherent random noise, then use them to create texture images resembling natural phenomena such as clouds or wood grain, build procedural game worlds of unlimited size, and more."}

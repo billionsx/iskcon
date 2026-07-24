@@ -11,3 +11,6 @@
 {"id": "/documentation/CarPlay/integrating-carplay-with-your-quick-ordering-app", "law": "Your app doesn’t need to support background updates, or use any cycle methods."}
 {"id": "/documentation/CarPlay/integrating-carplay-with-your-quick-ordering-app", "law": "The service app needs a JSON Web Token (JWT) to create push notifications for use with Live Activities."}
 {"id": "/documentation/CarPlay/integrating-carplay-with-your-quick-ordering-app", "law": "The following code example shows how the sample creates the JWT for use with the payload to send to Apple, which in turn sends a push notification to the associated device: Configure your food-ordering app to work with CarPlay."}
+{"id": "/documentation/CarPlay", "law": "Use the CarPlay framework to create an in-car experience for your app."}
+{"id": "/documentation/CarPlay", "law": "You can use other technologies to drive portions of your app’s CarPlay interface."}
+{"id": "/documentation/CarPlay", "law": "VoIP apps can use to manage incoming and outgoing calls, often in combination with SiriKit call support."}

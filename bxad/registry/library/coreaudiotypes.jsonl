@@ -1,0 +1,2 @@
+{"id": "/documentation/CoreAudioTypes", "law": "The Core Audio Types framework declares common data types and constants that other Core Audio interfaces use."}
+{"id": "/documentation/CoreAudioTypes", "law": "Use specialized data types to interact with audio streams, complex buffers, and audiovisual timestamps."}

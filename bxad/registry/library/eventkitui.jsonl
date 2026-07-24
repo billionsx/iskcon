@@ -1,0 +1,3 @@
+{"id": "/documentation/EventKitUI", "law": "On iOS, use the EventKitUI framework to show calendar and reminder information to the user modally."}
+{"id": "/documentation/EventKitUI", "law": "The view controllers you’ll use on iOS are: , for displaying existing events."}
+{"id": "/documentation/EventKitUI", "law": "To access the event store, which contains calendar and reminder data, use EventKit."}

@@ -25,3 +25,4 @@
 {"id": "/documentation/CoreData/synchronizing-a-local-store-to-the-cloud", "law": "Select the CoreDataCloudKitDemoUnitTests target and use the Team pop-up menu to choose your developer team."}
 {"id": "/documentation/CoreData/synchronizing-a-local-store-to-the-cloud", "law": "To facilitate testing, the app supports the following configuration options the class parses into properties: Set to to store files in the special directory , so that tests don’t overwrite user data."}
 {"id": "/documentation/CoreData/synchronizing-a-local-store-to-the-cloud", "law": "Enable Core Data multithreading assertions to verify all Core Data operations use the correct queue."}
+{"id": "/documentation/CoreData", "law": "Use Core Data to save your application’s permanent data for offline use, to cache temporary data, and to add undo functionality to your app on a single device."}

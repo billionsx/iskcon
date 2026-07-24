@@ -4,3 +4,7 @@
 {"id": "/documentation/Metal/using-argument-buffers-with-resource-heaps", "sha": "4fc822c2ced83dbec8933d6379daae5ccbd60a53d18c04048e514ecf09d3868d", "t": "Using argument buffers with resource heaps", "n": 5445, "laws": 4, "ts": "2026-07-24 17:50 UTC"}
 {"id": "/documentation/Vision/recognize-tables-within-a-document", "sha": "6c4e35e1817fd0754798d3dfe7e6b0f920ecb8f1dfd5861177d1c3a41cff3b91", "t": "Recognizing tables within a document", "n": 4560, "laws": 5, "ts": "2026-07-24 17:55 UTC"}
 {"id": "/documentation/SwiftUI", "sha": "991995a19bc84bd1c5028bc81805ca9d0fdf397b772584292c6fb82dae5a1366", "t": "SwiftUI", "n": 2463, "laws": 0, "ts": "2026-07-24 17:58 UTC"}
+{"id": "/documentation/ExternalPurchaseServerAPI", "sha": "440b2a93d92594d86e040acd580f275a0aab32dd3c4fc1f574f5a2c8ba0344ec", "t": "External Purchase Server API", "n": 4408, "laws": 3, "ts": "2026-07-24 18:50 UTC"}
+{"id": "/documentation/HIDDriverKit", "sha": "bb5b3fb14d5046e6e88475aa98f1682be2b9dcfcd2fb4fbfcb878bd37840ee8b", "t": "HIDDriverKit", "n": 2236, "laws": 0, "ts": "2026-07-24 18:51 UTC"}
+{"id": "/documentation/Swift", "sha": "0b9f27c1470496ce20d7447db6149204ba93d9f55658fa4ca05a08f7a37cd4b0", "t": "Swift", "n": 1633, "laws": 0, "ts": "2026-07-24 18:53 UTC"}
+{"id": "/documentation/avfoundation/avassetwriter/add(_:)-4c4d0", "sha": "fa42861dde2ba19879f188b845c653c13f144f83f75213e6d0b8ce0742935e7f", "t": "add(_:)", "n": 96, "laws": 0, "ts": "2026-07-24 19:03 UTC"}

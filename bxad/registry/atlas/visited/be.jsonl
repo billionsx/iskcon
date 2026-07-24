@@ -1,3 +1,8 @@
 {"id": "/documentation/CoreMotion/getting-motion-activity-data-from-headphones", "sha": "9ea6fb7690ea9b7176f08214c41a755bb1f234b9146bab5f2652be8028eb385a", "t": "Getting motion-activity data from headphones", "n": 615, "laws": 1, "ts": "2026-07-24 17:48 UTC"}
 {"id": "/documentation/NetworkExtension/setting-up-a-pir-server-for-url-filtering", "sha": "7c56de6ae8cff78dc4218f6a9f9e49011386d3e4996bb9912368e61fd3bf10f4", "t": "Setting up a PIR server for URL filtering", "n": 3887, "laws": 10, "ts": "2026-07-24 17:51 UTC"}
 {"id": "/documentation/UIKit/prefetching-collection-view-data", "sha": "86ce3235e71bbe526be49db8f6a6714e1080516c8679f210f3918559c75ad8e0", "t": "Prefetching collection view data", "n": 2329, "laws": 6, "ts": "2026-07-24 17:54 UTC"}
+{"id": "/documentation/updates/bundleresources", "sha": "a4d498e4f8b173b0da6f58c508fe9eb4eaaf40efd9331e09363a34f972060ef6", "t": "Bundle Resources updates", "n": 5734, "laws": 10, "ts": "2026-07-24 18:46 UTC"}
+{"id": "/documentation/updates/paperkit", "sha": "f407044c9804754ebce43d67d5da8c047fce6cd47a6d891d8f8e535be413193f", "t": "PaperKit updates", "n": 647, "laws": 0, "ts": "2026-07-24 18:47 UTC"}
+{"id": "/documentation/arkit/arlightestimate", "sha": "6a946fca040fa2ab191c3fb290fc7d7b3894afa6291970cd4c02865803a2f3f2", "t": "ARLightEstimate", "n": 566, "laws": 1, "ts": "2026-07-24 18:55 UTC"}
+{"id": "/documentation/arkit/arpointcloud", "sha": "5a6b9e28f6dcd689d367b7b9138b4035cb7303ad86aad99b37314e2800055644", "t": "ARPointCloud", "n": 299, "laws": 1, "ts": "2026-07-24 18:56 UTC"}
+{"id": "/documentation/avfoundation/avcapturestillimageoutput", "sha": "d815e9dd944d727e3967f00cc0d2dac489102f91d2a078fe3f566bd091b32b42", "t": "AVCaptureStillImageOutput", "n": 1069, "laws": 0, "ts": "2026-07-24 19:03 UTC"}

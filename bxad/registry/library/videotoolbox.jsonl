@@ -13,3 +13,6 @@
 {"id": "/documentation/VideoToolbox/encoding-video-for-offline-transcoding", "law": "Optionally specify the codec profile and level, the target bit rate, the maximum interval between key frames, the number of look ahead frames, and the spatial adaptive QP level."}
 {"id": "/documentation/VideoToolbox/encoding-video-for-offline-transcoding", "law": "You can use the movie file to test this app."}
 {"id": "/documentation/VideoToolbox/encoding-video-for-offline-transcoding", "law": "Use autocomplete before the component to complete the path for that directory."}
+{"id": "/documentation/VideoToolbox", "law": "Apps that don’t need direct access to hardware encoders and decoders shouldn’t need to use VideoToolbox directly."}
+{"id": "/documentation/VideoToolbox/kVTCompressionPropertyKey_RealTime", "law": "A Boolean value indicating whether it’s recommended that the video encoder perform compression in real time."}
+{"id": "/documentation/VideoToolbox/kVTCompressionPropertyKey_MVHEVCViewIDs", "law": "The entries in the specified array should be in the same order and have the same count as the value specified in ."}

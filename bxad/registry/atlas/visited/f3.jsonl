@@ -1,1 +1,3 @@
 {"id": "/documentation/CoreBluetooth/transferring-data-between-bluetooth-low-energy-devices", "sha": "2fd1b4cde02839af82549b467c571b655c93bd03da37005be8887d1a0151d05f", "t": "Transferring Data Between Bluetooth Low Energy Devices", "n": 3676, "laws": 3, "ts": "2026-07-24 17:47 UTC"}
+{"id": "/documentation/updates/proximityreader", "sha": "d69ea2d484f21091edc06141337fa8fc8cd841f46bbea475d3b1a32b8a79836e", "t": "ProximityReader updates", "n": 179, "laws": 1, "ts": "2026-07-24 18:47 UTC"}
+{"id": "/documentation/arkit/argeotrackingstatus/statereason-swift.enum/geodatanotloaded", "sha": "fa82dbce9cb47faa8183def8e0b7a921725199d7d35b5f5bdc0881564724aeb9", "t": "ARGeoTrackingStatus.StateReason.geoDataNotLoaded", "n": 403, "laws": 0, "ts": "2026-07-24 19:00 UTC"}

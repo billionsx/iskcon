@@ -1,1 +1,7 @@
 {"id": "/documentation/visionOS/drawing-in-the-air-and-on-surfaces-with-a-spatial-stylus", "sha": "2296f72a593aad8e29a1d337aac16cac8cdb3d434fe23bc151c5358011633e82", "t": "Drawing in the air and on surfaces with a spatial stylus", "n": 7241, "laws": 4, "ts": "2026-07-24 17:57 UTC"}
+{"id": "/documentation/watchos-release-notes", "sha": "509a56704be6a5f86810bd2eda902b5f03985c45264fb3a695fbe85940287d4a", "t": "watchOS Release Notes", "n": 2035, "laws": 0, "ts": "2026-07-24 18:48 UTC"}
+{"id": "/documentation/CoreAudioTypes", "sha": "7e9c60b77c2ceadaea6693fad68feeaef35aae3165deff98fd004271b4c2bed3", "t": "Core Audio Types", "n": 1564, "laws": 2, "ts": "2026-07-24 18:49 UTC"}
+{"id": "/documentation/ImagePlayground", "sha": "5edb0c94b58d2148c710431a663ce63439c729e4d9dfd7d4492e4cc589f8a9c0", "t": "Image Playground", "n": 1152, "laws": 3, "ts": "2026-07-24 18:51 UTC"}
+{"id": "/documentation/QuickLook", "sha": "ecf78ea316360be695157909b56ff01aca33507304c421fad39458316039eed1", "t": "Quick Look", "n": 2313, "laws": 4, "ts": "2026-07-24 18:52 UTC"}
+{"id": "/documentation/arkit/arsessionobserver/sessionshouldattemptrelocalization(_:)", "sha": "df45518a2ce420e72d573cea89948e82ddc2552dc6d02a44ad90d13bb504913d", "t": "sessionShouldAttemptRelocalization(_:)", "n": 1943, "laws": 1, "ts": "2026-07-24 18:58 UTC"}
+{"id": "/documentation/avfoundation/avsamplebuffergenerator", "sha": "cd42f0436c2ea2943637ae30bb5cbd5c824175fc6530080aa30bc33a602ac062", "t": "AVSampleBufferGenerator", "n": 498, "laws": 0, "ts": "2026-07-24 19:05 UTC"}

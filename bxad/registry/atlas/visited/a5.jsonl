@@ -1,1 +1,4 @@
 {"id": "/documentation/AVFAudio/capturing-stereo-audio-from-built-in-microphones", "sha": "9064c33f7c0defbc36c607467de210e47756838f3f8a613335af63ad94e9a8e1", "t": "Capturing stereo audio from built-In microphones", "n": 2862, "laws": 4, "ts": "2026-07-24 17:44 UTC"}
+{"id": "/documentation/CoreMotion", "sha": "a285f959dff2d0961c08e3bbc815a63ec3b8b7875314da1caf2cd03184b770a8", "t": "Core Motion", "n": 3613, "laws": 5, "ts": "2026-07-24 18:50 UTC"}
+{"id": "/documentation/DeviceDiscoveryUI", "sha": "8d95ae415e750a868b96802766c507408be8460399c0ef62cfec07c493e76297", "t": "DeviceDiscoveryUI", "n": 4136, "laws": 6, "ts": "2026-07-24 18:50 UTC"}
+{"id": "/documentation/avfoundation/converting-side-by-side-3d-video-to-multiview-hevc-and-spatial-video", "sha": "12f2c59c5c3f91a7d40fa46608ffe38292a4023d1743195781714c5f666b89bf", "t": "Converting side-by-side 3D video to multiview HEVC and spatial video", "n": 8595, "laws": 8, "ts": "2026-07-24 19:02 UTC"}

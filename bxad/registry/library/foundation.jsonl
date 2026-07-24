@@ -19,3 +19,12 @@
 {"id": "/documentation/Foundation/using-json-with-custom-types", "law": "Use the techniques described in this sample to handle the differences between external JSON data and your app’s model types."}
 {"id": "/documentation/Foundation/using-json-with-custom-types", "law": "Use Swift’s expressive type system to avoid manually looping over collections of identically structured objects."}
 {"id": "/documentation/Foundation/using-json-with-custom-types", "law": "Learn how to ignore structure and data in JSON that you don’t need in your code."}
+{"id": "/documentation/Foundation/NSKeyedArchiver", "law": "When decoding a non-keyed archive, the decoder must decode values in the same order the original encoder used."}
+{"id": "/documentation/Foundation/NSKeyedArchiver", "law": "The keys given to encoded values must be unique only within the scope of the currently-encoding object."}
+{"id": "/documentation/Foundation/NSKeyedArchiver", "law": "A keyed archive is hierarchical, so the keys used by object A to encode its instance variables don’t conflict with the keys used by object B."}
+{"id": "/documentation/Foundation/Data", "law": "You can use these interchangeably in code that interacts with Objective-C APIs."}
+{"id": "/documentation/Foundation/ProcessInfo/thermalState-swift.property", "law": "At higher thermal states your app should reduce usage of system resources."}
+{"id": "/documentation/Foundation/FileManager/removeItem(at:)", "law": "Prior to removing each item, the file manager asks its delegate if it should actually do so."}
+{"id": "/documentation/Foundation/NotificationCenter", "law": "When a caller adds itself as an observer, it specifies which notifications it should receive."}
+{"id": "/documentation/Foundation/NotificationCenter", "law": "and instances for use with Swift code, providing strong typing, appropriate actor isolation, and a more idiomatic Swift experience."}
+{"id": "/documentation/Foundation/NotificationCenter", "law": "On macOS, if you want to post a notification to other processes or receive notifications from other processes, use instead."}

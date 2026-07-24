@@ -1,2 +1,4 @@
 {"id": "/documentation/MapKitJS/displaying-indoor-maps-with-mapkit-js", "law": "Use these examples to create your own indoor map with a style that is consistent with your app’s design."}
 {"id": "/documentation/MapKitJS/displaying-indoor-maps-with-mapkit-js", "law": "Use the Indoor Mapping Data Format (IMDF) to show an indoor map with custom overlays and points of interest in your browser."}
+{"id": "/documentation/MapKitJS", "law": "Use this JavaScript API to embed interactive maps directly into your webpages or apps across different platforms and operating systems, including iOS and Android."}
+{"id": "/documentation/MapKitJS", "law": "MapKit JS requires authorization through a Maps token for initialization and some API calls."}

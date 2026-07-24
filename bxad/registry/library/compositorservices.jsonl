@@ -2,3 +2,5 @@
 {"id": "/documentation/CompositorServices/rendering_hover_effects_in_metal_immersive_apps", "law": "If your app needs more, you can also use 16-bit integers, which allows up to 65,534 tracking areas, but also increases your app’s memory consumption."}
 {"id": "/documentation/CompositorServices/rendering_hover_effects_in_metal_immersive_apps", "law": "To work around the fact that some pixels don’t reference the correct draw call identifier, it implements a compute shader to ensure the draw call for any specific pixel is correct."}
 {"id": "/documentation/CompositorServices/rendering_hover_effects_in_metal_immersive_apps", "law": "If you plan to let people override the maximum render quality, make sure you thoroughly test performance."}
+{"id": "/documentation/CompositorServices", "law": "Use this framework to create a fully immersive scene in your app that doesn’t require integration with the person’s surroundings."}
+{"id": "/documentation/CompositorServices", "law": "Use the layer to start your rendering loop and deliver successive frames of content."}

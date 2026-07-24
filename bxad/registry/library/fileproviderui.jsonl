@@ -1,0 +1,2 @@
+{"id": "/documentation/FileProviderUI", "law": "Use the File Provider UI extension to add custom actions to your File Provider extension."}
+{"id": "/documentation/FileProviderUI", "law": "After the user is finished, you must explicitly cancel or complete the action."}

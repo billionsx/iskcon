@@ -41,3 +41,8 @@
 {"id": "/documentation/SiriKit/soup-chef-with-app-intents-migrating-custom-intents", "law": "Entities declared in an App Intent can be optional or required."}
 {"id": "/documentation/SiriKit/soup-chef-with-app-intents-migrating-custom-intents", "law": "Handling cases where user input requires confirmation or needs new value are handled explicitly within the function."}
 {"id": "/documentation/SiriKit/soup-chef-with-app-intents-migrating-custom-intents", "law": "To aid with localization of AppShortcuts, use to add support for other locales."}
+{"id": "/documentation/SiriKit", "law": "To implement modern support for these features and integrate your app with Apple Intelligence and Siri AI, use the framework."}
+{"id": "/documentation/SiriKit", "law": "For SiriKit, use the standard intents that the system provides to empower actions users already ask Siri to do, such as playing music or sending a text message."}
+{"id": "/documentation/SiriKit", "law": "With a person’s permission, an installed health research app that uses entitlements may collect Face Metrics data while your SiriKit app is in use."}
+{"id": "/documentation/SiriKit", "law": "To prevent SensorKit from collecting Face Metrics data while your app is in use, you can set the information property list key to ."}
+{"id": "/documentation/SiriKit", "law": "Requesting Authorization to Use Siri."}

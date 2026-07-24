@@ -6,3 +6,6 @@
 {"id": "/documentation/AutomaticAssessmentConfiguration/build-an-educational-assessment-app", "law": "Make sure the ID matches the bundle ID."}
 {"id": "/documentation/AutomaticAssessmentConfiguration/build-an-educational-assessment-app", "law": "Then the app configures one or more apps that the student is allowed to use during the assessment."}
 {"id": "/documentation/AutomaticAssessmentConfiguration/build-an-educational-assessment-app", "law": "Ensure the academic integrity of your assessment app by using Automatic Assessment Configuration."}
+{"id": "/documentation/AutomaticAssessmentConfiguration", "law": "Use the AutomaticAssessmentConfiguration framework to create an assessment session that limits access to system features."}
+{"id": "/documentation/AutomaticAssessmentConfiguration", "law": "Apps that use the AutomaticAssessmentConfiguration framework must have the entitlement."}
+{"id": "/documentation/AutomaticAssessmentConfiguration", "law": "With the entitlement set, use an instance of the class to start and stop assessment sessions."}

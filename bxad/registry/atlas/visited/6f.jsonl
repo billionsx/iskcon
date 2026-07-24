@@ -1,1 +1,7 @@
 {"id": "/documentation/Accelerate/cropping-to-the-subject-in-a-chroma-keyed-image", "sha": "fff4b76759860a95b57a5a48fe90b38aa3435cd4edd75d6def694740f0832e70", "t": "Cropping to the subject in a chroma-keyed image", "n": 3231, "laws": 0, "ts": "2026-07-24 17:45 UTC"}
+{"id": "/documentation/technotes/tn3133-packaging-a-renderer", "sha": "56732228465a0ce49c98b4d0c5f567e62b2a7d5eca48329c3013a9d1e4777459", "t": "TN3133: Packaging a Metal renderer", "n": 3162, "laws": 3, "ts": "2026-07-24 18:43 UTC"}
+{"id": "/documentation/technotes/tn3152-migrating-to-the-latest-calendar-access-levels", "sha": "71cc526a3d2eae383fc39f72ab1949f907be426152f7216cd1a207ae0cb69664", "t": "TN3152: Migrating to the latest Calendar access levels", "n": 3024, "laws": 6, "ts": "2026-07-24 18:43 UTC"}
+{"id": "/documentation/SwiftUI/ViewBuilder", "sha": "8c736589973703b2072580c226006050af9bb3baeadaff132fe3d409d7edb358", "t": "ViewBuilder", "n": 970, "laws": 1, "ts": "2026-07-24 18:45 UTC"}
+{"id": "/documentation/USD", "sha": "44b01b8f9cce1e93c97d3e92ac4f5510b982404b20629dc2cf4db42603c6f7fd", "t": "USD", "n": 2203, "laws": 3, "ts": "2026-07-24 18:54 UTC"}
+{"id": "/documentation/arkit/environmental-analysis", "sha": "725a6dbd9a7e2318ada1c24b6124f492551b22c540150c384bdd2718ae3bed91", "t": "Environmental Analysis", "n": 430, "laws": 1, "ts": "2026-07-24 18:56 UTC"}
+{"id": "/documentation/ReplayKit/RPScreenRecorder", "sha": "b83ed3e76f472c22def0630144681d8584ead6d5cfc3bb2d50b18a1e8a7fa7db", "t": "RPScreenRecorder", "n": 1333, "laws": 2, "ts": "2026-07-24 18:58 UTC"}

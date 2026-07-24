@@ -1,2 +1,9 @@
 {"id": "/documentation/FSKit/building-a-passthrough-file-system", "sha": "54aa8b4525f6e7f73091ae2a31681c9fe18fd108e791a83b7b77a3e9f433af3e", "t": "Building a passthrough file system", "n": 6183, "laws": 9, "ts": "2026-07-24 17:48 UTC"}
 {"id": "/documentation/HomeKit/interacting-with-a-home-automation-network", "sha": "eca5975d30ca7565ed025ef1b6b2d7de4b57b0391a6d8f10394334e722617fe1", "t": "Interacting with a home automation network", "n": 12462, "laws": 10, "ts": "2026-07-24 17:49 UTC"}
+{"id": "/documentation/FoundationModels/managing-the-context-window", "sha": "165dd8dc22e4226f59e78a4d62fcfb06781eaa425f8a01bfb3a6325db27ac450", "t": "Managing the context window", "n": 8532, "laws": 10, "ts": "2026-07-24 18:45 UTC"}
+{"id": "/documentation/SwiftUI/AsyncImage", "sha": "c8254f07c4bde7ac143b7b61103aaa7ccc2d8b1526ed0ef5cb64d997013eb4d3", "t": "AsyncImage", "n": 2024, "laws": 3, "ts": "2026-07-24 18:45 UTC"}
+{"id": "/documentation/UIKit/UICollectionViewCompositionalLayoutSectionProvider", "sha": "4b75a31a06832ca72fc2a277ca2b58ee901f6185816543e3a014356b0b351af5", "t": "UICollectionViewCompositionalLayoutSectionProvider", "n": 1364, "laws": 3, "ts": "2026-07-24 18:45 UTC"}
+{"id": "/documentation/updates/xcode", "sha": "879c7c03162a91144f83ea7317e41d48e0dddaffa99e83756334d5eeed920551", "t": "Xcode updates", "n": 20188, "laws": 10, "ts": "2026-07-24 18:48 UTC"}
+{"id": "/documentation/AssetsLibrary", "sha": "78b2476e07f0c7e5a3b9e889abaf9280649c165e249e320a5b9fb6d9e9a28548", "t": "Assets Library", "n": 450, "laws": 2, "ts": "2026-07-24 18:49 UTC"}
+{"id": "/documentation/carkey", "sha": "59d7813e694ea541d6b19b1beb460585df85a29a075fdcf6ff99cb8e4795e6c1", "t": "CarKey", "n": 1544, "laws": 5, "ts": "2026-07-24 18:54 UTC"}
+{"id": "/documentation/Swift/using-key-value-observing-in-swift", "sha": "b12fb7bbc652ff7faea4d3f1c98b31715a9fb472522c5a3698c23b1c5d280ac8", "t": "Using Key-Value Observing in Swift", "n": 1789, "laws": 5, "ts": "2026-07-24 19:07 UTC"}

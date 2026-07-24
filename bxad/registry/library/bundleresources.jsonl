@@ -1,0 +1,15 @@
+{"id": "/documentation/BundleResources/Information-Property-List/GCSupportedGameControllers", "law": "The dictionary keys are and the possible game controller values are: The types of game controller profiles that the app supports or requires."}
+{"id": "/documentation/BundleResources/Information-Property-List/NSAccessoryTrackingUsageDescription", "law": "Use this key to indicate that your app requires access to accessory-tracking data."}
+{"id": "/documentation/BundleResources/Information-Property-List/UIRequiredDeviceCapabilities", "law": "The App Store prevents customers from installing an app on a device that doesn’t support the required capabilities for that app."}
+{"id": "/documentation/BundleResources/Information-Property-List/UIRequiredDeviceCapabilities", "law": "Use this key to declare the capabilities your app requires."}
+{"id": "/documentation/BundleResources/Information-Property-List/UIRequiredDeviceCapabilities", "law": "You typically use an array for the key’s associated value."}
+{"id": "/documentation/BundleResources/Information-Property-List/UIRequiredDeviceCapabilities", "law": "The presence in that array of any of the above possible values indicates that the app requires the corresponding feature."}
+{"id": "/documentation/BundleResources/Information-Property-List/UIRequiredDeviceCapabilities", "law": "Omit a value to indicate that the app doesn’t require the feature, but it can be present."}
+{"id": "/documentation/BundleResources/Information-Property-List/UIRequiredDeviceCapabilities", "law": "Alternatively, you can use a dictionary as the associated value for the key."}
+{"id": "/documentation/BundleResources/Information-Property-List/UIRequiredDeviceCapabilities", "law": "In that case, use the values above as the dictionary’s keys, each with an associated Boolean value."}
+{"id": "/documentation/BundleResources/Information-Property-List/UIRequiredDeviceCapabilities", "law": "Set the value to to require the corresponding feature."}
+{"id": "/documentation/BundleResources/Information-Property-List/UIRequiredDeviceCapabilities", "law": "Set the value to to indicate that the feature must not be present on the device."}
+{"id": "/documentation/BundleResources/Information-Property-List/UIRequiredDeviceCapabilities", "law": "Omit the feature from the dictionary to indicate that your app neither requires nor disallows it."}
+{"id": "/documentation/BundleResources/Information-Property-List/NSAppTransportSecurity", "law": "ATS requires that all HTTP connections made with the —typically using the class—use HTTPS."}
+{"id": "/documentation/BundleResources/Information-Property-List/NSAppTransportSecurity", "law": "ATS blocks connections that fail to meet minimum security specifications."}
+{"id": "/documentation/BundleResources/Information-Property-List/NSAppTransportSecurity", "law": "Always look for ways to improve server security before adding ATS exceptions."}

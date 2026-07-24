@@ -1,0 +1,4 @@
+{"id": "/documentation/XCUIAutomation", "law": "Use the XCUIAutomation framework to control your app’s user interface and inspect its state."}
+{"id": "/documentation/XCUIAutomation", "law": "Use to write tests that control your app using XCUIAutomation, and check if your app’s state matches your expectations."}
+{"id": "/documentation/XCUIAutomation", "law": "You can still use it to test compatible iPad and iPhone apps that you build using the iOS SDK but run in visionOS."}
+{"id": "/documentation/XCUIAutomation", "law": "Replicate sequences of interactions and make sure that your app’s user interface behaves as intended."}

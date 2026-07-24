@@ -1,0 +1,2 @@
+{"id": "/documentation/SensitiveContentAnalysis", "law": "Consider situations in which your app acquires externally sourced images or video, and use this framework to check if the media is sensitive."}
+{"id": "/documentation/SensitiveContentAnalysis", "law": "If the framework determines that some media contains sensitive content, call the person’s attention to the issue and avoid displaying the media until the person decides what to do."}

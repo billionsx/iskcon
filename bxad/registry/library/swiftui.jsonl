@@ -110,3 +110,62 @@
 {"id": "/documentation/SwiftUI/wishlist-planning-travel-in-a-swiftui-app", "law": "For content that extends into the safe area, use placement instead."}
 {"id": "/documentation/SwiftUI/wishlist-planning-travel-in-a-swiftui-app", "law": "Use the macro to do this."}
 {"id": "/documentation/SwiftUI/wishlist-planning-travel-in-a-swiftui-app", "law": "Use the property wrapper to create a unique value that associates the source and destination."}
+{"id": "/documentation/SwiftUI/AsyncImage", "law": "In the code in the previous example, SwiftUI shows a first, and then the image scaled to fit in the specified frame: If you use an as a placeholder view and it doesn’t load, SwiftUI doesn’t show anything as a placeholder and doesn’t report an error."}
+{"id": "/documentation/SwiftUI/AsyncImage", "law": "To gain more control over the loading process, use the initializer, which takes a closure that receives an to indicate the state of the loading operation."}
+{"id": "/documentation/SwiftUI/AsyncImage", "law": "To customize the download process in a specific view hierarchy, use to specify a ."}
+{"id": "/documentation/SwiftUI/ContentBuilder", "law": "You can use multiple-statement closures to provide several subviews, as the following example shows: You can also use with other SwiftUI-style result builders."}
+{"id": "/documentation/SwiftUI/DocumentGroup", "law": "Use a scene to tell SwiftUI what kinds of documents your app can open when you declare your app using the protocol."}
+{"id": "/documentation/SwiftUI/DocumentGroup", "law": "The document types you supply to must conform to or ."}
+{"id": "/documentation/SwiftUI/DocumentGroup", "law": "If your app only needs to display but not modify a specific document type, you can use the file viewer document group scene."}
+{"id": "/documentation/SwiftUI/DocumentGroup", "law": "Every document-based app must include this key."}
+{"id": "/documentation/SwiftUI/DocumentGroup", "law": "You don’t need to declare content types the operating system defines, like ."}
+{"id": "/documentation/SwiftUI/DocumentGroup", "law": "Document types that correspond to regular files on disk must conform to ; packages must conform to ."}
+{"id": "/documentation/SwiftUI/DocumentGroup", "law": "This ensures that the view you define in the closure always knows the URL of the document it hosts."}
+{"id": "/documentation/SwiftUI/DocumentGroup", "law": "Don’t access the document’s contents or metadata using the URL because that can conflict with the management of the file that SwiftUI performs."}
+{"id": "/documentation/SwiftUI/DocumentGroup", "law": "Instead, use the methods that and provide to perform read and write operations."}
+{"id": "/documentation/SwiftUI/ReadableDocument", "law": "Use to enable per-property change tracking: Present a read-only document with using the viewer initializer: Set to in your Info.plist for read-only document types."}
+{"id": "/documentation/SwiftUI/Reordering-items-in-lists-stacks-grids-and-custom-layouts", "law": "For example, the following code shows how to select a instance the system can use to get a transfer representation when someone drags a photo to another window or app: Add the modifier after the modifier to handle drop actions from other parts of your app or other apps."}
+{"id": "/documentation/SwiftUI/Reordering-items-in-lists-stacks-grids-and-custom-layouts", "law": "The following code shows how to add the drop destination to an inside a that’s also configured for reordering: Use the parameter of the modifier to limit what items the drop destination takes."}
+{"id": "/documentation/SwiftUI/Reordering-items-in-lists-stacks-grids-and-custom-layouts", "law": "When your drop destination accepts items from the reorder container, be sure to remove the items from the source data collection when you move them to the item’s data collection."}
+{"id": "/documentation/SwiftUI/Reordering-items-in-lists-stacks-grids-and-custom-layouts", "law": "To do this, use a variant of the reorder container modifier that has the parameter, and pass a Boolean property to that parameter to track whether reordering is enabled, as the following example shows: In that example, reordering is disabled when is ."}
+{"id": "/documentation/SwiftUI/State()", "law": "Use state as the single source of truth for a given value type that you store in a view hierarchy."}
+{"id": "/documentation/SwiftUI/State()", "law": "To access a state’s underlying value, you use its property."}
+{"id": "/documentation/SwiftUI/State()", "law": "Use state only for storage that’s local to a view and its subviews."}
+{"id": "/documentation/SwiftUI/ViewBuilder", "law": "When you build your project in Xcode 26 and earlier, use as a parameter attribute for view-producing closure parameters, allowing those closures to provide multiple child views."}
+{"id": "/documentation/SwiftUI/WritableDocument", "law": "Most documents also conform to — use the protocol as a shorthand for both."}
+{"id": "/documentation/SwiftUI/Scene", "law": "You can use the built-in scenes that SwiftUI provides, like , along with custom scenes that you compose from other scenes."}
+{"id": "/documentation/SwiftUI/Scene", "law": "Implement the required computed property and provide the content for your custom scene: A scene acts as a container for a view hierarchy that you want to display to the user."}
+{"id": "/documentation/SwiftUI/Scene", "law": "You can create a property that contains the scene phase, which is one of the values in the enumeration, using the attribute: The protocol provides scene modifiers, defined as protocol methods with default implementations, that you use to configure a scene."}
+{"id": "/documentation/SwiftUI/Scene", "law": "For example, you can use the modifier to trigger an action when a value changes."}
+{"id": "/documentation/SwiftUI/UIViewRepresentable", "law": "Use a instance to create and manage a object in your SwiftUI interface."}
+{"id": "/documentation/SwiftUI/UIViewRepresentable", "law": "Adopt this protocol in one of your app’s custom instances, and use its methods to create, update, and tear down your view."}
+{"id": "/documentation/SwiftUI/UIViewRepresentable", "law": "The creation and update processes parallel the behavior of SwiftUI views, and you use them to configure your view with your app’s current state information."}
+{"id": "/documentation/SwiftUI/UIViewRepresentable", "law": "Use the teardown process to remove your view cleanly from your SwiftUI."}
+{"id": "/documentation/SwiftUI/UIViewRepresentable", "law": "For example, you might use the teardown process to notify other objects that the view is disappearing."}
+{"id": "/documentation/SwiftUI/UIViewRepresentable", "law": "When you want your view to coordinate with other SwiftUI views, you must provide a instance to facilitate those interactions."}
+{"id": "/documentation/SwiftUI/UIViewRepresentable", "law": "For example, you use a coordinator to forward target-action and delegate messages from your view to any SwiftUI views."}
+{"id": "/documentation/SwiftUI/UIViewRepresentable", "law": "Don’t directly set these layout-related properties on the view managed by a instance from your own code because that conflicts with SwiftUI and results in undefined behavior."}
+{"id": "/documentation/SwiftUI/UIViewRepresentable", "law": "A wrapper for a UIKit view that you use to integrate that view into your SwiftUI view hierarchy."}
+{"id": "/documentation/SwiftUI/View", "law": "Implement the required computed property to provide the content for your custom view."}
+{"id": "/documentation/SwiftUI/View", "law": "The protocol provides a set of modifiers — protocol methods with default implementations — that you use to configure views in the layout of your app."}
+{"id": "/documentation/SwiftUI/View", "law": "Isolation to the main actor is the default, but it’s not required."}
+{"id": "/documentation/SwiftUI/View", "law": "A type that represents part of your app’s user interface and provides modifiers that you use to configure views."}
+{"id": "/documentation/SwiftUI/UIApplicationDelegateAdaptor", "law": "For example, you can implement the method to handle remote notification registration: Then use the property wrapper inside your declaration to tell SwiftUI about the delegate type: SwiftUI instantiates the delegate and calls the delegate’s methods in response to life cycle events."}
+{"id": "/documentation/SwiftUI/UIApplicationDelegateAdaptor", "law": "You can access the delegate from any scene or view in your app using the property wrapper: This enables you to use the dollar sign ( ) prefix to get a binding to published properties that you declare in the delegate."}
+{"id": "/documentation/SwiftUI/UIApplicationDelegateAdaptor", "law": "For example, prefer to handle changes in instead of relying on delegate callbacks, like ."}
+{"id": "/documentation/SwiftUI/UIApplicationDelegateAdaptor", "law": "A property wrapper type that you use to create a UIKit app delegate."}
+{"id": "/documentation/SwiftUI/UIHostingController", "law": "At creation time, specify the SwiftUI view you want to use as the root view for this view controller; you can change that view later using the property."}
+{"id": "/documentation/SwiftUI/UIHostingController", "law": "Use the hosting controller like you would any other view controller, by presenting it or embedding it as a child view controller in your interface."}
+{"id": "/documentation/SwiftUI/UIViewControllerRepresentable", "law": "Use a instance to create and manage a object in your SwiftUI interface."}
+{"id": "/documentation/SwiftUI/UIViewControllerRepresentable", "law": "Adopt this protocol in one of your app’s custom instances, and use its methods to create, update, and tear down your view controller."}
+{"id": "/documentation/SwiftUI/UIViewControllerRepresentable", "law": "The creation and update processes parallel the behavior of SwiftUI views, and you use them to configure your view controller with your app’s current state information."}
+{"id": "/documentation/SwiftUI/UIViewControllerRepresentable", "law": "Use the teardown process to remove your view controller cleanly from your SwiftUI."}
+{"id": "/documentation/SwiftUI/UIViewControllerRepresentable", "law": "For example, you might use the teardown process to notify other objects that the view controller is disappearing."}
+{"id": "/documentation/SwiftUI/UIViewControllerRepresentable", "law": "When you want your view controller to coordinate with other SwiftUI views, you must provide a instance to facilitate those interactions."}
+{"id": "/documentation/SwiftUI/UIViewControllerRepresentable", "law": "For example, you use a coordinator to forward target-action and delegate messages from your view controller to any SwiftUI views."}
+{"id": "/documentation/SwiftUI/UIViewControllerRepresentable", "law": "Don’t directly set these layout-related properties on the view managed by a instance from your own code because that conflicts with SwiftUI and results in undefined behavior."}
+{"id": "/documentation/SwiftUI/Binding", "law": "Use a binding to create a two-way connection between a property that stores data, and a view that displays and changes the data."}
+{"id": "/documentation/SwiftUI/Binding", "law": "It is always safe to pass a sendable binding between different concurrency domains."}
+{"id": "/documentation/SwiftUI/Binding", "law": "To create bindings to properties of a type that conforms to the protocol, use the property wrapper."}
+{"id": "/documentation/SwiftUI/View/continuityDevicePicker(isPresented:onDidConnect:)", "law": "A should be used to discover and connect nearby continuity device through a button interface or other form of activation."}
+{"id": "/documentation/SwiftUI/Toggle", "law": "Toggles use a default style that varies based on both the platform and the context."}

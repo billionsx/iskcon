@@ -12,3 +12,95 @@
 {"id": "/documentation/Xcode/creating-custom-modelers-for-intelligent-instruments", "law": "For example, a rule can specify that it requires a fact to have a nonempty description of the stop in which the execution occurred."}
 {"id": "/documentation/Xcode/creating-custom-modelers-for-intelligent-instruments", "law": "The overlapping intervals make it ambiguous as to which interval should be displayed on the lane."}
 {"id": "/documentation/Xcode/slothcreator-building-docc-documentation-in-xcode", "law": "To build documentation for this package, use Xcode 13, open the file, and select Product > Build Documentation."}
+{"id": "/documentation/Xcode", "law": "Xcode is the suite of tools you use to build apps for Apple platforms."}
+{"id": "/documentation/Xcode", "law": "Use Xcode to manage your entire development workflow — from creating your app to testing, optimizing, and submitting it to the App Store."}
+{"id": "/documentation/Xcode", "law": "Use coding intelligence from anywhere in your project to explain and write code, analyze bugs, and generate fixes."}
+{"id": "/documentation/Xcode", "law": "Use agents that iterate and refine your code with Xcode guidance, skills, and other expertise."}
+{"id": "/documentation/Xcode", "law": "You can also use coding intelligence to localize your app or make it more accessible for people who use VoiceOver."}
+{"id": "/documentation/Xcode", "law": "Use Instruments to profile and analyze your app, improve performance, and investigate system resource usage."}
+{"id": "/documentation/Xcode", "law": "Use Xcode Cloud to build and test your app."}
+{"id": "/documentation/Xcode/analyzing-cpu-profiles-with-call-tree-views", "law": "Most use CPU sampling, but some use other techniques, such as Processor Trace, which reconstructs a call tree from hardware branch-tracing instructions, or the Task Creation Call Tree in Swift Concurrency, which captures a backtrace each time your app creates a task."}
+{"id": "/documentation/Xcode/analyzing-cpu-profiles-with-call-tree-views", "law": "Click a block to select it, use the arrow keys to move the selection, and secondary-click for a context menu."}
+{"id": "/documentation/Xcode/analyzing-cpu-profiles-with-call-tree-views", "law": "In the call tree, you can click a column header to reverse the sort order, but the flame graph always sorts heaviest to the left."}
+{"id": "/documentation/Xcode/analyzing-cpu-profiles-with-call-tree-views", "law": "The flame graph doesn’t support self-weight columns because displaying self weight would require placing larger bars under smaller ones."}
+{"id": "/documentation/Xcode/analyzing-cpu-profiles-with-call-tree-views", "law": "The name parameter is a , so use a string literal, or a constant of type , as shown here: For more details on signpost types, disambiguation, and how to display signpost data in Instruments, see ."}
+{"id": "/documentation/Xcode/analyzing-cpu-profiles-with-call-tree-views", "law": "Use it when you want to measure whether a code change improved or regressed the performance of a specific operation."}
+{"id": "/documentation/Xcode/analyzing-cpu-profiles-with-call-tree-views", "law": "To compare runs, record at least two runs in the same document by clicking Record multiple times."}
+{"id": "/documentation/Xcode/analyzing-cpu-profiles-with-call-tree-views", "law": "A node that appears only in the candidate run shows +∞; a node that appears only in the baseline run shows −100%."}
+{"id": "/documentation/Xcode/analyzing-cpu-profiles-with-call-tree-views", "law": "Use call tree visualizations to find performance bottlenecks in Instruments."}
+{"id": "/documentation/Xcode/coding-intelligence", "law": "Use agents to help you explore code, add features, refine your interface, and leverage skills, such as localization and accessibility."}
+{"id": "/documentation/Xcode/device-hub", "law": "Run your app on simulated devices in Device Hub to quickly evaluate new features and fix bugs, and to see how your interface works on devices that you don’t have physical access to."}
+{"id": "/documentation/Xcode/device-hub", "law": "Use the inspector to change the appearance of a device, get basic information (such as the name, operating system version, and device ID), download diagnostic files, and more."}
+{"id": "/documentation/Xcode/device-hub", "law": "To add physical devices, use Device Hub to pair devices wirelessly or using a cable connected to your Mac."}
+{"id": "/documentation/Xcode/device-hub", "law": "Manage the simulated and physical devices that you use to test your app."}
+{"id": "/documentation/Xcode/extending-and-customizing-agents", "law": "To do this, grant agents permission to use system commands and tools, request agents use built-in skills, add agent-specific configuration files, and install external plug-ins that add more capabilities."}
+{"id": "/documentation/Xcode/extending-and-customizing-agents", "law": "Xcode includes built-in expertise that can guide agents to use the best APIs and workflows for high-level tasks."}
+{"id": "/documentation/Xcode/extending-and-customizing-agents", "law": "You can install plug-ins that contain additional subagents, Model Context Protocol (MCP) servers, and skills that agents can use."}
+{"id": "/documentation/Xcode/improving-your-app-s-performance", "law": "These activities form a cycle of continuous improvement, as the following illustration shows: Minimizing resource use benefits your users and improves their perceptions of your app."}
+{"id": "/documentation/Xcode/improving-your-app-s-performance", "law": "Decreasing overall memory use reduces the likelihood of iOS freeing your app’s memory in the background, and improves responsiveness when a user switches back to your app."}
+{"id": "/documentation/Xcode/improving-your-app-s-performance", "law": "Reducing battery consumption and the use of power-hungry device features makes your app more reliable, and helps ensure that the rest of a person’s device is available when needed."}
+{"id": "/documentation/Xcode/improving-your-app-s-performance", "law": "Maintaining low disk space usage allows a person to install and use more apps, and to keep more content on their device."}
+{"id": "/documentation/Xcode/improving-your-app-s-performance", "law": "Doing so speeds up app and system upgrades, and reduces the iCloud storage space the system requires to create an iCloud backup of the device."}
+{"id": "/documentation/Xcode/improving-your-app-s-performance", "law": "To thoroughly understand your app’s performance, combine information from multiple sources: Use the to view metrics for launch time, user-interface responsiveness, writes to storage, memory use, and energy use, as well as diagnostic reports for disk writes, crashes, and energy."}
+{"id": "/documentation/Xcode/improving-your-app-s-performance", "law": "Use to gather metrics and record them in your own tools."}
+{"id": "/documentation/Xcode/improving-your-app-s-performance", "law": "Use the information from your observations and your understanding of your app’s purpose and expected use patterns to spot the greatest opportunities for improvement."}
+{"id": "/documentation/Xcode/improving-your-app-s-performance", "law": "For example, energy use associated with background-audio playing is probably not a problem for a podcast player, which users expect to play in the background."}
+{"id": "/documentation/Xcode/improving-your-app-s-performance", "law": "Seeing that value dominate the metric reports can indicate that efficiency savings are possible, but the most impactful changes may be in the use of auxiliary services that don’t impact the app’s main features."}
+{"id": "/documentation/Xcode/localizing-your-app-using-agents", "law": "If Xcode omits some user-facing strings when updating string catalogs, make sure you’re using localizable APIs in your code."}
+{"id": "/documentation/Xcode/localizing-your-app-using-agents", "law": "However, other Swift code that creates human-readable strings, must explicitly use the initializer to be localizable."}
+{"id": "/documentation/Xcode/localizing-your-app-using-agents", "law": "Update your Swift code to use the initializer and build your app again to update the string catalogs."}
+{"id": "/documentation/Xcode/localizing-your-app-using-agents", "law": "For UIKit and AppKit, make sure you use similar localizable APIs."}
+{"id": "/documentation/Xcode/localizing-your-app-using-agents", "law": "Use the Generate Translations button in the editor toolbar to add translations to languages and strings: To generate missing translations for all languages, select the source localization in the sidebar and click Generate Translations."}
+{"id": "/documentation/Xcode/localizing-your-app-using-agents", "law": "Then make sure that all the text fits when you change the language."}
+{"id": "/documentation/Xcode/localizing-your-app-using-agents", "law": "For example, use Dynamic Type so words and letters don’t clip in languages that require more height."}
+{"id": "/documentation/Xcode/localizing-your-app-using-agents", "law": "Use agentic coding tools to translate the strings in your app into multiple languages and regions."}
+{"id": "/documentation/Xcode/managing-your-simulated-and-physical-devices-in-device-hub", "law": "Use Device Hub to add specific simulator configurations and pair physical devices that you want to test your app on."}
+{"id": "/documentation/Xcode/managing-your-simulated-and-physical-devices-in-device-hub", "law": "You can add simulators for specific platforms and operating system versions that don’t appear in the Xcode run destination pop-up menu."}
+{"id": "/documentation/Xcode/managing-your-simulated-and-physical-devices-in-device-hub", "law": "Upgrade your iPhone or iPad to iOS or iPadOS 27 or later to wirelessly pair it; otherwise, use a cable."}
+{"id": "/documentation/Xcode/managing-your-simulated-and-physical-devices-in-device-hub", "law": "First, ensure that the device is on the same Wi-Fi network as your Mac so that it can discover it."}
+{"id": "/documentation/Xcode/managing-your-simulated-and-physical-devices-in-device-hub", "law": "For tvOS and visionOS devices, make sure that your Wi-Fi network has IPv6 enabled."}
+{"id": "/documentation/Xcode/managing-your-simulated-and-physical-devices-in-device-hub", "law": "For Apple Watch Series 5 or older, make sure that your Mac is connected to the same Bonjour-compatible Wi-Fi network as your watch."}
+{"id": "/documentation/Xcode/managing-your-simulated-and-physical-devices-in-device-hub", "law": "For earlier versions of iOS, Xcode requires your iPhone to remain physically connected to your Mac to run your app on any model of Apple Watch."}
+{"id": "/documentation/Xcode/running-your-app-on-simulated-or-physical-devices", "law": "Use simulated devices to debug your app on a variety of hardware that you might not have access to."}
+{"id": "/documentation/Xcode/running-your-app-on-simulated-or-physical-devices", "law": "Be aware that simulators run within Device Hub on your Mac and don’t replicate the performance or features of a physical device."}
+{"id": "/documentation/Xcode/running-your-app-on-simulated-or-physical-devices", "law": "If you don’t have platform support installed for your target, you can’t build and run your app on a device."}
+{"id": "/documentation/Xcode/running-your-app-on-simulated-or-physical-devices", "law": "Use the controls in the debug area to step through your code, inspect variables, and interact with the debugger."}
+{"id": "/documentation/Xcode/running-your-app-on-simulated-or-physical-devices", "law": "You don’t need to configure a Mac device to run your macOS apps unless you add capabilities that require provisioning."}
+{"id": "/documentation/Xcode/setting-up-coding-intelligence", "law": "To use coding intelligence in Xcode, go to the Intelligence settings and turn on the agent and chat products that you want to use."}
+{"id": "/documentation/Xcode/setting-up-coding-intelligence", "law": "Where available, you can turn on Claude or ChatGPT in Xcode."}
+{"id": "/documentation/Xcode/setting-up-coding-intelligence", "law": "You can also use coding tools from other providers."}
+{"id": "/documentation/Xcode/setting-up-coding-intelligence", "law": "You control which commands, tools, and skills agents use to perform tasks on your behalf."}
+{"id": "/documentation/Xcode/setting-up-coding-intelligence", "law": "To give agents that you use outside of Xcode access to your project and Xcode capabilities, see ."}
+{"id": "/documentation/Xcode/setting-up-coding-intelligence", "law": "For more information about an agent, click the privacy policy and terms of use links that appear at the bottom of the agent settings."}
+{"id": "/documentation/Xcode/setting-up-coding-intelligence", "law": "To use ChatGPT in Xcode (with or without an account): In Intelligence settings, click Turn On in the ChatGPT in Xcode row under Chat."}
+{"id": "/documentation/Xcode/setting-up-coding-intelligence", "law": "In the dialogs that appear, click Next, and then click Turn On ChatGPT."}
+{"id": "/documentation/Xcode/setting-up-coding-intelligence", "law": "For more information about OpenAI products, click “OpenAI Terms of Use…” at the bottom of the ChatGPT in Xcode settings."}
+{"id": "/documentation/Xcode/setting-up-coding-intelligence", "law": "To use Claude Sonnet & Opus: In Intelligence settings, click Claude Sonnet & Opus under Chat."}
+{"id": "/documentation/Xcode/using-coding-intelligence-in-the-source-editor", "law": "You can use coding intelligence in the source editor to submit prompts using the coding tools popover."}
+{"id": "/documentation/Xcode/using-coding-intelligence-in-the-source-editor", "law": "Use playgrounds to run and display code snippets in the canvas, and use previews to validate UI code across platforms."}
+{"id": "/documentation/Xcode/using-coding-intelligence-in-the-source-editor", "law": "To add a playground macro to your project, open the coding tools popover and click Generate a Playground: If you use an agent, Xcode starts a new conversation with a playground prompt, shows the response in the transcript, and displays the generated playground code in the artifacts pane."}
+{"id": "/documentation/Xcode/using-coding-intelligence-in-the-source-editor", "law": "If you use a chat model, Xcode shows the code changes directly in the source editor and runs the playground in the canvas."}
+{"id": "/documentation/Xcode/writing-code-with-intelligence-in-xcode", "law": "Use other buttons in the message text field to manage a request: To submit a prompt that you type, press Return or click the Submit button in the lower-right corner."}
+{"id": "/documentation/Xcode/writing-code-with-intelligence-in-xcode", "law": "If you use a chat product, a Project Context button appears in the lower-left corner of the message text field and is on by default."}
+{"id": "/documentation/Xcode/writing-code-with-intelligence-in-xcode", "law": "If you use an agent, Xcode may iterate on a response, build your app to verify the code, and fix build warnings and errors automatically."}
+{"id": "/documentation/Xcode/writing-code-with-intelligence-in-xcode", "law": "For example, Xcode may ask whether it can use a command-line tool to perform a task."}
+{"id": "/documentation/Xcode/writing-code-with-intelligence-in-xcode", "law": "To navigate quickly between conversations, use the jump bar in the toolbar or select the conversation in the sidebar."}
+{"id": "/documentation/Xcode/writing-code-with-intelligence-in-xcode", "law": "If you use an agent, you can enter plan mode to iterate on a software design and approve it before Xcode modifies any code."}
+{"id": "/documentation/Xcode/writing-code-with-intelligence-in-xcode", "law": "If you use a chat product, you control whether Xcode modifies your project in the message text field before you submit a prompt."}
+{"id": "/documentation/Xcode/writing-code-with-intelligence-in-xcode", "law": "Use the conversation history that Xcode maintains to rollback changes to a known state of your project, or to review changes across multiple files in your project."}
+{"id": "/documentation/Xcode/writing-code-with-intelligence-in-xcode", "law": "To use the History feature, your project must have a Git repository."}
+{"id": "/documentation/Xcode/writing-code-with-intelligence-in-xcode", "law": "If you don’t have a repository, click the Create Repository button that appears when you click the History button."}
+{"id": "/documentation/Xcode/Xcode-Cloud", "law": "Xcode Cloud is a CI/CD system that combines the tools you use to create apps and frameworks for Apple platforms: , , and ."}
+{"id": "/documentation/Xcode/Xcode-Cloud", "law": "To learn more about configuring your project or workspace to use Xcode Cloud, see ."}
+{"id": "/documentation/Xcode/Xcode-Cloud", "law": "Setting up your project to use Xcode Cloud."}
+{"id": "/documentation/Xcode/swift-packages", "law": "Swift packages are reusable components of Swift, Objective-C, Objective-C++, C, or C++ code that developers can use in their projects."}
+{"id": "/documentation/Xcode/swift-packages", "law": "They bundle source files, binaries, and resources in a way that’s easy to use in your app’s project."}
+{"id": "/documentation/Xcode/swift-packages", "law": "To learn more about the API you use in your package manifest, see ."}
+{"id": "/documentation/Xcode/swift-packages", "law": "Building Swift packages or apps that use them in continuous integration workflows."}
+{"id": "/documentation/Xcode/configuring-app-groups", "law": "You can also use an app group to share data between an app extension or App Clip and its host app."}
+{"id": "/documentation/Xcode/configuring-app-groups", "law": "Use the Refresh button below the app groups list to re-fetch your account’s groups at any time."}
+{"id": "/documentation/Xcode/configuring-app-groups", "law": "Each developer account can register a maximum of 1,000 app groups."}
+{"id": "/documentation/Xcode/configuring-app-groups", "law": "A container ID must begin with and then a custom string."}
+{"id": "/documentation/Xcode/configuring-app-groups", "law": "When your app becomes a member of an app group, there are a number of APIs you can use to read and write data to that group’s shared container, such as: Sharing preferences and other limited data by using the method to access the app group’s shared user defaults database."}
+{"id": "/documentation/Xcode/configuring-app-groups", "law": "Retrieving the physical location of the app group’s shared container by calling the method, which you can later use to read and write data."}
+{"id": "/documentation/Xcode/configuring-app-groups", "law": "You can also use an app group, which has an identifier that starts with the prefix, as a Keychain Access Group."}

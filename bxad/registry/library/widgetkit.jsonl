@@ -1,0 +1,8 @@
+{"id": "/documentation/WidgetKit", "law": "Use an iterative approach and start with support for one feature or select sizes of widgets — for example, start with a small widget as described in , but plan and design additional sizes and features across platforms from the beginning."}
+{"id": "/documentation/WidgetKit", "law": "People use buttons and toggles in widgets, controls, and Live Activities to interact with your app without launching it."}
+{"id": "/documentation/WidgetKit", "law": "In addition to offering relevant information and specific interactivity at a glance, people use widgets, watch complications, Live Activities, and controls to personalize their devices: People configure widgets and watch complications to display details specific to their needs."}
+{"id": "/documentation/WidgetKit", "law": "Widgets and watch complications use a special mechanism to update their content: You create a timeline of data updates and hand it to WidgetKit."}
+{"id": "/documentation/WidgetKit", "law": "Live Activities don’t use timelines to update their content."}
+{"id": "/documentation/WidgetKit", "law": "Instead, they use and ActivityKit push notifications you send with APNs."}
+{"id": "/documentation/WidgetKit", "law": "Controls don’t use timelines to update their content."}
+{"id": "/documentation/WidgetKit", "law": "Widgets, watch complications, Live Activities, and controls are small and require a focused, glanceable design."}

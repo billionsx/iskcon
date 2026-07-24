@@ -8,3 +8,8 @@
 {"id": "/documentation/CloudKit/sharing-cloudkit-data-with-other-icloud-users", "law": "cloudkit/designing-and-creating-a-cloudkit-database Before saving a record, the sample doesn’t use any record-type information."}
 {"id": "/documentation/CloudKit/sharing-cloudkit-data-with-other-icloud-users", "law": "For real-world apps that use record types at an earlier phase, like creating a at the beginning of a launch session, the schema must be ready first."}
 {"id": "/documentation/CloudKit/sharing-cloudkit-data-with-other-icloud-users", "law": "Use Xcode to build and run the sample app on the devices."}
+{"id": "/documentation/CloudKit", "law": "You use CloudKit to store your app’s existing data in the cloud so that the user can access it on multiple devices."}
+{"id": "/documentation/CloudKit", "law": "Apps can always store data in a public area that is readable by all users."}
+{"id": "/documentation/CloudKit", "law": "CloudKit also relies heavily on the use of objects to manage the asynchronous transfer of data to and from the server."}
+{"id": "/documentation/CloudKit", "law": "Before using CloudKit, make sure it’s the most suitable option for your app."}
+{"id": "/documentation/CloudKit", "law": "Use these classes as-is to save, retrieve, and manipulate data in iCloud."}

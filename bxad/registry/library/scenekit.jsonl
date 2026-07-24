@@ -1,3 +1,22 @@
 {"id": "/documentation/SceneKit/postprocessing-a-scene-with-custom-symbols", "law": "See the “Defining a Technique” section of the documentation for detailed information about the steps required to define a technique."}
 {"id": "/documentation/SceneKit/postprocessing-a-scene-with-custom-symbols", "law": "Value bindings use the logical type that corresponds with the Metal type."}
 {"id": "/documentation/SceneKit/postprocessing-a-scene-with-custom-symbols", "law": "For example, custom symbols defined in the technique with a type of , with a type of in the shader, use a value when bound."}
+{"id": "/documentation/SceneKit", "law": "Unlike lower-level APIs such as Metal and OpenGL that require you to implement in precise detail the rendering algorithms that display a scene, SceneKit requires only descriptions of your scene’s contents and the actions or animations you want it to perform."}
+{"id": "/documentation/SceneKit/SCNMaterial/LightingModel-swift.struct", "law": "Constants specifying the lighting and shading algorithm to use for rendering a material."}
+{"id": "/documentation/SceneKit/SCNAudioPlayer", "law": "To use positional audio, first create a reusable or object to provide an audio stream."}
+{"id": "/documentation/SceneKit/SCNAudioSource", "law": "A simple, reusable audio source—music or sound effects loaded from a file—for use in positional audio playback."}
+{"id": "/documentation/SceneKit/SCNShadable", "law": "That is, you can still use material properties, lighting models, and camera effects to affect the rendered image."}
+{"id": "/documentation/SceneKit/SCNShadable", "law": "SceneKit inserts your shader modifiers into its shader program a specific order: You can use the structures defined by earlier entry points in later entry points."}
+{"id": "/documentation/SceneKit/SCNShadable", "law": "The code you provide for a shader modifier must be organized in a specific structure, as illustrated in the example below: Custom variables declarations."}
+{"id": "/documentation/SceneKit/SCNShadable", "law": "Because the syntax differs between Metal and OpenGL shaders, you must include both declarations for your shader modifier to be usable with both rendering technologies."}
+{"id": "/documentation/SceneKit/SCNShadable", "law": "If you include custom functions in your snippet, you must place the directive between your function definitions and the main body of the snippet."}
+{"id": "/documentation/SceneKit/SCNShadable", "law": "By default, SceneKit automatically uses material properties to determine whether an object should be rendered with partial transparency and uses this information to optimize rendering performance."}
+{"id": "/documentation/SceneKit/SCNShadable", "law": "Use the or directive to override SceneKit’s setting."}
+{"id": "/documentation/SceneKit/SCNShadable", "law": "If you set a value using the or method, or set a target value for a keypath animation, the value must be contained in an Objective-C object."}
+{"id": "/documentation/SceneKit/SCNShadable", "law": "Assigning a uniform of a vector or matrix type requires an object containing data of the appropriate type."}
+{"id": "/documentation/SceneKit/SCNShadable", "law": "In this case, your properties can use primitive or structure types appropriate to the corresponding Metal or GLSL variables."}
+{"id": "/documentation/SceneKit/SCNShaderModifierEntryPoint/geometry", "law": "You can use SceneKit’s uniforms (such as ) to operate in a different coordinate space, but you must convert back to model space before writing results."}
+{"id": "/documentation/SceneKit/SCNShaderModifierEntryPoint/geometry", "law": "The below shader modifier produces an animated sinusoidal deformation: Use this entry point to deform a geometry’s surface or alter its vertex attributes."}
+{"id": "/documentation/SceneKit/SCNNode", "law": "To construct a scene, you use a hierarchy of nodes to create its structure, then add lights, cameras, and geometry to nodes to create visible content."}
+{"id": "/documentation/SceneKit/SCNNode", "law": "You use a hierarchy of nodes and transformations to model the contents of your scene in a way that suits the needs of your app."}
+{"id": "/documentation/SceneKit/SCNNode", "law": "To add physics-based behaviors and special effects to SceneKit content, use other types of node attachments."}

@@ -3,3 +3,9 @@
 {"id": "/documentation/StoreKit/understanding-storekit-workflows", "sha": "acfc45358176dfefdc184643c2463dae5fb4b85dd4357cd8ba763a51ec192549", "t": "Understanding StoreKit workflows", "n": 2408, "laws": 2, "ts": "2026-07-24 17:53 UTC"}
 {"id": "/documentation/USD/schema-definitions-for-third-party-dccs", "sha": "dbed509ec20e86813718eb2c908f5f19881525a758a43ab5c5333bfc5104b6a0", "t": "Schema definitions for third-party DCCs", "n": 669, "laws": 0, "ts": "2026-07-24 17:55 UTC"}
 {"id": "/documentation/Xcode/localizing-landmarks", "sha": "e491f13099d171f1c572987fecf7874ef685b59f11a439854262c9cfe5e8af4c", "t": "Localizing Landmarks", "n": 290, "laws": 0, "ts": "2026-07-24 17:56 UTC"}
+{"id": "/documentation/CreateML", "sha": "d72f11ad2cc4c84f578423361adfb8d1f0b81530c9543de4cdc426101efe2e7e", "t": "Create ML", "n": 2174, "laws": 2, "ts": "2026-07-24 18:50 UTC"}
+{"id": "/documentation/ServicesAccountLinking", "sha": "f3f8130daa885e168dec1f121fb278ddc92b3aa5d2013a1dd83d66a055c0851a", "t": "ServicesAccountLinking", "n": 842, "laws": 1, "ts": "2026-07-24 18:53 UTC"}
+{"id": "/documentation/SwiftData", "sha": "9a5f76f8d16315766d50e6b2342032f1ff4b14604ebcb92329e46b6a9826b644", "t": "SwiftData", "n": 3054, "laws": 3, "ts": "2026-07-24 18:53 UTC"}
+{"id": "/documentation/Translation", "sha": "4c978ddc62c6eb7164b7bb23d0290e8db36fdbba1c11545ece8fbc873ed333bf", "t": "Translation", "n": 1108, "laws": 4, "ts": "2026-07-24 18:54 UTC"}
+{"id": "/documentation/AudioToolbox/AUAudioUnit/presetState(for:)", "sha": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855", "t": "presetState(for:)", "n": 0, "laws": 0, "ts": "2026-07-24 19:01 UTC"}
+{"id": "/documentation/avfoundation/avsamplebufferrequest", "sha": "9c7283fe9e66cb435bf803c408468d8e73aeebe8917f9cde6225f6d019a8d0b4", "t": "AVSampleBufferRequest", "n": 337, "laws": 0, "ts": "2026-07-24 19:05 UTC"}

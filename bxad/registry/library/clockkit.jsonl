@@ -11,3 +11,9 @@
 {"id": "/documentation/ClockKit/providing-multiple-complications", "law": "While each descriptor doesn’t need to cover all possible families, every family is covered by at least one descriptor."}
 {"id": "/documentation/ClockKit/providing-multiple-complications", "law": "For most families, the app checks the complication to determine which template it should provide."}
 {"id": "/documentation/ClockKit/providing-multiple-complications", "law": "If an app creates templates based on the complication’s property, it must check for the default identifier."}
+{"id": "/documentation/ClockKit", "law": "Use to create complications."}
+{"id": "/documentation/ClockKit", "law": "Use the ClockKit framework to implement complications for your app."}
+{"id": "/documentation/ClockKit", "law": "Complications are small interface elements that appear on a watch face and provide quick access to data that people frequently use."}
+{"id": "/documentation/ClockKit", "law": "Use the templates to display text, images, and graphical gauges."}
+{"id": "/documentation/ClockKit", "law": "If you use a user activity configuration, ClockKit passes the user activity to your app after waking it."}
+{"id": "/documentation/ClockKit", "law": "You can use these tasks to keep the content of your watchOS app and your complications up to date and accurate."}

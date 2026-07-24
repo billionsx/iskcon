@@ -18,3 +18,5 @@
 {"id": "/documentation/LocalAuthentication/logging-a-user-into-your-app-with-face-id-or-touch-id", "law": "Users don’t get a final opportunity to cancel."}
 {"id": "/documentation/LocalAuthentication/logging-a-user-into-your-app-with-face-id-or-touch-id", "law": "Users with Touch ID (or no biometry at all) don’t need the message because they can cancel the operation before the scan actually takes place."}
 {"id": "/documentation/LocalAuthentication/logging-a-user-into-your-app-with-face-id-or-touch-id", "law": "You test what kind of biometry the device supports by reading the context’s parameter: This parameter only contains a meaningful value after you run the method on the context at least once."}
+{"id": "/documentation/LocalAuthentication", "law": "Use the LocalAuthentication framework to leverage these mechanisms in your app and extend authentication procedures your app already implements."}
+{"id": "/documentation/LocalAuthentication", "law": "To maximize security, your app never gains access to any of the underlying authentication data."}

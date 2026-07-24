@@ -12,3 +12,7 @@
 {"id": "/documentation/Network/implementing-netcat-with-network-framework", "law": "Thus, you must retain the connection object, by calling , until you’re done with the connection."}
 {"id": "/documentation/Network/implementing-netcat-with-network-framework", "law": "For a simple application, like , you can use a very simple state changed handler."}
 {"id": "/documentation/Network/implementing-netcat-with-network-framework", "law": "Make sure you handle the state."}
+{"id": "/documentation/Network", "law": "Use this framework when you need direct access to protocols like TLS, TCP, and UDP for your custom application protocols."}
+{"id": "/documentation/Network", "law": "Continue to use , which is built upon this framework, for loading HTTP- and URL-based resources."}
+{"id": "/documentation/Network", "law": "watchOS supports Network framework for specific use cases."}
+{"id": "/documentation/Network", "law": "Configure protocol options to use with connections and listeners, and inspect the results of protocol handshakes."}

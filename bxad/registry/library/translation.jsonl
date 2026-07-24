@@ -3,3 +3,7 @@
 {"id": "/documentation/Translation/translating-text-within-your-app", "law": "This pattern of defining a configuration as a property wrapper and invalidating its state is recommended for initiating new translations."}
 {"id": "/documentation/Translation/translating-text-within-your-app", "law": "To translate multiple strings between the same languages, it’s most efficient to use one of the batch translation functions of ."}
 {"id": "/documentation/Translation/translating-text-within-your-app", "law": "To translate multiple strings of text and display the results as they arrive, use the function."}
+{"id": "/documentation/Translation", "law": "You can use the built-in UI and let the system offer a translation to users on your behalf."}
+{"id": "/documentation/Translation", "law": "Or you can use the framework to customize the translation experience."}
+{"id": "/documentation/Translation", "law": "To customize the translation experience use one of the translation tasks such as ."}
+{"id": "/documentation/Translation", "law": "These functions provides you with a that you can use to translate strings of text one at a time, or in a batch."}

@@ -8,3 +8,4 @@
 {"id": "/documentation/DriverKit/communicating-between-a-driverkit-extension-and-a-client-app", "law": "Although this simplifies running the sample code, in your own apps you may prefer to use ."}
 {"id": "/documentation/DriverKit/communicating-between-a-driverkit-extension-and-a-client-app", "law": "For the Bundle ID, choose “explicit”, and use the names you chose in the first step."}
 {"id": "/documentation/DriverKit/communicating-between-a-driverkit-extension-and-a-client-app", "law": "When creating the driver’s profile, be sure to select DriverKit App Development as the profile type."}
+{"id": "/documentation/DriverKit", "law": "In macOS, use the framework to install and upgrade your driver."}

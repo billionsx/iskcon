@@ -13,3 +13,5 @@
 {"id": "/documentation/Virtualization/running-macos-in-a-virtual-machine-on-apple-silicon", "law": "This app includes entitlements to enable it to use Virtualization and access the VM’s’ audio input, such as the microphone."}
 {"id": "/documentation/Virtualization/running-macos-in-a-virtual-machine-on-apple-silicon", "law": "You can use either version, they’re functionally identical."}
 {"id": "/documentation/Virtualization/running-macos-in-a-virtual-machine-on-apple-silicon", "law": "The Virtualization framework checks the configuration to make sure it supports saving and restoring."}
+{"id": "/documentation/Virtualization", "law": "Use this framework to boot and run macOS or Linux-based operating systems in custom environments that you define."}
+{"id": "/documentation/Virtualization", "law": "Then, create a object with your configuration data, and use that VM object to start, pause, and resume the VM environment."}

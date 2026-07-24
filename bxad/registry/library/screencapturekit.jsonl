@@ -1,1 +1,4 @@
 {"id": "/documentation/ScreenCaptureKit/capturing-screen-content-in-macos", "law": "After the stream starts, further changes to its configuration and content filter don’t require restarting it."}
+{"id": "/documentation/ScreenCaptureKit", "law": "Use ScreenCaptureKit to capture high-performance video and audio across iOS, iPadOS, macOS, tvOS, and visionOS."}
+{"id": "/documentation/ScreenCaptureKit", "law": "Use , the system screen-sharing control, as the recommended approach for letting people select content sources and manage active streams, rather than building your own selection UI."}
+{"id": "/documentation/ScreenCaptureKit", "law": "In the Info pane of the Xcode target editor, add a key with a description of why your app requires screen recording access."}

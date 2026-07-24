@@ -10,3 +10,5 @@
 {"id": "/documentation/CoreHaptics/updating-continuous-and-transient-haptic-parameters-in-real-time", "law": "HapticPalette requires Xcode 11 or later."}
 {"id": "/documentation/CoreHaptics/updating-continuous-and-transient-haptic-parameters-in-real-time", "law": "To accomplish this spacing, you use a dispatch timer to separate the transient haptic patterns by a time interval of 600 milliseconds, so they feel distinct."}
 {"id": "/documentation/CoreHaptics/updating-continuous-and-transient-haptic-parameters-in-real-time", "law": "Creating haptic pattern players is inexpensive, so you don’t need to keep them around."}
+{"id": "/documentation/CoreHaptics", "law": "Use haptics to engage users physically, with tactile and audio feedback that gets attention and reinforces actions."}
+{"id": "/documentation/CoreHaptics", "law": "You can use transient and continuous patterns independently, or build your pattern from precise combinations of the two."}

@@ -5,3 +5,7 @@
 {"id": "/documentation/Speech/recognizing-speech-in-live-audio", "law": "The task group uses Swift’s structured concurrency mechanism to ensure that both subtasks run to completion before returns."}
 {"id": "/documentation/Speech/recognizing-speech-in-live-audio", "law": "When the app launches, it uses to ensure that any necessary transcription assets install."}
 {"id": "/documentation/Speech/recognizing-speech-in-live-audio", "law": "Developers can enhance the transcriber module for specific use cases and applications by customizing its language model."}
+{"id": "/documentation/Speech", "law": "Use the Speech framework to recognize spoken words in recorded or live audio."}
+{"id": "/documentation/Speech", "law": "This framework provides a similar behavior, except that you can use it without the presence of the keyboard."}
+{"id": "/documentation/Speech", "law": "For example, you might use speech recognition to recognize verbal commands or to handle text dictation in other parts of your app."}
+{"id": "/documentation/Speech", "law": "For a general understanding of how you use these classes together, see ."}

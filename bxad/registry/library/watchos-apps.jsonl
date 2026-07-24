@@ -1,0 +1,10 @@
+{"id": "/documentation/watchOS-Apps", "law": "They don’t need to wait to see if the action succeeds; instead, the watchOS app automatically notifies them of any important updates."}
+{"id": "/documentation/watchOS-Apps", "law": "Many may prefer to interact through complications or notifications, and may never explicitly launch your app."}
+{"id": "/documentation/watchOS-Apps", "law": "Use notifications to alert people of significant events."}
+{"id": "/documentation/watchOS-Apps", "law": "You can use either local or remote notifications to communicate, even when your app isn’t running."}
+{"id": "/documentation/watchOS-Apps", "law": "Use SiriKit and App intents to expand the ways people can interact with your app."}
+{"id": "/documentation/watchOS-Apps", "law": "If your app uses domains like messaging or media, use to add Siri support to your app."}
+{"id": "/documentation/watchOS-Apps", "law": "For other features, use to expose your app’s functionality to system services like Siri and the Shortcuts app."}
+{"id": "/documentation/watchOS-Apps", "law": "Designing your app for the Always On state."}
+{"id": "/documentation/watchOS-Apps", "law": "Use WidgetKit to create complications on the watch face that provide quick access to useful information from your app."}
+{"id": "/documentation/watchOS-Apps", "law": "Use notifications to string together longer workflows."}

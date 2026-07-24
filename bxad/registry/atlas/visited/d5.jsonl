@@ -1,0 +1,6 @@
+{"id": "/documentation/Matter", "sha": "1af674620ad616417005370cf00e9e0197f3ce95d19be8919caa21d65ced5643", "t": "Matter", "n": 15866, "laws": 3, "ts": "2026-07-24 18:52 UTC"}
+{"id": "/documentation/ObjectiveC", "sha": "b9d85bd96899a12002064a6d2382b901fb046d7b950f00c108f0090d0506a057", "t": "Objective-C Runtime", "n": 755, "laws": 0, "ts": "2026-07-24 18:52 UTC"}
+{"id": "/documentation/SiriKit", "sha": "db29edf1b4186c71925aaf98585ecf1808a7f6a87082eee517e009ff9c9b0a65", "t": "SiriKit", "n": 2980, "laws": 5, "ts": "2026-07-24 18:53 UTC"}
+{"id": "/documentation/vmnet", "sha": "79339bcc3ea31d9392df5c7f62557ec9bb7abdccb73c5e86a2c04d8990472c16", "t": "vmnet", "n": 3081, "laws": 4, "ts": "2026-07-24 18:55 UTC"}
+{"id": "/documentation/avfaudio/avaudiomixernode", "sha": "e8412631cbbcbab7e4764fa253b42d63da5a2a1eab3f5abe378b107ddebe2979", "t": "AVAudioMixerNode", "n": 418, "laws": 0, "ts": "2026-07-24 19:00 UTC"}
+{"id": "/documentation/avfoundation/avcapturedevice/centerstagecontrolmode-swift.type.property", "sha": "3b07645a776777cec4bfedbfbdfa2eee5f51aa3e6371824ca7752aad879851e5", "t": "centerStageControlMode", "n": 149, "laws": 0, "ts": "2026-07-24 19:05 UTC"}

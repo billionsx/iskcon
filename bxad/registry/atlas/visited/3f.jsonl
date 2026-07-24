@@ -1,0 +1,6 @@
+{"id": "/documentation/updates/foundation", "sha": "a73ebbca8b20ce77d80cfbddd0ad90a32403326d52a05078e41f905e25ee6e2d", "t": "Foundation updates", "n": 3130, "laws": 10, "ts": "2026-07-24 18:47 UTC"}
+{"id": "/documentation/arkit/imageanchor", "sha": "8d17d19b1d180dbef48498ba57bde84b57e1628f98fc38668f2c87402d281f95", "t": "ImageAnchor", "n": 272, "laws": 0, "ts": "2026-07-24 18:59 UTC"}
+{"id": "/documentation/arkit/arfaceanchor/blendshapelocation", "sha": "9514366f20f3d3140fe471b604a6cbb0b45e81c09fbb47c54102fcfa6b778d38", "t": "ARFaceAnchor.BlendShapeLocation", "n": 2160, "laws": 3, "ts": "2026-07-24 18:59 UTC"}
+{"id": "/documentation/Metal/MTLComputeCommandEncoder", "sha": "92c7cda06fe56de0237d7dab4c29f2d81bfd0352971c798d6bb80a7e22053ee0", "t": "MTLComputeCommandEncoder", "n": 4046, "laws": 1, "ts": "2026-07-24 19:02 UTC"}
+{"id": "/documentation/VideoToolbox/VTSessionSetProperty(_:key:value:)", "sha": "157c00dae804abf23b751c965edfc62207f76534684d5d00481d0347ddbf679e", "t": "VTSessionSetProperty(_:key:value:)", "n": 214, "laws": 0, "ts": "2026-07-24 19:03 UTC"}
+{"id": "/documentation/AVFoundation/AVContinuityDevice", "sha": "58d2358510b458734a40a1f9b6ddf252059c36ccd7a4c6c5ff49a44d1cad48e2", "t": "AVContinuityDevice", "n": 552, "laws": 0, "ts": "2026-07-24 19:07 UTC"}

@@ -3,3 +3,6 @@
 {"id": "/documentation/visionOS/happybeam", "sha": "ea5fec34e7e76384c7f5baa2d04456ee1179050259e413ea67a2e2cb1b1bd565", "t": "Happy Beam", "n": 3859, "laws": 5, "ts": "2026-07-24 17:57 UTC"}
 {"id": "/documentation/technologyoverviews/apple-intelligence", "sha": "5a97b71f8cea2a89a5060fdbc3ceffe3911a8de2317504f6c11213564043aecf", "t": "Apple Intelligence", "n": 4477, "laws": 10, "ts": "2026-07-24 17:58 UTC"}
 {"id": "/documentation/technotes/tn3103-apple-pay-on-the-web-troubleshooting-guide", "sha": "ed794136ecf28d3deb85b3531faa9341a0dbbb7d105b7f86b1d9f00746b0757c", "t": "TN3103: Apple Pay on the Web troubleshooting guide", "n": 17457, "laws": 10, "ts": "2026-07-24 17:58 UTC"}
+{"id": "/documentation/SwiftUI/WritableDocument", "sha": "a8e80f3615f592faafda2882d17fcc5b3b34f9f8a17b8d09c4d469931a48f366", "t": "WritableDocument", "n": 789, "laws": 1, "ts": "2026-07-24 18:45 UTC"}
+{"id": "/documentation/Foundation/ProcessInfo/thermalState-swift.property", "sha": "c5dc5fe2e367a23b0bfaee19086e6414e1adc42355fdc74063f6654fa300db32", "t": "thermalState", "n": 157, "laws": 1, "ts": "2026-07-24 18:57 UTC"}
+{"id": "/documentation/SwiftUI/Binding", "sha": "1cb4ef7b52d4094e8ddf90b310c073c56f274e8c215126cb083bc953d40d9755", "t": "Binding", "n": 1781, "laws": 3, "ts": "2026-07-24 19:07 UTC"}

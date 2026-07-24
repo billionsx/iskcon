@@ -5,3 +5,5 @@
 {"id": "/documentation/CreateML/detecting-human-actions-in-a-live-video-feed", "law": "The next sections explain the remaining publishers in the chain and the methods they use to transform their inputs."}
 {"id": "/documentation/CreateML/detecting-human-actions-in-a-live-video-feed", "law": "Get the most accurate predictions from an action classifier by using whatever technique you think best tracks a person from frame to frame, and use the multiarray from that person’s result."}
 {"id": "/documentation/CreateML/detecting-human-actions-in-a-live-video-feed", "law": "An action classifier requires a valid, non- multiarray for every frame."}
+{"id": "/documentation/CreateML", "law": "Use Create ML with familiar tools like Swift and macOS playgrounds to create and train custom machine learning models on your Mac."}
+{"id": "/documentation/CreateML", "law": "Create machine learning models for use in your app."}

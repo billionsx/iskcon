@@ -1,0 +1,10 @@
+{"id": "/documentation/MetalKit/MTKView", "law": "The class provides a default implementation of a Metal-aware view that you can use to render graphics using Metal and display them onscreen."}
+{"id": "/documentation/MetalKit/MTKView", "law": "The view requires a object to manage the Metal objects it creates for you."}
+{"id": "/documentation/MetalKit/MTKView", "law": "You must set the property and, optionally, modify the view’s drawable properties before drawing."}
+{"id": "/documentation/MetalKit/MTKView", "law": "Use this mode for games and other animated content that’s regularly updated."}
+{"id": "/documentation/MetalKit/MTKView", "law": "Use this mode for apps with a more traditional workflow, where updates happen when data changes, but not on a regular timed interval."}
+{"id": "/documentation/MetalKit/MTKView", "law": "Use this mode to create your own custom workflow."}
+{"id": "/documentation/MetalKit/MTKView", "law": "You should either subclass or provide a delegate, but not both."}
+{"id": "/documentation/MetalKit/MTKView", "law": "After rendering the contents, you must present the drawable to update the view’s contents."}
+{"id": "/documentation/MetalKit/MTKView", "law": "Don’t wait for the command buffer to finish executing before registering the drawable’s presentation."}
+{"id": "/documentation/MetalKit/MTKViewDelegate", "law": "Use a delegate to provide a drawing method to a object and respond to rendering events without subclassing the class."}

@@ -11,3 +11,4 @@
 {"id": "/documentation/tvmljs/responding_to_user_interaction", "law": "Use the function to load the template and then add an event listener to the document using the JavaScript function."}
 {"id": "/documentation/tvmljs/responding_to_user_interaction", "law": "Use the function to verify that the event fired for the correct TVML element."}
 {"id": "/documentation/tvmljs/responding_to_user_interaction", "law": "Use the function to load the new document from the server."}
+{"id": "/documentation/tvmljs", "law": "You use other classes in the framework to stream media and respond to events."}

@@ -1,1 +1,6 @@
 {"id": "/documentation/Metal/processing-hdr-images-with-metal", "sha": "30991966788b2e9c8cc2df1ba69f641da567a035eae054dec7d321d786bc145d", "t": "Processing HDR images with Metal", "n": 171, "laws": 0, "ts": "2026-07-24 17:50 UTC"}
+{"id": "/documentation/CoreVideo", "sha": "29677f52746c9a1567254bd301210ead90c43c38c9e54f7f31999c6d948b405d", "t": "Core Video", "n": 1056, "laws": 1, "ts": "2026-07-24 18:50 UTC"}
+{"id": "/documentation/SecurityFoundation", "sha": "3d01fc91bcb0dbfb3c640362f06053a863641806e7acabe830d74cbbf081be1f", "t": "Security Foundation", "n": 482, "laws": 0, "ts": "2026-07-24 18:53 UTC"}
+{"id": "/documentation/avfaudio/avaudioapplication/microphoneinjectionpermission-swift.enum/granted", "sha": "8dc7f7e54b87e95d15fdc785446b76547884b46090af3d6111b7d41c963f8372", "t": "AVAudioApplication.MicrophoneInjectionPermission.granted", "n": 57, "laws": 0, "ts": "2026-07-24 19:00 UTC"}
+{"id": "/documentation/avfaudio/avaudiosourcenoderenderblockrealtimesafe", "sha": "94af7cf9b6e7536b20ca01859008d0744391f555f622098d39032d364c146942", "t": "AVAudioSourceNodeRenderBlockRealtimeSafe", "n": 106, "laws": 0, "ts": "2026-07-24 19:00 UTC"}
+{"id": "/documentation/avfoundation/avcomposition", "sha": "6450f82a5309868a85b1953c0636a34adc30fc9fa8a5fb43e14a75f295d960e3", "t": "AVComposition", "n": 1931, "laws": 1, "ts": "2026-07-24 19:04 UTC"}

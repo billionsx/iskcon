@@ -16,3 +16,7 @@
 {"id": "/documentation/SwiftData/Filtering-and-sorting-persistent-data", "law": "By defining the predicate once in a central location, queries in multiple views can use it."}
 {"id": "/documentation/SwiftData/Maintaining-a-local-copy-of-server-data", "law": "The server is always the source of truth."}
 {"id": "/documentation/SwiftData/Maintaining-a-local-copy-of-server-data", "law": "The structure also conforms to the protocol so the app can use the structure to decode the downloaded data."}
+{"id": "/documentation/swiftdata/resultsobserver/sections", "law": "The key path is automatically prepended as the first sort descriptor at initialization, and re-prepended if is mutated, ensuring results are always contiguous within each section."}
+{"id": "/documentation/SwiftData", "law": "For example, an app that fetches data from a remote web service might use SwiftData to implement a lightweight caching mechanism and provide limited offline functionality."}
+{"id": "/documentation/SwiftData", "law": "Use the class to insert, update, and delete instances of that model, and to write unsaved changes to disk."}
+{"id": "/documentation/SwiftData", "law": "To display models in a SwiftUI view, use the macro and specify a predicate or fetch descriptor."}

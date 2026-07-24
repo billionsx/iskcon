@@ -1,0 +1,5 @@
+{"id": "/documentation/updates/gamekit", "sha": "f726c6b54bd179955f8288c1ef8f08dddc0ddbc85c319f2358081124e3e9c42f", "t": "GameKit updates", "n": 927, "laws": 6, "ts": "2026-07-24 18:47 UTC"}
+{"id": "/documentation/AppStoreConnectAPI", "sha": "a0e69a4ab922a0ff365e76dcc745f20a167a3b4debd687f92cdbb8682a81f32a", "t": "App Store Connect API", "n": 2797, "laws": 3, "ts": "2026-07-24 18:48 UTC"}
+{"id": "/documentation/LivePhotosKitJS", "sha": "b2f712fe000a854d8af6610afdb8be5c23dfc6f72398f6126ebd65461e8fd635", "t": "LivePhotosKit JS", "n": 4821, "laws": 10, "ts": "2026-07-24 18:51 UTC"}
+{"id": "/documentation/avfaudio/avaudionode/installaudiotap(onbus:buffersize:format:tapprovider:)", "sha": "401e7c132b7bf6ca38db4d5986f2f61d537ac6305c84f5eabaa2708e4e634e52", "t": "installAudioTap(onBus:bufferSize:format:tapProvider:)", "n": 333, "laws": 1, "ts": "2026-07-24 19:00 UTC"}
+{"id": "/documentation/AVKit/AVContinuityDevicePickerViewController", "sha": "05b70ba2015e96efa6a9e22ea9342ba2ffc0a4f618133e6eb6f3857cfd9973c7", "t": "AVContinuityDevicePickerViewController", "n": 717, "laws": 1, "ts": "2026-07-24 19:07 UTC"}

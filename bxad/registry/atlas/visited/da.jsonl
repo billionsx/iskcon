@@ -1,3 +1,9 @@
 {"id": "/documentation/AppIntents/integrating-your-messaging-app-with-apple-intelligence", "sha": "7212a20589391944f2cc8c03041fa875ab58f5b8e174c0de88606d32cff56c69", "t": "Integrating your messaging app with Apple Intelligence", "n": 5506, "laws": 5, "ts": "2026-07-24 17:46 UTC"}
 {"id": "/documentation/RealityKit/mixing-spatial-music", "sha": "f06340eea25d92e1a39f7fb7ec414830708a22484518f9373ad24abb6e992d07", "t": "Mixing spatial music", "n": 174, "laws": 0, "ts": "2026-07-24 17:52 UTC"}
 {"id": "/documentation/UIKit/adding-hardware-keyboard-support-to-your-app", "sha": "647c825c784c5a59000594abcdf8fedb04067dbba9562a0e82530d6def5505b3", "t": "Adding hardware keyboard support to your app", "n": 213, "laws": 0, "ts": "2026-07-24 17:54 UTC"}
+{"id": "/documentation/updates/appclips", "sha": "95094ec87d5865f4370d37a413e3650cc247e56ca8b9167766d9c391b873b4e6", "t": "App Clips updates", "n": 329, "laws": 1, "ts": "2026-07-24 18:46 UTC"}
+{"id": "/documentation/Quartz", "sha": "38de5f05ab088b8f6142f58e3da5228b6c3fe34287e04542e33ee2f330269818", "t": "Quartz", "n": 846, "laws": 0, "ts": "2026-07-24 18:52 UTC"}
+{"id": "/documentation/watchOS-Apps", "sha": "af28a7c7e13cdac7908f9b345e014b9e77e0cd046ebf45e27b3635ed0a8638cb", "t": "watchOS apps", "n": 4888, "laws": 10, "ts": "2026-07-24 18:55 UTC"}
+{"id": "/documentation/arkit/arsession/update(with:)", "sha": "0dfe37238d8cc798e7e2876eca9f8544c6c02f9be050b0d36c932869e9dc56b6", "t": "update(with:)", "n": 508, "laws": 0, "ts": "2026-07-24 18:56 UTC"}
+{"id": "/documentation/arkit/arskviewdelegate", "sha": "4637734ce5f38f15baa6598c1f7709d60e0d29c31e609b7666a460031bc4d046", "t": "ARSKViewDelegate", "n": 566, "laws": 0, "ts": "2026-07-24 18:57 UTC"}
+{"id": "/documentation/avfoundation/avvideocompositing/startrequest(_:)", "sha": "3f1164f3ee45fc4f74cae47cba9f8622857dc41e63b09a398cdfc32b025cfb9b", "t": "startRequest(_:)", "n": 905, "laws": 1, "ts": "2026-07-24 19:04 UTC"}

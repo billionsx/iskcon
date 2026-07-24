@@ -7,3 +7,4 @@
 {"id": "/documentation/CoreAudio/capturing-system-audio-with-core-audio-taps", "law": "Before you run the sample code project in Xcode, ensure that you’re using macOS 14.2 or later."}
 {"id": "/documentation/CoreAudio/capturing-system-audio-with-core-audio-taps", "law": "Use a Core Audio tap to capture outgoing audio from a process or group of processes."}
 {"id": "/documentation/CoreAudio/creating-an-audio-server-driver-plug-in", "law": "Use Audio MIDI Setup to inspect the newly installed device."}
+{"id": "/documentation/CoreAudio", "law": "Use the Core Audio framework to interact with device’s audio hardware."}

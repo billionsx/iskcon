@@ -1,2 +1,18 @@
 {"id": "/documentation/CoreImage/generating-an-animation-with-a-core-image-render-destination", "law": "Set the peak specular highlight value to the maximum value of white with respect to the current headroom, or a reasonable default value."}
 {"id": "/documentation/CoreImage/generating-an-animation-with-a-core-image-render-destination", "law": "generates the gradient shading image between the current maximum RGB white, , and a fully transparent clear color, ."}
+{"id": "/documentation/CoreImage", "law": "Use the many built-in image filters to process images and build complex effects by chaining filters."}
+{"id": "/documentation/CoreImage", "law": "Use built-in or custom filters to process still and video images."}
+{"id": "/documentation/CoreImage/CIColorMatrix", "law": "The properties you use to configure a color matrix filter."}
+{"id": "/documentation/CoreImage/CIFilter-swift.class", "law": "The par swift.class` object are set and retrieved through the use of key-value pairs."}
+{"id": "/documentation/CoreImage/CIFilter-swift.class", "law": "You use the object in conjunction with other Core Image classes, such as , , and , to take advantage of the built-in Core Image filters when processing images, creating filter generators, or writing custom filters."}
+{"id": "/documentation/CoreImage/CIFilter-swift.class", "law": "Each thread must create its own objects, but you can pass a filter’s immutable input and output objects between threads."}
+{"id": "/documentation/CoreImage/CIFilter-swift.class", "law": "To get a quick overview of how to set up and use Core Image filters, see ."}
+{"id": "/documentation/CoreImage/CIFilter-swift.class", "law": "Use these filters to avoid run-time errors that can occur when relying on Core Image’s string-based API."}
+{"id": "/documentation/CoreImage/CIFilter-swift.class", "law": "To use the type-safe API, import : The type-safe approach returns a non-optional filter."}
+{"id": "/documentation/CoreImage/CIFilter-swift.class", "law": "For this reason, your subclass must obey the following guidelines to ensure proper behavior: Store input parameters in instance variables whose names are prefixed with ."}
+{"id": "/documentation/CoreImage/CIFilter-swift.class", "law": "Don’t use auto-synthesized instance variables, because their names are automatically prefixed with an underscore."}
+{"id": "/documentation/CoreImage/CIFilter-swift.class", "law": "For example: If using manual reference counting, don’t release input parameter instance variables in your method implementation."}
+{"id": "/documentation/CoreImage/CIImage", "law": "You use objects in conjunction with other Core Image classes—such as , , , and —to take advantage of the built-in Core Image filters when processing images."}
+{"id": "/documentation/CoreImage/CIImage", "law": "Multiple threads can use the same GPU or CPU object to render objects."}
+{"id": "/documentation/CoreImage/CIImage", "law": "If you app is multithreaded, each thread must create its own objects."}
+{"id": "/documentation/CoreImage/CIImage", "law": "(See Getting Autoadjustment Filters.) For a discussion of all the methods you can use to create objects on iOS and macOS, see ."}

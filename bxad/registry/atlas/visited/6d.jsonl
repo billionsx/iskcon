@@ -1,2 +1,5 @@
 {"id": "/documentation/Metal/rendering-reflections-with-fewer-render-passes", "sha": "a2226a190355e9e9b865bc7437903d13b8945d4ab8edeec48b331f0050aebfb8", "t": "Rendering reflections with fewer render passes", "n": 6786, "laws": 10, "ts": "2026-07-24 17:50 UTC"}
 {"id": "/documentation/visionOS/placing-content-on-detected-planes", "sha": "eaacd7783cb94a44d7501ab4f803a706a41a47628ac3a7e96871f0f508a78968", "t": "Placing content on detected planes", "n": 2334, "laws": 7, "ts": "2026-07-24 17:57 UTC"}
+{"id": "/documentation/AudioAccessoryKit", "sha": "aab39ae61ee1d7a04a4b83df1f8e6cc374c7b369da1416557ae808b16c8b75cd", "t": "AudioAccessoryKit", "n": 1537, "laws": 1, "ts": "2026-07-24 18:49 UTC"}
+{"id": "/documentation/GeoToolbox", "sha": "a37358f1dd44e444f113746bfe2582b8712650a0d371e38de3d3277c55dd7f13", "t": "GeoToolbox", "n": 471, "laws": 1, "ts": "2026-07-24 18:51 UTC"}
+{"id": "/documentation/AVFoundation/AVPlayer/replaceCurrentItem(with:)", "sha": "57c4eaffa55323d6c644a2b43912f8b106f1ac9729a773555035400c58a3576b", "t": "replaceCurrentItem(with:)", "n": 212, "laws": 0, "ts": "2026-07-24 19:06 UTC"}

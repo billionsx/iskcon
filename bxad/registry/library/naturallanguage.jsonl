@@ -1,0 +1,3 @@
+{"id": "/documentation/NaturalLanguage", "law": "Use this framework to segment natural language text into paragraphs, sentences, or words, and tag information about those segments, such as part of speech, lexical class, lemma, script, and language."}
+{"id": "/documentation/NaturalLanguage", "law": "Use this framework to perform tasks like: Language identification , automatically detecting the language of a piece of text."}
+{"id": "/documentation/NaturalLanguage", "law": "You can also use this framework with Create ML to train and deploy custom natural language models."}

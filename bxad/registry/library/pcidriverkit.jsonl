@@ -8,3 +8,6 @@
 {"id": "/documentation/PCIDriverKit/connecting-a-network-driver", "law": "Instead, use this callback to get into and out of a safe state given the power setting."}
 {"id": "/documentation/PCIDriverKit/connecting-a-network-driver", "law": "The driver uses this opportunity to set up queues to ensure that calls to and from NetworkingDriverKit are thread-safe."}
 {"id": "/documentation/PCIDriverKit/connecting-a-network-driver", "law": "The following setup in creates a queue and calls to tell the queue to use the newly created action."}
+{"id": "/documentation/PCIDriverKit", "law": "Use the PCIDriverKit framework to develop drivers that manage custom features on your Peripheral Component Interconnect (PCI) and PCI-Express hardware."}
+{"id": "/documentation/PCIDriverKit", "law": "Use that object to read and write the configuration and memory of your PCI hardware."}
+{"id": "/documentation/PCIDriverKit", "law": "On macOS, use the framework to install and upgrade your driver."}

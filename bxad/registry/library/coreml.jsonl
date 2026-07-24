@@ -24,3 +24,9 @@
 {"id": "/documentation/CoreML/using-core-ml-for-semantic-image-segmentation", "law": "For more information about the format uses for metadata, see : Because the colors from the model metadata are optional, a common practice is to use a generic set of colors that an app defines."}
 {"id": "/documentation/CoreML/using-core-ml-for-semantic-image-segmentation", "law": "A semantic image-segmentation model can generate a large number of labels, and may need to reuse colors or use very similar colors."}
 {"id": "/documentation/CoreML/using-core-ml-for-semantic-image-segmentation", "law": "To assist people with color blindness, avoid using only color to identify different objects."}
+{"id": "/documentation/CoreML", "law": "Use to integrate machine learning models into your app."}
+{"id": "/documentation/CoreML", "law": "You use a model to make predictions based on new input data."}
+{"id": "/documentation/CoreML", "law": "Models trained using are in the model format and are ready to use in your app."}
+{"id": "/documentation/CoreML", "law": "Alternatively, you can use a wide variety of other machine learning libraries and then use to convert the model into the format."}
+{"id": "/documentation/CoreML", "law": "Once a model is on a person’s device, you can use to retrain or fine-tune it on-device, with that person’s data."}
+{"id": "/documentation/CoreML/MLModel/predictions(from:options:)", "law": "Use this method to make more than one prediction at one time."}

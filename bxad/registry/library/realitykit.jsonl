@@ -74,3 +74,20 @@
 {"id": "/documentation/realitykit/controlling_entity_collisions_in_realitykit", "law": "This sample code project shows how to use collision groups and collision filters to take precise control over which entities collide in a scene."}
 {"id": "/documentation/realitykit/controlling_entity_collisions_in_realitykit", "law": "The sample code project requires Xcode 12.0, iOS 14.0, and an iOS device with an A9 or later processor."}
 {"id": "/documentation/realitykit/wwdc21_challenge_framework_freestyle", "law": "This project requires an iPhone or iPad with Apple Neural Engine, that’s also running iOS 15 or iPadOS 15."}
+{"id": "/documentation/RealityKit", "law": "RealityKit provides high-performance 3D simulation and rendering capabilities you can use to create apps with 3D or augmented reality (AR) for iOS, iPadOS, macOS, tvOS, and visionOS."}
+{"id": "/documentation/RealityKit", "law": "Use RealityKit’s rich functionality to create compelling augmented reality (AR) experiences: Create and import full RealityKit scenes with models, animations, and Spatial Audio by using Reality Composer Pro for visionOS."}
+{"id": "/documentation/RealityKit", "law": "Synchronize across devices and use SharePlay to enable group AR experiences."}
+{"id": "/documentation/RealityKit", "law": "Simulate and render 3D content for use in your augmented reality apps."}
+{"id": "/documentation/RealityKit/ARView", "law": "Use an instance to display rendered 3D graphics to the user."}
+{"id": "/documentation/RealityKit/ARView", "law": "Additionally, you can use the view to: Configure render options, environmental characteristics, and the camera mode."}
+{"id": "/documentation/RealityKit/ModelEntity", "law": "Use one or more model entities to place physical objects in a scene."}
+{"id": "/documentation/RealityKit/RealityView", "law": "Use to display rich 3D RealityKit content in your app, including content you author in Reality Composer Pro."}
+{"id": "/documentation/RealityKit/RealityView", "law": "passes a structure that conforms to to its and closures, which you can use to add and remove RealityKit entities to your view."}
+{"id": "/documentation/RealityKit/RealityView", "law": "Load your content asynchronously to avoid introducing a hang in your app."}
+{"id": "/documentation/RealityKit/RealityView", "law": "You can also use the optional closure on your to update your RealityKit content in response to changes in your view’s state."}
+{"id": "/documentation/RealityKit/RealityView", "law": "If you want to run code every frame (to do animations or simulations), you can use a or directly subscribe to the engine’s : has a flexible size by default, and does not size itself based on the RealityKit content it displays."}
+{"id": "/documentation/RealityKit/ARView/automaticallyConfigureSession", "law": "An indication of whether to use an automatically configured AR session."}
+{"id": "/documentation/RealityKit/PhysicsBodyComponent/mode", "law": "Apps typically use kinematic mode for entities the app programmatically controls, such as in response to a control or a person’s interaction."}
+{"id": "/documentation/RealityKit/PhysicsBodyComponent/mode", "law": "For entities that don’t need to move at all, set its physics body’s mode to ."}
+{"id": "/documentation/RealityKit/Scene", "law": "You don’t create a instance directly."}
+{"id": "/documentation/RealityKit/Scene", "law": "You then add a hierarchy of other instances to each anchor to indicate the geometry and behaviors that RealityKit should render at a given anchor point."}

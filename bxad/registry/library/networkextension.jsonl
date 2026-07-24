@@ -36,3 +36,6 @@
 {"id": "/documentation/NetworkExtension/using-the-bloom-filter-tool", "law": "This means you don’t need to include all these variants in your list of input URLs."}
 {"id": "/documentation/NetworkExtension/using-the-bloom-filter-tool", "law": "You can use this for the corresponding PIR server data, as described in ."}
 {"id": "/documentation/NetworkExtension/using-the-bloom-filter-tool", "law": "These hashing functions provide the data format required by the to create an in-memory Bloom filter."}
+{"id": "/documentation/NetworkExtension", "law": "The supported operating systems include a number of different VPN APIs, distinguished by the protocols they support: Use to create and manage a VPN configuration that uses one of the built-in VPN protocols (IPsec or IKEv2)."}
+{"id": "/documentation/NetworkExtension", "law": "iOS supports Always-on VPN to ensure all IP traffic is tunneled back to the organization."}
+{"id": "/documentation/NetworkExtension", "law": "See the for information about how to configure Always-on VPN."}

@@ -1,0 +1,4 @@
+{"id": "/documentation/NetworkingDriverKit", "law": "Use NetworkingDriverKit to develop drivers for USB Ethernet adapters."}
+{"id": "/documentation/NetworkingDriverKit", "law": "It also provides support for managing the memory you use to store packets, transferring those packets between the device and networking stack, and inspecting the Ethernet link status."}
+{"id": "/documentation/NetworkingDriverKit", "law": "Use USBDriverKit to manage the connection to your hardware device."}
+{"id": "/documentation/NetworkingDriverKit", "law": "Include your driver inside your macOS app and use the framework to install and upgrade the driver on the user’s Mac."}

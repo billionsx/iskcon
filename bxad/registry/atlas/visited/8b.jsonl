@@ -1,1 +1,5 @@
 {"id": "/documentation/ServiceManagement/updating-your-app-package-installer-to-use-the-new-service-management-api", "sha": "90cda22bae455888eda13c7a41943e4135ceb819b3417115e4ac9a95bbe7661a", "t": "Updating your app package installer to use the new Service Management API", "n": 3651, "laws": 4, "ts": "2026-07-24 17:52 UTC"}
+{"id": "/documentation/LightweightCodeRequirements", "sha": "c55675a14efec6e2652115d055573e6f7f7eebda8c35c55560210da6754fbc27", "t": "LightweightCodeRequirements", "n": 4172, "laws": 3, "ts": "2026-07-24 18:51 UTC"}
+{"id": "/documentation/MarketplaceKit", "sha": "19abca1dba79d65641c5d74749edfb8bf197e156f37ac9ccd2efb437e1fcae98", "t": "MarketplaceKit", "n": 2700, "laws": 1, "ts": "2026-07-24 18:52 UTC"}
+{"id": "/documentation/OpenGLES", "sha": "10167a9382de2b01e2aaf4a16f57f184049d2db2bb651c36f84e5720c3f5783f", "t": "OpenGL ES", "n": 1436, "laws": 1, "ts": "2026-07-24 18:52 UTC"}
+{"id": "/documentation/RealityKit/PhysicsBodyMode/dynamic", "sha": "4b0038b83b51a4d7960b05b2fc82d91cb8a2b5159743dc9b7ca4ce64853fc57b", "t": "PhysicsBodyMode.dynamic", "n": 44, "laws": 0, "ts": "2026-07-24 19:00 UTC"}

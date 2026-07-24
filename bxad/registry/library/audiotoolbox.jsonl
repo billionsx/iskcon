@@ -10,3 +10,15 @@
 {"id": "/documentation/AudioToolbox/incorporating-audio-effects-and-instruments", "law": "The view configuration object’s property indicates whether the host app should show its control surface for the view configuration."}
 {"id": "/documentation/AudioToolbox/incorporating-audio-effects-and-instruments", "law": "The host app should respect this setting and update its user interface accordingly."}
 {"id": "/documentation/AudioToolbox/incorporating-audio-effects-and-instruments", "law": "To create a new user preset, first create an instance of and give it a user-defined name and a negative value (user presets require a negative value for this property)."}
+{"id": "/documentation/AudioToolbox/AUAudioUnit", "law": "Version 3 audio units should subclass the class."}
+{"id": "/documentation/AudioToolbox/AUAudioUnit", "law": "The principal class must conform to the protocol, which will typically instantiate an subclass."}
+{"id": "/documentation/AudioToolbox/AUAudioUnit", "law": "Use the convention when naming your audio unit component."}
+{"id": "/documentation/AudioToolbox/AUAudioUnit", "law": "Version 2 audio units should subclass the class instead."}
+{"id": "/documentation/AudioToolbox/AUAudioUnit/fullStateForDocument", "law": "Hosts may use this property to save and restore the state of an audio unit being used."}
+{"id": "/documentation/AudioToolbox/AUAudioUnit/fullStateForDocument", "law": "Subclasses that do not implement this property interface with the property instead."}
+{"id": "/documentation/AudioToolbox/AUAudioUnitFactory", "law": "In most cases, if your audio unit specifies parameters to configure its behavior, it should provide a custom user interface to control those parameters."}
+{"id": "/documentation/AudioToolbox/AUAudioUnitFactory", "law": "In this case, the hosting app must create a generic user interface for your audio unit."}
+{"id": "/documentation/AudioToolbox/AUAudioUnitFactory/createAudioUnit(with:)", "law": "In this scenario, you should return an object with a reference count of 1, but autoreleased."}
+{"id": "/documentation/AudioToolbox/AUParameterNode/implementorValueObserver", "law": "It should store the new value in its audio signal processing state (assuming that state is separate from the parameter object)."}
+{"id": "/documentation/AudioToolbox/AUParameterNode/implementorValueProvider", "law": "The audio unit should return the current value for this parameter; the parameter node object then stores this value."}
+{"id": "/documentation/AudioToolbox/AUParameterTree", "law": "An audio unit may choose to dynamically rearrange the tree; when doing so, it must issue a KVO notification on the audio unit’s property."}

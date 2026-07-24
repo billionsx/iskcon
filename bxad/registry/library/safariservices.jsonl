@@ -1,0 +1,3 @@
+{"id": "/documentation/SafariServices", "law": "Use the Safari Services framework to integrate Safari behaviors into your iOS or macOS app, or to extend the behavior of Safari."}
+{"id": "/documentation/SafariServices/safari-app-extensions", "law": "These capabilities enhance the tools you use, the tasks you can accomplish, and the data you can access in your browser."}
+{"id": "/documentation/SafariServices/safari-app-extensions", "law": "Safari app extensions use a combination of JavaScript, CSS, and native code written in Objective-C or Swift."}

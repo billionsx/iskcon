@@ -3,3 +3,6 @@
 {"id": "/documentation/AccessorySetupKit/setting-up-and-authorizing-a-bluetooth-accessory", "law": "The target uses AccessorySetupKit to authorize the use of a Bluetooth dice accessory and receive roll results."}
 {"id": "/documentation/AccessorySetupKit/setting-up-and-authorizing-a-bluetooth-accessory", "law": "The accessory is now authorized for use in the app."}
 {"id": "/documentation/AccessorySetupKit/setting-up-and-authorizing-a-bluetooth-accessory", "law": "Discover, select, and set up a specific Bluetooth accessory without requesting permission to use Bluetooth."}
+{"id": "/documentation/AccessorySetupKit", "law": "Use AccessorySetupKit to discover and configure Bluetooth or Wi-Fi accessories with images and names provided by the app."}
+{"id": "/documentation/AccessorySetupKit", "law": "To use AccessorySetupKit with , specify Wi-Fi Aware properties in a prior to beginning accessory discovery."}
+{"id": "/documentation/AccessorySetupKit", "law": "In watchOS 26 and later, if someone sets up an accessory with your iOS app by using AccessorySetupKit, a companion watchOS app can also use CoreBluetooth to communicate with the new accessory and any other accessories."}

@@ -1,1 +1,4 @@
 {"id": "/documentation/Metal/selecting-device-objects-for-graphics-rendering", "sha": "e012b28b33739c6f738a8b8e54365e53116464daa9fdcb955253d290b20ac3ce", "t": "Selecting device objects for graphics rendering", "n": 8892, "laws": 3, "ts": "2026-07-24 17:50 UTC"}
+{"id": "/documentation/Hypervisor", "sha": "bda869ed0385cadf59e9bc046bf5223f5244a66d7d21913738e6442b3db9150f", "t": "Hypervisor", "n": 3385, "laws": 1, "ts": "2026-07-24 18:51 UTC"}
+{"id": "/documentation/avfaudio/avaudiounitvarispeed", "sha": "4a17f0c63a192c623984e5246b0428d84975ea3bf1615deb795c806994177e41", "t": "AVAudioUnitVarispeed", "n": 98, "laws": 0, "ts": "2026-07-24 19:00 UTC"}
+{"id": "/documentation/avfaudio/avaudiosession/category-swift.struct/record", "sha": "d48300953d10d6b4c881652750c1e92ff4c53aa9c8fb5aa0b45534669167bb72", "t": "record", "n": 636, "laws": 2, "ts": "2026-07-24 19:00 UTC"}

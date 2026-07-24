@@ -5,3 +5,6 @@
 {"id": "/documentation/DeclaredAgeRange/implementing-age-assurance-and-permissions", "law": "When the sample app requires compliance, calls the environment action to present a system dialog asking the person to share their age range."}
 {"id": "/documentation/DeclaredAgeRange/implementing-age-assurance-and-permissions", "law": "When the person acknowledges a change, the app writes it to iCloud so other devices don’t present the same flow again: The app also listens for changes arriving from other devices by observing and syncing the local set of handled changes."}
 {"id": "/documentation/DeclaredAgeRange/implementing-age-assurance-and-permissions", "law": "People who install the app when a significant change is already present don’t need to acknowledge it."}
+{"id": "/documentation/DeclaredAgeRange", "law": "Use the Declared Age Range API to request that people share their age range with your app."}
+{"id": "/documentation/DeclaredAgeRange", "law": "For children in a Family Sharing group, a parent or guardian or the Family Organizer can decide whether to always share a child’s age information with your app, ask the child every time, or never share their age information."}
+{"id": "/documentation/DeclaredAgeRange", "law": "To use the Declared Age Range API, add the entitlement to your app by enabling the Declared Age Range capability on your target in Xcode."}

@@ -1,0 +1,3 @@
+{"id": "/documentation/AppleMusicAPI", "law": "Use Apple Music API to access information about media in the Apple Music Catalog and a user’s personal iCloud Music Library."}
+{"id": "/documentation/AppleMusicAPI", "law": "Use this API to retrieve information about albums, songs, artists, playlists, music videos, Apple Music stations, ratings, charts, recommendations, and the user’s most-recently played content."}
+{"id": "/documentation/AppleMusicAPI", "law": "Use the to access the Apple Music Catalog in bulk."}

@@ -1,2 +1,10 @@
 {"id": "/documentation/mapkit/mkmapview/optimizing_map_views_with_filtering_and_camera_constraints", "sha": "d14034b775b7431384da944263bd00d7af37d4e09a4cfe5998e74072a677391a", "t": "Optimizing Map Views with Filtering and Camera Constraints", "n": 549, "laws": 0, "ts": "2026-07-24 17:56 UTC"}
 {"id": "/documentation/visionOS/accessing-the-main-camera", "sha": "beacd00b1b389074ee5d596c16d9688768f69969c4daed05d2ada8fcb3df57de", "t": "Accessing the main camera", "n": 2498, "laws": 4, "ts": "2026-07-24 17:56 UTC"}
+{"id": "/documentation/CoreAI", "sha": "99fbe600ba0a75d4acf02d830be8d46764b35775ff115ad93af32d136dcfc9be", "t": "Core AI", "n": 1661, "laws": 1, "ts": "2026-07-24 18:44 UTC"}
+{"id": "/documentation/HealthKit", "sha": "1cc9d8f9e48555a9b8dee04318106289a6ca6230cc68c45df01393ed74088fc5", "t": "HealthKit", "n": 2486, "laws": 3, "ts": "2026-07-24 18:51 UTC"}
+{"id": "/documentation/TouchController", "sha": "fa4be5adbc21f3655a0b28d63f5be83fea263f4d0bbaaa20d38b8149ca409cf8", "t": "Touch Controller", "n": 934, "laws": 4, "ts": "2026-07-24 18:54 UTC"}
+{"id": "/documentation/arkit/arplaneanchor", "sha": "b7b35e4165133746e6363249b55ee8c5440925f2206a4c3739e076b706c69d20", "t": "ARPlaneAnchor", "n": 805, "laws": 0, "ts": "2026-07-24 18:59 UTC"}
+{"id": "/documentation/avfaudio/avaudiosession/microphoneinjectionmode/spokenaudio", "sha": "471cf6b4061cbd0d7ee30cd4af0a1bc13538f7f1c9cab477a391dd25b8c48930", "t": "AVAudioSession.MicrophoneInjectionMode.spokenAudio", "n": 99, "laws": 0, "ts": "2026-07-24 19:00 UTC"}
+{"id": "/documentation/CoreImage/CIFilter-swift.class", "sha": "88eed95df707608fbe024bff0150de140c10d2433e09a0fa49848338da51c732", "t": "CIFilter", "n": 4799, "laws": 9, "ts": "2026-07-24 19:02 UTC"}
+{"id": "/documentation/avfoundation/avsamplecursor/stepindecodeorder(bycount:)", "sha": "005a292b79184b83a144a85b68c744517ac6e654a6227bfb7335acd3d04c1d76", "t": "stepInDecodeOrder(byCount:)", "n": 342, "laws": 0, "ts": "2026-07-24 19:05 UTC"}
+{"id": "/documentation/GroupActivities/GroupSession", "sha": "c1b4fd46a86eba8cb1b821680b4ca15baf4d1d837bef029ed94441123cf3e5a5", "t": "GroupSession", "n": 2121, "laws": 4, "ts": "2026-07-24 19:05 UTC"}

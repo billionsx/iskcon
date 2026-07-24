@@ -4,3 +4,7 @@
 {"id": "/documentation/ScreenCaptureKit/capturing-screen-content-in-macos", "sha": "6a62c0829b5d7d2e66d0e57ecbb85d05ed8c32e931ee559a6b618d224abc460a", "t": "Capturing screen content in macOS", "n": 3970, "laws": 1, "ts": "2026-07-24 17:52 UTC"}
 {"id": "/documentation/SiriKit/booking-rides-with-sirikit", "sha": "d3d057dd94025488d8e20c634785b34a7caf0710c07a8d8cad79950e05c1cfd0", "t": "Booking Rides with SiriKit", "n": 4313, "laws": 10, "ts": "2026-07-24 17:52 UTC"}
 {"id": "/documentation/UIKit/enriching-your-text-in-text-views", "sha": "2d88157d1548de689c42188bb32337cb31ea43c0e8365d963802a3655cccfda1", "t": "Enriching your text in text views", "n": 255, "laws": 0, "ts": "2026-07-24 17:54 UTC"}
+{"id": "/documentation/AppMigrationKit", "sha": "35c8dd59e4c457822817fd6d984b5a4b32c944e62d1938ce755c60b470259f88", "t": "AppMigrationKit", "n": 1351, "laws": 3, "ts": "2026-07-24 18:48 UTC"}
+{"id": "/documentation/Combine", "sha": "79706a0ea32afdb48d9028f1858eeed540a970aab44c16b4ca0346b0514ecfe5", "t": "Combine", "n": 2595, "laws": 2, "ts": "2026-07-24 18:49 UTC"}
+{"id": "/documentation/avfoundation/reading-multiview-3d-video-files", "sha": "5d71cad017f53bba2a854855a430fd32e8afa4bcd6e9b715457523238572c57e", "t": "Reading multiview 3D video files", "n": 2946, "laws": 2, "ts": "2026-07-24 19:04 UTC"}
+{"id": "/documentation/AVFoundation/AVPlayerItem", "sha": "aa28622ac5daeb1647b3c8b8437e77ce7353532fa0d533e6dfb541638da7df61", "t": "AVPlayerItem", "n": 4643, "laws": 3, "ts": "2026-07-24 19:06 UTC"}

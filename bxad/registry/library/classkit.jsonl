@@ -7,3 +7,8 @@
 {"id": "/documentation/ClassKit/incorporating-classkit-into-an-educational-app", "law": "For this, you use activity items."}
 {"id": "/documentation/ClassKit/incorporating-classkit-into-an-educational-app", "law": "The method demonstrates the two ways in which you can register an activity item, either as primary or not: If you do decide to set a primary item, make sure you always set the same kind of primary item for a given activity."}
 {"id": "/documentation/ClassKit/incorporating-classkit-into-an-educational-app", "law": "For example, once you register the score item as the primary for a quiz activity, you must always use score this way."}
+{"id": "/documentation/ClassKit", "law": "Meanwhile, students use Schoolwork to receive assignments that link directly to content in your app."}
+{"id": "/documentation/ClassKit", "law": "ClassKit doesn’t replace any existing logic or storage mechanisms in your app, and you don’t use it to generate any new user interfaces."}
+{"id": "/documentation/ClassKit", "law": "Instead, you use ClassKit to publicize the structure you already have, so that teachers can use Apple’s Schoolwork app to create assignments based on your app’s content and measure their students’ progress through those assignments."}
+{"id": "/documentation/ClassKit", "law": "For student-facing submission functionality, use the framework, which provides views that enable students to submit assigned documents and track submission status directly within your app."}
+{"id": "/documentation/ClassKit", "law": "ClassKit is designed for educational organizations that use ."}

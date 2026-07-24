@@ -1,0 +1,3 @@
+{"id": "/documentation/TVML", "law": "Use Apple TV Markup Language to create individual pages inside of a client-server app."}
+{"id": "/documentation/TVML", "law": "Simple elements often don’t contain other elements and typically fit on one line."}
+{"id": "/documentation/TVML", "law": "Use queries inside of a element to define different values for the same style in a single class."}

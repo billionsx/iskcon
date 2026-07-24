@@ -23,3 +23,16 @@
 {"id": "/documentation/MapKit/displaying-overlays-on-a-map", "law": "To use a custom bitmap map tile overlay, the app uses to manage loading the tile data and to render the map tiles."}
 {"id": "/documentation/MapKit/displaying-overlays-on-a-map", "law": "When the tile overlay loads the data, MapKit replaces the placeholder values with the required values to load tiles for a specific map region according to the EPSG:3857 spherical Mercator projection coordinate system."}
 {"id": "/documentation/mapkit/mapkit_for_appkit_and_uikit/explore_a_location_with_a_highly_detailed_map_and_look_around", "law": "Display a richly detailed map, and use Look Around to experience an interactive view of landmarks."}
+{"id": "/documentation/MapKit", "law": "Use MapKit to give your app a sense of place with maps and location information."}
+{"id": "/documentation/MapKit", "law": "You can use the MapKit framework to: Embed maps directly into your app’s windows and views."}
+{"id": "/documentation/MapKit/MKMapView", "law": "Use this class as-is to display map information and to manipulate the map contents from your app."}
+{"id": "/documentation/MapKit/MKMapView", "law": "You can also use projected map coordinates instead of regions to specify some values."}
+{"id": "/documentation/MapKit/MKMapView", "law": "To specify locations and distances, you use the , , and data types."}
+{"id": "/documentation/MapKit/MKMapView", "law": "Don’t subclass the class itself."}
+{"id": "/documentation/MapKit/MKMapView", "law": "Even if you specify a custom appearance, users can use the Maps app to force all maps to adopt a light appearance."}
+{"id": "/documentation/MapKit/MKMapView", "law": "Use the map view’s property to determine the actual appearance of your map."}
+{"id": "/documentation/MapKit/MKMapView", "law": "Because the map view needs annotation views only when they’re onscreen, the class provides a mechanism for queueing annotation views that aren’t in use."}
+{"id": "/documentation/MapKit/MKMapView", "law": "This feature improves memory use by keeping only a small number of annotation views in memory at once, and by recycling the views you do have."}
+{"id": "/documentation/MapKit/MKMapView", "law": "When configuring your map interface, be sure to add all of your annotation objects right away."}
+{"id": "/documentation/MapKit/MKMapView", "law": "You can use overlays to layer content over a wide portion of the map."}
+{"id": "/documentation/MapKit/MKOverlay", "law": "You might use overlays to define the geographic boundaries of a national park or trace a bus route along city streets."}

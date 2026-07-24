@@ -9,3 +9,5 @@
 {"id": "/documentation/Apple-Silicon/providing-touch-gesture-equivalents-using-touch-alternatives", "law": "Press and hold Option to use a trackpad as a virtual touch screen."}
 {"id": "/documentation/Apple-Silicon/providing-touch-gesture-equivalents-using-touch-alternatives", "law": "The array should include only those values that make sense for the app."}
 {"id": "/documentation/Apple-Silicon/providing-touch-gesture-equivalents-using-touch-alternatives", "law": "With earlier versions of Xcode, developers can use the Property List template."}
+{"id": "/documentation/apple-silicon", "law": "Getting the best performance on Apple silicon sometimes requires making adjustments to the way you use hardware resources."}
+{"id": "/documentation/apple-silicon", "law": "For example, use Grand Central Dispatch instead of creating and managing threads yourself."}

@@ -1,0 +1,2 @@
+{"id": "/documentation/ActivityKit", "law": "In your app, use ActivityKit to configure, start, update, and end the Live Activity, and create the user interface of your Live Activities with a widget extension, , and ."}
+{"id": "/documentation/ActivityKit", "law": "However, Live Activities use a different mechanism to receive updates compared to widgets."}

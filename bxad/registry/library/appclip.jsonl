@@ -13,3 +13,8 @@
 {"id": "/documentation/AppClip/interacting-with-app-clip-codes-in-ar", "law": "During testing in the TestFlight app, the three experience URLs in App Store Connect’s TestFlight area change the invocation URL the system passes into the App Clip, but they don’t affect URL decoding."}
 {"id": "/documentation/AppClip/interacting-with-app-clip-codes-in-ar", "law": "Seed Shop requires the AASA file that the Apple Developer website hosts at ."}
 {"id": "/documentation/AppClip/interacting-with-app-clip-codes-in-ar", "law": "An app may require another content anchoring technique, such as placing virtual content instantly after retrieving a position on a nearby horizontal or vertical plane."}
+{"id": "/documentation/AppClip", "law": "To ensure a fast launch experience and a fast order experience, the App Clip offers only the functionality to order donuts."}
+{"id": "/documentation/AppClip", "law": "Additionally, App Clips don’t appear on the Home screen, and users don’t manage them the way they manage full apps."}
+{"id": "/documentation/AppClip", "law": "Limit the function of an App Clip to ensure a fast launch experience, protect user privacy, and preserve resources for in-the-moment experiences and demo versions of your app."}
+{"id": "/documentation/AppClip", "law": "Before you create an App Clip: Review technology available to App Clips and constraints that ensure a good user experience."}
+{"id": "/documentation/AppClip", "law": "Learn how people discover and launch App Clips with invocations and how you configure App Clip experiences and use invocation URLs to offer a great launch experience."}

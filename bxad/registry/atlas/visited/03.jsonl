@@ -1,1 +1,7 @@
 {"id": "/documentation/PDFKit/pdf-widgets", "sha": "b03b8f42b87525a47aa091b7302daa44087da6e9b123afaa02ecb11caa046915", "t": "PDF Widgets", "n": 3649, "laws": 5, "ts": "2026-07-24 17:51 UTC"}
+{"id": "/documentation/technotes/tn3120-expected-use-cases-for-network-extension-packet-tunnel-providers", "sha": "23e85e6ac199089cbd306ab6f9d60117ce421985359df36acb0fdecdb4f2c29b", "t": "TN3120: Expected use cases for Network Extension packet tunnel providers", "n": 4029, "laws": 10, "ts": "2026-07-24 18:42 UTC"}
+{"id": "/documentation/updates/avfaudio", "sha": "8a3aef591fb9400db3508e69f44ce482d916d4cd1406d5433cd38e742e878595", "t": "AVFAudio updates", "n": 570, "laws": 1, "ts": "2026-07-24 18:46 UTC"}
+{"id": "/documentation/CallKit", "sha": "b40e0b3b1ac8a45f1df088c87517bcd76700792a699a034f28888e827c553950", "t": "CallKit", "n": 3037, "laws": 7, "ts": "2026-07-24 18:49 UTC"}
+{"id": "/documentation/CoreImage", "sha": "7c704d3f90d44818b8e022532d6c00eba0d27513ff5f458ae479ccea89a22afc", "t": "Core Image", "n": 2102, "laws": 2, "ts": "2026-07-24 18:50 UTC"}
+{"id": "/documentation/PencilKit", "sha": "26a4a3acf797fba6c7eb339f3730abca2708aa5c770631b6e40a0b62677f0aee", "t": "PencilKit", "n": 1597, "laws": 0, "ts": "2026-07-24 18:52 UTC"}
+{"id": "/documentation/avfoundation/avmetadataobject/objecttype/face", "sha": "aed371636ee1ba114293c561f585c6ec1c81c3cc4474d17c969e8639f6c984b7", "t": "face", "n": 148, "laws": 0, "ts": "2026-07-24 19:04 UTC"}

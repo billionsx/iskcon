@@ -8,3 +8,5 @@
 {"id": "/documentation/MIDIDriverKit/creating-a-midi-device-driver", "law": "When installation completes, the Driver Manager status in the app displays the message “CreatingMIDIDriverSampleAppDriver has been activated and is ready to use.” At this point, the sample’s MIDI device is available to CoreMIDI."}
 {"id": "/documentation/MIDIDriverKit/creating-a-midi-device-driver", "law": "To inspect the newly installed device, use the Audio MIDI Setup app ( ), which shows the CreatingMIDIDriverSampleAppDevice on the MIDI pane with one port."}
 {"id": "/documentation/MIDIDriverKit/creating-a-midi-device-driver", "law": "Then you can use the other buttons in this section to toggle the offline property and to add or remove ports."}
+{"id": "/documentation/MIDIDriverKit", "law": "Use the MIDIDriverKit framework to implement a MIDI driver extension that communicates with Core MIDI."}
+{"id": "/documentation/MIDIDriverKit", "law": "The framework handles all user-client communication between your driver extension and the Core MIDI server so you don’t need to implement a MIDI driver plug-in."}

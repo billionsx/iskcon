@@ -1,3 +1,11 @@
 {"id": "/documentation/ARKit/tracking-and-visualizing-faces", "sha": "08c2d33618672feeb9eed622cfadf66ee8a65d521e2bc612bf3ce9a511d2740c", "t": "Tracking and visualizing faces", "n": 8475, "laws": 10, "ts": "2026-07-24 17:44 UTC"}
 {"id": "/documentation/Foundation/language-introspector", "sha": "13e20e277caf474eb70f254abf6b28617f043446b047146f8ad6e7e06ec24034", "t": "Language Introspector", "n": 146, "laws": 0, "ts": "2026-07-24 17:48 UTC"}
 {"id": "/documentation/Vision/classifying-images-for-categorization-and-search", "sha": "324b1ba704f12a37559a65778104e1314fb287ff2ff4e47c7a71b9c5790481ce", "t": "Classifying images for categorization and search", "n": 3259, "laws": 1, "ts": "2026-07-24 17:55 UTC"}
+{"id": "/documentation/MediaDevice", "sha": "31cb80f98c5f8aa4a53c6f61244600c674a2b3f482bb1b6aebb283ea12475f46", "t": "Media Device", "n": 1903, "laws": 4, "ts": "2026-07-24 18:45 UTC"}
+{"id": "/documentation/updates/arkit", "sha": "80b67c97f23c99cf61f86f068b9b37e6c61f37b269c274d6c0edf347ba17683f", "t": "ARKit updates", "n": 275, "laws": 1, "ts": "2026-07-24 18:46 UTC"}
+{"id": "/documentation/updates/realitykit", "sha": "b985baadb608a0f351ce5235da094d7ccc2a93f82f33ee47572188cd5bac6f4a", "t": "RealityKit updates", "n": 3245, "laws": 6, "ts": "2026-07-24 18:47 UTC"}
+{"id": "/documentation/updates/wwdc2024", "sha": "29fb85a43500f7d395c401b00c5d7f09c8ceb8f77ea1677eb0ff5016204113d5", "t": "WWDC24", "n": 2880, "laws": 0, "ts": "2026-07-24 18:48 UTC"}
+{"id": "/documentation/CoreHaptics", "sha": "feafcafc86d17796e1a05b01dbd04e2ecdc94268088ecd28371a9f34d706eb17", "t": "Core Haptics", "n": 2154, "laws": 2, "ts": "2026-07-24 18:50 UTC"}
+{"id": "/documentation/RoomPlan", "sha": "965b3d049c46bf83a985ad9ef09269d469a813082d17725eda05372e5d32cf5c", "t": "RoomPlan", "n": 2917, "laws": 2, "ts": "2026-07-24 18:53 UTC"}
+{"id": "/documentation/arkit/arworldtrackingconfiguration/environmenttexturing-swift.enum/automatic", "sha": "358257192add385b0a878d2f90baddf2c983737f9bc71e8698a9711d2ae60c3c", "t": "ARWorldTrackingConfiguration.EnvironmentTexturing.automatic", "n": 553, "laws": 2, "ts": "2026-07-24 18:55 UTC"}
+{"id": "/documentation/arkit/arworldtrackingconfiguration/initialworldmap", "sha": "461d75e22d39ae6b79edeb256bb5ac84ac38683560261e303ba68ea75a507f86", "t": "initialWorldMap", "n": 1836, "laws": 2, "ts": "2026-07-24 18:56 UTC"}

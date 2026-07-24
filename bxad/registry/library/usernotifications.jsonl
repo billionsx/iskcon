@@ -8,3 +8,7 @@
 {"id": "/documentation/UserNotifications/handling-communication-notifications-and-focus-status-updates", "law": "To request authorization, use and parse the result."}
 {"id": "/documentation/UserNotifications/handling-communication-notifications-and-focus-status-updates", "law": "Unauthorized apps don’t receive a Focus status value."}
 {"id": "/documentation/UserNotifications/handling-communication-notifications-and-focus-status-updates", "law": "Ensure the app handles the Focus status case."}
+{"id": "/documentation/UserNotifications", "law": "Use this framework to do the following: Define the types of notifications that your app supports."}
+{"id": "/documentation/UserNotifications", "law": "The PushKit framework offers a more timely delivery mechanism for specific types of notifications, such as those VoIP and watchOS complications use."}
+{"id": "/documentation/UserNotifications", "law": "Asking permission to use notifications."}
+{"id": "/documentation/UserNotifications", "law": "Use a notification service app extension to modify the content of a notification before it’s delivered to your app."}

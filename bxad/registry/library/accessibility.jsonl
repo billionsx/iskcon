@@ -22,3 +22,5 @@
 {"id": "/documentation/Accessibility/wwdc22_challenge_learn_switch_control_through_gaming", "law": "Alternatively, you can choose Bluetooth Devices, select a device to use as a switch, and select an action for that switch."}
 {"id": "/documentation/Accessibility/wwdc22_challenge_learn_switch_control_through_gaming", "law": "If you don’t typically use Switch Control, you can set up an Accessibility Shortcut to quickly enable or disable it for the purposes of this challenge."}
 {"id": "/documentation/Accessibility/wwdc22_challenge_learn_switch_control_through_gaming", "law": "Make sure this is the only enabled item in the list."}
+{"id": "/documentation/Accessibility", "law": "Whether you’re developing a new app, or updating an existing one, consider the needs of all the people who might use your app."}
+{"id": "/documentation/Accessibility", "law": "Make sure your app provides a great experience for people who use assistive technologies by testing your app with them."}

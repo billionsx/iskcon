@@ -4,3 +4,18 @@
 {"id": "/documentation/HealthKit/accessing-a-user-s-clinical-records", "law": "The app must request permission to read all the types that it intends to use."}
 {"id": "/documentation/HealthKit/accessing-a-user-s-clinical-records", "law": "Instead, anyone using the app must manually request authorization, by scrolling to the bottom of the list and tapping the Authorize button."}
 {"id": "/documentation/HealthKit/creating-a-mobility-health-app", "law": "The sample code project requires this version of Xcode."}
+{"id": "/documentation/HealthKit/accessing-workout-zone-data", "law": "With permission, your app can use data from workout zones to provide a view of training intensity across all of a person’s workout apps."}
+{"id": "/documentation/HealthKit/accessing-workout-zone-data", "law": "Before you can access someone’s workout zone data, you must ask their permission."}
+{"id": "/documentation/HealthKit/accessing-workout-zone-data", "law": "You don’t need to call any additional methods to enable zone calculation."}
+{"id": "/documentation/HealthKit/accessing-workout-zone-data", "law": "Cycling power requires the person’s configuration."}
+{"id": "/documentation/HealthKit/accessing-workout-zone-data", "law": "Workouts can use different zone configurations, and comparing time-in-zone across workouts requires planning for those differences."}
+{"id": "/documentation/HealthKit/accessing-workout-zone-data", "law": "Use this information to update your interface and provide real-time feedback during workouts."}
+{"id": "/documentation/HealthKit/accessing-workout-zone-data", "law": "Custom configurations apply only to the workout created; they don’t modify the person’s preferred zone choices in Health Settings."}
+{"id": "/documentation/HealthKit/accessing-workout-zone-data", "law": "If you don’t set a custom configuration, the system uses the person’s preferred zones for zone calculations."}
+{"id": "/documentation/HealthKit/recording-and-querying-menopausal-state", "law": "Apps that support reproductive health tracking can use HealthKit to record and query information about whether a person reports a menopausal or nonmenopausal state."}
+{"id": "/documentation/HealthKit/recording-and-querying-menopausal-state", "law": "The framework requires that the start date and end date of each sample be identical."}
+{"id": "/documentation/HealthKit/recording-and-querying-menopausal-state", "law": "Use the value to record when someone confirms that they have neither menopause nor perimenopause at a specific date."}
+{"id": "/documentation/HealthKit/recording-and-querying-menopausal-state", "law": "Apps can use menopausal state information to personalize someone’s experience."}
+{"id": "/documentation/HealthKit", "law": "For example, when a group of friends joins a daily step-counting challenge, each person can use their preferred hardware device and app to track their steps, while everyone in the group uses the same social app for the challenge."}
+{"id": "/documentation/HealthKit", "law": "Because health data may contain sensitive, personal information, apps must receive permission from the user to read data from or write data to the HealthKit store."}
+{"id": "/documentation/HealthKit", "law": "They must also take steps to protect that data at all times."}

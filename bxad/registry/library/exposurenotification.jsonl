@@ -8,3 +8,11 @@
 {"id": "/documentation/ExposureNotification/building-an-app-to-notify-users-of-covid-19-exposure", "law": "They must also notify users that their keys are being submitted to the PHA’s key server."}
 {"id": "/documentation/ExposureNotification/building-an-app-to-notify-users-of-covid-19-exposure", "law": "To prevent runtime errors, Exposure Notifications apps for iOS 13.5 and iOS 13.6 must fall back to this version."}
 {"id": "/documentation/ExposureNotification/building-an-app-to-notify-users-of-covid-19-exposure", "law": "Version 2 — When available, apps should use this version of the API."}
+{"id": "/documentation/ExposureNotification", "law": "Use the Exposure Notification framework to inform people of potential exposure to COVID-19, the disease caused by the SARS-CoV-2 virus."}
+{"id": "/documentation/ExposureNotification", "law": "To get permission to use this entitlement, see ."}
+{"id": "/documentation/ExposureNotification", "law": "All EN apps must specify the region for which they work by adding a key called to the app’s file."}
+{"id": "/documentation/ExposureNotification", "law": "Avoid using wildcards because they can impact system operations."}
+{"id": "/documentation/ExposureNotification", "law": "Apps can implement this new method, or continue to use the calculation method introduced in earlier versions of iOS."}
+{"id": "/documentation/ExposureNotification", "law": "To use the new approach, specify a value of ."}
+{"id": "/documentation/ExposureNotification", "law": "To use the original approach, specify a value of ."}
+{"id": "/documentation/ExposureNotification", "law": "This feature is called Exposure Notification Express and must be enabled by a Health Authority."}

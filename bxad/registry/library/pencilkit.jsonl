@@ -6,3 +6,6 @@
 {"id": "/documentation/PencilKit/customizing-scribble-with-interactions", "law": "This sample code project must be run on a physical device with Apple Pencil."}
 {"id": "/documentation/PencilKit/drawing-with-pencilkit", "law": "This sample code project must be run on a physical device with Apple Pencil."}
 {"id": "/documentation/PencilKit/inspecting-modifying-and-constructing-pencilkit-drawings", "law": "This sample code project must be run on a physical device with Apple Pencil."}
+{"id": "/documentation/PencilKit/controlling-stroke-rendering-for-animation-and-editing", "law": "Use , , and to control how strokes look when you create or edit them in code."}
+{"id": "/documentation/PencilKit/controlling-stroke-rendering-for-animation-and-editing", "law": "To slice a full stroke, use ."}
+{"id": "/documentation/PencilKit/controlling-stroke-rendering-for-animation-and-editing", "law": "Use rather than slicing the path directly."}

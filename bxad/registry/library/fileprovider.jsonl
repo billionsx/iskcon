@@ -8,3 +8,5 @@
 {"id": "/documentation/FileProvider/synchronizing-files-using-file-provider-extensions", "law": "The extensions don’t maintain a local copy of the working set."}
 {"id": "/documentation/FileProvider/synchronizing-files-using-file-provider-extensions", "law": "Real-world file provider extensions can define a working set smaller than the root container item set, and use a different enumerator for the working set enumeration, if desired."}
 {"id": "/documentation/FileProvider/synchronizing-files-using-file-provider-extensions", "law": "Real-world file provider extensions can do that and report the items to the server so the server can maintain the materialized item set and avoid pushing the changes on items irrelevant to the devices."}
+{"id": "/documentation/FileProvider", "law": "You don’t need a File Provider extension to allow access to documents that your app stores locally."}
+{"id": "/documentation/FileProvider", "law": "An extension other apps use to access files and folders managed by your app and synced with a remote storage."}

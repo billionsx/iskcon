@@ -8,3 +8,4 @@
 {"id": "/documentation/WiFiAware/Building-peer-to-peer-apps", "law": "Although this particular design of connecting to the first available endpoint works for the sample app’s use case, most apps typically review the discovered endpoint and make a connection only if required."}
 {"id": "/documentation/WiFiAware/Building-peer-to-peer-apps", "law": "The setting provided during connection should match the one the app provides when starting the listener."}
 {"id": "/documentation/WiFiAware/Building-peer-to-peer-apps", "law": "To access the average transmit latency for the corresponding access category, use the following code:"}
+{"id": "/documentation/WiFiAware", "law": "Your app can use the Wi-Fi Aware framework to connect with Wi-Fi Aware certified accessories."}
