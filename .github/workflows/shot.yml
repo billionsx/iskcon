@@ -64,10 +64,12 @@ jobs:
 
           SEL = "|".join([
               ".amx", ".amx-top", ".amx-h1", ".amx-h2", ".amx-showcase-i",
-              ".amx-showcase-i article", ".amx-dock", "[data-amx-mini]", ".m-art",
-              ".amx-capsule", ".amx-chip", ".amx-row", ".r-num",
-              ".amx-pl", ".pl-in", ".pl-art", ".pl-meta", ".pl-meta .mt", ".pl-meta .ms", ".pl-tr", ".pl-tog",
-              ".pl-bar", ".pl-times", ".amx-cir",
+              ".amx-dock", "[data-amx-mini]", ".m-art", ".m-t", ".m-b",
+              ".amx-tab", ".amx-tab span", ".amx-scir",
+              ".amx-capsule", ".amx-chip", ".amx-row", ".r-num", ".r-c .r-t", ".amx-nav", ".amx-nav .amx-cir",
+              ".amx-pl", ".pl-in", ".pl-art", ".pl-meta", ".pl-meta .mt", ".pl-meta .ms",
+              ".pl-tr", ".pl-tog", ".pl-bar", ".pl-times", ".pl-vol", ".pl-brow", ".amx-cir",
+              ".amx-cardw", ".amx-cov", ".cw-t",
           ])
           STATES = {
               "root":     "/play",
