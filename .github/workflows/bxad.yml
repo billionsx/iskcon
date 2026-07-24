@@ -37,6 +37,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: "Инструменты кадротеки"
+        run: pip install --quiet pillow numpy
+
       - name: "Суд — selftest (живые нарушения в обе стороны)"
         run: python3 bxad/bin/bxad.py selftest
 

@@ -31,7 +31,6 @@ import crawler  # noqa: E402
 import digest as digest_mod  # noqa: E402
 import atlas as atlas_mod  # noqa: E402
 import figkit as figkit_mod  # noqa: E402
-import screens as screens_mod  # noqa: E402
 import study as study_mod  # noqa: E402
 import weblab as weblab_mod  # noqa: E402
 import verify as verify_mod  # noqa: E402
@@ -486,6 +485,7 @@ def cmd_selftest(root: Path) -> int:
         shutil.rmtree(tmpk, ignore_errors=True)
 
     print("SELFTEST · кадротека и веб-атлас (обе стороны)")
+    import screens as screens_mod
     tmpw = Path(tempfile.mkdtemp(prefix="bxad-w-"))
     try:
         (tmpw / "registry" / "state").mkdir(parents=True)
