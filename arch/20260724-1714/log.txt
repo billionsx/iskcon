@@ -1,9 +1,0 @@
-ключ /__shot синхронизирован с D1
-— player: /play?shot=player&book=bg&ch=1
-  ✓ кадр 1510 КБ · где: https://iskcon-web.ceo-5cb.workers.dev/play · amx=True текста=6183 · селекторов=14
-— root: /play
-  ✗ both HTTP 500: shot error: Unable to create new browser: code: 429: message: Rate limit exceeded
-  ✗ both HTTP 500: shot error: Unable to create new browser: code: 429: message: Rate limit exceeded
-  ✓ кадр 1510 КБ · где: https://iskcon-web.ceo-5cb.workers.dev/play · amx=True текста=6183 · селекторов=14
-НЕ СНЯТО: —
-rc=0
