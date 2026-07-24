@@ -73,7 +73,7 @@ jobs:
 
       - name: "Атлас — ежедневный шаг по всей документации (ст. 37.1)"
         if: steps.kind.outputs.net == 'yes'
-        run: python3 bxad/bin/bxad.py atlas --budget 700
+        run: python3 bxad/bin/bxad.py atlas --budget 1500
 
       - name: "Кит — величины официальных китов Apple без аккаунтов (ст. 36.1)"
         if: steps.kind.outputs.net == 'yes'

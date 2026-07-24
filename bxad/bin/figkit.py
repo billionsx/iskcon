@@ -157,6 +157,7 @@ def run_sketch_arm(root: Path, force=False, fixtures: Path = None) -> dict:
         if not _robots_ok(RES_URL):
             return {"status": "robots-disallow", "kits": []}
         html = _get(RES_URL)
+        all_names = sorted({h.rsplit("/", 1)[-1] for h in LINK.findall(html)})
         links = []
         for href in LINK.findall(html):
             if KITWORD.search(href.rsplit("/", 1)[-1]):
@@ -184,7 +185,8 @@ def run_sketch_arm(root: Path, force=False, fixtures: Path = None) -> dict:
             except Exception as e:  # рука не убивает движок: ошибка = честная запись
                 arm_errors.append(f"{name}: {type(e).__name__}: {e}")
     st = {"page_sha": (page_sha if not arm_errors else st.get("page_sha", "")),
-          "kits": kits, "errors": arm_errors, "ts": _now()}
+          "kits": kits, "errors": arm_errors,
+          "links_seen": (all_names if fixtures is None else ["fixture"]), "ts": _now()}
     stf.write_text(json.dumps(st, ensure_ascii=False, indent=1), encoding="utf-8")
     idx = ["# КИТ · величины официальных китов Apple (рука Sketch, без аккаунтов)",
            "Каждая величина несёт адрес kit:<файл>:<страница>/<имя> — 🍎 канон Apple.", ""]
@@ -199,7 +201,8 @@ def run_sketch_arm(root: Path, force=False, fixtures: Path = None) -> dict:
         with (reg / "state" / "CHANGELOG.md").open("a", encoding="utf-8") as f:
             f.write(f"### {_now()} · кит\n" + "".join(
                 f"- {k['kit']}: цветов {k['colors']} · текст-стилей {k['text_styles']} · радиусов {k['radii']} · символов {k['symbols']}\n" for k in kits)
-                + "".join(f"- ОШИБКА руки: {e}\n" for e in arm_errors) + "\n")
+                + "".join(f"- ОШИБКА руки: {e}\n" for e in arm_errors)
+                + ("- все ссылки страницы: " + " · ".join(all_names) + "\n" if fixtures is None else "") + "\n")
     status = "извлечено" if kits else ("ошибка руки: " + "; ".join(arm_errors) if arm_errors else "пусто")
     return {"status": status, "kits": kits, "errors": arm_errors}
 
