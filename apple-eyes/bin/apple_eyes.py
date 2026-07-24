@@ -29,6 +29,7 @@ ROOT = BIN.parent
 sys.path.insert(0, str(BIN))
 import crawler  # noqa: E402
 import digest as digest_mod  # noqa: E402
+import study as study_mod  # noqa: E402
 import verify as verify_mod  # noqa: E402
 import lint as lint_mod  # noqa: E402
 
@@ -413,6 +414,25 @@ def cmd_selftest(root: Path) -> int:
           all(s in const_t for s in ("32.0", "35.0", "±0.4", ".05", ".06", ".09",
                                      "383", "120", "2.5–2.6", "#1C1C1E", "#2C2C2E")))
 
+    print("SELFTEST · изученность (study: обе стороны)")
+    import study as study_mod2
+    rs = study_mod2.run(root)
+    check("все статьи кодекса изучены (замер/знание/🕳), не изучено 0",
+          not rs["bad"] and rs["articles"] >= 30 and rs["knowledge"] > 1000)
+    tmps = Path(tempfile.mkdtemp(prefix="apple-eyes-s-"))
+    try:
+        (tmps / "registry" / "state").mkdir(parents=True)
+        (tmps / "registry" / "knowledge").mkdir()
+        shutil.copy(root / "registry" / "sources.json", tmps / "registry" / "sources.json")
+        bare = (root / "CONSTITUTION.md").read_text(encoding="utf-8").replace(
+            "Дозор: `hig-split-views`, `hig-designing-for-ipados` (архитектура\nразделённых пространств).", "")
+        bare = bare.replace("прецедент ЗКН-Д029", "прецедент")
+        (tmps / "CONSTITUTION.md").write_text(bare, encoding="utf-8")
+        check("статья без замера/знания/🕳 → НЕ ИЗУЧЕНО пойман",
+              any("Суб-приложения" in b for b in study_mod2.run(tmps)["bad"]))
+    finally:
+        shutil.rmtree(tmps, ignore_errors=True)
+
     print("SELFTEST · сверка (verify: обе стороны)")
     import verify as verify_mod
     rv = verify_mod.run(root)
@@ -466,6 +486,7 @@ def main() -> int:
     ln.add_argument("--ratchet", help="файл базы долга: рост = красный, улучшение ужимает базу")
     sub.add_parser("digest")
     sub.add_parser("verify")
+    sub.add_parser("study")
     pr = sub.add_parser("probe")
     pr.add_argument("--fixtures")
     at = sub.add_parser("attach")
@@ -502,6 +523,11 @@ def main() -> int:
     if a.cmd == "verify":
         r = verify_mod.run(ROOT)
         print(f"сверка: строк {r['rows']} · подтверждено знанием {r['confirmed']} · расхождений {r['bad']}")
+        return 1 if r["bad"] else 0
+    if a.cmd == "study":
+        r = study_mod.run(ROOT)
+        print(f"изученность: статей {r['articles']} · замером {r['measured']} · знанием {r['known']} "
+              f"(положений {r['knowledge']}) · 🕳 {r['holes']} · не изучено {len(r['bad'])}")
         return 1 if r["bad"] else 0
     if a.cmd == "probe":
         r = crawler.probe(ROOT, fixtures=Path(a.fixtures) if a.fixtures else None)

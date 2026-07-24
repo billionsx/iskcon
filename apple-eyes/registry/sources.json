@@ -523,6 +523,16 @@
     "анимация",
     "спринги"
    ]
+  },
+  {
+   "id": "swiftui-spring",
+   "url": "https://developer.apple.com/documentation/swiftui/spring",
+   "kind": "docc",
+   "domains": [
+    "динамика",
+    "спринги",
+    "анимация"
+   ]
   }
  ]
 }

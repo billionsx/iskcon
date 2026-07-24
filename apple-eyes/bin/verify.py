@@ -77,6 +77,10 @@ def run(root: Path) -> dict:
     sym_kn = _kn(root, "sf-symbols") + _kn(root, "hig-icons")
     row("Б", "ст. 11", "SF Symbols как родной язык знаков",
         "ПОДТВЕРЖДЕНО ЗНАНИЕМ" if "SF Symbols" in sym_kn else "БАЗА")
+    spr_kn = _kn(root, "swiftui-animation") + _kn(root, "swiftui-spring")
+    row("Б", "ст. 21.1", "спринги платформы документированы (bounce/dampingFraction)",
+        "ПОДТВЕРЖДЕНО ЗНАНИЕМ" if re.search(r"bounce|dampingFraction", spr_kn, re.I)
+        else "ДОЗОР ДОБАВЛЕН — ждёт обхода")
     mot_kn = _kn(root, "hig-motion") + _kn(root, "hig-accessibility")
     row("Б", "ст. 22.1", "Reduce Motion — обязанность (текст Apple)",
         "ПОДТВЕРЖДЕНО ЗНАНИЕМ" if re.search(r"reduc\w+ motion", mot_kn, re.I)

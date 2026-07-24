@@ -74,6 +74,9 @@ jobs:
       - name: "Сверка — конституция ↔ реестр ↔ знание Apple (ст. 45)"
         run: python3 apple-eyes/bin/apple_eyes.py verify
 
+      - name: "Изученность — каждая статья кодекса изучена (замер/знание/🕳)"
+        run: python3 apple-eyes/bin/apple_eyes.py study
+
       - name: "Советник + храповик — по ВСЕМ адаптерам, долг только падает (§7.4)"
         run: |
           rc=0
