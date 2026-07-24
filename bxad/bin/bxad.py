@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-APPLE EYES · единая точка входа департамента.
+BXAD · единая точка входа департамента.
 
   status    — сводка: источники, состояние дозора, iOS 27, стандарты
   crawl     — разведка (живая сеть или --fixtures для офлайна)
@@ -78,7 +78,7 @@ def cmd_status(root: Path) -> int:
     w = json.loads((reg / "state" / "ios27-watch.json").read_text(encoding="utf-8"))
     tk = json.loads((reg / "standards" / "tokens.json").read_text(encoding="utf-8"))
     snapped = sum(1 for s in st.values() if s.get("sha"))
-    print(f"APPLE EYES · {_now()}")
+    print(f"BXAD · {_now()}")
     print(f"  источники: {len(srcs)} · снято снимков: {snapped} · база стандартов: {tk['base']}")
     print(f"  iOS 27: {'ОБНАРУЖЕН ' + w.get('first_seen', '') if w.get('detected') else 'дозор, не обнаружен'}")
     last = max((s.get("last_checked", "") for s in st.values()), default="—")
@@ -188,13 +188,13 @@ def cmd_ios27(root: Path, issue: bool) -> int:
     if issue and w.get("detected") and not w.get("issue"):
         tok, repo = os.environ.get("GITHUB_TOKEN"), os.environ.get("GITHUB_REPOSITORY")
         if tok and repo:
-            body = ("Дозор Apple Eyes обнаружил iOS 27 в официальных источниках.\n\n"
+            body = ("Дозор Billions X Apple Developer (BXAD) обнаружил iOS 27 в официальных источниках.\n\n"
                     + "\n".join(f"- `{e['source']}` — «…{e['context']}…»" for e in w["evidence"][:10])
-                    + "\n\nПротокол: `apple-eyes/registry/standards/ios27/DETECTED.md` (устав §5).")
+                    + "\n\nПротокол: `bxad/registry/standards/ios27/DETECTED.md` (устав §5).")
             req = urllib.request.Request(
                 f"https://api.github.com/repos/{repo}/issues",
-                data=json.dumps({"title": "Apple Eyes · iOS 27 обнаружен — протокол смены базы",
-                                 "body": body, "labels": ["apple-eyes"]}).encode(),
+                data=json.dumps({"title": "Billions X Apple Developer (BXAD) · iOS 27 обнаружен — протокол смены базы",
+                                 "body": body, "labels": ["bxad"]}).encode(),
                 headers={"Authorization": f"Bearer {tok}", "Accept": "application/vnd.github+json",
                          "User-Agent": crawler.UA})
             try:
@@ -248,7 +248,7 @@ def cmd_attach(root: Path, project: str, report_glob: list, strict_glob: list) -
     }
     out = root / "adapters" / f"{project}.json"
     out.write_text(json.dumps(ad, ensure_ascii=False, indent=1), encoding="utf-8")
-    print(f"адаптер создан: {out.relative_to(root)} · дальше: apple_eyes.py lint --adapter {project} --mode report")
+    print(f"адаптер создан: {out.relative_to(root)} · дальше: bxad.py lint --adapter {project} --mode report")
     return 0
 
 
@@ -278,7 +278,7 @@ def cmd_selftest(root: Path) -> int:
     check("комментарий срезан до проверки: нарушитель в /* */ не считается", not res_c["findings"])
 
     print("SELFTEST · разведка (crawler, офлайн)")
-    tmp = Path(tempfile.mkdtemp(prefix="apple-eyes-"))
+    tmp = Path(tempfile.mkdtemp(prefix="bxad-"))
     try:
         reg = tmp / "registry"
         (reg / "state").mkdir(parents=True)
@@ -369,7 +369,7 @@ def cmd_selftest(root: Path) -> int:
           not lint_mod.run(root, adapter, tokens, "strict", fx)["findings"])
 
     print("SELFTEST · храповик советника")
-    tmp2 = Path(tempfile.mkdtemp(prefix="apple-eyes-r-"))
+    tmp2 = Path(tempfile.mkdtemp(prefix="bxad-r-"))
     try:
         bl = tmp2 / "baseline.json"
         res_w = {"rules": ["AE1", "AE9"], "findings": [("AE1", "f", 1, "x")] * 3}
@@ -406,7 +406,7 @@ def cmd_selftest(root: Path) -> int:
 
     print("SELFTEST · атлас (цикл документации: обе стороны)")
     import atlas as atlas_mod2
-    tmpa = Path(tempfile.mkdtemp(prefix="apple-eyes-a-"))
+    tmpa = Path(tempfile.mkdtemp(prefix="bxad-a-"))
     try:
         (tmpa / "registry" / "state").mkdir(parents=True)
         (tmpa / "registry" / "state" / "CHANGELOG.md").write_text("", encoding="utf-8")
@@ -448,7 +448,7 @@ def cmd_selftest(root: Path) -> int:
     print("SELFTEST · кит (разбор .sketch без аккаунтов)")
     import io, zipfile
     import figkit as figkit_mod2
-    tmpk = Path(tempfile.mkdtemp(prefix="apple-eyes-k-"))
+    tmpk = Path(tempfile.mkdtemp(prefix="bxad-k-"))
     try:
         (tmpk / "registry" / "state").mkdir(parents=True)
         (tmpk / "registry" / "state" / "CHANGELOG.md").write_text("", encoding="utf-8")
@@ -496,7 +496,7 @@ def cmd_selftest(root: Path) -> int:
     rs = study_mod2.run(root)
     check("все статьи кодекса изучены (замер/знание/🕳), не изучено 0",
           not rs["bad"] and rs["articles"] >= 30 and rs["knowledge"] > 1000)
-    tmps = Path(tempfile.mkdtemp(prefix="apple-eyes-s-"))
+    tmps = Path(tempfile.mkdtemp(prefix="bxad-s-"))
     try:
         (tmps / "registry" / "state").mkdir(parents=True)
         (tmps / "registry" / "knowledge").mkdir()
@@ -514,7 +514,7 @@ def cmd_selftest(root: Path) -> int:
     import verify as verify_mod
     rv = verify_mod.run(root)
     check("живая сверка сходится: расхождений 0", rv["bad"] == 0 and rv["confirmed"] >= 3)
-    tmpv = Path(tempfile.mkdtemp(prefix="apple-eyes-v-"))
+    tmpv = Path(tempfile.mkdtemp(prefix="bxad-v-"))
     try:
         (tmpv / "registry" / "standards").mkdir(parents=True)
         (tmpv / "registry" / "state").mkdir()
@@ -548,7 +548,7 @@ def cmd_selftest(root: Path) -> int:
 
 # ─────────────────────────────── main ──────────────────────────────────
 def main() -> int:
-    ap = argparse.ArgumentParser(prog="apple_eyes")
+    ap = argparse.ArgumentParser(prog="bxad")
     sub = ap.add_subparsers(dest="cmd", required=True)
     sub.add_parser("status")
     c = sub.add_parser("crawl")

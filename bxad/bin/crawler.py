@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-APPLE EYES · РАЗВЕДКА. Автономный дозор источников Apple — без ИИ.
+BXAD · РАЗВЕДКА. Автономный дозор источников Apple — без ИИ.
 
 Принципы (устав §3):
   ВЕЖЛИВОСТЬ  — robots.txt уважается; между запросами пауза; User-Agent
@@ -83,7 +83,7 @@ def probe(root: Path, fixtures: Path = None, delay: float = None) -> dict:
                     + " · ".join(f"`{e}`" for e in enrolled) + "\n\n")
     return {"checked": checked, "enrolled": enrolled}
 
-UA = "AppleEyes/1.0 (+https://github.com/billionsx/iskcon; standards change-watch; ceo@billionsx.com)"
+UA = "BXAD/1.0 (+https://github.com/billionsx/iskcon; standards change-watch; ceo@billionsx.com)"
 TIMEOUT = 25
 DELAY = 2.5
 SNAP_CAP = 120_000  # знаков текста в снимке — хватает любой странице HIG

@@ -1,4 +1,4 @@
-# APPLE EYES · Apple Eyes Development Team Department
+# BXAD · Billions X Apple Developer
 
 Автономный департамент стандартов Apple: **разведка** официальных
 источников (без ИИ) · **реестр** измеренной базы iOS 26 (каждое число
@@ -10,32 +10,32 @@
 ## Команды
 
 ```
-python3 apple-eyes/bin/apple_eyes.py status      # сводка департамента
-python3 apple-eyes/bin/apple_eyes.py selftest    # суд: ломаю→красный, чиню→зелёный
-python3 apple-eyes/bin/apple_eyes.py crawl       # разведка (живая сеть)
-python3 apple-eyes/bin/apple_eyes.py ios27       # дозор iOS 27
-python3 apple-eyes/bin/apple_eyes.py lint --adapter iskcon --mode report
+python3 bxad/bin/bxad.py status      # сводка департамента
+python3 bxad/bin/bxad.py selftest    # суд: ломаю→красный, чиню→зелёный
+python3 bxad/bin/bxad.py crawl       # разведка (живая сеть)
+python3 bxad/bin/bxad.py ios27       # дозор iOS 27
+python3 bxad/bin/bxad.py lint --adapter iskcon --mode report
 ```
 
 Только stdlib Python 3 — никаких зависимостей.
 
 ## Подключить к любому проекту (3 шага)
 
-1. Перенести каталог `apple-eyes/` (копия · git subtree · submodule).
-2. `python3 apple-eyes/bin/apple_eyes.py attach --project имя \
+1. Перенести каталог `bxad/` (копия · git subtree · submodule).
+2. `python3 bxad/bin/bxad.py attach --project имя \
       --report-glob "src/**/*.css" --report-glob "src/**/*.tsx"`
-3. Скопировать `.github/workflows/apple-eyes.yml` — разведка, дозор и
+3. Скопировать `.github/workflows/bxad.yml` — разведка, дозор и
    суд поедут по расписанию сами; хроника ляжет в
-   `apple-eyes/registry/state/CHANGELOG.md`.
+   `bxad/registry/state/CHANGELOG.md`.
 
 Порядок принуждения: новый проект начинает с `report`; правило
 переводится в `strict`, когда его долг в проекте равен нулю (устав §4).
 
 ## Дополнительные органы
 
-    apple_eyes.py digest                 # знание: нормативная выжимка из снимков
-    apple_eyes.py probe                  # пробы iOS 27: вербовка оживших страниц
-    apple_eyes.py lint --adapter X --mode report \
+    bxad.py digest                 # знание: нормативная выжимка из снимков
+    bxad.py probe                  # пробы iOS 27: вербовка оживших страниц
+    bxad.py lint --adapter X --mode report \
         --ratchet registry/state/ae-baseline.json   # храповик: долг только падает
 
 Правила: AE1–AE11. Знание: `registry/knowledge/`. Продукты: `registry/standards/products/`.

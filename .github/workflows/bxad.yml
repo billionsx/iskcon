@@ -1,6 +1,6 @@
-name: apple-eyes
+name: bxad
 
-# ДЕПАРТАМЕНТ APPLE EYES · ЗКН-Д030 · устав: apple-eyes/CONSTITUTION.md
+# ДЕПАРТАМЕНТ BXAD · ЗКН-Д030 · устав: bxad/CONSTITUTION.md
 #
 # Автономная разведка стандартов Apple: дозор официальных источников,
 # хроника изменений, детектор iOS 27, суд (selftest на живых нарушениях),
@@ -14,16 +14,16 @@ on:
   push:
     branches: [main]
     paths:
-      - "apple-eyes/**"
+      - "bxad/**"
       - "apps/web/src/**"           # храповик ловит долг там, где он рождается
-      - ".github/workflows/apple-eyes.yml"
+      - ".github/workflows/bxad.yml"
   schedule:
     - cron: "43 5 * * 1"   # понедельник — полный обход
     - cron: "43 5 * * 4"   # четверг — резервный слот (GH-кроны роняют слоты)
   workflow_dispatch:
 
 concurrency:
-  group: apple-eyes
+  group: bxad
   cancel-in-progress: false
 
 permissions:
@@ -38,7 +38,7 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: "Суд — selftest (живые нарушения в обе стороны)"
-        run: python3 apple-eyes/bin/apple_eyes.py selftest
+        run: python3 bxad/bin/bxad.py selftest
 
       - name: "Что за событие: веб-пуш без правок департамента → без сети"
         id: kind
@@ -46,7 +46,7 @@ jobs:
           NET=yes
           if [ "${{ github.event_name }}" = "push" ]; then
             git fetch --deepen=1 -q || true
-            if ! git diff --name-only HEAD^ HEAD 2>/dev/null | grep -qE '^(apple-eyes/|\.github/workflows/apple-eyes\.yml)'; then
+            if ! git diff --name-only HEAD^ HEAD 2>/dev/null | grep -qE '^(bxad/|\.github/workflows/bxad\.yml)'; then
               NET=no
             fi
           fi
@@ -55,25 +55,25 @@ jobs:
 
       - name: "Разведка — дозор источников Apple"
         if: steps.kind.outputs.net == 'yes'
-        run: python3 apple-eyes/bin/apple_eyes.py crawl
+        run: python3 bxad/bin/bxad.py crawl
 
       - name: "Дозор iOS 27"
         if: steps.kind.outputs.net == 'yes'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: python3 apple-eyes/bin/apple_eyes.py ios27 --issue-on-detect
+        run: python3 bxad/bin/bxad.py ios27 --issue-on-detect
 
       - name: "Пробы iOS 27 — вербовка оживших страниц (устав §7.3)"
         if: steps.kind.outputs.net == 'yes'
-        run: python3 apple-eyes/bin/apple_eyes.py probe
+        run: python3 bxad/bin/bxad.py probe
 
       - name: "Знание — нормативная выжимка из снимков (устав §7.2)"
         if: steps.kind.outputs.net == 'yes'
-        run: python3 apple-eyes/bin/apple_eyes.py digest
+        run: python3 bxad/bin/bxad.py digest
 
       - name: "Атлас — ежедневный шаг по всей документации (ст. 37.1)"
         if: steps.kind.outputs.net == 'yes'
-        run: python3 apple-eyes/bin/apple_eyes.py atlas --budget 700
+        run: python3 bxad/bin/bxad.py atlas --budget 700
 
       - name: "Кит — величины официальных китов Apple без аккаунтов (ст. 36.1)"
         if: steps.kind.outputs.net == 'yes'
@@ -82,37 +82,38 @@ jobs:
           FIGMA_KIT_KEY: ${{ secrets.FIGMA_KIT_KEY }}
         run: |
           command -v 7z >/dev/null || sudo apt-get -yq install p7zip-full >/dev/null
-          python3 apple-eyes/bin/apple_eyes.py kit
+          python3 bxad/bin/bxad.py kit
 
       - name: "Сверка — конституция ↔ реестр ↔ знание Apple (ст. 45)"
-        run: python3 apple-eyes/bin/apple_eyes.py verify
+        run: python3 bxad/bin/bxad.py verify
 
       - name: "Изученность — каждая статья кодекса изучена (замер/знание/🕳)"
-        run: python3 apple-eyes/bin/apple_eyes.py study
+        run: python3 bxad/bin/bxad.py study
 
       - name: "Советник + храповик — по ВСЕМ адаптерам, долг только падает (§7.4)"
         run: |
           rc=0
-          for f in apple-eyes/adapters/*.json; do
+          for f in bxad/adapters/*.json; do
             a=$(basename "$f" .json)
-            python3 apple-eyes/bin/apple_eyes.py lint --adapter "$a" --mode report \
-              --out "apple-eyes/registry/state/report-$a.md" \
-              --ratchet apple-eyes/registry/state/ae-baseline.json > /tmp/lint.out \
+            python3 bxad/bin/bxad.py lint --adapter "$a" --mode report \
+              --out "bxad/registry/state/report-$a.md" \
+              --ratchet bxad/registry/state/ae-baseline.json > /tmp/lint.out \
               || { echo "=== $a ==="; cat /tmp/lint.out; rc=1; }
-            head -2 "apple-eyes/registry/state/report-$a.md" | tail -1
+            head -2 "bxad/registry/state/report-$a.md" | tail -1
           done
           exit $rc
 
       - name: "Хроника — коммит состояния в репозиторий"
+        if: always()
         run: |
-          git config user.name "apple-eyes"
+          git config user.name "bxad"
           git config user.email "ceo@billionsx.com"
-          git add apple-eyes/registry
+          git add bxad/registry
           if git diff --cached --quiet; then
             echo "изменений нет — хроника чиста"
             exit 0
           fi
-          git commit -m "apple-eyes: хроника разведки"
+          git commit -m "bxad: хроника разведки"
           for i in 1 2 3 4; do
             git push && exit 0
             git pull --rebase && sleep 3

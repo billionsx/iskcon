@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-APPLE EYES · ИСПОЛНИТЕЛЬНАЯ ВЛАСТЬ. Переносимый линт измеренных стандартов.
+BXAD · ИСПОЛНИТЕЛЬНАЯ ВЛАСТЬ. Переносимый линт измеренных стандартов.
 
 Правила выведены из замеров (registry/standards/tokens.json — каждое число
 несёт адрес, ЗКН-Д028), а не из вкуса. Комментарии срезаются ДО проверки:
@@ -210,7 +210,7 @@ def run(root: Path, adapter: dict, tokens: dict, mode: str, project_root: Path) 
 
 
 def render(res: dict, adapter_name: str) -> str:
-    out = [f"# APPLE EYES · отчёт линта · адаптер `{adapter_name}` · режим {res['mode']}",
+    out = [f"# BXAD · отчёт линта · адаптер `{adapter_name}` · режим {res['mode']}",
            f"Файлов просмотрено: {res['files']} · правила: {', '.join(res['rules'])} · находок: {len(res['findings'])}", ""]
     if not res["findings"]:
         out.append("Чисто.")

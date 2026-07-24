@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-APPLE EYES · КИТ. Величины официальных дизайн-китов Apple — без единого аккаунта.
+BXAD · КИТ. Величины официальных дизайн-китов Apple — без единого аккаунта.
 
 Основатель: «движок должен сам открывать кит iOS 27 и брать стандарты,
 элементы, иконки — без моего аккаунта». Две руки:
@@ -48,11 +48,24 @@ def _now():
     return datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
 
 
+MAX_KIT_BYTES = 700 * 1024 * 1024
+
+
 def _get(url: str, binary=False, timeout=120):
     req = urllib.request.Request(url, headers={"User-Agent": UA, "Accept": "*/*"})
     with urllib.request.urlopen(req, timeout=timeout) as r:
-        b = r.read()
-    return b if binary else b.decode("utf-8", "replace")
+        if not binary:
+            return r.read().decode("utf-8", "replace")
+        chunks, total = [], 0
+        while True:
+            c = r.read(1 << 20)
+            if not c:
+                break
+            total += len(c)
+            if total > MAX_KIT_BYTES:
+                raise RuntimeError(f"кит больше капа {MAX_KIT_BYTES>>20}МБ")
+            chunks.append(c)
+        return b"".join(chunks)
 
 
 def _rgba(c: dict) -> str:
@@ -149,20 +162,29 @@ def run_sketch_arm(root: Path, force=False, fixtures: Path = None) -> dict:
             if KITWORD.search(href.rsplit("/", 1)[-1]):
                 url = href if href.startswith("http") else "https://developer.apple.com" + href
                 name = url.rsplit("/", 1)[-1]
-                links.append((name, _get(url, binary=True, timeout=900)))
+                try:
+                    links.append((name, _get(url, binary=True, timeout=900)))
+                except Exception as e:
+                    links.append((name + "!download", str(e).encode()))
         if not links:
             return {"status": "ссылок на iOS-кит не найдено (страница изменилась?)", "kits": []}
-    kits = []
+    kits, arm_errors = [], []
     with tempfile.TemporaryDirectory() as td:
         for name, blob in links[:2]:
-            suffix = name.rsplit(".", 1)[-1].lower()
-            sk = _extract_container(blob, suffix, Path(td))
-            std = parse_sketch(sk, name)
-            slug = re.sub(r"[^a-z0-9]+", "-", name.lower()).strip("-")
-            (kdir / f"{slug}.json").write_text(json.dumps(std, ensure_ascii=False, indent=1), encoding="utf-8")
-            kits.append({"kit": name, "colors": len(std["colors"]), "text_styles": len(std["text_styles"]),
-                         "radii": len(std["corner_radii"]), "symbols": len(std["symbols"])})
-    st = {"page_sha": page_sha, "kits": kits, "ts": _now()}
+            try:
+                if name.endswith("!download"):
+                    raise RuntimeError("закачка: " + blob.decode(errors="replace")[:160])
+                suffix = name.rsplit(".", 1)[-1].lower()
+                sk = _extract_container(blob, suffix, Path(td))
+                std = parse_sketch(sk, name)
+                slug = re.sub(r"[^a-z0-9]+", "-", name.lower()).strip("-")
+                (kdir / f"{slug}.json").write_text(json.dumps(std, ensure_ascii=False, indent=1), encoding="utf-8")
+                kits.append({"kit": name, "colors": len(std["colors"]), "text_styles": len(std["text_styles"]),
+                             "radii": len(std["corner_radii"]), "symbols": len(std["symbols"])})
+            except Exception as e:  # рука не убивает движок: ошибка = честная запись
+                arm_errors.append(f"{name}: {type(e).__name__}: {e}")
+    st = {"page_sha": (page_sha if not arm_errors else st.get("page_sha", "")),
+          "kits": kits, "errors": arm_errors, "ts": _now()}
     stf.write_text(json.dumps(st, ensure_ascii=False, indent=1), encoding="utf-8")
     idx = ["# КИТ · величины официальных китов Apple (рука Sketch, без аккаунтов)",
            "Каждая величина несёт адрес kit:<файл>:<страница>/<имя> — 🍎 канон Apple.", ""]
@@ -175,9 +197,11 @@ def run_sketch_arm(root: Path, force=False, fixtures: Path = None) -> dict:
     (kdir / "KIT.md").write_text("\n".join(idx) + "\n", encoding="utf-8")
     if fixtures is None:
         with (reg / "state" / "CHANGELOG.md").open("a", encoding="utf-8") as f:
-            f.write(f"### {_now()} · кит · извлечение\n" + "".join(
-                f"- {k['kit']}: цветов {k['colors']} · текст-стилей {k['text_styles']} · радиусов {k['radii']} · символов {k['symbols']}\n" for k in kits) + "\n")
-    return {"status": "извлечено", "kits": kits}
+            f.write(f"### {_now()} · кит\n" + "".join(
+                f"- {k['kit']}: цветов {k['colors']} · текст-стилей {k['text_styles']} · радиусов {k['radii']} · символов {k['symbols']}\n" for k in kits)
+                + "".join(f"- ОШИБКА руки: {e}\n" for e in arm_errors) + "\n")
+    status = "извлечено" if kits else ("ошибка руки: " + "; ".join(arm_errors) if arm_errors else "пусто")
+    return {"status": status, "kits": kits, "errors": arm_errors}
 
 
 def run_figma_arm(root: Path) -> dict:

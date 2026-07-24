@@ -1,4 +1,4 @@
-# APPLE EYES · отчёт линта · адаптер `iskcon` · режим report
+# BXAD · отчёт линта · адаптер `iskcon` · режим report
 Файлов просмотрено: 117 · правила: AE1, AE2, AE3, AE4, AE6, AE7, AE8, AE9, AE10, AE11, AE12, AE13 · находок: 327
 
 ## AE1 · 14
