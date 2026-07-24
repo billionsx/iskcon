@@ -88,6 +88,24 @@ TIMEOUT = 25
 DELAY = 2.5
 SNAP_CAP = 120_000  # знаков текста в снимке — хватает любой странице HIG
 
+_ROBOTS = {}
+
+
+def _robots_ok(url: str) -> bool:
+    """Кэшированный robots.txt по хосту — общий для дозора и атласа."""
+    from urllib.parse import urlparse
+    host = "{0.scheme}://{0.netloc}".format(urlparse(url))
+    rp = _ROBOTS.get(host)
+    if rp is None:
+        rp = urllib.robotparser.RobotFileParser()
+        try:
+            rp.set_url(host + "/robots.txt")
+            rp.read()
+        except Exception:
+            rp = None
+        _ROBOTS[host] = rp
+    return True if rp is None else rp.can_fetch(UA, url)
+
 
 def _now() -> str:
     return datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")

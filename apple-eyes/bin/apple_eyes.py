@@ -29,6 +29,8 @@ ROOT = BIN.parent
 sys.path.insert(0, str(BIN))
 import crawler  # noqa: E402
 import digest as digest_mod  # noqa: E402
+import atlas as atlas_mod  # noqa: E402
+import figkit as figkit_mod  # noqa: E402
 import study as study_mod  # noqa: E402
 import verify as verify_mod  # noqa: E402
 import lint as lint_mod  # noqa: E402
@@ -57,6 +59,8 @@ FOUNDER_MANDATE = {
     "автономность": "Статья 46 · Переносимость",
     "самоулучшение без ИИ": "Статья 48 · Три контура",
     "iOS 27 автообновление": "Статья 40 · Рельсы",
+    "полная документация developer.apple.com": "Статья 37.1 · Атлас",
+    "кит Figma iOS 27": "Статья 36.1 · Кит",
     "динамика": "Статья 21.1 · Динамика", "эффекты": "Статья 22.1 · Эффекты",
 }
 
@@ -400,6 +404,79 @@ def cmd_selftest(root: Path) -> int:
     finally:
         shutil.rmtree(tmp2, ignore_errors=True)
 
+    print("SELFTEST · атлас (цикл документации: обе стороны)")
+    import atlas as atlas_mod2
+    tmpa = Path(tempfile.mkdtemp(prefix="apple-eyes-a-"))
+    try:
+        (tmpa / "registry" / "state").mkdir(parents=True)
+        (tmpa / "registry" / "state" / "CHANGELOG.md").write_text("", encoding="utf-8")
+        fxa = tmpa / "fx"; fxa.mkdir()
+        (fxa / "documentation.json").write_text(json.dumps({
+            "metadata": {"title": "Root"},
+            "references": {"a": {"url": "/documentation/aaa"}, "b": {"url": "/documentation/bbb"}},
+            "primaryContentSections": []}), encoding="utf-8")
+        (fxa / "documentation__aaa.json").write_text(json.dumps({
+            "metadata": {"title": "AAA"}, "references": {},
+            "primaryContentSections": [{"content": [{"type": "paragraph", "inlineContent": [
+                {"type": "text", "text": "Use a minimum tappable area of 44x44 pt for controls."}]}]}]}), encoding="utf-8")
+        (fxa / "documentation__bbb.json").write_text(json.dumps({
+            "metadata": {"title": "BBB"}, "references": {},
+            "primaryContentSections": [{"content": [{"type": "paragraph", "inlineContent": [
+                {"type": "text", "text": "A plain descriptive line without prescriptions."}]}]}]}), encoding="utf-8")
+        r1 = atlas_mod2.step(tmpa, budget=1, fixtures=fxa)
+        check("бюджет уважается: шаг 1 → пройдена 1, очередь выросла",
+              r1["walked"] == 1 and r1["frontier"] == 2)
+        r2 = atlas_mod2.step(tmpa, budget=10, fixtures=fxa)
+        lib = (tmpa / "registry" / "library" / "aaa.jsonl")
+        check("цикл сам раскрывает дерево и добывает закон в библиотеку",
+              r2["walked"] == 2 and lib.exists() and "44x44" in lib.read_text(encoding="utf-8")
+              and (tmpa / "registry" / "library" / "INDEX.md").exists())
+        r3 = atlas_mod2.step(tmpa, budget=10, fixtures=fxa)
+        check("фронтир пуст → второй круг переобхода, без ложных изменений",
+              r3["walked"] == 3 and r3["changed"] == 0)
+        (fxa / "documentation__aaa.json").write_text(json.dumps({
+            "metadata": {"title": "AAA"}, "references": {},
+            "primaryContentSections": [{"content": [{"type": "paragraph", "inlineContent": [
+                {"type": "text", "text": "Use a minimum tappable area of 48x48 pt for controls."}]}]}]}), encoding="utf-8")
+        r4 = atlas_mod2.step(tmpa, budget=10, fixtures=fxa)
+        chg = (tmpa / "registry" / "state" / "CHANGELOG.md").read_text(encoding="utf-8")
+        check("подмена страницы на круге → «закон изменился» в хронике",
+              r4["changed"] == 1 and "закон изменился" in chg)
+    finally:
+        shutil.rmtree(tmpa, ignore_errors=True)
+
+    print("SELFTEST · кит (разбор .sketch без аккаунтов)")
+    import io, zipfile
+    import figkit as figkit_mod2
+    tmpk = Path(tempfile.mkdtemp(prefix="apple-eyes-k-"))
+    try:
+        (tmpk / "registry" / "state").mkdir(parents=True)
+        (tmpk / "registry" / "state" / "CHANGELOG.md").write_text("", encoding="utf-8")
+        fxk = tmpk / "fx"; fxk.mkdir()
+        buf = io.BytesIO()
+        with zipfile.ZipFile(buf, "w") as z:
+            z.writestr("document.json", json.dumps({
+                "sharedSwatches": {"objects": [{"name": "System Red", "value": {"red": 1, "green": 0.231, "blue": 0.188, "alpha": 1}}]},
+                "layerTextStyles": {"objects": [{"name": "Body/Regular", "value": {"textStyle": {"encodedAttributes": {
+                    "MSAttributedStringFontAttribute": {"attributes": {"name": "SFPro-Regular", "size": 17}},
+                    "kerning": -0.43,
+                    "paragraphStyle": {"maximumLineHeight": 22}}}}}]}}))
+            z.writestr("pages/p1.json", json.dumps({"name": "Controls", "layers": [
+                {"_class": "symbolMaster", "name": "Button/Filled", "layers": [
+                    {"_class": "rectangle", "name": "bg", "fixedRadius": 26, "points": []}]}]}))
+        (fxk / "mini-kit.sketch").write_bytes(buf.getvalue())
+        rk = figkit_mod2.run_sketch_arm(tmpk, fixtures=fxk)
+        kj = json.loads((tmpk / "registry" / "standards" / "kit" / "fixture-kit-sketch.json").read_text(encoding="utf-8"))
+        check("кит разобран: цвет, текст-стиль 17pt/22/-0.43, радиус 26, символ — с адресами kit:",
+              rk["status"] == "извлечено"
+              and kj["colors"]["System Red"]["value"] == "#FF3B30"
+              and kj["text_styles"]["Body/Regular"]["size_pt"] == 17
+              and kj["text_styles"]["Body/Regular"]["kerning"] == -0.43
+              and "26.0" in kj["corner_radii"] and kj["symbols"] == ["Button/Filled"]
+              and kj["colors"]["System Red"]["at"].startswith("kit:"))
+    finally:
+        shutil.rmtree(tmpk, ignore_errors=True)
+
     print("SELFTEST · конституция (ст. 45: полнота мандата машиной)")
     const_t = (root / "CONSTITUTION.md").read_text(encoding="utf-8")
     missing = [d for d, anchor in FOUNDER_MANDATE.items() if anchor not in const_t]
@@ -487,6 +564,10 @@ def main() -> int:
     sub.add_parser("digest")
     sub.add_parser("verify")
     sub.add_parser("study")
+    at = sub.add_parser("atlas")
+    at.add_argument("--budget", type=int, default=700)
+    kt = sub.add_parser("kit")
+    kt.add_argument("--force", action="store_true")
     pr = sub.add_parser("probe")
     pr.add_argument("--fixtures")
     at = sub.add_parser("attach")
@@ -529,6 +610,19 @@ def main() -> int:
         print(f"изученность: статей {r['articles']} · замером {r['measured']} · знанием {r['known']} "
               f"(положений {r['knowledge']}) · 🕳 {r['holes']} · не изучено {len(r['bad'])}")
         return 1 if r["bad"] else 0
+    if a.cmd == "atlas":
+        r = atlas_mod.step(ROOT, budget=a.budget)
+        print(f"атлас: пройдено {r['walked']} · очередь {r['frontier']} · всего {r['visited_total']} · "
+              f"добыто {r['mined']} · изменилось {r['changed']} · библиотека {r['library']['total']} законов / {r['library']['frameworks']} фреймворков")
+        return 0
+    if a.cmd == "kit":
+        r = figkit_mod.run_sketch_arm(ROOT, force=a.force)
+        print("кит:", r["status"])
+        for k in r.get("kits", []):
+            print(f"  {k['kit']}: цветов {k['colors']} · текст-стилей {k['text_styles']} · радиусов {k['radii']} · символов {k['symbols']}")
+        f = figkit_mod.run_figma_arm(ROOT)
+        print("figma-рука:", f["status"])
+        return 0
     if a.cmd == "probe":
         r = crawler.probe(ROOT, fixtures=Path(a.fixtures) if a.fixtures else None)
         print(f"пробы iOS 27: проверено {r['checked']} · завербовано {len(r['enrolled'])}"

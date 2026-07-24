@@ -533,6 +533,118 @@
     "спринги",
     "анимация"
    ]
+  },
+  {
+   "id": "asc-help",
+   "url": "https://developer.apple.com/help/app-store-connect/",
+   "kind": "html",
+   "domains": [
+    "App Store Connect",
+    "публикация",
+    "маркетинг"
+   ]
+  },
+  {
+   "id": "upcoming-requirements",
+   "url": "https://developer.apple.com/news/upcoming-requirements/",
+   "kind": "html",
+   "domains": [
+    "требования",
+    "релиз-ноты",
+    "маркетинг"
+   ]
+  },
+  {
+   "id": "icon-composer",
+   "url": "https://developer.apple.com/icon-composer/",
+   "kind": "html",
+   "domains": [
+    "иконки",
+    "инструменты"
+   ]
+  },
+  {
+   "id": "pass-designer",
+   "url": "https://developer.apple.com/pass-designer/",
+   "kind": "html",
+   "domains": [
+    "Wallet",
+    "инструменты"
+   ]
+  },
+  {
+   "id": "reality-composer-pro",
+   "url": "https://developer.apple.com/reality-composer-pro/",
+   "kind": "html",
+   "domains": [
+    "visionOS",
+    "инструменты",
+    "3D"
+   ]
+  },
+  {
+   "id": "videos-design",
+   "url": "https://developer.apple.com/videos/design/",
+   "kind": "html",
+   "domains": [
+    "UI/UX",
+    "видео",
+    "Liquid Glass"
+   ]
+  },
+  {
+   "id": "dev-programs",
+   "url": "https://developer.apple.com/programs/",
+   "kind": "html",
+   "domains": [
+    "программа разработчика",
+    "правила"
+   ]
+  },
+  {
+   "id": "appstore-whats-new",
+   "url": "https://developer.apple.com/app-store/whats-new/",
+   "kind": "html",
+   "domains": [
+    "App Store",
+    "маркетинг"
+   ]
+  },
+  {
+   "id": "technologies",
+   "url": "https://developer.apple.com/technologies/",
+   "kind": "html",
+   "domains": [
+    "технологии",
+    "кроссплатформенность"
+   ]
+  },
+  {
+   "id": "dev-community",
+   "url": "https://developer.apple.com/community/",
+   "kind": "html",
+   "domains": [
+    "сообщество"
+   ]
+  },
+  {
+   "id": "dev-download",
+   "url": "https://developer.apple.com/download/",
+   "kind": "html",
+   "domains": [
+    "загрузки",
+    "инструменты",
+    "iOS 27"
+   ]
+  },
+  {
+   "id": "dev-help",
+   "url": "https://developer.apple.com/help/",
+   "kind": "html",
+   "domains": [
+    "справка",
+    "правила"
+   ]
   }
  ]
 }
