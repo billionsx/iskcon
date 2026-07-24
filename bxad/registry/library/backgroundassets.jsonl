@@ -1,0 +1,2 @@
+{"id": "/documentation/BackgroundAssets/downloading-essential-assets-in-the-background", "law": "Before you run the sample code project in Xcode: Configure the WWDC Sessions and WWDC Sessions Background Assets Extension targets to use your Developer team for signing."}
+{"id": "/documentation/BackgroundAssets/downloading-essential-assets-in-the-background", "law": "Fetch the assets your app requires before its first launch using an app extension and the Background Assets framework."}

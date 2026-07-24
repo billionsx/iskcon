@@ -1,0 +1,14 @@
+{"id": "/documentation/AVKit/adopting-picture-in-picture-playback-in-tvos", "law": "This sample code project must be run on a physical device."}
+{"id": "/documentation/AVKit/creating-a-multiview-video-playback-experience-in-visionos", "law": "This sample code project demonstrates how to use the multiview video playback APIs using SwiftUI."}
+{"id": "/documentation/AVKit/creating-a-multiview-video-playback-experience-in-visionos", "law": "Use this type of experience in apps where watching multiple videos makes sense, such as in a sports app or a security camera app."}
+{"id": "/documentation/AVKit/creating-a-multiview-video-playback-experience-in-visionos", "law": "Use this experience controller to configure the experiences you support, and to initiate transitions between different experience types."}
+{"id": "/documentation/AVKit/creating-a-multiview-video-playback-experience-in-visionos", "law": "Use to adapt this for SwiftUI."}
+{"id": "/documentation/AVKit/creating-a-multiview-video-playback-experience-in-visionos", "law": "The function performs a request to transition the video to the provided state, but this doesn’t always succeed."}
+{"id": "/documentation/AVKit/creating-a-multiview-video-playback-experience-in-visionos", "law": "This transition fails if you already presented the maximum number of videos."}
+{"id": "/documentation/AVKit/creating-a-multiview-video-playback-experience-in-visionos", "law": "Use the delegate method to update your state and view hierarchy for completed transitions."}
+{"id": "/documentation/AVKit/creating-a-multiview-video-playback-experience-in-visionos", "law": "This transition fails to complete when the isn’t in the view hierarchy because the system requires a scene to transition to these states."}
+{"id": "/documentation/AVKit/playing-video-content-in-a-standard-user-interface", "law": "A player view controller requires an object to provide the media content to display."}
+{"id": "/documentation/AVKit/playing-video-content-in-a-standard-user-interface", "law": "This delegate method passes the player view controller and transition coordinator to use for coordinating animations."}
+{"id": "/documentation/AVKit/playing-video-content-in-a-standard-user-interface", "law": "To use PiP, the sample configures its audio session and background modes."}
+{"id": "/documentation/AVKit/supporting-continuity-camera-in-your-tvos-app", "law": "You can use a separate Apple ID for each device or the same Apple ID for both."}
+{"id": "/documentation/AVKit/supporting-continuity-camera-in-your-tvos-app", "law": "The third step is important for conferencing apps that use Voice over IP (VoIP)."}

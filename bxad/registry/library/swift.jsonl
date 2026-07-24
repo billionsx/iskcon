@@ -1,0 +1,16 @@
+{"id": "/documentation/Swift/CallingAPIsAcrossLanguageBoundaries", "law": "Before you run the sample code project in Xcode, ensure you’re using macOS 14.0 or later."}
+{"id": "/documentation/Swift/CallingAPIsAcrossLanguageBoundaries", "law": "Use a variety of C++ APIs in Swift – and vice-versa – across multiple targets and frameworks in an Xcode project."}
+{"id": "/documentation/Swift/MixingLanguagesInAnXcodeProject", "law": "Before you run the sample code project in Xcode, ensure you’re using macOS 14.0 or later."}
+{"id": "/documentation/Swift/MixingLanguagesInAnXcodeProject", "law": "Use C++ APIs in Swift – and Swift APIs in C++ – in a single framework target, and consume the framework’s APIs in a separate app target."}
+{"id": "/documentation/Swift/updating-an-app-to-use-strict-concurrency", "law": "Make sure that the complication appears on the active watch face."}
+{"id": "/documentation/Swift/updating-an-app-to-use-strict-concurrency", "law": "Each target generates warnings that must be resolved."}
+{"id": "/documentation/Swift/updating-an-app-to-use-strict-concurrency", "law": "Use this code to follow along with a guide to migrating your code to take advantage of the full concurrency protection that the Swift 6 language mode provides."}
+{"id": "/documentation/swift/tictacfish_implementing_a_game_using_distributed_actors", "law": "Use distributed actors to take your Swift concurrency and actor-based apps beyond a single process."}
+{"id": "/documentation/swift/updating_an_app_to_use_swift_concurrency", "law": "You don’t have to convert all of your code all at once; instead, you can use specific refactoring techniques to convert your code one piece at time."}
+{"id": "/documentation/swift/updating_an_app_to_use_swift_concurrency", "law": "Make sure the Coffee Tracker complication appears on the active watch face."}
+{"id": "/documentation/swift/updating_an_app_to_use_swift_concurrency", "law": "You can remove completion handlers by updating these calls to use the - versions."}
+{"id": "/documentation/swift/updating_an_app_to_use_swift_concurrency", "law": "In some cases an SDK call requires using a completion handler."}
+{"id": "/documentation/swift/updating_an_app_to_use_swift_concurrency", "law": "To the results of a completion handler in these cases, add a : To protect the stored properties on the controller when accessed asynchronously, change from a type to an : Calls to functions from synchronous functions are made by creating new asynchronous tasks, which can use to wait for completion:"}
+{"id": "/documentation/swift/updating_an_app_to_use_swift_concurrency", "law": "To ensure that all updates to this property are made on the main thread, place the type on the main actor: Two methods that perform synchronous IO — the and methods — are factored out into a separate actor, which performs these activities away from the main thread."}
+{"id": "/documentation/swift/updating_an_app_to_use_swift_concurrency", "law": "The model type on the main actor must use to call methods on the actor, which allows other work to run on the main thread during the synchronous IO operations."}
+{"id": "/documentation/swift/updating_an_app_to_use_swift_concurrency", "law": "Calls to the object from SwiftUI views don’t require any use of as these views are also on the main actor due to their use of ."}

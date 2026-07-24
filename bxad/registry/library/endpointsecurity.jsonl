@@ -1,0 +1,4 @@
+{"id": "/documentation/EndpointSecurity/monitoring-system-events-with-endpoint-security", "law": "is a minimal system extension that shows how to use the Endpoint Security library."}
+{"id": "/documentation/EndpointSecurity/monitoring-system-events-with-endpoint-security", "law": "You must set the “Extension” target membership on exactly one of these two files."}
+{"id": "/documentation/EndpointSecurity/monitoring-system-events-with-endpoint-security", "law": "Scroll to “Full Disk Access” and grant permission to use the extension."}
+{"id": "/documentation/EndpointSecurity/monitoring-system-events-with-endpoint-security", "law": "For process executions, the extension denies new execs that use the signing ID ; this means the extension will prevent the default from launching."}

@@ -1,0 +1,2 @@
+{"id": "/documentation/Security/constraining-a-tool's-launch-environment", "law": "In Xcode, ensure the Launch Constraints Sample App scheme is selected in the scheme drop-down menu, and choose Product > Run."}
+{"id": "/documentation/Security/constraining-a-tool's-launch-environment", "law": "You use this design pattern to create GUI “wrappers” for command-line tools, such as database administration tools."}

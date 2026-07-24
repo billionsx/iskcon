@@ -1,0 +1,14 @@
+{"id": "/documentation/Xcode/configuring-your-app-to-use-alternate-app-icons", "law": "For each alternate app icon, the project requires an Icon Composer file."}
+{"id": "/documentation/Xcode/configuring-your-app-to-use-alternate-app-icons", "law": "Don’t edit or remove these keys manually from the file."}
+{"id": "/documentation/Xcode/configuring-your-app-to-use-alternate-app-icons", "law": "Alternatively, you can use a build configuration file to specify alternate app icons."}
+{"id": "/documentation/Xcode/creating-custom-modelers-for-intelligent-instruments", "law": "This sample code is associated with WWDC 2019 session Use this sample code project to step through the process of building a custom modeler for GoatList, an app that displays and modifies a list of goats."}
+{"id": "/documentation/Xcode/creating-custom-modelers-for-intelligent-instruments", "law": "The GoatList app makes use of a pattern to break down a goal, such as sorting a list, into smaller subgoals."}
+{"id": "/documentation/Xcode/creating-custom-modelers-for-intelligent-instruments", "law": "This sample requires Xcode 11 or later and iOS 12 or later."}
+{"id": "/documentation/Xcode/creating-custom-modelers-for-intelligent-instruments", "law": "Searching for “Mobile Agent” should reveal the Custom Instrument."}
+{"id": "/documentation/Xcode/creating-custom-modelers-for-intelligent-instruments", "law": "You can use this movement to set up an execution environment for a , wait until certain conditions are satisfied before letting the execute at a stop, or signal failure status."}
+{"id": "/documentation/Xcode/creating-custom-modelers-for-intelligent-instruments", "law": "As a result, there are four possible logical steps the modeler must consider when processing a signpost: If it’s a signpost, assert a new execution bookkeeping fact."}
+{"id": "/documentation/Xcode/creating-custom-modelers-for-intelligent-instruments", "law": "Implementing the four steps requires the use of CLIPS Conditional Elements (CEs)."}
+{"id": "/documentation/Xcode/creating-custom-modelers-for-intelligent-instruments", "law": "There are different mechanisms at work that make sure your modeling logic executes fully before being passed down to the rules, two of which are described below."}
+{"id": "/documentation/Xcode/creating-custom-modelers-for-intelligent-instruments", "law": "For example, a rule can specify that it requires a fact to have a nonempty description of the stop in which the execution occurred."}
+{"id": "/documentation/Xcode/creating-custom-modelers-for-intelligent-instruments", "law": "The overlapping intervals make it ambiguous as to which interval should be displayed on the lane."}
+{"id": "/documentation/Xcode/slothcreator-building-docc-documentation-in-xcode", "law": "To build documentation for this package, use Xcode 13, open the file, and select Product > Build Documentation."}

@@ -1,0 +1,10 @@
+{"id": "/documentation/WiFiAware/Building-peer-to-peer-apps", "law": "For an app to perform any Wi-Fi Aware operations, it needs to declare the services that it intends to use for publishing and subscribing."}
+{"id": "/documentation/WiFiAware/Building-peer-to-peer-apps", "law": "Before using Wi-Fi Aware in an app, it’s important to decide on the to use for the connections."}
+{"id": "/documentation/WiFiAware/Building-peer-to-peer-apps", "law": "The first option is , the recommended option for almost all use cases."}
+{"id": "/documentation/WiFiAware/Building-peer-to-peer-apps", "law": "The second option is , which is for instances that require low latency."}
+{"id": "/documentation/WiFiAware/Building-peer-to-peer-apps", "law": "The sample app uses as it needs to send position updates for every frame of the simulation scene and thus requires very low latency."}
+{"id": "/documentation/WiFiAware/Building-peer-to-peer-apps", "law": "To change the performance mode in the sample app, change the following line in : Using performance mode can drain a device’s battery, so use it only when it’s required."}
+{"id": "/documentation/WiFiAware/Building-peer-to-peer-apps", "law": "The sample app uses the User Datagram Protocol (UDP) as the transport protocol because the use case doesn’t require reliable or in-order delivery."}
+{"id": "/documentation/WiFiAware/Building-peer-to-peer-apps", "law": "Although this particular design of connecting to the first available endpoint works for the sample app’s use case, most apps typically review the discovered endpoint and make a connection only if required."}
+{"id": "/documentation/WiFiAware/Building-peer-to-peer-apps", "law": "The setting provided during connection should match the one the app provides when starting the listener."}
+{"id": "/documentation/WiFiAware/Building-peer-to-peer-apps", "law": "To access the average transmit latency for the corresponding access category, use the following code:"}

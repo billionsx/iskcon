@@ -1,0 +1,9 @@
+{"id": "/documentation/FSKit/building-a-passthrough-file-system", "law": "You can use the FSKit framework to implement any kind of file system, whether based on an existing storage device or as an abstraction of the contents of a URL."}
+{"id": "/documentation/FSKit/building-a-passthrough-file-system", "law": "To use the sample file system, do the following: Build and run the project in Xcode."}
+{"id": "/documentation/FSKit/building-a-passthrough-file-system", "law": "In Terminal, use the command to create a directory to serve as the mount target for the passthrough file system."}
+{"id": "/documentation/FSKit/building-a-passthrough-file-system", "law": "In Terminal, use the command to mount an arbitrary directory as the source for the passthrough file system."}
+{"id": "/documentation/FSKit/building-a-passthrough-file-system", "law": "The sample code project already contains these items; you don’t need to create a new target."}
+{"id": "/documentation/FSKit/building-a-passthrough-file-system", "law": "With this type, the can implement its required method to set up a as follows: Verify that the source resource is an and that the extension can access it as a security-scoped resource by calling ."}
+{"id": "/documentation/FSKit/building-a-passthrough-file-system", "law": "The implementation of the required is similar."}
+{"id": "/documentation/FSKit/building-a-passthrough-file-system", "law": "Your own implementation is free to implement whichever volume operation protocols you need for your purposes, as long as you implmement the required protocol."}
+{"id": "/documentation/FSKit/building-a-passthrough-file-system", "law": "You can omit any operation protocols you don’t need."}

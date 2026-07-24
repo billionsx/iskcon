@@ -1,0 +1,18 @@
+{"id": "/documentation/SwiftData/Adding-and-editing-persistent-data-in-your-app", "law": "This sample shows one approach, which is to use a data-entry form with SwiftData that lets someone add, edit, and store data about animals."}
+{"id": "/documentation/SwiftData/Adding-and-editing-persistent-data-in-your-app", "law": "Before SwiftData can store data from your app, the app must define the data model that represents the data."}
+{"id": "/documentation/SwiftData/Adding-and-editing-persistent-data-in-your-app", "law": "As with , the definition applies the macro to ensure the class conforms to and to save the animal category data to a model container."}
+{"id": "/documentation/SwiftData/Adding-and-editing-persistent-data-in-your-app", "law": "The design of allows the app to use the same view for both adding new animals and editing existing ones."}
+{"id": "/documentation/SwiftData/Defining-data-relationships-with-enumerations-and-model-classes", "law": "Which one to use depends on the unique circumstances of your app."}
+{"id": "/documentation/SwiftData/Defining-data-relationships-with-enumerations-and-model-classes", "law": "To define the static data, create an enumeration and ensure it conforms to the protocol."}
+{"id": "/documentation/SwiftData/Defining-data-relationships-with-enumerations-and-model-classes", "law": "SwiftData requires this conformance to persist any data that is of the enumeration type."}
+{"id": "/documentation/SwiftData/Defining-data-relationships-with-enumerations-and-model-classes", "law": "Because this property is non-optional, its value must be set to one of the cases: , , and ."}
+{"id": "/documentation/SwiftData/Defining-data-relationships-with-enumerations-and-model-classes", "law": "If you don’t want to delete the animals within a category, you can use the delete rule."}
+{"id": "/documentation/SwiftData/Defining-data-relationships-with-enumerations-and-model-classes", "law": "Whether your data model includes relationships, you must always create a model container for your app when using SwiftData."}
+{"id": "/documentation/SwiftData/Defining-data-relationships-with-enumerations-and-model-classes", "law": "If your app defines multiple root model types, use the"}
+{"id": "/documentation/SwiftData/Deleting-persistent-data-from-your-app", "law": "To delete all items of a particular model type, use the method ."}
+{"id": "/documentation/SwiftData/Deleting-persistent-data-from-your-app", "law": "(For a complete list of delete rules, see .) To delete all persistent data from your app and not just data of a certain model type, use the method ."}
+{"id": "/documentation/SwiftData/Deleting-persistent-data-from-your-app", "law": "Explore different ways to use SwiftData to delete persistent data."}
+{"id": "/documentation/SwiftData/Filtering-and-sorting-persistent-data", "law": "To ensure that the app’s interface remains approachable, the app limits how many earthquakes it displays based on: A date — To avoid overwhelming the map with too many markers, the app displays only one day’s worth of earthquakes at a time."}
+{"id": "/documentation/SwiftData/Filtering-and-sorting-persistent-data", "law": "By defining the predicate once in a central location, queries in multiple views can use it."}
+{"id": "/documentation/SwiftData/Maintaining-a-local-copy-of-server-data", "law": "The server is always the source of truth."}
+{"id": "/documentation/SwiftData/Maintaining-a-local-copy-of-server-data", "law": "The structure also conforms to the protocol so the app can use the structure to decode the downloaded data."}

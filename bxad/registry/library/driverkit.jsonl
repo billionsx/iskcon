@@ -1,0 +1,10 @@
+{"id": "/documentation/DriverKit/communicating-between-a-driverkit-extension-and-a-client-app", "law": "DriverKit on iPadOS requires an iPad with an M-series chip."}
+{"id": "/documentation/DriverKit/communicating-between-a-driverkit-extension-and-a-client-app", "law": "Use this app to install or update the driver, and then to call the driver directly."}
+{"id": "/documentation/DriverKit/communicating-between-a-driverkit-extension-and-a-client-app", "law": "You can set up the project to build with automatic signing (recommended) or manual signing."}
+{"id": "/documentation/DriverKit/communicating-between-a-driverkit-extension-and-a-client-app", "law": "To use automatic signing: Temporarily turn off SIP, as described in the article ."}
+{"id": "/documentation/DriverKit/communicating-between-a-driverkit-extension-and-a-client-app", "law": "Select the project and use the “Signing & Capabilities” tab to set the and targets to “Automatically manage signing”."}
+{"id": "/documentation/DriverKit/communicating-between-a-driverkit-extension-and-a-client-app", "law": "Use a reverse-DNS format for your identifier, as described in ."}
+{"id": "/documentation/DriverKit/communicating-between-a-driverkit-extension-and-a-client-app", "law": "In the Xcode Project navigator, choose the project and use the Signing & Capabilities tab to replace the existing bundle identifier with your chosen identifier for each of the targets."}
+{"id": "/documentation/DriverKit/communicating-between-a-driverkit-extension-and-a-client-app", "law": "Although this simplifies running the sample code, in your own apps you may prefer to use ."}
+{"id": "/documentation/DriverKit/communicating-between-a-driverkit-extension-and-a-client-app", "law": "For the Bundle ID, choose “explicit”, and use the names you chose in the first step."}
+{"id": "/documentation/DriverKit/communicating-between-a-driverkit-extension-and-a-client-app", "law": "When creating the driver’s profile, be sure to select DriverKit App Development as the profile type."}

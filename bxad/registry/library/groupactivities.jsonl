@@ -1,0 +1,14 @@
+{"id": "/documentation/GroupActivities/building-a-guessing-game-for-visionos", "law": "The team member that sees the word or phrase can use any gestures or phrases to elicit a correct guess, but can’t say the word or phrase itself."}
+{"id": "/documentation/GroupActivities/building-a-guessing-game-for-visionos", "law": "SharePlay requires the entitlement."}
+{"id": "/documentation/GroupActivities/building-a-guessing-game-for-visionos", "law": "Participants don’t have an assigned role initially, so the system places them in the audience seats."}
+{"id": "/documentation/GroupActivities/building-a-guessing-game-for-visionos", "law": "Seat roles reflect the role that a participant must have to occupy that seat."}
+{"id": "/documentation/GroupActivities/building-a-guessing-game-for-visionos", "law": "Members of the opposing team don’t receive a role until it’s their turn to play, so they initially sit in the audience positions."}
+{"id": "/documentation/GroupActivities/creating-a-collaborative-photo-gallery-with-shareplay", "law": "For smaller amounts of data or more time-sensitive messages, like adding a comment to someone’s shared image, use ."}
+{"id": "/documentation/GroupActivities/creating-a-collaborative-photo-gallery-with-shareplay", "law": "SharePlay requires the capability."}
+{"id": "/documentation/GroupActivities/creating-a-collaborative-photo-gallery-with-shareplay", "law": "To ensure that locally uploaded images are shared when the activity begins, the function also uploads those images to the object: The sample creates a to set up the with the photo-sharing activity, create the journal object to share images, and handle state synchronization."}
+{"id": "/documentation/GroupActivities/creating-a-collaborative-photo-gallery-with-shareplay", "law": "The method saves the data in a dictionary, which the UI iterates over and uses to initialize an to show to all participants: Don’t call on attachments you add to the object."}
+{"id": "/documentation/groupactivities/drawing_content_in_a_group_session", "law": "The real-time interactions you unlock, and the instant reaction people who use your app get, can lead to some truly special moments."}
+{"id": "/documentation/groupactivities/drawing_content_in_a_group_session", "law": "The app relies on the default implementation for , and the property is required."}
+{"id": "/documentation/groupactivities/drawing_content_in_a_group_session", "law": "First, the sample checks to make sure a doesn’t exist already."}
+{"id": "/documentation/groupactivities/drawing_content_in_a_group_session", "law": "Next, it calls the method to make sure a FaceTime call is active and the system can create group sessions."}
+{"id": "/documentation/groupactivities/drawing_content_in_a_group_session", "law": "To ensure a proper experience, the app gives late joiners the most recent information so all the devices use the same data."}

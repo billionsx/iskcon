@@ -428,3 +428,58 @@
 - https://developer.apple.com/documentation/swiftui/spring
 - домены мандата: динамика, спринги, анимация
 
+### 2026-07-24 17:43 UTC · `asc-help` · первый снимок
+- https://developer.apple.com/help/app-store-connect/
+- домены мандата: App Store Connect, публикация, маркетинг
+
+### 2026-07-24 17:43 UTC · `upcoming-requirements` · первый снимок
+- https://developer.apple.com/news/upcoming-requirements/
+- домены мандата: требования, релиз-ноты, маркетинг
+
+### 2026-07-24 17:43 UTC · `icon-composer` · первый снимок
+- https://developer.apple.com/icon-composer/
+- домены мандата: иконки, инструменты
+
+### 2026-07-24 17:43 UTC · `pass-designer` · первый снимок
+- https://developer.apple.com/pass-designer/
+- домены мандата: Wallet, инструменты
+
+### 2026-07-24 17:43 UTC · `reality-composer-pro` · первый снимок
+- https://developer.apple.com/reality-composer-pro/
+- домены мандата: visionOS, инструменты, 3D
+
+### 2026-07-24 17:43 UTC · `videos-design` · первый снимок
+- https://developer.apple.com/videos/design/
+- домены мандата: UI/UX, видео, Liquid Glass
+
+### 2026-07-24 17:43 UTC · `dev-programs` · первый снимок
+- https://developer.apple.com/programs/
+- домены мандата: программа разработчика, правила
+
+### 2026-07-24 17:43 UTC · `appstore-whats-new` · первый снимок
+- https://developer.apple.com/app-store/whats-new/
+- домены мандата: App Store, маркетинг
+
+### 2026-07-24 17:43 UTC · `technologies` · первый снимок
+- https://developer.apple.com/technologies/
+- домены мандата: технологии, кроссплатформенность
+
+### 2026-07-24 17:43 UTC · `dev-community` · первый снимок
+- https://developer.apple.com/community/
+- домены мандата: сообщество
+
+### 2026-07-24 17:43 UTC · `dev-download` · первый снимок
+- https://developer.apple.com/download/
+- домены мандата: загрузки, инструменты, iOS 27
+
+### 2026-07-24 17:43 UTC · `dev-help` · первый снимок
+- https://developer.apple.com/help/
+- домены мандата: справка, правила
+
+### 2026-07-24 17:58 UTC · атлас · шаг дня
+- пройдено 700 · в очередь 6900 · законов добыто 2460 · изменилось 0
+- фронтир 6201 · всего пройдено 700 · библиотека 2460 законов / 123 фреймворков
+
+### 2026-07-24 17:58 UTC · кит
+- ОШИБКА руки: iOS-27-Icon-Templates-Photoshop-Illustrator.dmg: RuntimeError: в контейнере нет .sketch
+

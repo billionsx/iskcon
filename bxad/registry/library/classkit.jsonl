@@ -1,0 +1,9 @@
+{"id": "/documentation/ClassKit/incorporating-classkit-into-an-educational-app", "law": "Before starting, be sure to read to learn how to configure your environment to work with ClassKit, and to prepare to debug your ClassKit adoption."}
+{"id": "/documentation/ClassKit/incorporating-classkit-into-an-educational-app", "law": "In your implementation of the protocol’s method, you can use characteristics of your model objects to inform context creation."}
+{"id": "/documentation/ClassKit/incorporating-classkit-into-an-educational-app", "law": "If your app has contexts that can change, use this opportunity to reconfigure the context."}
+{"id": "/documentation/ClassKit/incorporating-classkit-into-an-educational-app", "law": "While contexts declare the structure of your app, you use instances to report progress through those contexts."}
+{"id": "/documentation/ClassKit/incorporating-classkit-into-an-educational-app", "law": "Model objects use their own identifier path to locate the matching context, and then use the context to manage activities."}
+{"id": "/documentation/ClassKit/incorporating-classkit-into-an-educational-app", "law": "Quizzes, once started, must be finished before the user can move to another task."}
+{"id": "/documentation/ClassKit/incorporating-classkit-into-an-educational-app", "law": "For this, you use activity items."}
+{"id": "/documentation/ClassKit/incorporating-classkit-into-an-educational-app", "law": "The method demonstrates the two ways in which you can register an activity item, either as primary or not: If you do decide to set a primary item, make sure you always set the same kind of primary item for a given activity."}
+{"id": "/documentation/ClassKit/incorporating-classkit-into-an-educational-app", "law": "For example, once you register the score item as the primary for a quiz activity, you must always use score this way."}

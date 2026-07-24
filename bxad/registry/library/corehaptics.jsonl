@@ -1,0 +1,12 @@
+{"id": "/documentation/CoreHaptics/delivering-rich-app-experiences-with-haptics", "law": "You must run the sample on iPhone 8 or later."}
+{"id": "/documentation/CoreHaptics/playing-a-custom-haptic-pattern-from-a-file", "law": "HapticSampler requires Xcode 11 or later."}
+{"id": "/documentation/CoreHaptics/playing-a-custom-haptic-pattern-from-a-file", "law": "If you don’t want the layering, your app should wait out the duration of the first haptic before starting subsequent haptic players."}
+{"id": "/documentation/CoreHaptics/playing-a-custom-haptic-pattern-from-a-file", "law": "Haptic patterns don’t blend like audio waveforms, and not all combinations produce a discernible effect."}
+{"id": "/documentation/CoreHaptics/playing-a-custom-haptic-pattern-from-a-file", "law": "Experiment with various combinations to ensure that the result feels right."}
+{"id": "/documentation/CoreHaptics/playing-collision-based-haptic-patterns", "law": "Although the sample app uses UIKit Dynamics and UIKit for simplicity and familiarity with UIKit classes, but your app can also use a 2D engine like SpriteKit to represent interactive object collisions."}
+{"id": "/documentation/CoreHaptics/playing-collision-based-haptic-patterns", "law": "HapticBounce requires Xcode 11 or later."}
+{"id": "/documentation/CoreHaptics/playing-haptics-on-game-controllers", "law": "This sample code project must be run on a physical device and requires a Bluetooth-connected game controller."}
+{"id": "/documentation/CoreHaptics/updating-continuous-and-transient-haptic-parameters-in-real-time", "law": "Use this interface to explore the range of haptic patterns that you can create with Core Haptics."}
+{"id": "/documentation/CoreHaptics/updating-continuous-and-transient-haptic-parameters-in-real-time", "law": "HapticPalette requires Xcode 11 or later."}
+{"id": "/documentation/CoreHaptics/updating-continuous-and-transient-haptic-parameters-in-real-time", "law": "To accomplish this spacing, you use a dispatch timer to separate the transient haptic patterns by a time interval of 600 milliseconds, so they feel distinct."}
+{"id": "/documentation/CoreHaptics/updating-continuous-and-transient-haptic-parameters-in-real-time", "law": "Creating haptic pattern players is inexpensive, so you don’t need to keep them around."}

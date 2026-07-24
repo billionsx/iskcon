@@ -1,0 +1,5 @@
+{"id": "/documentation/Translation/translating-text-within-your-app", "law": "To display simple system translations in your app, use the translation overlay."}
+{"id": "/documentation/Translation/translating-text-within-your-app", "law": "For a more customizable translation experience, use the object and its associated translation methods."}
+{"id": "/documentation/Translation/translating-text-within-your-app", "law": "This pattern of defining a configuration as a property wrapper and invalidating its state is recommended for initiating new translations."}
+{"id": "/documentation/Translation/translating-text-within-your-app", "law": "To translate multiple strings between the same languages, it’s most efficient to use one of the batch translation functions of ."}
+{"id": "/documentation/Translation/translating-text-within-your-app", "law": "To translate multiple strings of text and display the results as they arrive, use the function."}

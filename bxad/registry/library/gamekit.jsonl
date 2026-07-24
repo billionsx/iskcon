@@ -1,0 +1,6 @@
+{"id": "/documentation/GameKit/creating-real-time-games", "law": "To extend this sample to use matchmaking rules, see ."}
+{"id": "/documentation/GameKit/creating-real-time-games", "law": "Otherwise, use the existing bundle ID that ends in your team ID."}
+{"id": "/documentation/GameKit/creating-real-time-games", "law": "The first time the sample starts voice chat, the system displays a dialog asking the player whether the sample may use the microphone."}
+{"id": "/documentation/GameKit/creating-real-time-games", "law": "Each time the player starts a match, they earn 10% toward this achievement until they reach 100%."}
+{"id": "/documentation/GameKit/creating-turn-based-games", "law": "Then pass the next participants and the game data, specifying a timeout in case the recipients don’t respond, to the method."}
+{"id": "/documentation/GameKit/creating-turn-based-games", "law": "Because GameKit requires that the current participant save completed exchanges before ending a match, the method also invokes the method before ending a match."}

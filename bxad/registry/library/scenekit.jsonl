@@ -1,0 +1,3 @@
+{"id": "/documentation/SceneKit/postprocessing-a-scene-with-custom-symbols", "law": "See the “Defining a Technique” section of the documentation for detailed information about the steps required to define a technique."}
+{"id": "/documentation/SceneKit/postprocessing-a-scene-with-custom-symbols", "law": "Value bindings use the logical type that corresponds with the Metal type."}
+{"id": "/documentation/SceneKit/postprocessing-a-scene-with-custom-symbols", "law": "For example, custom symbols defined in the technique with a type of , with a type of in the shader, use a value when bound."}

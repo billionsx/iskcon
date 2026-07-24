@@ -1,0 +1,7 @@
+{"id": "/documentation/CreateML/creating-a-model-from-tabular-data", "law": "Use any initializer to import your data in to a data table."}
+{"id": "/documentation/CreateML/creating-a-model-from-tabular-data", "law": "In this example, the playground sets aside 20% of each model’s data rows for evaluation, leaving the remaining 80% for training."}
+{"id": "/documentation/CreateML/creating-a-model-from-tabular-data", "law": "During training, automatically sets aside a small percentage of the training data to use for validating the model’s progress during the training phase."}
+{"id": "/documentation/CreateML/creating-a-model-from-tabular-data", "law": "When you are satisfied with your modelʼs performance, save it to a file for later use in your app."}
+{"id": "/documentation/CreateML/detecting-human-actions-in-a-live-video-feed", "law": "The next sections explain the remaining publishers in the chain and the methods they use to transform their inputs."}
+{"id": "/documentation/CreateML/detecting-human-actions-in-a-live-video-feed", "law": "Get the most accurate predictions from an action classifier by using whatever technique you think best tracks a person from frame to frame, and use the multiarray from that person’s result."}
+{"id": "/documentation/CreateML/detecting-human-actions-in-a-live-video-feed", "law": "An action classifier requires a valid, non- multiarray for every frame."}

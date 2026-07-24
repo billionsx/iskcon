@@ -1,0 +1,10 @@
+{"id": "/documentation/UserNotifications/handling-communication-notifications-and-focus-status-updates", "law": "The bundle identifier must support the following capabilities: Push notifications Communication notifications Time Sensitive notifications SiriKit To support communication notifications, the app’s file must contain a top-level entry with the key and type ."}
+{"id": "/documentation/UserNotifications/handling-communication-notifications-and-focus-status-updates", "law": "This array should contain if the app supports calling functionality, and if it supports messaging."}
+{"id": "/documentation/UserNotifications/handling-communication-notifications-and-focus-status-updates", "law": "Accessing a user’s Focus status requires their authorization."}
+{"id": "/documentation/UserNotifications/handling-communication-notifications-and-focus-status-updates", "law": "The app should donate both outgoing and incoming communication interactions."}
+{"id": "/documentation/UserNotifications/handling-communication-notifications-and-focus-status-updates", "law": "To display a communication notification, your app should update the notification’s content."}
+{"id": "/documentation/UserNotifications/handling-communication-notifications-and-focus-status-updates", "law": "Use the same intent object that initialized the interaction."}
+{"id": "/documentation/UserNotifications/handling-communication-notifications-and-focus-status-updates", "law": "Accessing the user’s Focus status requires explicit user authorization."}
+{"id": "/documentation/UserNotifications/handling-communication-notifications-and-focus-status-updates", "law": "To request authorization, use and parse the result."}
+{"id": "/documentation/UserNotifications/handling-communication-notifications-and-focus-status-updates", "law": "Unauthorized apps don’t receive a Focus status value."}
+{"id": "/documentation/UserNotifications/handling-communication-notifications-and-focus-status-updates", "law": "Ensure the app handles the Focus status case."}

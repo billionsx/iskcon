@@ -1,0 +1,15 @@
+{"id": "/documentation/AppClip/fruta-building-a-feature-rich-app-with-swiftui", "law": "This iOS app runs in Simulator, and only requires a standard Apple ID to install on a device."}
+{"id": "/documentation/AppClip/fruta-building-a-feature-rich-app-with-swiftui", "law": "To build this project for iOS 15.4, use Xcode 13.3."}
+{"id": "/documentation/AppClip/fruta-building-a-feature-rich-app-with-swiftui", "law": "To build this project for macOS 12.3, use Xcode 13.3."}
+{"id": "/documentation/AppClip/fruta-building-a-feature-rich-app-with-swiftui", "law": "On iOS and iPadOS, the Fruta app offers some of its functionality to users who don’t have the full app installed as an App Clip."}
+{"id": "/documentation/AppClip/fruta-building-a-feature-rich-app-with-swiftui", "law": "In shared code, the project makes use of the Active Compilation Condition build setting to exclude code for targets that don’t define the value."}
+{"id": "/documentation/AppClip/fruta-building-a-feature-rich-app-with-swiftui", "law": "Both use code that’s shared across all targets."}
+{"id": "/documentation/AppClip/interacting-with-app-clip-codes-in-ar", "law": "The process of setting the hostname requires an explicit App ID, provided by a development team member with Admin permission."}
+{"id": "/documentation/AppClip/interacting-with-app-clip-codes-in-ar", "law": "You must set the run destination to an actual device."}
+{"id": "/documentation/AppClip/interacting-with-app-clip-codes-in-ar", "law": "In , the sample app calls to check if the device contains the Apple Neural Engine (ANE), which App Clip Code tracking requires."}
+{"id": "/documentation/AppClip/interacting-with-app-clip-codes-in-ar", "law": "The sample app requires a local experience URL prefix of , and a bundle ID of ."}
+{"id": "/documentation/AppClip/interacting-with-app-clip-codes-in-ar", "law": "At runtime, the system checks the App Clip registry in App Store Connect to ensure an App Clip associates to an App Clip Code before allowing the app access to the App Clip Code URL."}
+{"id": "/documentation/AppClip/interacting-with-app-clip-codes-in-ar", "law": "To create an App Clip Code for the sunflower, the sample requires a CSV file containing the URL: When testers view App Clip Codes to launch the App Clip or decode URLs in an AR experience, the framework refers to the device’s local experience."}
+{"id": "/documentation/AppClip/interacting-with-app-clip-codes-in-ar", "law": "During testing in the TestFlight app, the three experience URLs in App Store Connect’s TestFlight area change the invocation URL the system passes into the App Clip, but they don’t affect URL decoding."}
+{"id": "/documentation/AppClip/interacting-with-app-clip-codes-in-ar", "law": "Seed Shop requires the AASA file that the Apple Developer website hosts at ."}
+{"id": "/documentation/AppClip/interacting-with-app-clip-codes-in-ar", "law": "An app may require another content anchoring technique, such as placing virtual content instantly after retrieving a position on a nearby horizontal or vertical plane."}

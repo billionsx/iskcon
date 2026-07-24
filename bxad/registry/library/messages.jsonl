@@ -1,0 +1,4 @@
+{"id": "/documentation/Messages/creating-a-sticker-app-with-a-custom-layout", "law": "The cells use a custom to provide an , each of which contains an instance."}
+{"id": "/documentation/Messages/icecreambuilder-building-an-imessage-extension", "law": "iMessage Extensions can be required to display in ."}
+{"id": "/documentation/Messages/icecreambuilder-building-an-imessage-extension", "law": "All data passed between users in a conversation needs to be encoded in a URL; you should use to build and parse these URLs."}
+{"id": "/documentation/Messages/icecreambuilder-building-an-imessage-extension", "law": "If you prefer to send the message immediately then use the method instead."}

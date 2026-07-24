@@ -1,0 +1,3 @@
+{"id": "/documentation/FinanceKit/implementing-a-background-delivery-extension", "law": "In the next dialog that appears click Activate to use the extension scheme Xcode creates."}
+{"id": "/documentation/FinanceKit/implementing-a-background-delivery-extension", "law": "If you don’t have an Xcode project for your app, first create one from an Application template under iOS."}
+{"id": "/documentation/FinanceKit/implementing-a-background-delivery-extension", "law": "To access someone’s financial data, you must meet the criteria outlined in , request the , hold an organization-level Apple Developer account, be logged in as Account Holder, and include the string in your ."}

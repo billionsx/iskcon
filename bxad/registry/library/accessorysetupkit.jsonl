@@ -1,0 +1,5 @@
+{"id": "/documentation/AccessorySetupKit/setting-up-and-authorizing-a-bluetooth-accessory", "law": "This sample project uses two app targets to demonstrate how to use AccessorySetupKit."}
+{"id": "/documentation/AccessorySetupKit/setting-up-and-authorizing-a-bluetooth-accessory", "law": "simulates Bluetooth dice, while highlights how to use AccessorySetupKit to onboard the accessory."}
+{"id": "/documentation/AccessorySetupKit/setting-up-and-authorizing-a-bluetooth-accessory", "law": "The target uses AccessorySetupKit to authorize the use of a Bluetooth dice accessory and receive roll results."}
+{"id": "/documentation/AccessorySetupKit/setting-up-and-authorizing-a-bluetooth-accessory", "law": "The accessory is now authorized for use in the app."}
+{"id": "/documentation/AccessorySetupKit/setting-up-and-authorizing-a-bluetooth-accessory", "law": "Discover, select, and set up a specific Bluetooth accessory without requesting permission to use Bluetooth."}

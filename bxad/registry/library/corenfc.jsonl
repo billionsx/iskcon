@@ -1,0 +1,6 @@
+{"id": "/documentation/CoreNFC/building-an-nfc-tag-reader-app", "law": "This sample code project shows how to use Core NFC in an app to read Near Field Communication (NFC) tags of types 1 through 5 that contains NFC Data Exchange Format (NDEF) data."}
+{"id": "/documentation/CoreNFC/building-an-nfc-tag-reader-app", "law": "To use this sample, download the project and build it using Xcode."}
+{"id": "/documentation/CoreNFC/building-an-nfc-tag-reader-app", "law": "Turn on Near Field Communication Tag Reading under the Capabilities tab for the project’s target (see )."}
+{"id": "/documentation/CoreNFC/building-an-nfc-tag-reader-app", "law": "The dispatch queue to use when calling methods on the delegate."}
+{"id": "/documentation/CoreNFC/building-an-nfc-tag-reader-app", "law": "The reader session requires a delegate object that conforms to the protocol."}
+{"id": "/documentation/CoreNFC/building-an-nfc-tag-reader-app", "law": "This session must be active to write an NDEF message to the tag, so this time, is set to , preventing the session from becoming invalid after reading the tag."}

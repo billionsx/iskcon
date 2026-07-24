@@ -1,0 +1,20 @@
+{"id": "/documentation/EventKit/accessing-calendar-using-eventkit-and-eventkitui", "law": "indicates how your app intends to use calendar data."}
+{"id": "/documentation/EventKit/accessing-calendar-using-eventkit-and-eventkitui", "law": "Starting in iOS 17, your app should only request the specific level of access it requires to complete its calendar data tasks."}
+{"id": "/documentation/EventKit/accessing-calendar-using-eventkit-and-eventkitui", "law": "Because its workflow doesn’t interact with the user’s calendar data, the app isn’t required to include any calendar usage strings or prompt the user for access."}
+{"id": "/documentation/EventKit/accessing-calendar-using-eventkit-and-eventkitui", "law": "To request write-only access to events, use or ."}
+{"id": "/documentation/EventKit/accessing-calendar-using-eventkit-and-eventkitui", "law": "and require write-only or full access."}
+{"id": "/documentation/EventKit/accessing-calendar-using-eventkit-and-eventkitui", "law": "doesn’t require any user permission."}
+{"id": "/documentation/EventKit/accessing-calendar-using-eventkit-and-eventkitui", "law": "Because of these reasons, the app requires write-only access so it can control the date and time of every event added to Calendar."}
+{"id": "/documentation/EventKit/accessing-calendar-using-eventkit-and-eventkitui", "law": "In write-only access apps, the calendar chooser ignores the value of the setting and this setting always behaves as if it’s set to ."}
+{"id": "/documentation/EventKit/accessing-calendar-using-eventkit-and-eventkitui", "law": "To request full access to events, use or ."}
+{"id": "/documentation/EventKit/accessing-calendar-using-eventkit-and-eventkitui", "law": "To request access to events, use or ."}
+{"id": "/documentation/EventKit/managing-location-based-reminders", "law": "You app must first request full access to reminders from the person using the app before it can access their reminder data."}
+{"id": "/documentation/EventKit/managing-location-based-reminders", "law": "Before running the sample code project in Xcode, select the sample target, then configure it to use your team for signing."}
+{"id": "/documentation/EventKit/managing-location-based-reminders", "law": "The sample app presents a map with custom annotations that someone can use to create location-based reminders within the app."}
+{"id": "/documentation/EventKit/managing-location-based-reminders", "law": "This key is required for apps that access the person’s location services."}
+{"id": "/documentation/EventKit/managing-location-based-reminders", "law": "The key is required for apps that access a person’s reminders."}
+{"id": "/documentation/EventKit/managing-location-based-reminders", "law": "Set up your app to instantiate and use a single instance of that manages all reminder-related tasks."}
+{"id": "/documentation/EventKit/managing-location-based-reminders", "law": "An object requires a significant amount of time to initialize and release."}
+{"id": "/documentation/EventKit/managing-location-based-reminders", "law": "Creating a reminder requires a list, which is a calendar for these items."}
+{"id": "/documentation/EventKit/managing-location-based-reminders", "law": "To use the default radius, set its value to 0."}
+{"id": "/documentation/EventKit/managing-location-based-reminders", "law": "First, the sample app creates an object using , then it sets the and properties, and other properties, such as priority and time zone: The and properties are required and must be set before saving the reminder."}

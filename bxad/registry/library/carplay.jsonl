@@ -1,0 +1,13 @@
+{"id": "/documentation/CarPlay/integrating-carplay-with-your-music-app", "law": "Update the variable in the file to use the developer token you create."}
+{"id": "/documentation/CarPlay/integrating-carplay-with-your-music-app", "law": "A good way to ensure an app UI updates automatically in response to changes is to listen for changes in the Now Playing item, as well as in the playing state."}
+{"id": "/documentation/CarPlay/integrating-carplay-with-your-navigation-app", "law": "In all navigation apps, the root template must be an instance of and contain no additional graphics or UI elements."}
+{"id": "/documentation/CarPlay/integrating-carplay-with-your-navigation-app", "law": "All overlays must be a type of template that CarPlay provides."}
+{"id": "/documentation/CarPlay/integrating-carplay-with-your-navigation-app", "law": "The map must cover the entire screen, which the sample accomplishes using constraints."}
+{"id": "/documentation/CarPlay/integrating-carplay-with-your-quick-ordering-app", "law": "CarPlay quick-ordering apps require a CarPlay quick-ordering entitlement, which you can request ."}
+{"id": "/documentation/CarPlay/integrating-carplay-with-your-quick-ordering-app", "law": "Create an file in the project, if you don’t have one already."}
+{"id": "/documentation/CarPlay/integrating-carplay-with-your-quick-ordering-app", "law": "Make sure that the target project setting has the path of the file."}
+{"id": "/documentation/CarPlay/integrating-carplay-with-your-quick-ordering-app", "law": "Live Activities don’t display in CarPlay, but do provide a glanceable view on the person’s Lock Screen to inform them about updates to their order."}
+{"id": "/documentation/CarPlay/integrating-carplay-with-your-quick-ordering-app", "law": "If your app spends significant amounts of time in the background, such as in a quick-ordering app, you need to use notifications to provide updates to people using the app."}
+{"id": "/documentation/CarPlay/integrating-carplay-with-your-quick-ordering-app", "law": "Your app doesn’t need to support background updates, or use any cycle methods."}
+{"id": "/documentation/CarPlay/integrating-carplay-with-your-quick-ordering-app", "law": "The service app needs a JSON Web Token (JWT) to create push notifications for use with Live Activities."}
+{"id": "/documentation/CarPlay/integrating-carplay-with-your-quick-ordering-app", "law": "The following code example shows how the sample creates the JWT for use with the payload to send to Apple, which in turn sends a push notification to the associated device: Configure your food-ordering app to work with CarPlay."}

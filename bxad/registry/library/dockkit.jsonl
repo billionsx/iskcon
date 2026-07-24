@@ -1,0 +1,3 @@
+{"id": "/documentation/DockKit/controlling-a-dockkit-accessory-using-your-camera-app", "law": "This sample code project shows you how to use your camera app with a DockKit accessory to frame and track subjects in real time."}
+{"id": "/documentation/DockKit/controlling-a-dockkit-accessory-using-your-camera-app", "law": "To keep the user interface responsive, the app defines as an actor type to ensure that AVFoundation capture API calls don’t occur on the main thread."}
+{"id": "/documentation/DockKit/controlling-a-dockkit-accessory-using-your-camera-app", "law": "When an accessory connects, DockKit sets it up to use system tracking, and to listen to accessory events and battery states in ."}

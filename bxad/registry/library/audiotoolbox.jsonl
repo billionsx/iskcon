@@ -1,0 +1,12 @@
+{"id": "/documentation/AudioToolbox/encoding-and-decoding-audio", "law": "Some audio formats have a magic cookie that the converter requires to decompress audio data."}
+{"id": "/documentation/AudioToolbox/encoding-and-decoding-audio", "law": "If one changes, the other must match."}
+{"id": "/documentation/AudioToolbox/encoding-and-decoding-audio", "law": "If the audio format calls for packet descriptions, they should also be consistent with and ."}
+{"id": "/documentation/AudioToolbox/generating-spatial-audio-from-a-multichannel-audio-stream", "law": "To generate spatialized audio from a multichannel audio stream, you use a spatial mixer audio unit (AUSM)."}
+{"id": "/documentation/AudioToolbox/generating-spatial-audio-from-a-multichannel-audio-stream", "law": "Use for an object to render the input signal as a single source, except if rendering in-head with ."}
+{"id": "/documentation/AudioToolbox/incorporating-audio-effects-and-instruments", "law": "This sample app shows you how to use AU plug-ins in your iOS and macOS apps."}
+{"id": "/documentation/AudioToolbox/incorporating-audio-effects-and-instruments", "law": "You must avoid blocking your application’s main thread when instantiating an Audio Unit."}
+{"id": "/documentation/AudioToolbox/incorporating-audio-effects-and-instruments", "law": "However, the interprocess communication required of this model adds some small but potentially significant overhead."}
+{"id": "/documentation/AudioToolbox/incorporating-audio-effects-and-instruments", "law": "In both platforms, these plug-ins are always run as part of the host app’s process."}
+{"id": "/documentation/AudioToolbox/incorporating-audio-effects-and-instruments", "law": "The view configuration object’s property indicates whether the host app should show its control surface for the view configuration."}
+{"id": "/documentation/AudioToolbox/incorporating-audio-effects-and-instruments", "law": "The host app should respect this setting and update its user interface accordingly."}
+{"id": "/documentation/AudioToolbox/incorporating-audio-effects-and-instruments", "law": "To create a new user preset, first create an instance of and give it a user-defined name and a negative value (user presets require a negative value for this property)."}

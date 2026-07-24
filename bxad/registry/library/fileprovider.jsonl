@@ -1,0 +1,10 @@
+{"id": "/documentation/FileProvider/synchronizing-files-using-file-provider-extensions", "law": "More and more people use cloud storage to store and share digital assets."}
+{"id": "/documentation/FileProvider/synchronizing-files-using-file-provider-extensions", "law": "The identifier points to an App Group container that the apps and extensions use to share data."}
+{"id": "/documentation/FileProvider/synchronizing-files-using-file-provider-extensions", "law": "Find the domain from the sidebar of Finder, and start to use it by dragging a file onto the location."}
+{"id": "/documentation/FileProvider/synchronizing-files-using-file-provider-extensions", "law": "The macOS app includes a server, which the iOS app requires to function."}
+{"id": "/documentation/FileProvider/synchronizing-files-using-file-provider-extensions", "law": "Users use the app to create a file provider domain and log in to the remote server from a Mac."}
+{"id": "/documentation/FileProvider/synchronizing-files-using-file-provider-extensions", "law": "To be functional, both the macOS and the iOS file provider extensions require the server to be running on the same network."}
+{"id": "/documentation/FileProvider/synchronizing-files-using-file-provider-extensions", "law": "Users use the app to create a file provider domain and log in to the remote server for an iOS device."}
+{"id": "/documentation/FileProvider/synchronizing-files-using-file-provider-extensions", "law": "The extensions don’t maintain a local copy of the working set."}
+{"id": "/documentation/FileProvider/synchronizing-files-using-file-provider-extensions", "law": "Real-world file provider extensions can define a working set smaller than the root container item set, and use a different enumerator for the working set enumeration, if desired."}
+{"id": "/documentation/FileProvider/synchronizing-files-using-file-provider-extensions", "law": "Real-world file provider extensions can do that and report the items to the server so the server can maintain the materialized item set and avoid pushing the changes on items irrelevant to the devices."}

@@ -1,0 +1,17 @@
+{"id": "/documentation/AppStoreConnectAPI/retrieve-power-and-performance-metrics-and-log-insights", "law": "The system behind the API requires significant usage of your app before it makes metrics available, and each metric has different usage thresholds."}
+{"id": "/documentation/AppStoreConnectAPI/retrieve-power-and-performance-metrics-and-log-insights", "law": "Use Terminal to run the following command to install the libraries locally:"}
+{"id": "/documentation/AppStoreConnectAPI/retrieve-power-and-performance-metrics-and-log-insights", "law": "To use the API, you need to generate and provide a JSON Web Token (JWT), signed using an App Store Connect API key."}
+{"id": "/documentation/AppStoreConnectAPI/retrieve-power-and-performance-metrics-and-log-insights", "law": "While retrieving your API key, take note of the issuer ID and the key ID, generating a JWT requires them."}
+{"id": "/documentation/AppStoreConnectAPI/retrieve-power-and-performance-metrics-and-log-insights", "law": "After retrieving your API key, use the script to generate a JWT to authenticate requests you send to the App Store Connect API."}
+{"id": "/documentation/AppStoreConnectAPI/retrieve-power-and-performance-metrics-and-log-insights", "law": "Use the endpoint to get a list of your apps and metadata about them, including App IDs."}
+{"id": "/documentation/AppStoreConnectAPI/retrieve-power-and-performance-metrics-and-log-insights", "law": "Create a JWT, then use that token with to request a list of your apps: Retrieving diagnostic logs, or build-specific metrics, requires a build ID."}
+{"id": "/documentation/AppStoreConnectAPI/retrieve-power-and-performance-metrics-and-log-insights", "law": "Use to get a list of the builds."}
+{"id": "/documentation/AppStoreConnectAPI/retrieve-power-and-performance-metrics-and-log-insights", "law": "Use the following command to request a list of builds for an App:"}
+{"id": "/documentation/AppStoreConnectAPI/retrieve-power-and-performance-metrics-and-log-insights", "law": "Use the script to download power and performance metrics, and to print metric hotspot data identified by insights:"}
+{"id": "/documentation/AppStoreConnectAPI/uploading-app-previews", "law": "To run this sample, you must have an app in App Store Connect with a version in the “Prepare for Submission” state, and an app preview file to upload."}
+{"id": "/documentation/AppStoreConnectAPI/uploading-app-previews", "law": "This project requires Python 3, which is pre-installed on macOS 10.15."}
+{"id": "/documentation/AppStoreConnectAPI/uploading-app-previews", "law": "Follow these steps to install and the required Python modules: Open the Terminal app by typing Command-space and entering “Terminal.app” in the Spotlight search field."}
+{"id": "/documentation/AppStoreConnectAPI/uploading-app-previews", "law": "Make sure the video file you’d like to upload is available on your local machine."}
+{"id": "/documentation/AppStoreConnectAPI/uploading-app-previews", "law": "Your app must be in App Store Connect with a version in the “Prepare for Submission” state."}
+{"id": "/documentation/AppStoreConnectAPI/uploading-app-previews", "law": "The App Store Connect API requires the addition of an app preview to an app preview set ."}
+{"id": "/documentation/AppStoreConnectAPI/uploading-app-previews", "law": "Use the upload operations to upload a file, potentially in multiple parts."}

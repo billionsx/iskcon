@@ -1,0 +1,6 @@
+{"id": "/documentation/WatchConnectivity/transferring-data-with-watch-connectivity", "law": "This sample demonstrates how to use the APIs, and how to handle Watch Connectivity background tasks."}
+{"id": "/documentation/WatchConnectivity/transferring-data-with-watch-connectivity", "law": "Use a physical iPhone and Apple Watch to test this sample code project."}
+{"id": "/documentation/WatchConnectivity/transferring-data-with-watch-connectivity", "law": "For example, if the iOS app target uses , the watchOS app and widget targets must use and , respectively."}
+{"id": "/documentation/WatchConnectivity/transferring-data-with-watch-connectivity", "law": "The reply handler runs asynchronously on a background thread, and returns quickly to avoid timeout."}
+{"id": "/documentation/WatchConnectivity/transferring-data-with-watch-connectivity", "law": "Apps can use to retrieve the number of remaining times."}
+{"id": "/documentation/WatchConnectivity/transferring-data-with-watch-connectivity", "law": "When using Watch Connectivity, apps must complete every background task ( )."}

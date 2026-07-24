@@ -1,0 +1,8 @@
+{"id": "/documentation/AutomaticAssessmentConfiguration/build-an-educational-assessment-app", "law": "Academic assessment apps need to ensure that students can’t use certain system resources, like network access, the dictionary, and the calculator."}
+{"id": "/documentation/AutomaticAssessmentConfiguration/build-an-educational-assessment-app", "law": "However, depending on the assessment, you might want to allow students to use one or more of these resources."}
+{"id": "/documentation/AutomaticAssessmentConfiguration/build-an-educational-assessment-app", "law": "Use the Automatic Assessment Configuration framework to enable assessment administrators to chose which of these system resources, if any, students can use during an assessment."}
+{"id": "/documentation/AutomaticAssessmentConfiguration/build-an-educational-assessment-app", "law": "To build and run this sample on your device, you must first select your development team for the project’s target using these steps: Change the sample project’s bundle ID to something unique."}
+{"id": "/documentation/AutomaticAssessmentConfiguration/build-an-educational-assessment-app", "law": "Make sure your team has been granted the entitlement for macOS."}
+{"id": "/documentation/AutomaticAssessmentConfiguration/build-an-educational-assessment-app", "law": "Make sure the ID matches the bundle ID."}
+{"id": "/documentation/AutomaticAssessmentConfiguration/build-an-educational-assessment-app", "law": "Then the app configures one or more apps that the student is allowed to use during the assessment."}
+{"id": "/documentation/AutomaticAssessmentConfiguration/build-an-educational-assessment-app", "law": "Ensure the academic integrity of your assessment app by using Automatic Assessment Configuration."}

@@ -1,0 +1,13 @@
+{"id": "/documentation/PassKit/implementing-wallet-extensions", "law": "Apple Pay in-app provisioning relies on the individual to add a payment pass from within the issuer app, and requires this person to already be in the issuer app with the intention of adding the pass."}
+{"id": "/documentation/PassKit/implementing-wallet-extensions", "law": "Wallet Extensions improve discoverability of the option to add an issued card to Apple Wallet, as people can tap a button within Apple Wallet to begin a provisioning experience that doesn’t require them to enter details manually."}
+{"id": "/documentation/PassKit/implementing-wallet-extensions", "law": "Use this sample as a guide for developing the Wallet Extensions feature."}
+{"id": "/documentation/PassKit/implementing-wallet-extensions", "law": "As for the UI extension, the issuer app needs a UI extension to perform user authentication if the non-UI extension reports that authentication is required."}
+{"id": "/documentation/PassKit/implementing-wallet-extensions", "law": "Because Wallet Extensions require an entitlement from Apple, you can’t run the app extensions in this sample."}
+{"id": "/documentation/PassKit/offering-apple-pay-in-your-app", "law": "The sample app demonstrates how to use the Apple Pay button, display the Apple Pay payment sheet, make payment requests, and accept coupon codes."}
+{"id": "/documentation/PassKit/offering-apple-pay-in-your-app", "law": "Doing this requires an Apple developer account."}
+{"id": "/documentation/PassKit/offering-apple-pay-in-your-app", "law": "Xcode configures the required merchant ID for Apple Pay in each target when you build the project."}
+{"id": "/documentation/PassKit/offering-apple-pay-in-your-app", "law": "Set the signing option for the iOS app to “Automatically manage signing.” Running this app on an iPhone or Apple Watch requires an Apple Pay card."}
+{"id": "/documentation/PassKit/offering-apple-pay-in-your-app", "law": "Running in Simulator doesn’t require a card."}
+{"id": "/documentation/PassKit/offering-apple-pay-in-your-app", "law": "The iOS app displays the payment button if the device can make payments, and it contains at least one payment card; otherwise it displays the button to add a payment."}
+{"id": "/documentation/PassKit/offering-apple-pay-in-your-app", "law": "Configuring the dates requires a calendar, start date components, and end date components"}
+{"id": "/documentation/PassKit/offering-apple-pay-in-your-app", "law": "Updates to the payment sheet use the completion handlers implemented by both apps."}

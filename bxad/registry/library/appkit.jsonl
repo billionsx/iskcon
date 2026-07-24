@@ -1,0 +1,64 @@
+{"id": "/documentation/AppKit/add-functionality-to-finder-with-action-extensions", "law": "To access the input files, use the property of the contained in the array."}
+{"id": "/documentation/AppKit/add-functionality-to-finder-with-action-extensions", "law": "To obtain the correct directory path for writing output files, use , passing the constant."}
+{"id": "/documentation/AppKit/add-functionality-to-finder-with-action-extensions", "law": "If the action requires user interaction then the extension may present a user interface."}
+{"id": "/documentation/AppKit/add-functionality-to-finder-with-action-extensions", "law": "Set the key in the to and ensure that the principal class is a subclass of ."}
+{"id": "/documentation/AppKit/add-functionality-to-finder-with-action-extensions", "law": "If the extension does not require user interaction, specify and have the principal class conform to ."}
+{"id": "/documentation/AppKit/add-functionality-to-finder-with-action-extensions", "law": "Extensions that present a user interface show their view controller’s view immediately after the extension calls and should input files with the property of ."}
+{"id": "/documentation/AppKit/add-functionality-to-finder-with-action-extensions", "law": "Once the extension’s user interface has completed any required user interaction for the task, process the files in the normal way by calling ."}
+{"id": "/documentation/AppKit/add-functionality-to-finder-with-action-extensions", "law": "To cancel the task, use the ."}
+{"id": "/documentation/AppKit/add-functionality-to-finder-with-action-extensions", "law": "Each extension must also have a template icon for use in the Quick Actions menu and the Finder Preview pane."}
+{"id": "/documentation/AppKit/creating-and-customizing-the-touch-bar", "law": "You can use the Touch Bar to display interactive content and controls for supported models of MacBook Pro."}
+{"id": "/documentation/AppKit/creating-and-customizing-the-touch-bar", "law": "The class shows the available use cases."}
+{"id": "/documentation/AppKit/creating-and-customizing-the-touch-bar", "law": "When you select one of the use cases, the secondary view shows what you can do with the Touch Bar controls."}
+{"id": "/documentation/AppKit/creating-and-customizing-the-touch-bar", "law": "For example, the class shows how to use an object."}
+{"id": "/documentation/AppKit/creating-and-customizing-the-touch-bar", "law": "Refer to this sample if you’re looking for specific ways to use and customize the ."}
+{"id": "/documentation/AppKit/creating-and-customizing-the-touch-bar", "law": "It shows how to create an for use with buttons, views, pickers, sliders, popovers, scrubbers, text fields, and text views."}
+{"id": "/documentation/AppKit/creating-and-customizing-the-touch-bar", "law": "The sample also displays a secondary window that shows a typical use case with the Touch Bar that uses an to pick an image that changes the window background."}
+{"id": "/documentation/AppKit/developing-a-document-based-app", "law": "This sample shows how to use the Cocoa document architecture to manage documents."}
+{"id": "/documentation/AppKit/developing-a-document-based-app", "law": "Apps must use Xcode’s Document Types editor to define the types of documents they can open."}
+{"id": "/documentation/AppKit/developing-a-document-based-app", "law": "The Cocoa document architecture uses the Objective-C runtime, and document-based apps often use Objective-C technologies such as key-value coding (KVC), key-value observing (KVO), Cocoa bindings, and Cocoa archiving ( )."}
+{"id": "/documentation/AppKit/developing-a-document-based-app", "law": "Therefore, the model classes in your app should be Objective-C classes (subclasses of ), and the properties and methods in those classes should be Objective-C compatible (declared )."}
+{"id": "/documentation/AppKit/developing-a-document-based-app", "law": "In addition, their properties should be declared in Swift, which tells the compiler to use dynamic dispatch to access that attribute."}
+{"id": "/documentation/AppKit/developing-a-document-based-app", "law": "When you create your subclass, you determine which window controller the document will use by implementing the function."}
+{"id": "/documentation/AppKit/enhancing-your-custom-text-engine-with-writing-tools", "law": "The systems provide easy-to-use and highly capable APIs for text editing, such as , , and SwiftUI ."}
+{"id": "/documentation/AppKit/enhancing-your-custom-text-engine-with-writing-tools", "law": "Apps generally use these APIs to implement text editing."}
+{"id": "/documentation/AppKit/integrating-a-toolbar-and-touch-bar-into-your-app", "law": "You use an object to manage the items that appear in a toolbar, which are objects created in Interface Builder or source code."}
+{"id": "/documentation/AppKit/navigating-hierarchical-data-using-outline-and-split-views", "law": "This sample shows how to use to navigate hierarchical data."}
+{"id": "/documentation/AppKit/navigating-hierarchical-data-using-outline-and-split-views", "law": "When you use with , your app presents data in a primary-detail format similar to that of the Xcode Project navigator or the Finder."}
+{"id": "/documentation/AppKit/navigating-hierarchical-data-using-outline-and-split-views", "law": "For a primary-detail configuration, use , which arranges two or more views in a linear stack running horizontally."}
+{"id": "/documentation/AppKit/navigating-hierarchical-data-using-outline-and-split-views", "law": "The class focuses on how to use ."}
+{"id": "/documentation/AppKit/navigating-hierarchical-data-using-outline-and-split-views", "law": "In a primary-detail user interface, the list view on the left must remain the same size when the split view grows or shrinks, while the detail view on the right changes size."}
+{"id": "/documentation/AppKit/navigating-hierarchical-data-using-outline-and-split-views", "law": "Use the Edit menu to directly affect the contents of the outline view."}
+{"id": "/documentation/AppKit/navigating-hierarchical-data-using-outline-and-split-views", "law": "Use the protocol to enable or disable the Delete menu item according to the selection in the outline view."}
+{"id": "/documentation/AppKit/navigating-hierarchical-data-using-outline-and-split-views", "law": "Use the window restoration system’s function to save the outline view’s node selection."}
+{"id": "/documentation/AppKit/navigating-hierarchical-data-using-outline-and-split-views", "law": "The next time the app launches, use to restore that selection."}
+{"id": "/documentation/AppKit/organize-your-user-interface-with-a-stack-view", "law": "This sample shows how to use with each individual view either disclosed (expanded) or hidden (collapsed)."}
+{"id": "/documentation/AppKit/organize-your-user-interface-with-a-stack-view", "law": "For state restoration to work, you must deselect the “Close windows when quitting an app” checkbox on the General Pane in System Preferences."}
+{"id": "/documentation/AppKit/organize-your-user-interface-with-a-stack-view", "law": "To reset state restoration, use Command-Option-Quit when quitting the sample."}
+{"id": "/documentation/AppKit/organize-your-user-interface-with-a-stack-view", "law": "To restore the stack view’s window on relaunch, use the protocol."}
+{"id": "/documentation/AppKit/organize-your-user-interface-with-a-stack-view", "law": "This sample provides two disclosure options: A triangle A rounded button The sample project conditionally decides which type of header disclosure control to use by referencing the compilation flag."}
+{"id": "/documentation/AppKit/organize-your-user-interface-with-a-stack-view", "law": "If you prefer the style (a rounded button with up and down arrows), remove the compilation flag from the Xcode target’s build settings."}
+{"id": "/documentation/AppKit/restoring-your-app-s-state-with-appkit", "law": "The person should be able to return to where they left off—and window state restoration is a core part of making that experience seamless."}
+{"id": "/documentation/AppKit/restoring-your-app-s-state-with-appkit", "law": "This sample app demonstrates the use of state preservation and restoration for a macOS app."}
+{"id": "/documentation/AppKit/restoring-your-app-s-state-with-appkit", "law": "To enable window state restoration, each window must be configured with a unique identifier, a frame autosave name, and a restoration class."}
+{"id": "/documentation/AppKit/restoring-your-app-s-state-with-appkit", "law": "The app delegate must also declare support for secure restorable state:"}
+{"id": "/documentation/AppKit/restoring-your-app-s-state-with-appkit", "law": "Whenever someone makes a change that should be preserved—selecting a product, switching tabs, or editing fields—the window controller calls ."}
+{"id": "/documentation/AppKit/restoring-your-app-s-state-with-appkit", "law": "Do not force quit the app, as macOS discards saved state when a person force quits."}
+{"id": "/documentation/AppKit/supporting-collection-view-drag-and-drop-through-file-promises", "law": "When working with drag and drop, use file promises to indicate intent for a future drag operation."}
+{"id": "/documentation/AppKit/supporting-collection-view-drag-and-drop-through-file-promises", "law": "Use the class when creating file promises."}
+{"id": "/documentation/AppKit/supporting-collection-view-drag-and-drop-through-file-promises", "law": "Use the to receive file promises."}
+{"id": "/documentation/AppKit/supporting-collection-view-drag-and-drop-through-file-promises", "law": "This sample app also supports drag and drop of images from within the collection view that don’t involve a URL."}
+{"id": "/documentation/AppKit/supporting-collection-view-drag-and-drop-through-file-promises", "law": "The sample registers these pasteboard types in the view controller’s function: Handle file promises before handling file URLs, because the file promise generally represents the higher-quality image and should take precedence when both types are supported."}
+{"id": "/documentation/AppKit/supporting-collection-view-drag-and-drop-through-file-promises", "law": "Use the first function to provide the title of the file to be promised."}
+{"id": "/documentation/AppKit/supporting-drag-and-drop-through-file-promises", "law": "When dragging content that isnʼt yet a file on disk at the time dragging began, an app may put a file promise onto the pasteboard instead of a file URL, to avoid blocking the main thread."}
+{"id": "/documentation/AppKit/supporting-drag-and-drop-through-file-promises", "law": "Handle file promises before handling URLs, because the file promise generally represents the higher-quality image and should take precedence when both types are supported."}
+{"id": "/documentation/AppKit/supporting-drag-and-drop-through-file-promises", "law": "It uses a hard-coded string for simplicity, but depending on use case, take the parameter into account."}
+{"id": "/documentation/AppKit/supporting-table-view-drag-and-drop-through-file-promises", "law": "When working with drag and drop, use file promises to indicate intent for a future drag operation."}
+{"id": "/documentation/AppKit/supporting-table-view-drag-and-drop-through-file-promises", "law": "Use the class when creating file promises."}
+{"id": "/documentation/AppKit/supporting-table-view-drag-and-drop-through-file-promises", "law": "Use the to receive file promises."}
+{"id": "/documentation/AppKit/supporting-table-view-drag-and-drop-through-file-promises", "law": "This sample app also supports drag and drop of images from within the table view that don’t involve a URL."}
+{"id": "/documentation/AppKit/supporting-table-view-drag-and-drop-through-file-promises", "law": "The sample registers these pasteboard types in the view controller’s function: Handle file promises before handling file URLs, because the file promise generally represents the higher-quality image and should take precedence when both types are supported."}
+{"id": "/documentation/AppKit/supporting-table-view-drag-and-drop-through-file-promises", "law": "Use the first function to provide the title of the file to be promised."}
+{"id": "/documentation/AppKit", "law": "The framework also contains built-in support for localization and accessibility to ensure that your app reaches as many people as possible."}
+{"id": "/documentation/AppKit", "law": "To build an iOS app, you can use SwiftUI to create an app that works across all of Apple’s platforms, or use to create an app for iOS only."}
+{"id": "/documentation/AppKit", "law": "Avoid using deprecated classes and protocols in your apps."}

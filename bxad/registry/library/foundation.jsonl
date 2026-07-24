@@ -1,0 +1,21 @@
+{"id": "/documentation/Foundation/building-a-localized-food-ordering-app", "law": "A parameter indicates that the formatting should format the price as a currency, using U.S."}
+{"id": "/documentation/Foundation/building-a-localized-food-ordering-app", "law": "The SwiftUI view can then use this attribute when styling the watch display."}
+{"id": "/documentation/Foundation/building-a-localized-food-ordering-app", "law": "is strongly-typed, meaning that all attributes must have defined names and value types."}
+{"id": "/documentation/Foundation/building-a-localized-food-ordering-app", "law": "This allows code to use dot syntax when looking up the members of ."}
+{"id": "/documentation/Foundation/building-a-localized-food-ordering-app", "law": "Some languages’ grammar require that nouns, adjectives, articles, and other parts of speech agree in number or gender with other parts of a sentence."}
+{"id": "/documentation/Foundation/building-a-localized-food-ordering-app", "law": "The following entry from the English strings file shows an example of this disambiguation: Format, style, and localize your app’s text for use in multiple languages with string formatting, attributed strings, and automatic grammar agreement."}
+{"id": "/documentation/Foundation/continuing-user-activities-with-handoff", "law": "If the user changes devices, they can use Handoff to launch the app and return to what they were doing on the original device."}
+{"id": "/documentation/Foundation/continuing-user-activities-with-handoff", "law": "must be run on actual devices; the iOS version cannot run in Simulator."}
+{"id": "/documentation/Foundation/continuing-user-activities-with-handoff", "law": "To configure your iOS devices to run the sample code project, open the Settings app and do the following: In Bluetooth settings, tap to turn on Bluetooth."}
+{"id": "/documentation/Foundation/continuing-user-activities-with-handoff", "law": "Then tap to turn on iCloud."}
+{"id": "/documentation/Foundation/continuing-user-activities-with-handoff", "law": "In General settings, tap to turn on Handoff."}
+{"id": "/documentation/Foundation/continuing-user-activities-with-handoff", "law": "You use the app’s to tell Handoff which activities your app can continue, by providing an entry with the key name ."}
+{"id": "/documentation/Foundation/continuing-user-activities-with-handoff", "law": "The originating device can use this to clean up its own UI state."}
+{"id": "/documentation/Foundation/increasing-app-usage-with-suggestions-based-on-user-activities", "law": "When the user activity object is not contained within the responder chain, you must call the method to mark the object as current, which also registers the object with the system."}
+{"id": "/documentation/Foundation/increasing-app-usage-with-suggestions-based-on-user-activities", "law": "The app must also maintain a strong reference to any activity objects that the system uses for search results."}
+{"id": "/documentation/Foundation/synchronizing-app-preferences-with-icloud", "law": "Don’t use it to store large amounts of data."}
+{"id": "/documentation/Foundation/synchronizing-app-preferences-with-icloud", "law": "This sample examines the reason for the change through the use the from the notification’s ."}
+{"id": "/documentation/Foundation/synchronizing-app-preferences-with-icloud", "law": "To obtain key-values that have changed, use the key from the notification’s ."}
+{"id": "/documentation/Foundation/using-json-with-custom-types", "law": "Use the techniques described in this sample to handle the differences between external JSON data and your app’s model types."}
+{"id": "/documentation/Foundation/using-json-with-custom-types", "law": "Use Swift’s expressive type system to avoid manually looping over collections of identically structured objects."}
+{"id": "/documentation/Foundation/using-json-with-custom-types", "law": "Learn how to ignore structure and data in JSON that you don’t need in your code."}

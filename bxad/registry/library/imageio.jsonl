@@ -1,0 +1,10 @@
+{"id": "/documentation/ImageIO/writing-spatial-photos", "law": "This sample app demonstrates how to use APIs to convert two separate images into a spatial photo, saving the output as a HEIC file."}
+{"id": "/documentation/ImageIO/writing-spatial-photos", "law": "For these images, a disparity adjustment of +2% of the image width produces a comfortable depth effect when the spatial photo is presented in a window on Apple Vision Pro."}
+{"id": "/documentation/ImageIO/writing-spatial-photos", "law": "This 2% disparity adjustment value positions the nearest object in the spatial photo — the hummingbird — just behind the front of the window, while still keeping an effective illusion of depth between the hummingbird and the background."}
+{"id": "/documentation/ImageIO/writing-spatial-photos", "law": "The scheme’s arguments express the +2% disparity adjustment with a value of ."}
+{"id": "/documentation/ImageIO/writing-spatial-photos", "law": "The left- and right-eye images in a spatial photo must have the same pixel size."}
+{"id": "/documentation/ImageIO/writing-spatial-photos", "law": "The distance in 3D space between the left- and right-eye camera extrinsic positions must always represent the baseline in meters between the two cameras that captured the images."}
+{"id": "/documentation/ImageIO/writing-spatial-photos", "law": "The position of the right-eye camera must always be positioned to the right of the left-eye camera in the left-eye camera’s coordinate space."}
+{"id": "/documentation/ImageIO/writing-spatial-photos", "law": "The camera model dictionary for the left- and right-eye images in a spatial photo must always define a camera model type of either or ."}
+{"id": "/documentation/ImageIO/writing-spatial-photos", "law": "The properties dictionary also specifies a value of to indicate that the system should ignore any alpha channel data in the source image when adding that source image to the image destination."}
+{"id": "/documentation/ImageIO/writing-spatial-photos", "law": "However, not all apps and operating systems use the primary image index when displaying a HEIC file, and instead display the first image in the HEIC by default."}

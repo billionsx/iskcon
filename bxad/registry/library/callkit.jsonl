@@ -1,0 +1,3 @@
+{"id": "/documentation/CallKit/voip-calling-with-callkit", "law": "This sample code project must be run on a physical device."}
+{"id": "/documentation/CallKit/voip-calling-with-callkit", "law": "Before you run the sample code project in Xcode, check to be sure your device has iOS 13 or later or iPadOS 13 or later installed."}
+{"id": "/documentation/CallKit/voip-calling-with-callkit", "law": "Use the CallKit framework to integrate native VoIP calling."}

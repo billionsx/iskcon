@@ -1,0 +1,13 @@
+{"id": "/documentation/ClockKit/creating-and-updating-a-complication-s-timeline", "law": "Coffee Tracker saves and reads caffeine samples to HealthKit, so the app must respond to any external changes, such as another app adding or deleting a caffeine sample from HealthKit."}
+{"id": "/documentation/ClockKit/creating-and-updating-a-complication-s-timeline", "law": "Make sure the Coffee Tracker complication appears on the active watch face."}
+{"id": "/documentation/ClockKit/creating-and-updating-a-complication-s-timeline", "law": "Settings should show all the drinks you added to the app."}
+{"id": "/documentation/ClockKit/creating-and-updating-a-complication-s-timeline", "law": "When ClockKit asks the data source for a timeline entry, the app needs to instantiate a template for the specified identifier and family, and then fill the template with the required data, before wrapping it in a object and returning it."}
+{"id": "/documentation/ClockKit/creating-and-updating-a-complication-s-timeline", "law": "Depending on the watch face, the gauge and text may use the specified colors to provide additional information."}
+{"id": "/documentation/ClockKit/creating-and-updating-a-complication-s-timeline", "law": "In general, if an app has a complication on the active watch face, it can safely use four updates per hour, shared between both the app’s background tasks and it’s background observer queries."}
+{"id": "/documentation/ClockKit/creating-and-updating-a-complication-s-timeline", "law": "However, HealthKit further limits the update on caffeine samples to a maximum of one per hour."}
+{"id": "/documentation/ClockKit/creating-and-updating-a-complication-s-timeline", "law": "This means, the first update from HealthKit should trigger within a minute."}
+{"id": "/documentation/ClockKit/displaying-essential-information-on-a-watch-face", "law": "The bundle IDs should be and respectively."}
+{"id": "/documentation/ClockKit/displaying-essential-information-on-a-watch-face", "law": "To avoid showing a desaturated image, this sample uses to provide both full-color and tinted versions."}
+{"id": "/documentation/ClockKit/providing-multiple-complications", "law": "While each descriptor doesn’t need to cover all possible families, every family is covered by at least one descriptor."}
+{"id": "/documentation/ClockKit/providing-multiple-complications", "law": "For most families, the app checks the complication to determine which template it should provide."}
+{"id": "/documentation/ClockKit/providing-multiple-complications", "law": "If an app creates templates based on the complication’s property, it must check for the default identifier."}

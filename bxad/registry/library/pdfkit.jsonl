@@ -1,0 +1,8 @@
+{"id": "/documentation/PDFKit/custom-graphics", "law": "This method returns and declares that all instances of for the document presented through should instantiate the subclass ."}
+{"id": "/documentation/PDFKit/custom-graphics", "law": "All custom drawing for a PDF page should be done through this mechanism."}
+{"id": "/documentation/PDFKit/custom-graphics", "law": "Custom drawing methods should always be thread-safe and call the superclass method, which is required to draw the original content."}
+{"id": "/documentation/PDFKit/pdf-widgets", "law": "The property sets the maximum number of characters a user can enter into the text field."}
+{"id": "/documentation/PDFKit/pdf-widgets", "law": "The property, if set, divides the text field into as many equally spaced positions, or combs, as the value of the maximum length of the field."}
+{"id": "/documentation/PDFKit/pdf-widgets", "law": "By default, all text widget annotations are single line, meaning they don’t include word wrapping."}
+{"id": "/documentation/PDFKit/pdf-widgets", "law": "To group widgets—in this case the radio buttons—the buttons must have the same field name, which is set in ."}
+{"id": "/documentation/PDFKit/pdf-widgets", "law": "To give radio buttons of the same field name their own unique subidentifier, the property must be set on each, which is also done in ."}

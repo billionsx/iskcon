@@ -1,0 +1,3 @@
+{"id": "/documentation/MediaPlayer/becoming-a-now-playable-app", "law": "Before you run the sample code project in Xcode: See the comments for the protocol in file , to learn what settings and configuration you may want to customize for your use-case."}
+{"id": "/documentation/MediaPlayer/becoming-a-now-playable-app", "law": "Use the platform-specific class to implement your customizations to the standard behavior."}
+{"id": "/documentation/MediaPlayer/becoming-a-now-playable-app", "law": "Ensure your app is eligible to become the Now Playing app by adopting best practices for providing Now Playing info and registering for remote command center actions."}

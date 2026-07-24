@@ -1,0 +1,2 @@
+{"id": "/documentation/CoreImage/generating-an-animation-with-a-core-image-render-destination", "law": "Set the peak specular highlight value to the maximum value of white with respect to the current headroom, or a reasonable default value."}
+{"id": "/documentation/CoreImage/generating-an-animation-with-a-core-image-render-destination", "law": "generates the gradient shading image between the current maximum RGB white, , and a fully transparent clear color, ."}

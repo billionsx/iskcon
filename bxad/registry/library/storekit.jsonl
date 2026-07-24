@@ -1,0 +1,32 @@
+{"id": "/documentation/StoreKit/determining-service-entitlement-on-the-server", "law": "The sample code contains two endpoints: URL: — Use for testing using real or artificial receipts."}
+{"id": "/documentation/StoreKit/determining-service-entitlement-on-the-server", "law": "This endpoint requires no special configuration."}
+{"id": "/documentation/StoreKit/determining-service-entitlement-on-the-server", "law": "URL: — Use with real Base64-encoded receipts."}
+{"id": "/documentation/StoreKit/determining-service-entitlement-on-the-server", "law": "This endpoint requires additional configuration."}
+{"id": "/documentation/StoreKit/determining-service-entitlement-on-the-server", "law": "Make sure it completes successfully."}
+{"id": "/documentation/StoreKit/determining-service-entitlement-on-the-server", "law": "In Terminal, choose Shell > New Windows > New Window with Profile to open a second Teminal window to use to send the requests."}
+{"id": "/documentation/StoreKit/determining-service-entitlement-on-the-server", "law": "The data must be in the same JSON format that you receive by calling the endpoint when you pass it a valid receipt."}
+{"id": "/documentation/StoreKit/determining-service-entitlement-on-the-server", "law": "Use it to determine whether a customer has the necessary entitlements to service, offers, or other messaging."}
+{"id": "/documentation/StoreKit/generating-a-promotional-offer-signature-on-the-server", "law": "Run from the command line, and make sure it completes successfully."}
+{"id": "/documentation/StoreKit/generating-a-promotional-offer-signature-on-the-server", "law": "Open another terminal window and use the command to send a request."}
+{"id": "/documentation/StoreKit/generating-a-promotional-offer-signature-on-the-server", "law": "The request must have a header of , and JSON body data with the following format: Generate a signature using your private key and lightweight cryptography libraries."}
+{"id": "/documentation/StoreKit/implementing-a-store-in-your-app-using-the-storekit-api", "law": "The sample project demonstrates how to use StoreKit in a SwiftUI-based iOS app with a simulated app server, SKDemoServer."}
+{"id": "/documentation/StoreKit/implementing-a-store-in-your-app-using-the-storekit-api", "law": "To test your implementation of In-App Purchases using StoreKit, you can use StoreKit Testing in Xcode and the sandbox environment."}
+{"id": "/documentation/StoreKit/implementing-a-store-in-your-app-using-the-storekit-api", "law": "To test the sample in Xcode: Select the sample target, then configure it to use your Developer team for signing."}
+{"id": "/documentation/StoreKit/implementing-a-store-in-your-app-using-the-storekit-api", "law": "To prepare this sample code project to run in the sandbox, perform the following steps in App Store Connect: Find or create an app that supports In-App Purchases and you can use for testing purposes."}
+{"id": "/documentation/StoreKit/implementing-a-store-in-your-app-using-the-storekit-api", "law": "Use information from to set up the In-App Purchase."}
+{"id": "/documentation/StoreKit/implementing-a-store-in-your-app-using-the-storekit-api", "law": "To prepare this sample code project to use information from App Store Connect, perform the following steps in Xcode: Select the sample target, then change the bundle ID to your testing app’s bundle ID."}
+{"id": "/documentation/StoreKit/implementing-a-store-in-your-app-using-the-storekit-api", "law": "Configure the target to use your Developer team for signing."}
+{"id": "/documentation/StoreKit/offering-completing-and-restoring-in-app-purchases", "law": "Use the In-App Purchase API to give people the ability to purchase virtual goods within your app or directly from the App Store using the StoreKit framework."}
+{"id": "/documentation/StoreKit/offering-completing-and-restoring-in-app-purchases", "law": "First, you set up your app to register and use a single-transaction queue observer at launch."}
+{"id": "/documentation/StoreKit/offering-completing-and-restoring-in-app-purchases", "law": "When you receive a prompt to authenticate the purchase, use your test user account."}
+{"id": "/documentation/StoreKit/offering-completing-and-restoring-in-app-purchases", "law": "Be sure to keep a strong reference to the products request object; the system may release it before the request completes."}
+{"id": "/documentation/StoreKit/offering-media-for-sale-in-your-app", "law": "The sample app requires an iOS or iPadOS device."}
+{"id": "/documentation/StoreKit/offering-media-for-sale-in-your-app", "law": "Apps can also use this method to resume any activities that they pause before presenting the store."}
+{"id": "/documentation/StoreKit/requesting-app-store-reviews", "law": "Be aware that the system displays the review prompt to a user a maximum of three times within a 365-day period."}
+{"id": "/documentation/StoreKit/requesting-app-store-reviews", "law": "Avoid showing a request for a review immediately when a user launches your app, even if it isn’t the first time it launches."}
+{"id": "/documentation/StoreKit/requesting-app-store-reviews", "law": "Avoid requesting a review as the result of a user action."}
+{"id": "/documentation/StoreKit/requesting-app-store-reviews", "law": "In addition, the app and its use meets the following conditions before displaying the prompt: The app hasn’t shown a review prompt for a version of the app bundle that matches the current bundle version."}
+{"id": "/documentation/StoreKit/requesting-app-store-reviews", "law": "The person successfully completes the three-step process at least four times."}
+{"id": "/documentation/StoreKit/requesting-app-store-reviews", "law": "A person must pause on the Process Completed scene for a few seconds."}
+{"id": "/documentation/StoreKit/understanding-storekit-workflows", "law": "The design of this sample doesn’t require any special setup, or even the creation of products in App Store Connect; it uses StoreKit Testing in Xcode and the Transaction Manager window in Xcode to test In-App Purchase."}
+{"id": "/documentation/StoreKit/understanding-storekit-workflows", "law": "For more information on the product types that App Store Connect supports, see The transactions this app demonstrates don’t get information from App Store Connect and don’t incur charges."}

@@ -1,0 +1,6 @@
+{"id": "/documentation/HealthKit/accessing-a-user-s-clinical-records", "law": "People must first download their clinical records from one of the before the records appear in HealthKit."}
+{"id": "/documentation/HealthKit/accessing-a-user-s-clinical-records", "law": "To use HealthKit, you must first enable the HealthKit capability and include the key in your app’s file, as described in ."}
+{"id": "/documentation/HealthKit/accessing-a-user-s-clinical-records", "law": "If you don’t have such an account, you can add sample data within the Simulator as described in ."}
+{"id": "/documentation/HealthKit/accessing-a-user-s-clinical-records", "law": "The app must request permission to read all the types that it intends to use."}
+{"id": "/documentation/HealthKit/accessing-a-user-s-clinical-records", "law": "Instead, anyone using the app must manually request authorization, by scrolling to the bottom of the list and tapping the Authorize button."}
+{"id": "/documentation/HealthKit/creating-a-mobility-health-app", "law": "The sample code project requires this version of Xcode."}

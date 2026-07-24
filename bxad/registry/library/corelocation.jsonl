@@ -1,0 +1,5 @@
+{"id": "/documentation/CoreLocation/adopting-live-updates-in-core-location", "law": "The live updates sample requires Xcode 16 or later and iOS 18 or later."}
+{"id": "/documentation/CoreLocation/monitoring-location-changes-with-core-location", "law": "Before you run the sample code project in Xcode, ensure that you’re using Xcode 16 or later and iOS 18 or later."}
+{"id": "/documentation/CoreLocation/ranging-for-beacons", "law": "This sample code project configures a device to act as a beacon, and configures a device to use ranging to find surrounding beacons."}
+{"id": "/documentation/CoreLocation/ranging-for-beacons", "law": "Use two iOS devices to run the sample, with one acting as a beacon, and the other ranging for the beacon."}
+{"id": "/documentation/CoreLocation/ranging-for-beacons", "law": "Use a instance to request that authorization, set up the constraint based on the hardcoded UUID, then tell the instance to start monitoring."}

@@ -1,0 +1,15 @@
+{"id": "/documentation/Virtualization/running-gui-linux-in-a-virtual-machine-on-a-mac", "law": "The Linux ISO image you download must support the CPU architecture of your Mac."}
+{"id": "/documentation/Virtualization/running-gui-linux-in-a-virtual-machine-on-a-mac", "law": "When you run the app for the first time, it displays a file picker so you can choose the Linux installation ISO image to use for installing your Linux VM."}
+{"id": "/documentation/Virtualization/running-gui-linux-in-a-virtual-machine-on-a-mac", "law": "When the installation finishes, the Linux VM is ready to use."}
+{"id": "/documentation/Virtualization/running-gui-linux-in-a-virtual-machine-on-a-mac", "law": "Running multiple VMs requires an app to manage the execution and artifacts of each individual VM."}
+{"id": "/documentation/Virtualization/running-gui-linux-in-a-virtual-machine-on-a-mac", "law": "The example below shows the steps for configuring and to enable this capability: To use the copy-and-paste capability in Linux, the user needs to install the package, which is available through most Linux package managers."}
+{"id": "/documentation/Virtualization/running-linux-in-a-virtual-machine", "law": "The sample configures the boot loader that the virtual machine requires to run the guest operating system, and it configures a console device to handle standard input and output."}
+{"id": "/documentation/Virtualization/running-linux-in-a-virtual-machine", "law": "The kernel and RAM disk image must support the CPU architecture of your Mac."}
+{"id": "/documentation/Virtualization/running-linux-in-a-virtual-machine", "law": "The parameters are position-dependent, so use the following the order:"}
+{"id": "/documentation/Virtualization/running-linux-in-a-virtual-machine", "law": "The sample configures the virtual machine to use two CPUs and 2 GB of RAM."}
+{"id": "/documentation/Virtualization/running-linux-in-a-virtual-machine", "law": "It also sets the object’s property with additional information about how to use the RAM disk and console information."}
+{"id": "/documentation/Virtualization/running-macos-in-a-virtual-machine-on-apple-silicon", "law": "You can use this tool to download the restore image of the most current macOS release from the network, or with your own restore image."}
+{"id": "/documentation/Virtualization/running-macos-in-a-virtual-machine-on-apple-silicon", "law": "You use to launch and control the macOS VM that loads and runs macOS from the VM bundle."}
+{"id": "/documentation/Virtualization/running-macos-in-a-virtual-machine-on-apple-silicon", "law": "This app includes entitlements to enable it to use Virtualization and access the VM’s’ audio input, such as the microphone."}
+{"id": "/documentation/Virtualization/running-macos-in-a-virtual-machine-on-apple-silicon", "law": "You can use either version, they’re functionally identical."}
+{"id": "/documentation/Virtualization/running-macos-in-a-virtual-machine-on-apple-silicon", "law": "The Virtualization framework checks the configuration to make sure it supports saving and restoring."}

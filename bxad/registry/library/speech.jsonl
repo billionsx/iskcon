@@ -1,0 +1,7 @@
+{"id": "/documentation/Speech/recognizing-speech-in-live-audio", "law": "This sample project shows you how to use the Speech framework to transcribe or caption audio, and how to use a custom language model to add new vocabulary and improve the accuracy of the transcription."}
+{"id": "/documentation/Speech/recognizing-speech-in-live-audio", "law": "The hint provides the transcriber with the specialized chess vocabulary described in the section below, helping to ensure that the app transcribes that vocabulary correctly."}
+{"id": "/documentation/Speech/recognizing-speech-in-live-audio", "law": "The speech analyzer processes audio taken from an asynchronous sequence; the app must convert the audio to a format that the transcriber module can work with and add it to that sequence."}
+{"id": "/documentation/Speech/recognizing-speech-in-live-audio", "law": "To avoid concurrency-related compilation errors, the app actually saves the session instance in an actor and manages the session through that actor."}
+{"id": "/documentation/Speech/recognizing-speech-in-live-audio", "law": "The task group uses Swift’s structured concurrency mechanism to ensure that both subtasks run to completion before returns."}
+{"id": "/documentation/Speech/recognizing-speech-in-live-audio", "law": "When the app launches, it uses to ensure that any necessary transcription assets install."}
+{"id": "/documentation/Speech/recognizing-speech-in-live-audio", "law": "Developers can enhance the transcriber module for specific use cases and applications by customizing its language model."}

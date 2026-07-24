@@ -1,0 +1,4 @@
+{"id": "/documentation/MetricKit/track-performance-by-app-state-using-metrickit", "law": "As you use the app on your device, MetricKit collects performance data in the background."}
+{"id": "/documentation/MetricKit/track-performance-by-app-state-using-metrickit", "law": "The person can also change the active variant from the MetricKit Sample settings in the Settings app, which provides a “Use Card Layout” toggle under the “A/B Test” group."}
+{"id": "/documentation/MetricKit/track-performance-by-app-state-using-metrickit", "law": "You can also use with this handle, but only populates the measurement properties such as CPU time, memory usage, and logical writes."}
+{"id": "/documentation/MetricKit/track-performance-by-app-state-using-metrickit", "law": "The sample demonstrates how to use this pattern to prompt someone for additional context in debug builds."}

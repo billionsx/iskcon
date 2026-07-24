@@ -1,0 +1,6 @@
+{"id": "/documentation/StoreKitTest/testing-and-validating-ad-impression-signatures-and-postbacks-for-skadnetwork", "law": "This sample code project provides examples of how to use the StoreKit Test framework to test individual units of an implementation."}
+{"id": "/documentation/StoreKitTest/testing-and-validating-ad-impression-signatures-and-postbacks-for-skadnetwork", "law": "In the sample code, use the same value everywhere that the ad network identifier is required."}
+{"id": "/documentation/StoreKitTest/testing-and-validating-ad-impression-signatures-and-postbacks-for-skadnetwork", "law": "In the testing environment, this value is always ."}
+{"id": "/documentation/StoreKitTest/testing-and-validating-ad-impression-signatures-and-postbacks-for-skadnetwork", "law": "In the sample code, use the private key when you generate a signature, and use the public key when you call ."}
+{"id": "/documentation/StoreKitTest/testing-and-validating-ad-impression-signatures-and-postbacks-for-skadnetwork", "law": "All of the properties are required."}
+{"id": "/documentation/StoreKitTest/testing-and-validating-ad-impression-signatures-and-postbacks-for-skadnetwork", "law": "In the testing environment, the is always ."}

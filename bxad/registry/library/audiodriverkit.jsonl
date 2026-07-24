@@ -1,0 +1,10 @@
+{"id": "/documentation/AudioDriverKit/creating-an-audio-device-driver", "law": "Use a reverse-DNS format for your identifiers, as described in ."}
+{"id": "/documentation/AudioDriverKit/creating-an-audio-device-driver", "law": "iPadOS also requires that your driver’s bundle identifier begin with the host app’s bundle identifier."}
+{"id": "/documentation/AudioDriverKit/creating-an-audio-device-driver", "law": "In , make sure the string concatentation that initializes matches the bundle identifer for the driver."}
+{"id": "/documentation/AudioDriverKit/creating-an-audio-device-driver", "law": "Although this simplifies running the sample code, in your own apps you may prefer to use ."}
+{"id": "/documentation/AudioDriverKit/creating-an-audio-device-driver", "law": "If you don’t intend for your driver to allow user client connections, just use the entitlement."}
+{"id": "/documentation/AudioDriverKit/creating-an-audio-device-driver", "law": "When creating the driver’s profile, be sure to select DriverKit App Development as the profile type."}
+{"id": "/documentation/AudioDriverKit/creating-an-audio-device-driver", "law": "To run the sample app in macOS, use the scheme selector to select the SimpleAudio (macOS) scheme and the My Mac destination."}
+{"id": "/documentation/AudioDriverKit/creating-an-audio-device-driver", "law": "When installation completes, the Driver Manager status in the app displays the message “SimpleAudioDriver has been activated and is ready to use.” At this point, the sample’s audio device is available to Core Audio."}
+{"id": "/documentation/AudioDriverKit/creating-an-audio-device-driver", "law": "To inspect the newly installed device, use the Audio MIDI Setup app ( ), which shows the sine tone’s frequency and sample rate."}
+{"id": "/documentation/AudioDriverKit/creating-an-audio-device-driver", "law": "Then you can use the other buttons in this section to toggle the frequency and sample rate."}

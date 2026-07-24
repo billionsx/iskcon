@@ -1,0 +1,10 @@
+{"id": "/documentation/ExposureNotification/building-an-app-to-notify-users-of-covid-19-exposure", "law": "Before you run the sample code project in Xcode, make sure: Your iOS device is running either iOS 12.5 or 13.5 or later."}
+{"id": "/documentation/ExposureNotification/building-an-app-to-notify-users-of-covid-19-exposure", "law": "To get permission to use this entitlement, see ."}
+{"id": "/documentation/ExposureNotification/building-an-app-to-notify-users-of-covid-19-exposure", "law": "Users must explicitly authorize an app to use Exposure Notifications."}
+{"id": "/documentation/ExposureNotification/building-an-app-to-notify-users-of-covid-19-exposure", "law": "The class manages the user’s private data, defined as a series of properties that all use this property wrapper."}
+{"id": "/documentation/ExposureNotification/building-an-app-to-notify-users-of-covid-19-exposure", "law": "Each time the app calls this method, the user must authorize the transaction."}
+{"id": "/documentation/ExposureNotification/building-an-app-to-notify-users-of-covid-19-exposure", "law": "This authorization lasts for up to five days and should be requested only if the app determines that the user is about to take a test and the app has a way to determine the results."}
+{"id": "/documentation/ExposureNotification/building-an-app-to-notify-users-of-covid-19-exposure", "law": "PHAs must notify users that they’ve tested positive before the app calls ."}
+{"id": "/documentation/ExposureNotification/building-an-app-to-notify-users-of-covid-19-exposure", "law": "They must also notify users that their keys are being submitted to the PHA’s key server."}
+{"id": "/documentation/ExposureNotification/building-an-app-to-notify-users-of-covid-19-exposure", "law": "To prevent runtime errors, Exposure Notifications apps for iOS 13.5 and iOS 13.6 must fall back to this version."}
+{"id": "/documentation/ExposureNotification/building-an-app-to-notify-users-of-covid-19-exposure", "law": "Version 2 — When available, apps should use this version of the API."}

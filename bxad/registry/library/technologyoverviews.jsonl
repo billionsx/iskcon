@@ -1,0 +1,158 @@
+{"id": "/documentation/TechnologyOverviews", "law": "Start your exploration with the foundational technologies you use to build your app or game, and make your interface shine by adopting Liquid Glass."}
+{"id": "/documentation/TechnologyOverviews", "law": "Explore the technologies you use to build your app’s unique experience."}
+{"id": "/documentation/TechnologyOverviews", "law": "The developer documentation includes API reference, articles, sample code, and tutorials to help you learn how to use a given technology."}
+{"id": "/documentation/TechnologyOverviews", "law": "Learn about the wide range of technologies you use to develop software for Apple platforms."}
+{"id": "/documentation/TechnologyOverviews/ai-machine-learning", "law": "Of course, if you have your own machine learning models, use Apple technologies to incorporate them into your app in a way that works well with Apple hardware and the system’s other intelligent features."}
+{"id": "/documentation/TechnologyOverviews/ai-machine-learning", "law": "Many system frameworks use already trained models to analyze the content you provide and return results."}
+{"id": "/documentation/TechnologyOverviews/ai-machine-learning", "law": "Train custom machine-learning models using straightforward tools and use them to improve your app’s responses for your specific content."}
+{"id": "/documentation/TechnologyOverviews/app-design-and-ui", "law": "At the start of every new project, you need to choose an app-builder technology to use for your initial code."}
+{"id": "/documentation/TechnologyOverviews/app-design-and-ui", "law": "Use SwiftUI to build apps for , , , , , and and the programming language."}
+{"id": "/documentation/TechnologyOverviews/app-design-and-ui", "law": "Use UIKit to build apps for , , , , and ."}
+{"id": "/documentation/TechnologyOverviews/app-design-and-ui", "law": "Use AppKit to build apps for ."}
+{"id": "/documentation/TechnologyOverviews/app-design-and-ui", "law": "No matter which app-builder technology you choose, most of the components you use to build your interface are the same."}
+{"id": "/documentation/TechnologyOverviews/app-design-and-ui", "law": "Before you build your interface, learn about the different components available to you, and learn how different platforms use those components."}
+{"id": "/documentation/TechnologyOverviews/app-design-and-ui", "law": "Learn how to leverage Liquid Glass to make sure your interface looks right at home on Apple platforms."}
+{"id": "/documentation/TechnologyOverviews/app-design-and-ui", "law": "Choose a programming approach to build your app, create your app’s interface, and implement the fundamental behaviors that your app requires."}
+{"id": "/documentation/TechnologyOverviews/games", "law": "Familiarize yourself with the tools and technologies you use to build games on Apple platforms."}
+{"id": "/documentation/TechnologyOverviews/games", "law": "Use this setup to from your PC."}
+{"id": "/documentation/TechnologyOverviews/tools-and-distribution", "law": "Xcode provides the suite of tools you use to create apps."}
+{"id": "/documentation/TechnologyOverviews/tools-and-distribution", "law": "Start the development process with the Xcode app, which you use to manage your project’s code and resources."}
+{"id": "/documentation/TechnologyOverviews/tools-and-distribution", "law": "Use the integrated debugger to find and fix issues in your code and verify its behavior."}
+{"id": "/documentation/technologyoverviews", "law": "Start your exploration with the foundational technologies you use to build your app or game, and make your interface shine by adopting Liquid Glass."}
+{"id": "/documentation/technologyoverviews", "law": "Explore the technologies you use to build your app’s unique experience."}
+{"id": "/documentation/technologyoverviews", "law": "The developer documentation includes API reference, articles, sample code, and tutorials to help you learn how to use a given technology."}
+{"id": "/documentation/technologyoverviews", "law": "Learn about the wide range of technologies you use to develop software for Apple platforms."}
+{"id": "/documentation/technologyoverviews/ai-machine-learning", "law": "Of course, if you have your own machine learning models, use Apple technologies to incorporate them into your app in a way that works well with Apple hardware and the system’s other intelligent features."}
+{"id": "/documentation/technologyoverviews/ai-machine-learning", "law": "Many system frameworks use already trained models to analyze the content you provide and return results."}
+{"id": "/documentation/technologyoverviews/ai-machine-learning", "law": "Train custom machine-learning models using straightforward tools and use them to improve your app’s responses for your specific content."}
+{"id": "/documentation/technologyoverviews/app-design-and-ui", "law": "At the start of every new project, you need to choose an app-builder technology to use for your initial code."}
+{"id": "/documentation/technologyoverviews/app-design-and-ui", "law": "Use SwiftUI to build apps for , , , , , and and the programming language."}
+{"id": "/documentation/technologyoverviews/app-design-and-ui", "law": "Use UIKit to build apps for , , , , and ."}
+{"id": "/documentation/technologyoverviews/app-design-and-ui", "law": "Use AppKit to build apps for ."}
+{"id": "/documentation/technologyoverviews/app-design-and-ui", "law": "No matter which app-builder technology you choose, most of the components you use to build your interface are the same."}
+{"id": "/documentation/technologyoverviews/app-design-and-ui", "law": "Before you build your interface, learn about the different components available to you, and learn how different platforms use those components."}
+{"id": "/documentation/technologyoverviews/app-design-and-ui", "law": "Learn how to leverage Liquid Glass to make sure your interface looks right at home on Apple platforms."}
+{"id": "/documentation/technologyoverviews/app-design-and-ui", "law": "Choose a programming approach to build your app, create your app’s interface, and implement the fundamental behaviors that your app requires."}
+{"id": "/documentation/technologyoverviews/audio-and-video", "law": "You can use Apple technologies to handle multimedia content, whether you’re playing sounds as part of your interface, streaming video from your servers, or creating a professional media-editing app."}
+{"id": "/documentation/technologyoverviews/core-experiences", "law": "Generate notifications to people informed of events that require their attention."}
+{"id": "/documentation/technologyoverviews/data-management", "law": "Make use of someone’s music, contacts, photos, and other personal data in a privacy friendly way."}
+{"id": "/documentation/technologyoverviews/data-management", "law": "All apps use integers, floating-point numbers, strings, URLs, collections, and other primitive types to store data."}
+{"id": "/documentation/technologyoverviews/data-management", "law": "When you use and the framework, you get object-oriented versions of these types that work on all Apple platforms."}
+{"id": "/documentation/technologyoverviews/data-management", "law": "These types also support security and convenience features that make them easier to use in your code."}
+{"id": "/documentation/technologyoverviews/data-management", "law": "You also need to understand some of the special conventions that Apple platforms use to minimize the complexity of the file system for people using Apple devices."}
+{"id": "/documentation/technologyoverviews/data-management", "law": "People use the system apps to manage some of this data, but your app can also contribute to that data in a privacy friendly way."}
+{"id": "/documentation/technologyoverviews/games", "law": "Familiarize yourself with the tools and technologies you use to build games on Apple platforms."}
+{"id": "/documentation/technologyoverviews/games", "law": "Use this setup to from your PC."}
+{"id": "/documentation/technologyoverviews/graphics-drawing-and-animation", "law": "When you want to customize your app’s appearance in ways the standard system views don’t support, draw the content yourself using the system’s drawing technologies."}
+{"id": "/documentation/technologyoverviews/graphics-drawing-and-animation", "law": "Most apps can use a combination of images, text, and standard views to display their content."}
+{"id": "/documentation/technologyoverviews/graphics-drawing-and-animation", "law": "A digital painting app might use custom drawing to reflect mouse or touch input, while a game might draw custom worlds in two or three dimensions."}
+{"id": "/documentation/technologyoverviews/graphics-drawing-and-animation", "law": "Use images in your interface for decoration or to show custom content."}
+{"id": "/documentation/technologyoverviews/graphics-drawing-and-animation", "law": "Use system types to configure the drawing environment, issue drawing commands, and composite the results in one of your views."}
+{"id": "/documentation/technologyoverviews/graphics-drawing-and-animation", "law": "Configure your app for printing and use your existing drawing code to generate the content for an attached printer."}
+{"id": "/documentation/technologyoverviews/hardware-networking-sensors", "law": "The frameworks also help the device owner protect their personal data, keeping them informed of which apps use that data and giving them controls to manage that access."}
+{"id": "/documentation/technologyoverviews/hardware-networking-sensors", "law": "Use sensor-related data as direct input to your app, or as additional context for your app to use when generating content."}
+{"id": "/documentation/technologyoverviews/hardware-networking-sensors", "law": "The system frameworks you use to connect to the Internet let you focus on the tasks you want to perform more than the network connection itself."}
+{"id": "/documentation/technologyoverviews/hardware-networking-sensors", "law": "Use these frameworks to browse the web or fetch resources, communicate with your company’s RESTful endpoints, or implement voice or video conversation tools."}
+{"id": "/documentation/technologyoverviews/hardware-networking-sensors", "law": "Create custom drivers to support the features unique to your company’s accessories, and optimize your code for Apple silicon to take maximum advantage of the available hardware."}
+{"id": "/documentation/technologyoverviews/tools-and-distribution", "law": "Xcode provides the suite of tools you use to create apps."}
+{"id": "/documentation/technologyoverviews/tools-and-distribution", "law": "Start the development process with the Xcode app, which you use to manage your project’s code and resources."}
+{"id": "/documentation/technologyoverviews/tools-and-distribution", "law": "Use the integrated debugger to find and fix issues in your code and verify its behavior."}
+{"id": "/documentation/technologyoverviews/apple-intelligence", "law": "Apple Intelligence is the personal intelligence system behind many built-in capabilities, and you use it to create contextually relevant and personal experiences for people."}
+{"id": "/documentation/technologyoverviews/apple-intelligence", "law": "Customize your app’s content with features like Writing Tools, Image Playgrounds, Visual Intelligence, and Genmoji, which use Apple Intelligence to enhance your content."}
+{"id": "/documentation/technologyoverviews/apple-intelligence", "law": "Include the code for app intents in your app or in an you use to handle interactions when your app isn’t running."}
+{"id": "/documentation/technologyoverviews/apple-intelligence", "law": "To ensure that interactions with the system are fast, make your app entities lightweight and something you can create quickly in your code."}
+{"id": "/documentation/technologyoverviews/apple-intelligence", "law": "Apple Intelligence uses to identify data in your app’s interface, which Siri can use as additional context during a conversation."}
+{"id": "/documentation/technologyoverviews/apple-intelligence", "law": "The system can also retrieve the entities it finds in your app’s , and use them to interact with your content."}
+{"id": "/documentation/technologyoverviews/apple-intelligence", "law": "Display text using the standard text views whenever possible, and use the configuration options to ."}
+{"id": "/documentation/technologyoverviews/apple-intelligence", "law": "Use the Writing Tools API if you have a or can’t use the system text views."}
+{"id": "/documentation/technologyoverviews/apple-intelligence", "law": "For example, use it to generate stylized images for use in your app, such as someone’s profile photo."}
+{"id": "/documentation/technologyoverviews/apple-intelligence", "law": "To , use the same conceptual input."}
+{"id": "/documentation/technologyoverviews/built-in-intelligence", "law": "Adding intelligent features to your app is relatively easy because many Apple frameworks already use on-device models to analyze different types of content for you."}
+{"id": "/documentation/technologyoverviews/built-in-intelligence", "law": "For example, you don’t have to start from zero to ."}
+{"id": "/documentation/technologyoverviews/built-in-intelligence", "law": "Use this framework with audio from prerecorded files or from a live source like a microphone."}
+{"id": "/documentation/technologyoverviews/built-in-intelligence", "law": "If you’re building a music creation app, use sound analysis to identify the instrument someone is playing."}
+{"id": "/documentation/technologyoverviews/built-in-intelligence", "law": "into lexical units — like words or sentences — to ensure correct behavior in multiple script languages."}
+{"id": "/documentation/technologyoverviews/generative-models", "law": "Apple makes its models, so you don’t have to spend time creating and training your own."}
+{"id": "/documentation/technologyoverviews/generative-models", "law": "Use these models to answer general questions, extract structured data, personalize your app’s experience, or implement intelligent features."}
+{"id": "/documentation/technologyoverviews/generative-models", "law": "Focus on the prompts you send to the model initially, and use configuration options to tune the model’s output."}
+{"id": "/documentation/technologyoverviews/generative-models", "law": "Use these models to analyze the text-based content you provide and generate responses."}
+{"id": "/documentation/technologyoverviews/generative-models", "law": "For example, you might use this approach to map the model’s output to a custom data type you use to configure your app."}
+{"id": "/documentation/technologyoverviews/generative-models", "law": "Supplement the model you use with custom to provide the model with information specific to your app."}
+{"id": "/documentation/technologyoverviews/generative-models", "law": "For example, use the to include your app’s content as additional context for the model to consider when generating its response."}
+{"id": "/documentation/technologyoverviews/generative-models", "law": "Use the framework to run deep learning models on a device for tasks like generating text, recognizing images, or transcribing speech."}
+{"id": "/documentation/technologyoverviews/generative-models", "law": "Prepare the data you use to train models with help from the framework."}
+{"id": "/documentation/technologyoverviews/generative-models", "law": "Use Core ML for standard machine learning tasks like decision trees and tabular regression, and for models that don’t need the deep learning capabilities of ."}
+{"id": "/documentation/technologyoverviews/interface-fundamentals", "law": "To build your app’s interface, you can use standard system views, draw content yourself, or mix custom drawing with the standard views."}
+{"id": "/documentation/technologyoverviews/interface-fundamentals", "law": "Every , , and app has at least one , and some platforms let your app display multiple windows simultaneously."}
+{"id": "/documentation/technologyoverviews/interface-fundamentals", "law": "Every and app has at least one scene, and you can create additional scenes to manage distinct experiences."}
+{"id": "/documentation/technologyoverviews/interface-fundamentals", "law": "AppKit apps don’t use scenes."}
+{"id": "/documentation/technologyoverviews/interface-fundamentals", "law": "They also define the architecture that you use to create custom views and display any content you want."}
+{"id": "/documentation/technologyoverviews/interface-fundamentals", "law": "Volumes are a of window that you use to in visionOS."}
+{"id": "/documentation/technologyoverviews/interface-fundamentals", "law": "The app-builder technologies you use to create your app maintain a separation between your app’s data and the views and other interface elements you use to display that data."}
+{"id": "/documentation/technologyoverviews/interface-fundamentals", "law": "Your data model objects are always the source of truth for your app’s content."}
+{"id": "/documentation/technologyoverviews/interface-fundamentals", "law": "When you use SwiftUI, this process is more automatic, but with UIKit and AppKit you synchronize the changes yourself."}
+{"id": "/documentation/technologyoverviews/interface-fundamentals", "law": "You want apps to feel like they belong on a given platform, which might require you to tweak your interface on each platform."}
+{"id": "/documentation/technologyoverviews/liquid-glass", "law": "Be judicious with your use of color in controls and navigation so they stay legible and allow your content to infuse them and shine through."}
+{"id": "/documentation/technologyoverviews/liquid-glass", "law": "Ensure interface elements fit in with software and hardware design across devices."}
+{"id": "/documentation/technologyoverviews/swiftui", "law": "is the best choice for creating new apps, the preferred choice for visionOS apps, and required for watchOS apps."}
+{"id": "/documentation/technologyoverviews/swiftui", "law": "You use this structure to initialize your app’s global data structures."}
+{"id": "/documentation/technologyoverviews/swiftui", "law": "You also use it to declare one or more scenes, where each scene corresponds to part of your app’s interface code."}
+{"id": "/documentation/technologyoverviews/swiftui", "law": "An app with a single main window can use a scene to display that window’s contents."}
+{"id": "/documentation/technologyoverviews/swiftui", "law": "If your app manages documents, you use a scene to specify contents of the document windows."}
+{"id": "/documentation/technologyoverviews/swiftui", "law": "The sample demonstrates how you use data to drive interface changes in a multiplatform app."}
+{"id": "/documentation/technologyoverviews/swiftui", "law": "On a Mac, people interact with your app primarily using the mouse and keyboard, but they can also use the trackpad of a MacBook Pro, an input tablet, or other input devices."}
+{"id": "/documentation/technologyoverviews/swiftui", "law": "Use these features to differentiate your app’s content."}
+{"id": "/documentation/technologyoverviews/swiftui", "law": "Use an in your visionOS app to display content outside of a window or volume."}
+{"id": "/documentation/technologyoverviews/swiftui", "law": "Use these views to create custom content in your interface."}
+{"id": "/documentation/technologyoverviews/uikit-appkit", "law": "and both provide a more traditional approach to creating apps that some people might prefer."}
+{"id": "/documentation/technologyoverviews/uikit-appkit", "law": "The main entry point for a UIKit or AppKit app is the app object, which handles the system-required initialization tasks."}
+{"id": "/documentation/technologyoverviews/uikit-appkit", "law": "Your app delegate is one of many controller objects you use to manage your app’s behavior."}
+{"id": "/documentation/technologyoverviews/uikit-appkit", "law": "UIKit and AppKit use a model-view-controller architecture to manage information."}
+{"id": "/documentation/technologyoverviews/uikit-appkit", "law": "This architecture separates the objects that manage your app’s data from the interface objects you use to present that data."}
+{"id": "/documentation/technologyoverviews/uikit-appkit", "law": "One special data object you use to manage content is the document object."}
+{"id": "/documentation/technologyoverviews/uikit-appkit", "law": "If your app manages document-based content, use the (UIKit) or (AppKit) type to manage your document’s data."}
+{"id": "/documentation/technologyoverviews/uikit-appkit", "law": "You use trait information to make decisions about your content, such as what views to display in your interface."}
+{"id": "/documentation/technologyoverviews/uikit-appkit", "law": "and provide standard views for buttons, text fields, and other views you use as is."}
+{"id": "/documentation/technologyoverviews/uikit-appkit", "law": "You can draw custom content in your views, or use them to organize one or more child views."}
+{"id": "/documentation/technologyoverviews/building-your-macos-game-remotely-from-your-pc", "law": "To avoid disrupting your Windows-based workflow, Apple provides tools to configure a remote Mac to build and debug the macOS version of your game from your PC."}
+{"id": "/documentation/technologyoverviews/building-your-macos-game-remotely-from-your-pc", "law": "Setting up a Mac to build your Windows code remotely requires changes to both the Mac and your PC."}
+{"id": "/documentation/technologyoverviews/building-your-macos-game-remotely-from-your-pc", "law": "To build on both platforms, you must have a CMake-based project, which provides the instructions that both systems need to build your code."}
+{"id": "/documentation/technologyoverviews/building-your-macos-game-remotely-from-your-pc", "law": "Download and install the on your Mac if your build process requires building DXIL shaders."}
+{"id": "/documentation/technologyoverviews/building-your-macos-game-remotely-from-your-pc", "law": "In System Settings, choose General > Sharing, and ensure that both Remote Management and Remote Login are turned on to allow VNC and SSH access, respectively."}
+{"id": "/documentation/technologyoverviews/building-your-macos-game-remotely-from-your-pc", "law": "If your network uses a firewall, make sure it allows Remote Management and Remote Login services, as well as TCP port forwarding over SSH."}
+{"id": "/documentation/technologyoverviews/building-your-macos-game-remotely-from-your-pc", "law": "Microsoft Visual Studio requires this configuration to copy files over the network."}
+{"id": "/documentation/technologyoverviews/building-your-macos-game-remotely-from-your-pc", "law": "With Visual Studio installed and set up, choose Tools > Options > CMake and select “Use CMake presets if available, otherwise use a CMakeSettings.json”."}
+{"id": "/documentation/technologyoverviews/building-your-macos-game-remotely-from-your-pc", "law": "Avoid opening any Visual Studio Solution files."}
+{"id": "/documentation/technologyoverviews/building-your-macos-game-remotely-from-your-pc", "law": "If your project doesn’t currently use CMake, adopt CMake as your native build system or implement a mechanism to drive your current build system through CMake for remote builds."}
+{"id": "/documentation/technologyoverviews/games-technologies", "law": "For example, someone might use their iPhone when travelling or relaxing on the couch, or use their Mac when they’re sitting at their desk."}
+{"id": "/documentation/technologyoverviews/games-technologies", "law": "Encode to run in parallel with so that computations don’t impact graphics rendering."}
+{"id": "/documentation/technologyoverviews/games-technologies", "law": "Make sure you tune your graphics code specifically for Apple silicon: to ensure your code runs well on Apple silicon."}
+{"id": "/documentation/technologyoverviews/games-technologies", "law": "Make sure your code supports virtual memory-page sizes, cache line sizes, variadic functions, memory that’s simultaneously writable and executable, and more."}
+{"id": "/documentation/technologyoverviews/games-technologies", "law": "Write your Metal code to use features like imageblocks, tile shading, and raster order groups."}
+{"id": "/documentation/technologyoverviews/games-technologies", "law": "And if you’re making a game for iPad or iPhone, that game can also run run on Apple Vision Pro in a window and use direct and indirect gestures as input."}
+{"id": "/documentation/technologyoverviews/games-technologies", "law": "Get started by that make up spatial computing, and find out how you use these elements to build your game experiences."}
+{"id": "/documentation/technologyoverviews/games-technologies", "law": "Use to configure game-oriented features, distribute your game for beta testing, and submit builds to App Review."}
+{"id": "/documentation/technologyoverviews/development-process", "law": "Use it to create: that you ship on the App Store that augment system or app-specific features , libraries, and frameworks that contain code for distribution , , , and other types of content Download the latest version of Xcode from the Mac App Store, or from the ."}
+{"id": "/documentation/technologyoverviews/development-process", "law": "Many system frameworks provide Objective-C interfaces, so you can use their functionality in your existing Objective-C code bases to build apps and other types of software."}
+{"id": "/documentation/technologyoverviews/development-process", "law": "Create new projects and use the app to , , , and other project-related resources."}
+{"id": "/documentation/technologyoverviews/development-process", "law": "Each target specifies the list of files to compile and the build settings to use."}
+{"id": "/documentation/technologyoverviews/development-process", "law": "For example, you might build a library first, followed by the app that requires that library."}
+{"id": "/documentation/technologyoverviews/development-process", "law": "Use to simplify the management of , , and other project assets you ship with your code."}
+{"id": "/documentation/technologyoverviews/development-process", "law": "Use to manage string resources, including localized and customized versions of those strings."}
+{"id": "/documentation/technologyoverviews/development-process", "law": "Use your Mac’s keyboard and mouse to simulate input like touch events, gestures, head movements, and other input."}
+{"id": "/documentation/technologyoverviews/development-process", "law": "Whether you use or another system, source management makes it easier for teams to collaborate on the same project."}
+{"id": "/documentation/technologyoverviews/development-process", "law": "Pull requests ensure changes receive proper review and are easier to revert if needed."}
+{"id": "/documentation/technologyoverviews/distribution", "law": "Use App Store Connect to specify detailed information about your apps, and the legal and financial documents Apple needs to pay you for any sales."}
+{"id": "/documentation/technologyoverviews/distribution", "law": "Specifically, use App Store Connect to: you want to sell, and about those apps."}
+{"id": "/documentation/technologyoverviews/distribution", "law": "Create and other to encourage people to download your app or use specific features."}
+{"id": "/documentation/technologyoverviews/distribution", "law": "If you use Xcode Cloud to build your app, to upload your app after a successful build and distribute it to testers or the App Store."}
+{"id": "/documentation/technologyoverviews/testing-and-performance", "law": "In Xcode, to your project and use it to create your initial tests and test suites."}
+{"id": "/documentation/technologyoverviews/testing-and-performance", "law": "You can create any number of unit tests for your app and use them to validate the behavior of specific types or features."}
+{"id": "/documentation/technologyoverviews/testing-and-performance", "law": "To write unit tests for your code, to your project and configure it to use the or framework."}
+{"id": "/documentation/technologyoverviews/testing-and-performance", "law": "Use for any UI tests you create, and for code you write using Swift, Objective-C, and other C-based languages."}
+{"id": "/documentation/technologyoverviews/testing-and-performance", "law": "Create dedicated XCTest types and use them to ."}
+{"id": "/documentation/technologyoverviews/testing-and-performance", "law": "Use this pane to run individual unit tests or groups of unit tests at any time."}
+{"id": "/documentation/technologyoverviews/testing-and-performance", "law": "Like unit tests, you use UI tests to test specific workflows in your app."}
+{"id": "/documentation/technologyoverviews/testing-and-performance", "law": "XCTest provides the types you use to create your tests, and XCUIAutomation works with your app’s to give you references to views and other elements in your interface."}
+{"id": "/documentation/technologyoverviews/testing-and-performance", "law": "Use it to that build your project and run tests automatically in iCloud."}
+{"id": "/documentation/technologyoverviews/testing-and-performance", "law": "You can specify different devices and languages to use during testing, and you can even run custom scripts to handle project-specific actions."}

@@ -1,0 +1,2 @@
+{"id": "/documentation/ImmersiveMediaSupport/authoring-apple-immersive-video", "law": "Running this sample requires a zip file that contains an example QuickTime movie and supporting content."}
+{"id": "/documentation/ImmersiveMediaSupport/processing-apple-immersive-video-with-foveation", "law": "Because it’s impractical to stream that many pixels over even the fastest available networks, AIV can optionally use static foveation to reduce the overall resolution to a streamable 4K, while maintaining most of the perceptual resolution at the original 90 fps."}

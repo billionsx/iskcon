@@ -1,6 +1,15 @@
 # ЗНАНИЕ · индекс по доменам мандата
 Выжимка нормативных положений из снимков разведки. Числа отсюда в tokens.json НЕ переносятся (Д028).
 
+## 3D
+- [`reality-composer-pro`](reality-composer-pro.md) · положений: 1
+
+## App Store
+- [`appstore-whats-new`](appstore-whats-new.md) · положений: 16
+
+## App Store Connect
+- [`asc-help`](asc-help.md) · положений: 4
+
 ## Calendar
 - [`hig-pickers`](hig-pickers.md) · положений: 4
 
@@ -8,6 +17,7 @@
 - [`hig-charting-data`](hig-charting-data.md) · положений: 14
 
 ## Liquid Glass
+- [`videos-design`](videos-design.md) · положений: 1
 - [`wwdc-videos`](wwdc-videos.md) · положений: 1
 
 ## TV
@@ -15,6 +25,10 @@
 
 ## UI/UX
 - [`design-awards`](design-awards.md) · положений: 13
+- [`videos-design`](videos-design.md) · положений: 1
+
+## Wallet
+- [`pass-designer`](pass-designer.md) · положений: 5
 
 ## apple-pay
 - [`hig-apple-pay`](hig-apple-pay.md) · положений: 74
@@ -31,6 +45,9 @@
 - [`doc-updates`](doc-updates.md) · положений: 35
 - [`hig-index`](hig-index.md) · положений: 0
 - [`hig-whats-new`](hig-whats-new.md) · положений: 16
+
+## iOS 27
+- [`dev-download`](dev-download.md) · положений: 3
 
 ## ios27
 - [`apple-newsroom-rss`](apple-newsroom-rss.md) · положений: 0
@@ -54,6 +71,9 @@
 - [`hig-popovers`](hig-popovers.md) · положений: 16
 - [`hig-sheets`](hig-sheets.md) · положений: 19
 
+## visionOS
+- [`reality-composer-pro`](reality-composer-pro.md) · положений: 1
+
 ## анимация
 - [`hig-accessibility`](hig-accessibility.md) · положений: 53
 - [`hig-motion`](hig-motion.md) · положений: 16
@@ -74,6 +94,9 @@
 
 ## вибрации
 - [`hig-haptics`](hig-haptics.md) · положений: 18
+
+## видео
+- [`videos-design`](videos-design.md) · положений: 1
 
 ## геймификация
 - [`app-review-guidelines`](app-review-guidelines.md) · положений: 120
@@ -108,12 +131,22 @@
 ## жесты
 - [`hig-gestures`](hig-gestures.md) · положений: 39
 
+## загрузки
+- [`dev-download`](dev-download.md) · положений: 3
+
 ## иконки
 - [`design-resources`](design-resources.md) · положений: 10
 - [`hig-app-icons`](hig-app-icons.md) · положений: 30
 - [`hig-icons`](hig-icons.md) · положений: 28
+- [`icon-composer`](icon-composer.md) · положений: 2
 - [`sf-symbols`](sf-symbols.md) · положений: 4
 - [`sf-symbols-8`](sf-symbols-8.md) · положений: 4
+
+## инструменты
+- [`dev-download`](dev-download.md) · положений: 3
+- [`icon-composer`](icon-composer.md) · положений: 2
+- [`pass-designer`](pass-designer.md) · положений: 5
+- [`reality-composer-pro`](reality-composer-pro.md) · положений: 1
 
 ## капсулы
 - [`hig-buttons`](hig-buttons.md) · положений: 58
@@ -139,11 +172,15 @@
 - [`hig-layout`](hig-layout.md) · положений: 42
 - [`hig-split-views`](hig-split-views.md) · положений: 18
 - [`hig-widgets`](hig-widgets.md) · положений: 75
+- [`technologies`](technologies.md) · положений: 1
 
 ## маркетинг
 - [`app-review-guidelines`](app-review-guidelines.md) · положений: 120
 - [`app-store-marketing`](app-store-marketing.md) · положений: 108
 - [`apple-newsroom-rss`](apple-newsroom-rss.md) · положений: 0
+- [`appstore-whats-new`](appstore-whats-new.md) · положений: 16
+- [`asc-help`](asc-help.md) · положений: 4
+- [`upcoming-requirements`](upcoming-requirements.md) · положений: 16
 
 ## меню
 - [`hig-toolbars`](hig-toolbars.md) · положений: 34
@@ -178,8 +215,18 @@
 ## полупрозрачность
 - [`hig-materials`](hig-materials.md) · положений: 32
 
+## правила
+- [`dev-help`](dev-help.md) · положений: 1
+- [`dev-programs`](dev-programs.md) · положений: 3
+
+## программа разработчика
+- [`dev-programs`](dev-programs.md) · положений: 3
+
 ## пространственность
 - [`hig-designing-visionos`](hig-designing-visionos.md) · положений: 13
+
+## публикация
+- [`asc-help`](asc-help.md) · положений: 4
 
 ## размытие
 - [`hig-materials`](hig-materials.md) · положений: 32
@@ -194,8 +241,17 @@
 ## реклама
 - [`app-store-marketing`](app-store-marketing.md) · положений: 108
 
+## релиз-ноты
+- [`upcoming-requirements`](upcoming-requirements.md) · положений: 16
+
 ## свечение
 - [`liquid-glass-adoption`](liquid-glass-adoption.md) · положений: 41
+
+## сообщество
+- [`dev-community`](dev-community.md) · положений: 1
+
+## справка
+- [`dev-help`](dev-help.md) · положений: 1
 
 ## спринги
 - [`swiftui-animation`](swiftui-animation.md) · положений: 0
@@ -210,6 +266,12 @@
 
 ## тени
 - [`hig-dark-mode`](hig-dark-mode.md) · положений: 19
+
+## технологии
+- [`technologies`](technologies.md) · положений: 1
+
+## требования
+- [`upcoming-requirements`](upcoming-requirements.md) · положений: 16
 
 ## формы
 - [`hig-text-fields`](hig-text-fields.md) · положений: 11

@@ -1,0 +1,9 @@
+{"id": "/documentation/TipKit/HighlightingAppFeaturesWithTipKit", "law": "The protocol defines the text and imagery that tips use to describe what the features does, as well as the rules for when the tip appears."}
+{"id": "/documentation/TipKit/HighlightingAppFeaturesWithTipKit", "law": "Before tips display, they must load into the app."}
+{"id": "/documentation/TipKit/HighlightingAppFeaturesWithTipKit", "law": "Use this style of tip whenever possible to avoid covering UI elements that people may want to interact with."}
+{"id": "/documentation/TipKit/HighlightingAppFeaturesWithTipKit", "law": "Use this style of tip view if adjusting the underlying layout is undesirable or people don’t need to interact with any controls the tip obscures."}
+{"id": "/documentation/TipKit/HighlightingAppFeaturesWithTipKit", "law": "If you use a popover, consider excluding imagery because the tip already points to the feature being highlighted."}
+{"id": "/documentation/TipKit/HighlightingAppFeaturesWithTipKit", "law": "Buttons present people with additional information and options before they decide whether to use a new feature."}
+{"id": "/documentation/TipKit/HighlightingAppFeaturesWithTipKit", "law": "This sample demonstrates how to use app state to display a tip."}
+{"id": "/documentation/TipKit/HighlightingAppFeaturesWithTipKit", "law": "In this sample, the tip displays if the following rules are satisfied: The event occurs at least once."}
+{"id": "/documentation/TipKit/HighlightingAppFeaturesWithTipKit", "law": "The event occurs with at least three distinct items."}
