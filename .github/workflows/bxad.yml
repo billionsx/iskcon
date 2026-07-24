@@ -84,6 +84,10 @@ jobs:
           command -v 7z >/dev/null || sudo apt-get -yq install p7zip-full >/dev/null
           python3 bxad/bin/bxad.py kit
 
+      - name: "Веб-атлас — кит лендингов Apple (ст. 36.3)"
+        if: steps.kind.outputs.net == 'yes'
+        run: python3 bxad/bin/bxad.py weblab || true
+
       - name: "Сверка — конституция ↔ реестр ↔ знание Apple (ст. 45)"
         run: python3 bxad/bin/bxad.py verify
 
@@ -102,6 +106,19 @@ jobs:
             head -2 "bxad/registry/state/report-$a.md" | tail -1
           done
           exit $rc
+
+      - name: "Кадротека → релиз (одноразовый мост, затем очистка)"
+        if: always()
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          if ls bxad/registry/screens/raw_part_* >/dev/null 2>&1; then
+            cat bxad/registry/screens/raw_part_* > /tmp/Apple_Apps_iOS27.zip
+            REL=$(curl -s -H "Authorization: token $GITHUB_TOKEN" https://api.github.com/repos/${{ github.repository }}/releases/tags/bxad-screens-v1 | python3 -c "import sys,json;print(json.load(sys.stdin).get('id',''))")
+            curl -s -H "Authorization: token $GITHUB_TOKEN" -H "Content-Type: application/zip"               --data-binary @/tmp/Apple_Apps_iOS27.zip               "https://uploads.github.com/repos/${{ github.repository }}/releases/$REL/assets?name=Apple_Apps_iOS27.zip"               -o /tmp/up.json -w "upload HTTP=%{http_code}\n"
+            python3 -c "import json;d=json.load(open('/tmp/up.json'));print('asset:',d.get('state',d.get('message')))"
+            rm -f bxad/registry/screens/raw_part_*
+          fi
 
       - name: "Хроника — коммит состояния в репозиторий"
         if: always()

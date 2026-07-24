@@ -1,0 +1,47 @@
+name: bxad-macos
+on:
+  schedule:
+    - cron: "19 6 * * 2"   # еженедельно, вт — macOS-плечо (устав ст. 49.1)
+  workflow_dispatch:
+concurrency:
+  group: bxad-macos
+  cancel-in-progress: false
+permissions:
+  contents: write
+jobs:
+  arm:
+    runs-on: macos-14
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+      - name: "Установка приложений Apple и опись (ст. 49.1)"
+        run: |
+          mkdir -p bxad/registry/standards/symbols
+          {
+            echo "# macOS-ПЛЕЧО · установленные приложения Apple"
+            echo "Обновлено: $(date -u '+%Y-%m-%d %H:%M UTC')"
+            echo
+            echo "## Xcode (предустановлен на раннере)"
+            xcodebuild -version | sed 's/^/    /'
+            ls /Applications | grep -i xcode | sed 's/^/    /'
+            echo
+            echo "## SF Symbols"
+            if brew install --cask sf-symbols >/dev/null 2>&1; then
+              echo "    установлен: $(ls -d /Applications/SF\ Symbols*.app 2>/dev/null)"
+            else
+              echo "    установка не удалась (честно: см. лог)"
+            fi
+          } > bxad/registry/standards/symbols/APPS.md
+          APP=$(ls -d "/Applications/SF Symbols"*.app 2>/dev/null | head -1)
+          if [ -n "$APP" ]; then
+            NAMES=$(find "$APP" -name "name_availability.plist" | head -1)
+            [ -n "$NAMES" ] && python3 bxad/bin/symbols_dump.py "$NAMES"
+          fi
+      - name: "Хроника"
+        run: |
+          git config user.name "bxad"; git config user.email "ceo@billionsx.com"
+          N=$(python3 -c "import json;print(json.load(open('bxad/registry/standards/symbols/sf-symbols-names.json'))['count'])" 2>/dev/null || echo 0)
+          printf '### %s · macOS-плечо\n- Xcode зафиксирован · SF Symbols установлен · символов выгружено: %s\n\n' "$(date -u '+%Y-%m-%d %H:%M UTC')" "$N" >> bxad/registry/state/CHANGELOG.md
+          git add bxad/registry/standards/symbols bxad/registry/state/CHANGELOG.md
+          git commit -m "bxad: macOS-плечо — приложения и символы" || exit 0
+          for i in 1 2 3 4; do git pull --rebase -q && git push -q && break || sleep 3; done

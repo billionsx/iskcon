@@ -31,7 +31,9 @@ import crawler  # noqa: E402
 import digest as digest_mod  # noqa: E402
 import atlas as atlas_mod  # noqa: E402
 import figkit as figkit_mod  # noqa: E402
+import screens as screens_mod  # noqa: E402
 import study as study_mod  # noqa: E402
+import weblab as weblab_mod  # noqa: E402
 import verify as verify_mod  # noqa: E402
 import lint as lint_mod  # noqa: E402
 
@@ -61,6 +63,12 @@ FOUNDER_MANDATE = {
     "iOS 27 автообновление": "Статья 40 · Рельсы",
     "полная документация developer.apple.com": "Статья 37.1 · Атлас",
     "кит Figma iOS 27": "Статья 36.1 · Кит",
+    "кадротека приложений": "Статья 36.2 · Кадротека",
+    "лендинги и магазин Apple": "Статья 36.3 · Веб-атлас",
+    "платформы (iOS·iPadOS·macOS·tvOS·visionOS·watchOS·App Store·Web)": "Статья 26.2 · Платформенные кодексы",
+    "живой взгляд (не скриншоты)": "Статья 37.3 · Живой взгляд",
+    "macOS-плечо и установка приложений": "Статья 49.1 · macOS-плечо",
+    "Программа-95": "Статья 52 · Программа-95",
     "динамика": "Статья 21.1 · Динамика", "эффекты": "Статья 22.1 · Эффекты",
 }
 
@@ -477,6 +485,48 @@ def cmd_selftest(root: Path) -> int:
     finally:
         shutil.rmtree(tmpk, ignore_errors=True)
 
+    print("SELFTEST · кадротека и веб-атлас (обе стороны)")
+    tmpw = Path(tempfile.mkdtemp(prefix="bxad-w-"))
+    try:
+        (tmpw / "registry" / "state").mkdir(parents=True)
+        (tmpw / "registry" / "state" / "CHANGELOG.md").write_text("", encoding="utf-8")
+        # кадротека: 2×2-кадры — лестница против чужого цвета
+        from PIL import Image as _Im
+        fr = tmpw / "frames" / "TestApp"; fr.mkdir(parents=True)
+        im = _Im.new("RGB", (4, 4), (0, 0, 0))
+        for x in range(2):
+            im.putpixel((x, 0), (0x1C, 0x1C, 0x1E))
+        im.putpixel((3, 3), (0x8E, 0x8E, 0x8E))
+        im.save(fr / "a.PNG")
+        rs = screens_mod.run(tmpw, tmpw / "frames")
+        pj = json.loads((tmpw / "registry" / "screens" / "passports" / "TestApp.json").read_text(encoding="utf-8"))
+        fr0 = pj["frames"][0]
+        check("кадр разобран: лестница посчитана, двойник пойман, адрес screen:",
+              rs["frames"] == 1 and abs(fr0["ladder_share"]["#1C1C1E"] - 2/16) < 1e-6
+              and fr0["forbidden_hits"].get("#8E8E8E") == 1
+              and fr0["at"].startswith("screen:TestApp/"))
+        # веб-атлас: страница+css → паспорт структуры и закон типографики
+        (tmpw / "registry" / "web-sources.json").write_text(json.dumps(
+            {"pages": ["https://www.apple.com/fixture/"]}), encoding="utf-8")
+        fxw = tmpw / "fxw"; fxw.mkdir()
+        (fxw / "www-apple-com-fixture.html").write_text(
+            '<link rel="stylesheet" href="/v/fixture/main.css">'
+            '<section class="section-hero x"></section><section class="section-gallery"></section>'
+            '<a class="button">Buy</a><h1>t</h1><img><video></video>', encoding="utf-8")
+        (fxw / (__import__("crawler")._slug("/v/fixture/main.css") + ".css")).write_text(
+            ".typography-hero-headline{font-size:80px;line-height:1.05;letter-spacing:-0.015em;font-weight:600}",
+            encoding="utf-8")
+        rw = weblab_mod.run(tmpw, fixtures=fxw)
+        wp = json.loads((tmpw / "registry" / "weblab" / "www-apple-com-fixture.json").read_text(encoding="utf-8"))
+        lib = (tmpw / "registry" / "library" / "web-landings.jsonl").read_text(encoding="utf-8")
+        check("лендинг разобран: секции по порядку, CTA/медиа, закон typography с адресом css:",
+              wp["sections"] == ["section-hero", "section-gallery"] and wp["cta"] == 1
+              and rw["typo_laws_new"] == 1 and '"font-size": "80px"' in lib and '"at": "css:main.css:' in lib)
+        rw2 = weblab_mod.run(tmpw, fixtures=fxw)
+        check("законы веб-атласа идемпотентны по адресу", rw2["typo_laws_new"] == 0)
+    finally:
+        shutil.rmtree(tmpw, ignore_errors=True)
+
     print("SELFTEST · конституция (ст. 45: полнота мандата машиной)")
     const_t = (root / "CONSTITUTION.md").read_text(encoding="utf-8")
     missing = [d for d, anchor in FOUNDER_MANDATE.items() if anchor not in const_t]
@@ -564,6 +614,7 @@ def main() -> int:
     sub.add_parser("digest")
     sub.add_parser("verify")
     sub.add_parser("study")
+    sub.add_parser("weblab")
     at = sub.add_parser("atlas")
     at.add_argument("--budget", type=int, default=700)
     kt = sub.add_parser("kit")
@@ -610,6 +661,10 @@ def main() -> int:
         print(f"изученность: статей {r['articles']} · замером {r['measured']} · знанием {r['known']} "
               f"(положений {r['knowledge']}) · 🕳 {r['holes']} · не изучено {len(r['bad'])}")
         return 1 if r["bad"] else 0
+    if a.cmd == "weblab":
+        r = weblab_mod.run(ROOT)
+        print(f"веб-атлас: страниц {r['pages']} · видов секций {r['sections_kinds']} · новых типографических законов {r['typo_laws_new']}")
+        return 0
     if a.cmd == "atlas":
         r = atlas_mod.step(ROOT, budget=a.budget)
         print(f"атлас: пройдено {r['walked']} · очередь {r['frontier']} · всего {r['visited_total']} · "
