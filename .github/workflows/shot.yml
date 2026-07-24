@@ -67,8 +67,9 @@ jobs:
               ".amx-dock", "[data-amx-mini]", ".m-art", ".m-t", ".m-b",
               ".amx-tab", ".amx-tab span", ".amx-scir",
               ".amx-capsule", ".amx-chip", ".amx-row", ".r-num", ".r-c .r-t", ".amx-nav", ".amx-nav .amx-cir",
-              ".amx-pl", ".pl-in", ".pl-art", ".pl-meta", ".pl-meta .mt", ".pl-meta .ms",
-              ".pl-tr", ".pl-tog", ".pl-bar", ".pl-times", ".pl-vol", ".pl-brow", ".amx-cir",
+              ".amx-pl", ".pl-in", ".pl-head", ".pl-grab", ".pl-mid", ".pl-art", ".pl-dots",
+              ".pl-meta", ".pl-meta .mt", ".pl-meta .ms", ".pl-tr", ".pl-tog",
+              ".pl-bar", ".pl-times", ".pl-trans", ".pl-trans button", ".pl-vbar", ".pl-brow", ".pl-brow button", ".amx-cir",
               ".amx-cardw", ".amx-cov", ".cw-t",
           ])
           STATES = {
