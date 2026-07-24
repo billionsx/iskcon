@@ -108,8 +108,17 @@ function Marq({ t, cls }: { t: string; cls: string }) {
 export function MiniPlayer({ onOpen }: { onOpen: () => void }) {
   const p = usePlayer();
   const cur = p.cur;
+  /* В2: мини закрывается свайпом вниз (>60px) — как MiniPlayer:59 боевого.
+     dismiss() останавливает движок; тап по мини по-прежнему раскрывает плеер. */
+  const dragFrom = useRef<number | null>(null);
+  const [drag, setDrag] = useState(0);
   return (
-    <div className="amx-mini" data-amx-mini onClick={() => cur && onOpen()}>
+    <div className="amx-mini" data-amx-mini onClick={() => cur && onOpen()}
+      style={drag > 0 ? { transform: `translateY(${Math.min(drag, 90)}px)`, opacity: Math.max(.25, 1 - drag / 140) } : undefined}
+      onPointerDown={(e) => { dragFrom.current = e.clientY; }}
+      onPointerMove={(e) => { if (dragFrom.current != null) { const d = e.clientY - dragFrom.current; if (d > 6) setDrag(d); } }}
+      onPointerUp={() => { const d = drag; dragFrom.current = null; setDrag(0); if (d > 60) p.dismiss(); }}
+      onPointerCancel={() => { dragFrom.current = null; setDrag(0); }}>
       {cur && p.playing !== undefined && (p.playing || p.pos > 0) ? (
         <Cover id={cur.id} src={cur.cov} cls="m-art sm" />
       ) : (
