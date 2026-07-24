@@ -23,6 +23,13 @@ def _kn(root: Path, sid: str) -> str:
     return f.read_text(encoding="utf-8") if f.exists() else ""
 
 
+def _txt(root: Path, sid: str) -> str:
+    """Текст Apple целиком: выжимка + снимок. Сверка вправе читать сырец —
+    короткое имя параметра законно живёт в снимке, не пройдя порог выжимки."""
+    s = root / "registry" / "snapshots" / f"{sid}.txt"
+    return _kn(root, sid) + (s.read_text(encoding="utf-8", errors="replace") if s.exists() else "")
+
+
 def run(root: Path) -> dict:
     tk = json.loads((root / "registry" / "standards" / "tokens.json").read_text(encoding="utf-8"))
     const = (root / "CONSTITUTION.md").read_text(encoding="utf-8")
@@ -77,7 +84,7 @@ def run(root: Path) -> dict:
     sym_kn = _kn(root, "sf-symbols") + _kn(root, "hig-icons")
     row("Б", "ст. 11", "SF Symbols как родной язык знаков",
         "ПОДТВЕРЖДЕНО ЗНАНИЕМ" if "SF Symbols" in sym_kn else "БАЗА")
-    spr_kn = _kn(root, "swiftui-animation") + _kn(root, "swiftui-spring")
+    spr_kn = _txt(root, "swiftui-animation") + _txt(root, "swiftui-spring")
     row("Б", "ст. 21.1", "спринги платформы документированы (bounce/dampingFraction)",
         "ПОДТВЕРЖДЕНО ЗНАНИЕМ" if re.search(r"bounce|dampingFraction", spr_kn, re.I)
         else "ДОЗОР ДОБАВЛЕН — ждёт обхода")
