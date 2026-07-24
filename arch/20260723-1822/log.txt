@@ -1,5 +1,0 @@
-ключ /__shot синхронизирован с D1
-— player: /play?shot=player&book=bg&ch=1
-  ✓ кадр 1455 КБ · где: https://iskcon-web.ceo-5cb.workers.dev/play · amx=True текста=6259 · селекторов=18
-НЕ СНЯТО: —
-rc=0
