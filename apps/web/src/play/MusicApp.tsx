@@ -7,6 +7,11 @@ import { I, Menu, MItem, MQuick, ScrollCtx, mutate, storeNow, useStore, shuffled
 import { ALL_SONGS, Song } from "./data";
 import { FullPlayer, MiniPlayer, PlayerProvider, usePlayer } from "./player";
 import { usePlayer as useCore } from "../player/store";
+
+/* Параметры съёмки захватываются СИНХРОННО при загрузке модуля: эффект
+   нормализации истории заменяет URL раньше, чем успевает отработать эффект
+   съёмки, и query исчезала (плеер переставал открываться в кадре). */
+const SHOT_QS = typeof window !== "undefined" ? window.location.search : "";
 import {
   FindScreen, GenreScreen, HomeScreen, HubScreen, LinksScreen, NewScreen,
   BookScreen, PlistScreen, RadioScreen, SearchTab, ShowScreen, SongsScreen,
@@ -115,7 +120,7 @@ function Shell() {
   const shotDone = useRef(false);
   useEffect(() => {
     if (shotDone.current) return;
-    const q = new URLSearchParams(window.location.search);
+    const q = new URLSearchParams(SHOT_QS);
     const shot = q.get("shot");
     if (!shot) return;
     shotDone.current = true;
