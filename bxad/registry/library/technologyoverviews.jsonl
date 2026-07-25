@@ -156,3 +156,13 @@
 {"id": "/documentation/technologyoverviews/testing-and-performance", "law": "XCTest provides the types you use to create your tests, and XCUIAutomation works with your app’s to give you references to views and other elements in your interface."}
 {"id": "/documentation/technologyoverviews/testing-and-performance", "law": "Use it to that build your project and run tests automatically in iCloud."}
 {"id": "/documentation/technologyoverviews/testing-and-performance", "law": "You can specify different devices and languages to use during testing, and you can even run custom scripts to handle project-specific actions."}
+{"id": "/documentation/TechnologyOverviews/adopting-liquid-glass", "law": "As you review your app, use the following sections to understand the scope of changes and learn how you can adopt these best practices in your interface."}
+{"id": "/documentation/TechnologyOverviews/adopting-liquid-glass", "law": "Reduce your use of custom backgrounds in controls and navigation elements."}
+{"id": "/documentation/TechnologyOverviews/adopting-liquid-glass", "law": "Any custom backgrounds and appearances you use in these elements might overlay or interfere with Liquid Glass or other effects that the system provides, such as the scroll edge effect."}
+{"id": "/documentation/TechnologyOverviews/adopting-liquid-glass", "law": "Make sure to check any custom backgrounds in elements like split views, tab bars, and toolbars."}
+{"id": "/documentation/TechnologyOverviews/adopting-liquid-glass", "law": "Prefer to remove custom effects and let the system determine the background appearance, especially for the following elements: Test your interface with a variety of display and accessibility settings."}
+{"id": "/documentation/TechnologyOverviews/adopting-liquid-glass", "law": "For example, people can choose a preferred look for Liquid Glass in their device’s settings, or turn on accessibility settings that reduce transparency or motion in the interface."}
+{"id": "/documentation/TechnologyOverviews/adopting-liquid-glass", "law": "If you use standard components from system frameworks, this experience adapts automatically."}
+{"id": "/documentation/TechnologyOverviews/adopting-liquid-glass", "law": "Ensure you test your app’s custom elements, colors, and animations with different configurations of these settings."}
+{"id": "/documentation/TechnologyOverviews/adopting-liquid-glass", "law": "Avoid overusing Liquid Glass effects."}
+{"id": "/documentation/TechnologyOverviews/adopting-liquid-glass", "law": "Keep elements centered to avoid clipping."}

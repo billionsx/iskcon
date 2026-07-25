@@ -7,3 +7,9 @@
 {"id": "/documentation/DriverKit/IOService/RegisterService", "sha": "5d89e14031f9fcc5563f84efb91c22261131debc42732e90157438b45d6b9c8a", "t": "RegisterService", "n": 315, "laws": 0, "ts": "2026-07-25 18:12 UTC"}
 {"id": "/documentation/cinematic/cnscript-1ispe", "sha": "cc30debdf8280a5426812525cf4335f493ef35548ea5e1229fd4cedc677ad0d3", "t": "CNScript", "n": 1357, "laws": 0, "ts": "2026-07-25 18:16 UTC"}
 {"id": "/documentation/foundation/nsubiquitouskeyvaluestorechangedkeyskey", "sha": "7b0f0dac2d0e914c655d7ca04bf8c933fc32d99349fa5d90dc5112330b88403c", "t": "NSUbiquitousKeyValueStoreChangedKeysKey", "n": 329, "laws": 0, "ts": "2026-07-25 18:31 UTC"}
+{"id": "/documentation/mediaaccessibility", "sha": "f2f3fbcae88b564896cdf25e9cd1ef8c5c614578a8ba62b0994f86400041903e", "t": "Media Accessibility", "n": 571, "laws": 0, "ts": "2026-07-25 23:03 UTC"}
+{"id": "/documentation/metal/mtlattributestridestatic", "sha": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855", "t": "MTLAttributeStrideStatic", "n": 0, "laws": 0, "ts": "2026-07-25 23:06 UTC"}
+{"id": "/documentation/network/nwprotocolwebsocket", "sha": "25c2deaf4d4e007cbcd5980d4f22182471741c873d471e64fc90c6b1666e09b6", "t": "NWProtocolWebSocket", "n": 338, "laws": 1, "ts": "2026-07-25 23:09 UTC"}
+{"id": "/documentation/safariservices", "sha": "d317c23c206dd0a8092a24d517c001bcd46e72465734e85e6e272153b795b83a", "t": "Safari Services", "n": 2063, "laws": 1, "ts": "2026-07-25 23:18 UTC"}
+{"id": "/documentation/safariservices/syncing-safari-web-extensions-across-devices-and-platforms", "sha": "274869d69773ca1390981d5b9d65acb42877d7f92a5c568f49a9fe0b23a0f3fa", "t": "Syncing Safari web extensions across devices and platforms", "n": 3020, "laws": 4, "ts": "2026-07-25 23:18 UTC"}
+{"id": "/documentation/swiftui/animation/default", "sha": "e6bfa6506bf61ecb785cb2a348d9f3378651d52caac8db9879c9e578022ade73", "t": "default", "n": 1031, "laws": 3, "ts": "2026-07-25 23:24 UTC"}

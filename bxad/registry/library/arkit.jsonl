@@ -428,3 +428,5 @@
 {"id": "/documentation/ARKit/ARSession", "law": "Every AR experience requires an ."}
 {"id": "/documentation/ARKit/ARSession", "law": "If you use one of the standard renderers (like , , or ), the renderer creates a session object for you."}
 {"id": "/documentation/ARKit/ARSession", "law": "Running a session requires a configuration."}
+{"id": "/documentation/ARKit/ARWorldTrackingConfiguration/sceneReconstruction", "law": "Before setting this property, call to ensure device support."}
+{"id": "/documentation/ARKit/ARWorldTrackingConfiguration/supportsSceneReconstruction(_:)", "law": "Scene reconstruction requires a device with a LiDAR Scanner, such as the fourth-generation iPad Pro."}

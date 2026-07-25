@@ -1,23 +1,23 @@
 {
  "url": "https://www.apple.com/iphone-17-pro/",
  "sections": [
-  "section",
-  "section",
-  "section",
-  "section",
-  "section",
-  "section",
-  "section",
-  "section",
-  "section",
-  "section",
-  "section",
-  "section",
-  "section",
-  "section",
-  "section",
-  "section",
-  "section"
+  "section-welcome",
+  "section-highlights",
+  "section-design",
+  "section-product-viewer",
+  "section-cameras",
+  "section-performance",
+  "section-shared-features",
+  "section-upgrade",
+  "section-accessories",
+  "section-upgrade-banner",
+  "section-incentive",
+  "section-incentive-alt",
+  "section-contrast",
+  "section-environment",
+  "section-values",
+  "section-faq",
+  "section-index"
  ],
  "modules": [
   "name:hero",
@@ -65,5 +65,5 @@
   "/v/iphone-17-pro/g/built/styles/overview.built.css",
   "/ac/ac-films/7.5.1/styles/modal.css"
  ],
- "typography_laws": 0
+ "typography_laws": 2
 }

@@ -8,3 +8,4 @@
 {"id": "/documentation/authenticationservices/asauthorizationappleidprovider", "sha": "7dea56fb697787cddf2a4d2d0664c491348f269cf8bcff085594eac2f281a91c", "t": "ASAuthorizationAppleIDProvider", "n": 828, "laws": 2, "ts": "2026-07-25 18:14 UTC"}
 {"id": "/documentation/coremidi/midiclientref", "sha": "2eef85e3db31dc025dc1d873f0c06a5cdc39adb8166cc32d9cdf12f88bf9bb35", "t": "MIDIClientRef", "n": 121, "laws": 0, "ts": "2026-07-25 18:21 UTC"}
 {"id": "/documentation/coreml/updating-a-model-file-to-a-model-package", "sha": "160cb82b96e11ad5d897e4615b19b10ab7ff6c0cebdc6b3f7dd6a0c7fe368e26", "t": "Updating a Model File to a Model Package", "n": 1233, "laws": 0, "ts": "2026-07-25 18:22 UTC"}
+{"id": "/documentation/Security/kSecUseAuthenticationUISkip", "sha": "5f431276427563b21aa38b79079a344f1599e47f33b035bd4d0d9fca128146c1", "t": "kSecUseAuthenticationUISkip", "n": 188, "laws": 3, "ts": "2026-07-25 23:00 UTC"}

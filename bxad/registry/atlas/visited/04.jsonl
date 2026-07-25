@@ -5,3 +5,10 @@
 {"id": "/documentation/UIKit/UIDynamicAnimator", "sha": "77808418425f3ffcf5322af64beccdc69078eb1df7f046d3b7977e8c144a21e5", "t": "UIDynamicAnimator", "n": 4620, "laws": 6, "ts": "2026-07-25 18:20 UTC"}
 {"id": "/documentation/Foundation/URL/startAccessingSecurityScopedResource()", "sha": "9bd7ab97182b026af6d48ec87a69462d98aa06a08de69099db1fa6313f2980fd", "t": "startAccessingSecurityScopedResource()", "n": 1284, "laws": 4, "ts": "2026-07-25 18:29 UTC"}
 {"id": "/documentation/foundation/nsuseractivity", "sha": "e287d824e939f3b9f00eac8977cd8b90fa6ed6d0cd430d4d6a67464fa066f07d", "t": "NSUserActivity", "n": 4974, "laws": 4, "ts": "2026-07-25 18:30 UTC"}
+{"id": "/documentation/Security/errSecDuplicateItem", "sha": "aa190e7f33d5260f73ec03b44be1ab53458a476c607eb2bb5dcfb761861557e0", "t": "errSecDuplicateItem", "n": 952, "laws": 0, "ts": "2026-07-25 23:00 UTC"}
+{"id": "/documentation/metal/mtlrendercommandencoder/setfragmenttexture(_:index:)", "sha": "18d0363cbd4ed2ea6c3b7a60526d9ba7d0b2d3076789fd6db05e6249650d725b", "t": "setFragmentTexture(_:index:)", "n": 125, "laws": 0, "ts": "2026-07-25 23:06 UTC"}
+{"id": "/documentation/realitykit/unlitmaterial", "sha": "cb3cd3ed6451e9c66528a29d678fee95ad5545acf8b5e8d0ebb22f479a45ed9f", "t": "UnlitMaterial", "n": 1118, "laws": 2, "ts": "2026-07-25 23:15 UTC"}
+{"id": "/documentation/replaykit/rppreviewviewcontroller", "sha": "b401ddfbe6fc9b0dc8f8f05cecea53b7888ec896aa2d76d07cc527d4e90319fe", "t": "RPPreviewViewController", "n": 371, "laws": 0, "ts": "2026-07-25 23:18 UTC"}
+{"id": "/documentation/swiftui/keyframeanimator", "sha": "0a433ffccdd0426429e7822dbdc148dfe8a6a2495a8306cdd53b94dffd669ed7", "t": "KeyframeAnimator", "n": 302, "laws": 1, "ts": "2026-07-25 23:24 UTC"}
+{"id": "/documentation/swiftui/view/environment(_:_:)", "sha": "9b303d07d3f3685e839f9c8b166ff09a1f1a20f838b9dfb5e31171a0f15f25f0", "t": "environment(_:_:)", "n": 806, "laws": 1, "ts": "2026-07-25 23:26 UTC"}
+{"id": "/documentation/WeatherKit/WeatherService", "sha": "f01ce2fd30336f92f0fd443f6a7d3bcece230b7f7750af4e07eca68b7102b36a", "t": "WeatherService", "n": 852, "laws": 0, "ts": "2026-07-25 23:27 UTC"}

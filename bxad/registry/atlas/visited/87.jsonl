@@ -12,3 +12,8 @@
 {"id": "/documentation/AudioToolbox/AudioUnitElement", "sha": "45e6fa2aebd3dc635c96b636f7a93447bae1d7813c10076fcb055e3fe5aa4dff", "t": "AudioUnitElement", "n": 467, "laws": 1, "ts": "2026-07-25 18:12 UTC"}
 {"id": "/documentation/foundation/nsuseractivity/userinfo", "sha": "d54a24580533fadaeb36d2ff1dd083c04584d08c7aa313b748e2a12d5af3c7b7", "t": "userInfo", "n": 306, "laws": 1, "ts": "2026-07-25 18:31 UTC"}
 {"id": "/documentation/groupactivities/adding-spatial-persona-support-to-an-activity", "sha": "4a86c6a851a5e53a6760a8eb6513c2b70cfdf9768adc4df7f33f0919ce566750", "t": "Adding spatial Persona support to an activity", "n": 11380, "laws": 10, "ts": "2026-07-25 18:34 UTC"}
+{"id": "/documentation/mapkitjs/itemcollection", "sha": "acaabd4c2f6ba04763c16d4bf368252e3718be693a7dae22f4f21b0d09e95fcb", "t": "ItemCollection", "n": 235, "laws": 1, "ts": "2026-07-25 23:03 UTC"}
+{"id": "/documentation/metal/drawing-a-triangle-with-metal-4", "sha": "f5d0123a0a8ccd56eb36b3ad22d2ebacb9f5b62924e5794d016c284d963f7b8c", "t": "Drawing a triangle with Metal 4", "n": 11902, "laws": 2, "ts": "2026-07-25 23:03 UTC"}
+{"id": "/documentation/metal/shader-libraries", "sha": "29469a842c45c9c47eeb1e9e95a0ab30a282dc43476c89064d166643ca278eb1", "t": "Shader libraries", "n": 4859, "laws": 2, "ts": "2026-07-25 23:04 UTC"}
+{"id": "/documentation/realitykit/shaperesource", "sha": "5b95e8d6dcc077a5cebacca920b283d933dcaf143ef9ebab6d51cac94badf016", "t": "ShapeResource", "n": 578, "laws": 0, "ts": "2026-07-25 23:14 UTC"}
+{"id": "/documentation/storekit/subscriptionstatus", "sha": "e444db14a3728997e7aed517701c8369959d12a71a58cc9a91412035637777cb", "t": "SubscriptionStatus", "n": 77, "laws": 0, "ts": "2026-07-25 23:21 UTC"}

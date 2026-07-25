@@ -1,26 +1,26 @@
 {
  "url": "https://www.apple.com/mac-studio/",
  "sections": [
-  "section",
-  "section",
-  "section",
-  "section",
-  "section",
-  "section",
-  "section",
-  "section",
-  "section",
-  "section",
-  "section",
-  "section",
-  "section",
-  "section",
-  "section",
-  "section",
-  "section",
-  "section",
-  "section",
-  "section"
+  "section-hero",
+  "section-performance",
+  "section-mx-max",
+  "section-mx-max",
+  "section-mx-max",
+  "section-mx-ultra",
+  "section-mx-ultra",
+  "section-mx-ultra",
+  "section-apple-intelligence",
+  "section-privacy",
+  "section-design",
+  "section-thermals",
+  "section-connectivity",
+  "section-ports",
+  "section-studio-display",
+  "section-accessories",
+  "section-macos",
+  "section-routers",
+  "section-decarbonizing",
+  "section-values-router"
  ],
  "modules": [
   "name:hero",
@@ -61,5 +61,5 @@
   "/v/mac-studio/m/built/styles/overview.built.css",
   "/ac/ac-films/7.5.1/styles/modal.css"
  ],
- "typography_laws": 0
+ "typography_laws": 2
 }

@@ -1,27 +1,27 @@
 {
  "url": "https://www.apple.com/imac/",
  "sections": [
-  "section",
-  "section",
-  "section",
-  "section",
-  "section",
-  "section",
-  "section",
-  "section",
-  "section",
-  "section",
-  "section",
-  "section",
-  "section",
-  "section",
-  "section",
-  "section",
-  "section",
-  "section",
-  "section",
-  "section",
-  "section"
+  "section-welcome",
+  "section-highlights",
+  "section-closer-look",
+  "section-product-stories",
+  "section-apple-intelligence",
+  "section-performance",
+  "section-display",
+  "section-camera-mics-speakers",
+  "section-product-story-modal",
+  "section-apps",
+  "section-imac-iphone",
+  "section-imac-iphone-modal",
+  "section-new-to-mac",
+  "section-connections",
+  "section-accessories",
+  "section-upgraders",
+  "section-incentive",
+  "section-contrast",
+  "section-decarbonizing",
+  "section-values-router",
+  "section-index"
  ],
  "modules": [
   "name:hero",
@@ -68,5 +68,5 @@
   "/v/imac/v/built/styles/overview.built.css",
   "/ac/ac-films/7.5.1/styles/modal.css"
  ],
- "typography_laws": 0
+ "typography_laws": 2
 }

@@ -12,3 +12,6 @@
 {"id": "/documentation/foundation/task-management", "sha": "3c22335f43b042fa7d6be0e446f377f05d19946f49f661b89bc2e07d623278da", "t": "Task Management", "n": 829, "laws": 0, "ts": "2026-07-25 18:30 UTC"}
 {"id": "/documentation/gamecontroller", "sha": "0e6a6e88ba7ef2da9c2f934ea6daf2cb26a4ecd3f31573a7daae50f65398aecd", "t": "Game Controller", "n": 3569, "laws": 3, "ts": "2026-07-25 18:33 UTC"}
 {"id": "/documentation/gamekit/gkmatchdelegate/match(_:didreceive:fromremoteplayer:)", "sha": "98a1af7f08533df9bc452676d375731cdd766d405d5524b50831c6af761f133d", "t": "match(_:didReceive:fromRemotePlayer:)", "n": 366, "laws": 1, "ts": "2026-07-25 18:33 UTC"}
+{"id": "/documentation/ObjectiveC/NSObject-swift.class/validateMenuItem:", "sha": "2962b78a9830d18cb239c9ec81c0ce8e7e9fc066dc7ec087d90a787d1648134e", "t": "validateMenuItem:", "n": 596, "laws": 1, "ts": "2026-07-25 23:13 UTC"}
+{"id": "/documentation/realitykit/physicsbodymode/dynamic", "sha": "4b0038b83b51a4d7960b05b2fc82d91cb8a2b5159743dc9b7ca4ce64853fc57b", "t": "PhysicsBodyMode.dynamic", "n": 44, "laws": 0, "ts": "2026-07-25 23:17 UTC"}
+{"id": "/documentation/swiftdata/filtering-and-sorting-persistent-data", "sha": "6e0a8684392785f0c2fa7e3ae71121760fa902a4367d9e404a185bdd8fe61d4b", "t": "Filtering and sorting persistent data", "n": 4037, "laws": 2, "ts": "2026-07-25 23:23 UTC"}

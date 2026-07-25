@@ -1,13 +1,13 @@
 {
  "url": "https://www.apple.com/racial-equity-justice-initiative/",
  "sections": [
-  "section",
-  "section",
-  "section",
-  "section",
-  "section",
-  "section",
-  "section"
+  "section-hero",
+  "section-education",
+  "section-economic",
+  "section-criminal-justice",
+  "section-resources",
+  "section-newsroom",
+  "section-values"
  ],
  "modules": [
   "name:hero",
@@ -33,5 +33,5 @@
   "/v/racial-equity-justice-initiative/d/built/styles/main.built.css",
   "/v/racial-equity-justice-initiative/d/built/styles/overview.built.css"
  ],
- "typography_laws": 0
+ "typography_laws": 2
 }

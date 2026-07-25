@@ -10,3 +10,8 @@
 {"id": "/documentation/ClassKit/CLSContext", "sha": "d8a662a437d333d7fa090d7aba191a6aae4a3e869fbdfd7e0cfae318c4f8278e", "t": "CLSContext", "n": 1712, "laws": 0, "ts": "2026-07-25 18:16 UTC"}
 {"id": "/documentation/evaluations/toolexpectation", "sha": "cf780c036fb43b4bab880ea830cd6be475f21a5257787d40af8ade993e9dc4ec", "t": "ToolExpectation", "n": 533, "laws": 0, "ts": "2026-07-25 18:27 UTC"}
 {"id": "/documentation/foundation/nsuseractivity/iseligibleforsearch", "sha": "f099126fa0369cf302578ea955313c45d64c8ed01fb2cf5f586e272ad7dcf755", "t": "isEligibleForSearch", "n": 1148, "laws": 2, "ts": "2026-07-25 18:30 UTC"}
+{"id": "/documentation/photosui/phpickerfilter-swift.struct/cinematicvideos", "sha": "126ee855b198c92d826415bfc6fc0de98966a174176d6c8eb48136297d21be71", "t": "cinematicVideos", "n": 84, "laws": 0, "ts": "2026-07-25 23:12 UTC"}
+{"id": "/documentation/realitykit/lowlevelmesh/descriptor-swift.struct", "sha": "6e82ab0cc21e1bd170ba411b672fa8e796afd33ee79366bf23f9e0f7031f6e72", "t": "LowLevelMesh.Descriptor", "n": 606, "laws": 0, "ts": "2026-07-25 23:15 UTC"}
+{"id": "/documentation/Intents/INPersonResolutionResult/confirmationRequired(with:)", "sha": "9053436a950f779694b872c5f2e82e1fca17a6a441c2938a7f7979a27f599e90", "t": "confirmationRequired(with:)", "n": 263, "laws": 2, "ts": "2026-07-25 23:19 UTC"}
+{"id": "/documentation/swiftui/drag-and-drop", "sha": "d66f4cd83185501d99c178d421251b82e8b8c7b3a02acdb7c21cc470003af490", "t": "Drag and drop", "n": 2140, "laws": 1, "ts": "2026-07-25 23:23 UTC"}
+{"id": "/documentation/swiftui/view/dropdestination(for:action:istargeted:)", "sha": "1f8a31d9ee4e82fbe8ff4852991751c531f9ca9767b81e548b064d1c874a0669", "t": "dropDestination(for:action:isTargeted:)", "n": 378, "laws": 0, "ts": "2026-07-25 23:23 UTC"}

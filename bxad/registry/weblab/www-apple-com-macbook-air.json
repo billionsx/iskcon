@@ -1,11 +1,11 @@
 {
  "url": "https://www.apple.com/macbook-air/",
  "sections": [
-  "section",
-  "section",
-  "section",
-  "section",
-  "section"
+  "section-hero",
+  "section-highlights",
+  "section-routers",
+  "section-decarbonizing",
+  "section-values-router"
  ],
  "modules": [
   "name:hero",
@@ -56,5 +56,5 @@
   "/v/macbook-air/z/built/styles/main.built.css",
   "/v/macbook-air/z/built/styles/overview.built.css"
  ],
- "typography_laws": 0
+ "typography_laws": 2
 }

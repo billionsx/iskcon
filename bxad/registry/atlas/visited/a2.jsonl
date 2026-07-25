@@ -10,3 +10,8 @@
 {"id": "/documentation/audiotoolbox/kaudiounitsubtype_remoteio", "sha": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855", "t": "kAudioUnitSubType_RemoteIO", "n": 0, "laws": 0, "ts": "2026-07-25 18:13 UTC"}
 {"id": "/documentation/Foundation/OperationQueue", "sha": "52f4968081d80e6e81eb00c489b58bd7309149eab0d10c5a2766a0437ae6f40e", "t": "OperationQueue", "n": 4511, "laws": 9, "ts": "2026-07-25 18:17 UTC"}
 {"id": "/documentation/CoreImage/CILinearGradient", "sha": "09850d011ab57ad554dbc0e700e47355641b4f193823da44ddd3cc0bd0720fc0", "t": "CILinearGradient", "n": 116, "laws": 1, "ts": "2026-07-25 18:21 UTC"}
+{"id": "/documentation/healthkit/reading-data-from-healthkit", "sha": "f22984574d43482b8fff4a8d2a87d6e691b6188ba5a5b7e06a6c19d44da9e991", "t": "Reading data from HealthKit", "n": 4821, "laws": 10, "ts": "2026-07-25 22:58 UTC"}
+{"id": "/documentation/HomeKit/HMAccessoryCategory", "sha": "5b4dc3e67200c11b29e40c95fc7092a930731a3b118177aaaf13877740710faf", "t": "HMAccessoryCategory", "n": 692, "laws": 2, "ts": "2026-07-25 22:59 UTC"}
+{"id": "/documentation/networkextension/neapppushmanager", "sha": "d7826da125553f5d58e58303c14d5bc094b4cbd507a94520f996d494b61ff5d7", "t": "NEAppPushManager", "n": 989, "laws": 0, "ts": "2026-07-25 23:10 UTC"}
+{"id": "/documentation/Intents/INCancelWorkoutIntentHandling", "sha": "493d098fecc270e5743742ec596dafde4daceb621afa42ff8249ba1ed9651b7f", "t": "INCancelWorkoutIntentHandling", "n": 726, "laws": 2, "ts": "2026-07-25 23:20 UTC"}
+{"id": "/documentation/swiftui/view/backgroundextensioneffect()", "sha": "61f2c3f348968e1fa348391ab87b906235a7a200707a9b8a53e6f926a791d037", "t": "backgroundExtensionEffect()", "n": 846, "laws": 3, "ts": "2026-07-25 23:25 UTC"}

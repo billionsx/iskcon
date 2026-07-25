@@ -1,18 +1,18 @@
 {
  "url": "https://www.apple.com/airpods-4/",
  "sections": [
-  "section",
-  "section",
-  "section",
-  "section",
-  "section",
-  "section",
-  "section",
-  "section",
-  "section",
-  "section",
-  "section",
-  "section"
+  "section-welcome",
+  "section-media-card",
+  "section-bento-gallery",
+  "section-product-stories",
+  "section-new-audio-experience",
+  "section-anc",
+  "section-redesigned",
+  "section-charging",
+  "section-magic",
+  "section-icon-card-gallery",
+  "section-contrast",
+  "section-index"
  ],
  "modules": [
   "name:hero",
@@ -50,5 +50,5 @@
   "/v/airpods-4/g/built/styles/overview.built.css",
   "/ac/ac-films/7.5.1/styles/modal.css"
  ],
- "typography_laws": 0
+ "typography_laws": 2
 }

@@ -9,3 +9,6 @@
 {"id": "/documentation/avkit/avcontentproposalviewcontroller", "sha": "8c3d58a10e0a4d73fa739a9c95429bd1cf3fa2b7030790edcaea86f339ff3ead", "t": "AVContentProposalViewController", "n": 442, "laws": 0, "ts": "2026-07-24 19:08 UTC"}
 {"id": "/documentation/appkit/nstouchbar", "sha": "13df5e594ede3a4c1e129132d6916aba7b6604070865e9ab1ab4045aa7e11399", "t": "NSTouchBar", "n": 24661, "laws": 10, "ts": "2026-07-25 18:09 UTC"}
 {"id": "/documentation/Combine/Subject/send(_:)", "sha": "872ed94a3a8617291dd9a4d00773ad1585df4923438e2983ce69cba074cfc9d8", "t": "send(_:)", "n": 32, "laws": 0, "ts": "2026-07-25 18:24 UTC"}
+{"id": "/documentation/AppKit/NSView/viewDidMoveToWindow()", "sha": "4a0fe44836d5fab42cd3e63e36f32506fa9a880ab3fc19d35b517b3c680003a4", "t": "viewDidMoveToWindow()", "n": 335, "laws": 0, "ts": "2026-07-25 23:04 UTC"}
+{"id": "/documentation/realitykit/system", "sha": "7d98f0606ab6a6ab2fa598fb94bc9262bea6a2b1a2d517dbcbdd68df3ae55d01", "t": "System", "n": 2137, "laws": 3, "ts": "2026-07-25 23:13 UTC"}
+{"id": "/documentation/SwiftUI/Gesture/targetedToEntity(_:)", "sha": "88f0e730c4a6ecab5645b37b55cc628bd3542c542cbc7935bade4e6f02416190", "t": "targetedToEntity(_:)", "n": 162, "laws": 1, "ts": "2026-07-25 23:14 UTC"}

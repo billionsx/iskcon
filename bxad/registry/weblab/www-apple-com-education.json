@@ -1,12 +1,12 @@
 {
  "url": "https://www.apple.com/education/",
  "sections": [
-  "section",
-  "section",
-  "section",
-  "section",
-  "section",
-  "section"
+  "section-welcome",
+  "section-film-banner",
+  "section-pillar",
+  "section-education-path",
+  "section-real-stories",
+  "section-how-to-buy"
  ],
  "modules": [
   "name:hero",
@@ -37,5 +37,5 @@
   "/v/education/home/al/built/styles/overview.built.css",
   "/ac/ac-films/7.5.1/styles/modal.css"
  ],
- "typography_laws": 0
+ "typography_laws": 2
 }

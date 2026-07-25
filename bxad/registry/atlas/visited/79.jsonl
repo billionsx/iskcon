@@ -9,3 +9,9 @@
 {"id": "/documentation/cinematic", "sha": "d1d7f7af0fb1c85a188eb9667ca306a5eb6752d02eb7655bc34bfb67ca5359cd", "t": "Cinematic", "n": 1131, "laws": 0, "ts": "2026-07-25 18:16 UTC"}
 {"id": "/documentation/Observation/Observable", "sha": "6890c0260ce46ea7f8861854e39ae8421d421d9b6f512cff693de8ef435a8210", "t": "Observable", "n": 347, "laws": 1, "ts": "2026-07-25 18:19 UTC"}
 {"id": "/documentation/corelocation/turning-an-ios-device-into-an-ibeacon-device", "sha": "a00710991945219638bc85a4c047a6f538803d42c09d18cc36708de6f0ea32f3", "t": "Turning an iOS device into an iBeacon device", "n": 4283, "laws": 10, "ts": "2026-07-25 18:21 UTC"}
+{"id": "/documentation/mapkitjs/mapkit", "sha": "bb8fbba112ce0ead1fb42bc31ae6dbfeca46153c061325c5bc84caca70130689", "t": "mapkit", "n": 3307, "laws": 1, "ts": "2026-07-25 23:03 UTC"}
+{"id": "/documentation/Xcode/Metal-debugger", "sha": "5f5b8629f90dcb6647e52fb9b7806ab04d4c4cd1544795467d2ef226bb4b1dea", "t": "Metal debugger", "n": 2508, "laws": 1, "ts": "2026-07-25 23:03 UTC"}
+{"id": "/documentation/metal/mtlrendercommandencoder/setvisibilityresultmode(_:offset:)", "sha": "a54d3cc01649f654123ec3dc10ae03f45141cfb9054e5ecc5c02c73ed390cf64", "t": "setVisibilityResultMode(_:offset:)", "n": 767, "laws": 0, "ts": "2026-07-25 23:04 UTC"}
+{"id": "/documentation/networkextension/neapppushprovider", "sha": "c55a4036bed3777ea40f890509a9ca9f62b99fbc21704c9fba3f1aaafe059d35", "t": "NEAppPushProvider", "n": 1531, "laws": 0, "ts": "2026-07-25 23:10 UTC"}
+{"id": "/documentation/Intents/INSpeakableStringResolutionResult/disambiguation(with:)", "sha": "3de531ce4e992d74fd38acf7ecc05326e114d88024b2a3be6dcd47971523e958", "t": "disambiguation(with:)", "n": 313, "laws": 2, "ts": "2026-07-25 23:20 UTC"}
+{"id": "/documentation/storekit/skpaymentqueuedelegate", "sha": "f05140e433a887839210c3bc4be19450e50240177260e7a6999623b7471a0923", "t": "SKPaymentQueueDelegate", "n": 354, "laws": 0, "ts": "2026-07-25 23:21 UTC"}

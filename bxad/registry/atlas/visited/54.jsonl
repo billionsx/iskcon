@@ -17,3 +17,6 @@
 {"id": "/documentation/CryptoKit/HPKE/Sender", "sha": "b930e2970c820aa93e4caa5cb42e717f976a62070e70033ff6ca0c973852c390", "t": "HPKE.Sender", "n": 978, "laws": 0, "ts": "2026-07-25 18:25 UTC"}
 {"id": "/documentation/driverkit/iouserserver", "sha": "607bb8339d7a44976641a9d0add4efd9f6994d4514e99f256e2afab7243ecb9c", "t": "IOUserServer", "n": 297, "laws": 1, "ts": "2026-07-25 18:26 UTC"}
 {"id": "/documentation/EventKitUI/EKEventEditViewController/event", "sha": "d0490ec6daf2025c5a99304746857627757df90c7959cdfcad0267477a4703a7", "t": "event", "n": 237, "laws": 1, "ts": "2026-07-25 18:27 UTC"}
+{"id": "/documentation/mapkit/mkoverlayrenderer/candraw(_:zoomscale:)", "sha": "2412109b9be55bed49082a4d183d6f65a8ba744d1b39feac2eff6702f2728786", "t": "canDraw(_:zoomScale:)", "n": 864, "laws": 0, "ts": "2026-07-25 23:01 UTC"}
+{"id": "/documentation/SwiftUI/View/modelContainer(for:inMemory:isAutosaveEnabled:isUndoEnabled:onSetup:)-18hhy", "sha": "ed9c6aa65504f5d72f7434ce2c114da173947edb50c4883d5b1462201b0e30e8", "t": "modelContainer(for:inMemory:isAutosaveEnabled:isUndoEnabled:onSetup:)", "n": 818, "laws": 2, "ts": "2026-07-25 23:22 UTC"}
+{"id": "/documentation/swiftui/navigationstack", "sha": "2947416710146197df1ac059bba76cdff35a3c3e598dcf94df35a70d7263da03", "t": "NavigationStack", "n": 3036, "laws": 5, "ts": "2026-07-25 23:27 UTC"}

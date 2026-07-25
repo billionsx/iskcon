@@ -1,13 +1,13 @@
 {
  "url": "https://www.apple.com/apple-pay/",
  "sections": [
-  "section",
-  "section",
-  "section",
-  "section",
-  "section",
-  "section",
-  "section"
+  "section-hero",
+  "section-benefits",
+  "section-just-go",
+  "section-easy-does-it",
+  "section-security",
+  "section-faqs",
+  "section-routers"
  ],
  "modules": [
   "name:hero",
@@ -35,5 +35,5 @@
   "/v/apple-pay/v/built/styles/overview.built.css",
   "/ac/ac-films/7.5.1/styles/modal.css"
  ],
- "typography_laws": 0
+ "typography_laws": 2
 }

@@ -6,3 +6,9 @@
 {"id": "/documentation/QuartzCore/CAMetalLayer/colorspace", "sha": "738ac7b38c55f3af578765ba49f68525b2999b82ab82e8165c7ca80efd061dfd", "t": "colorspace", "n": 334, "laws": 0, "ts": "2026-07-25 18:21 UTC"}
 {"id": "/documentation/foundation/uploading-data-to-a-website", "sha": "c575355e4d55d5f06a36f559b0050a872e024e3b3d4b4873ad7361c6e7f8716c", "t": "Uploading data to a website", "n": 2214, "laws": 5, "ts": "2026-07-25 18:30 UTC"}
 {"id": "/documentation/PhotosUI/PhotosPicker", "sha": "4a6c9ec890061e3556863f834a01f8db362b03b773657eefab69278042bc0205", "t": "PhotosPicker", "n": 1950, "laws": 3, "ts": "2026-07-25 18:34 UTC"}
+{"id": "/documentation/HomeKit/HMHomeDelegate/home(_:didAdd:)-6jcl7", "sha": "1d54ea69639d2ad5724611cb2fb19aaafbe405eddee3df6a3aee54fc9fd3c84c", "t": "home(_:didAdd:)", "n": 53, "laws": 0, "ts": "2026-07-25 22:59 UTC"}
+{"id": "/documentation/photosui/phprojectextensioncontroller/finishproject(completionhandler:)", "sha": "d172c11bfcd082132f80eff14a7ef6008d17213fdc91860a431de2ab1d49fb8e", "t": "finishProject(completionHandler:)", "n": 114, "laws": 0, "ts": "2026-07-25 23:13 UTC"}
+{"id": "/documentation/RealityKit/implementing-systems-for-entities-in-a-scene", "sha": "990955834c54c1cbafc1d8bd53152783810d4583bae49b8d7bb8cfb232e3edcc", "t": "Implementing systems for entities in a scene", "n": 4125, "laws": 8, "ts": "2026-07-25 23:13 UTC"}
+{"id": "/documentation/realitykit/ecs-systems", "sha": "8cb0b20316961823d6fbd91b378a461c4c6ceacf2c80b9e5eed1d8c84e86d155", "t": "Systems", "n": 2394, "laws": 2, "ts": "2026-07-25 23:13 UTC"}
+{"id": "/documentation/scenekit/scntechnique", "sha": "e87d17bef816586a3c0c3c694272cf297333d99e9dffbd6bbb9c3905691d9c17", "t": "SCNTechnique", "n": 6091, "laws": 10, "ts": "2026-07-25 23:18 UTC"}
+{"id": "/documentation/Intents/INGetRideStatusIntent", "sha": "9a04bc9a124959a6b5b60e92578a5c197a4d0b28d9cba6e2c8a63cd96735eb04", "t": "INGetRideStatusIntent", "n": 836, "laws": 3, "ts": "2026-07-25 23:19 UTC"}

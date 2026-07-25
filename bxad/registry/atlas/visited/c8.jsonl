@@ -16,3 +16,9 @@
 {"id": "/documentation/Vision/VNCoreMLModel", "sha": "95e57ad9826ffddfe421e9df77dfb408deea1f7e800ba20395184de8f7232aef", "t": "VNCoreMLModel", "n": 413, "laws": 2, "ts": "2026-07-25 18:22 UTC"}
 {"id": "/documentation/createml", "sha": "d72f11ad2cc4c84f578423361adfb8d1f0b81530c9543de4cdc426101efe2e7e", "t": "Create ML", "n": 2174, "laws": 2, "ts": "2026-07-25 18:23 UTC"}
 {"id": "/documentation/foundationmodels/systemlanguagemodel/default", "sha": "8986e1dce9e5d266373e4966ff809b8db4ff430b1969392bac85f1146d555b7c", "t": "default", "n": 180, "laws": 1, "ts": "2026-07-25 18:31 UTC"}
+{"id": "/documentation/mapkit/mklocalsearchcompletion", "sha": "df5a89d6027fadd4c282c375486d10fc12996371515baa9b022014054a97d2ce", "t": "MKLocalSearchCompletion", "n": 877, "laws": 4, "ts": "2026-07-25 23:02 UTC"}
+{"id": "/documentation/mediaplayer", "sha": "9859169d6e01325a4be65b39b31133b9dc40097687ab1b26f968c0c734b6b744", "t": "Media Player", "n": 3929, "laws": 10, "ts": "2026-07-25 23:03 UTC"}
+{"id": "/documentation/SwiftUI/View/onChange(of:initial:_:)", "sha": "4bd02475e3c04a82cefaab8c7d5d1c6acfca1fccb0683b4f80164ceabc7e697a", "t": "onChange(of:initial:_:)", "n": 690, "laws": 2, "ts": "2026-07-25 23:16 UTC"}
+{"id": "/documentation/storekit/product", "sha": "941e98a6ce6ff1a8cad435ddf85b7cba5475ef672b3b265da1921057d1f6ccba", "t": "Product", "n": 2854, "laws": 5, "ts": "2026-07-25 23:21 UTC"}
+{"id": "/documentation/swiftui/tabcontent/customizationbehavior(_:for:)", "sha": "b2332892bf3d8907bffc6e38b3bba82b72ded735b5deca13a0db18f7ef364651", "t": "customizationBehavior(_:for:)", "n": 1202, "laws": 1, "ts": "2026-07-25 23:25 UTC"}
+{"id": "/documentation/swiftui/landmarks-building-an-app-with-liquid-glass", "sha": "6a588c1ff59f48e63fa1ab23e25eec61d05a514dcd427f5c859013ecc8b8c6ea", "t": "Landmarks: Building an app with Liquid Glass", "n": 4589, "laws": 4, "ts": "2026-07-25 23:25 UTC"}

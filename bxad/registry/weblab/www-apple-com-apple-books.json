@@ -1,12 +1,12 @@
 {
  "url": "https://www.apple.com/apple-books/",
  "sections": [
-  "section",
-  "section",
-  "section",
-  "section",
-  "section",
-  "section"
+  "section-hero",
+  "section-library",
+  "section-tiles",
+  "section-devices",
+  "section-faq",
+  "section-router"
  ],
  "modules": [
   "name:hero",
@@ -33,5 +33,5 @@
   "/v/apple-books/c/built/styles/main.built.css",
   "/v/apple-books/c/built/styles/overview.built.css"
  ],
- "typography_laws": 0
+ "typography_laws": 2
 }

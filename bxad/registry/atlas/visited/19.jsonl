@@ -13,3 +13,6 @@
 {"id": "/documentation/EventKit/EKEventStoreChangedNotification", "sha": "331cb185cc52619403bff2ef61175768c66cd38f8a029a7d6f3f450f77ce7b02", "t": "EKEventStoreChangedNotification", "n": 649, "laws": 3, "ts": "2026-07-25 18:28 UTC"}
 {"id": "/documentation/foundation/implementing-handoff-in-your-app", "sha": "e748f01568d394539e44595339827d2b07f90b6c8e7cf54664f75f0f04290934", "t": "Implementing Handoff in Your App", "n": 6390, "laws": 10, "ts": "2026-07-25 18:30 UTC"}
 {"id": "/documentation/foundation/format-style-configurations", "sha": "1c7a7d3e90c7f6d6682bd1ce9853a51c6a83e1fa683b48f0cb21ee9561efd6e9", "t": "Format Style Configurations", "n": 269, "laws": 0, "ts": "2026-07-25 18:31 UTC"}
+{"id": "/documentation/mapkit/mklocalsearchcompletion/titlehighlightranges", "sha": "bca4fe4988fa3ada6cf6bc27087abf160f475d10e6976d6d9e25aef7a71bdb7e", "t": "titleHighlightRanges", "n": 435, "laws": 1, "ts": "2026-07-25 23:02 UTC"}
+{"id": "/documentation/BundleResources/Entitlements/com.apple.security.app-sandbox", "sha": "eac7202a4703074a0614fda258f82d5e5b816c9f9a18d20fd19d07c17230c5d8", "t": "App Sandbox Entitlement", "n": 247, "laws": 1, "ts": "2026-07-25 23:10 UTC"}
+{"id": "/documentation/realitykit/triggervolume", "sha": "4399cc5ffcb83b6a54f45318076d1caa246b8eea6d6eccbbae27cb74ecf62e14", "t": "TriggerVolume", "n": 890, "laws": 3, "ts": "2026-07-25 23:14 UTC"}

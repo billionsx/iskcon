@@ -1,12 +1,12 @@
 {
  "url": "https://www.apple.com/airpods/",
  "sections": [
-  "section",
-  "section",
-  "section",
-  "section",
-  "section",
-  "section"
+  "section-airpods-max-2",
+  "section-airpods-pro-3",
+  "section-airpods-4",
+  "section-compare",
+  "section-consider",
+  "section-music"
  ],
  "modules": [
   "name:airpods max 2",
@@ -33,5 +33,5 @@
   "/v/airpods/ae/built/styles/overview.built.css",
   "/v/airpods/shared/compare/g/built/styles/compare.built.css"
  ],
- "typography_laws": 0
+ "typography_laws": 2
 }

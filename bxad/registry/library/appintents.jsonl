@@ -242,3 +242,6 @@
 {"id": "/documentation/appintents/making-app-entities-available-in-spotlight", "law": "Each method also receives a type you can use to determine which of your app’s searchable indexes to update."}
 {"id": "/documentation/appintents/making-app-entities-available-in-spotlight", "law": "When an open intent is present, Spotlight can use it to provide that behavior."}
 {"id": "/documentation/appintents/making-app-entities-available-in-spotlight", "law": "When a search query yields more than ten results, Spotlight can use this intent to launch your app and display the results in your custom search interface."}
+{"id": "/documentation/AppIntents/WidgetConfigurationIntent", "law": "Use to configure the order of the parameters in the configuration UI, as well as dynamic presentation such as using the value of one parameter to determine whether to show or hide another."}
+{"id": "/documentation/AppIntents/WidgetConfigurationIntent", "law": "When using this protocol, you don’t need to provide an implementation for ."}
+{"id": "/documentation/AppIntents/WidgetConfigurationIntent", "law": "You can, however, still implement to use the same implementation for both widget configuration and as an actionable intent."}

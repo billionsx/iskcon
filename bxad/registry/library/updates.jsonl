@@ -244,3 +244,17 @@
 {"id": "/documentation/Updates/FoundationModels", "law": "Use the latest on-device large language model that improves instruction-following and tool-calling abilities."}
 {"id": "/documentation/Updates/FoundationModels", "law": "Use the property to get the maximum context size — in tokens — that the supports."}
 {"id": "/documentation/Updates/FoundationModels", "law": "Use the macro in Xcode to view an estimate of the usage of 4,096 tokens in the available context window."}
+{"id": "/documentation/Updates/ScreenCaptureKit", "law": "Or use to simplify the selection of properties needed for capture HDR."}
+{"id": "/documentation/Updates/ScreenCaptureKit", "law": "Use the new sharing picker: ."}
+{"id": "/documentation/Updates/Speech", "law": "Use to convert data into formats that supports."}
+{"id": "/documentation/Updates/SwiftData", "law": "Use types that conform to in a model, including types you don’t control directly, by using the option for ."}
+{"id": "/documentation/Updates/SwiftUI", "law": "Use the modifier to prioritize important toolbar actions so SwiftUI keeps them visible as space shrinks, moving lower-priority items to the overflow menu first."}
+{"id": "/documentation/Updates/SwiftUI", "law": "Implement custom reading and writing logic with and , or use and for simpler file-wrapper-based cases."}
+{"id": "/documentation/Updates/SwiftUI", "law": "Present an alert or confirmation dialog from an optional data item or error object, and use that data to produce the content and title:"}
+{"id": "/documentation/Updates/SwiftUI", "law": "The following gestures have initializers that you can use to specify the sources of gesture input: , , , , , , , , ."}
+{"id": "/documentation/Updates/SwiftUI", "law": "Use with the modifier to apply Liquid Glass to instances of ."}
+{"id": "/documentation/Updates/SwiftUI", "law": "Use to configure the scroll edge effect style for scroll views."}
+{"id": "/documentation/Updates/SwiftUI", "law": "Use the macro to have SwiftUI synthesize custom animatable data properties."}
+{"id": "/documentation/Updates/SwiftUI", "law": "Use to set the window anchor point when a window must resize."}
+{"id": "/documentation/Updates/SwiftUI", "law": "Use to create a find navigator in views that support text editing."}
+{"id": "/documentation/Updates/SwiftUI", "law": "Use to render stereo content from your Mac app on Apple Vision Pro."}

@@ -8,3 +8,7 @@
 {"id": "/documentation/AVFAudio/AVAudioUnitComponentManager", "sha": "d9c3834a09110f360a13e493110f58dd1875baed1e6f10362ed59a06f5aaa7dd", "t": "AVAudioUnitComponentManager", "n": 1034, "laws": 0, "ts": "2026-07-25 18:13 UTC"}
 {"id": "/documentation/contacts", "sha": "d8e81e5587cc11fa187f5f264bcc7076c24665d4edec327511447f274b93c330", "t": "Contacts", "n": 7594, "laws": 10, "ts": "2026-07-25 18:18 UTC"}
 {"id": "/documentation/fskit/fsvolumekerneloffloadediooperations", "sha": "062123ed0e40fcb9782da2d8624eff0453a34a567461f470c6debfe6ec6a5b63", "t": "FSVolumeKernelOffloadedIOOperations", "n": 1607, "laws": 3, "ts": "2026-07-25 18:29 UTC"}
+{"id": "/documentation/metal/mtlstages/dispatch", "sha": "8cb5ce58652a226225bb81c1a202a2dd38dab75720d310b478e777f35afb20cc", "t": "dispatch", "n": 52, "laws": 0, "ts": "2026-07-25 23:04 UTC"}
+{"id": "/documentation/realitykit/capturing-photographs-for-realitykit-object-capture", "sha": "0eb111188c52f65aa2cc89f8f71c7ba8903ad252fb1e2df0f9cdf8253be74b84", "t": "Capturing photographs for RealityKit Object Capture", "n": 6104, "laws": 10, "ts": "2026-07-25 23:13 UTC"}
+{"id": "/documentation/roomplan/scanning-the-rooms-of-a-single-structure", "sha": "dd26e9243b41dc3f5b882667ef37c455d4582a69cb98008d933ef3cd8b3ec379", "t": "Scanning the rooms of a single structure", "n": 6779, "laws": 2, "ts": "2026-07-25 23:18 UTC"}
+{"id": "/documentation/swiftui/dynamicviewcontent/reorderable()", "sha": "2ad67e2d14a178cdb17d43dbbfa3be311ac021051afacdccd8fb281849b68228", "t": "reorderable()", "n": 577, "laws": 2, "ts": "2026-07-25 23:26 UTC"}

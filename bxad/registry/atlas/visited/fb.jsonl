@@ -8,3 +8,10 @@
 {"id": "/documentation/accelerate/calculating-the-dominant-colors-in-an-image", "sha": "d73c0a71841113bbd1e2fd899df54cdf9105a48f5683a47afb90185976d11083", "t": "Calculating the dominant colors in an image", "n": 4952, "laws": 1, "ts": "2026-07-25 18:04 UTC"}
 {"id": "/documentation/CoreSpotlight/CSSearchableItemAttributeSet", "sha": "af29cb95cc324079ec48f761d2f1dc7aab2242b42ae5afbb5ffdd41f82ccfce4", "t": "CSSearchableItemAttributeSet", "n": 4707, "laws": 2, "ts": "2026-07-25 18:07 UTC"}
 {"id": "/documentation/appstoreconnectapi/app-metadata", "sha": "acc2e922cbd2de3778196adcf6f2113aae803c4bb00473fb413b6d8b3d9fb91d", "t": "App Metadata", "n": 636, "laws": 0, "ts": "2026-07-25 18:11 UTC"}
+{"id": "/documentation/healthkit/hkdocumentsample", "sha": "bb8a70da3384932c82aa92a4d5efce273be0067e23f034640d275c6e0b9a48b7", "t": "HKDocumentSample", "n": 676, "laws": 3, "ts": "2026-07-25 22:58 UTC"}
+{"id": "/documentation/imageio/cgimagesourcegetprimaryimageindex(_:)", "sha": "d439316f17c2573649ac5786b09e89b7500dff1bf63db9ec2babf55840f14b54", "t": "CGImageSourceGetPrimaryImageIndex(_:)", "n": 190, "laws": 0, "ts": "2026-07-25 22:59 UTC"}
+{"id": "/documentation/mapkit/mkmappoint", "sha": "04dd88872d450a27c6fd745cbeabc8f219a6d0baeda4a4b797e735bb3f6cc844", "t": "MKMapPoint", "n": 1250, "laws": 2, "ts": "2026-07-25 23:01 UTC"}
+{"id": "/documentation/metal/metal-dynamic-libraries", "sha": "d36548ae92d994c4d153a6c02729eccdb6b01faa07f8422748f79fefc9722949", "t": "Metal dynamic libraries", "n": 1306, "laws": 3, "ts": "2026-07-25 23:04 UTC"}
+{"id": "/documentation/metal/mtllibrary", "sha": "6b0abc32a285af9fb9f6e37c08f48352619a43283097d33327bfea7beaefbf0e", "t": "MTLLibrary", "n": 996, "laws": 1, "ts": "2026-07-25 23:05 UTC"}
+{"id": "/documentation/metal/mtlcomputepipelinestate", "sha": "5f88fefbc12069e117fba49075bcee29cae2e57d70b786126021f340f3557dc4", "t": "MTLComputePipelineState", "n": 1478, "laws": 2, "ts": "2026-07-25 23:07 UTC"}
+{"id": "/documentation/Dispatch/dispatch_queue_t", "sha": "082a1b242e346c927c6e02f75bd79f22f616c2cebcd67364f0b0e9d9448c9d19", "t": "dispatch_queue_t", "n": 940, "laws": 1, "ts": "2026-07-25 23:09 UTC"}

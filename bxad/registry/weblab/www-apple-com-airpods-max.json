@@ -1,13 +1,13 @@
 {
  "url": "https://www.apple.com/airpods-max/",
  "sections": [
-  "section",
-  "section",
-  "section",
-  "section",
-  "section",
-  "section",
-  "section"
+  "section-welcome",
+  "section-media-card",
+  "section-bento-gallery",
+  "section-product-stories",
+  "section-icon-card",
+  "section-contrast",
+  "section-index"
  ],
  "modules": [
   "name:hero",
@@ -37,5 +37,5 @@
   "/v/airpods-max/k/built/styles/main.built.css",
   "/v/airpods-max/k/built/styles/overview.built.css"
  ],
- "typography_laws": 0
+ "typography_laws": 2
 }

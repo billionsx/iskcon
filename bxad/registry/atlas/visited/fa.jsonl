@@ -13,3 +13,5 @@
 {"id": "/documentation/coreml/mltask/resume()", "sha": "1e7b6bae8b88d60c0529cd0c19923e109b1661a2d1ce6424d5ba07be11c89c04", "t": "resume()", "n": 243, "laws": 1, "ts": "2026-07-25 18:23 UTC"}
 {"id": "/documentation/foundation/building-a-localized-food-ordering-app", "sha": "5aa280efe17e4f7afb6503ebb0ad18d33fcc2a96f7285de6e0d0644a687c0c66", "t": "Building a Localized Food-Ordering App", "n": 6904, "laws": 6, "ts": "2026-07-25 18:30 UTC"}
 {"id": "/documentation/FoundationModels/categorizing-and-organizing-data-with-content-tags", "sha": "71b4bd089fd1a20e9b0a64dc2c94526acb26476784b98f041920c48f276539b1", "t": "Categorizing and organizing data with content tags", "n": 4411, "laws": 10, "ts": "2026-07-25 18:31 UTC"}
+{"id": "/documentation/networkextension/neurlfiltermanager/prefilterfetchinterval", "sha": "86446fd0d0d1cce00093f04566bfdb11bf0a82a4921438f29235518197e0a866", "t": "prefilterFetchInterval", "n": 414, "laws": 2, "ts": "2026-07-25 23:10 UTC"}
+{"id": "/documentation/realitykit/photogrammetrysample", "sha": "5371f478311055740494fa90b484787ea4dfb56b29ef11e6fc53cbd0b526dece", "t": "PhotogrammetrySample", "n": 736, "laws": 1, "ts": "2026-07-25 23:14 UTC"}

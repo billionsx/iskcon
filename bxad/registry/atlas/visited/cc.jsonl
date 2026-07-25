@@ -6,3 +6,6 @@
 {"id": "/documentation/appintents/app-schema-domain-photos", "sha": "446230b3ba480b4ef60567a3f9f0beb8dfa06e9353628e0f56a468371b9d5af2", "t": "Photos", "n": 1757, "laws": 0, "ts": "2026-07-25 18:08 UTC"}
 {"id": "/documentation/callkit/making-and-receiving-voip-calls", "sha": "8918d596f249002d7df18df1dd54bf94a386ef0632056511c1ee963fb247506d", "t": "Making and receiving VoIP calls", "n": 2921, "laws": 0, "ts": "2026-07-25 18:15 UTC"}
 {"id": "/documentation/Foundation/URL", "sha": "9306f9d4f2a1e6f2c0e48ab2174cafcf48c6cbc1e1a7c36b948731fa4c1f060e", "t": "URL", "n": 5403, "laws": 4, "ts": "2026-07-25 18:22 UTC"}
+{"id": "/documentation/realitykit/entity", "sha": "080702c4bc41b46179ca3f5e82bc0deaad875f214344da42c1b99d48ed09ab73", "t": "Entity", "n": 4755, "laws": 0, "ts": "2026-07-25 23:13 UTC"}
+{"id": "/documentation/realitykit/transforming-realitykit-entities-with-gestures", "sha": "2970e0ba451f75dca44fa187ab893aa82655c2fe943a5b1e5c3da76405b1ba59", "t": "Transforming RealityKit entities using gestures", "n": 4884, "laws": 1, "ts": "2026-07-25 23:14 UTC"}
+{"id": "/documentation/swiftdata/preserving-your-apps-model-data-across-launches", "sha": "8f967805053764f9dd2ae5e115382542b2b34e729af5114d723a405cb02ba89f", "t": "Preserving your app’s model data across launches", "n": 7031, "laws": 10, "ts": "2026-07-25 23:22 UTC"}

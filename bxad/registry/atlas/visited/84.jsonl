@@ -13,3 +13,5 @@
 {"id": "/documentation/driverkit/type", "sha": "a74cf8720c215605de81f025fb1beb20ce870b2b30843147ad5389037fc30e88", "t": "TYPE", "n": 961, "laws": 3, "ts": "2026-07-25 18:26 UTC"}
 {"id": "/documentation/EventKit/updating-with-notifications", "sha": "d2023f058eb711b93a84322471caea44ff36898da9d3fcc3fecd18fed8f6184f", "t": "Updating with notifications", "n": 1720, "laws": 4, "ts": "2026-07-25 18:28 UTC"}
 {"id": "/documentation/foundationmodels/imagereference", "sha": "f580d937f9dde367ff98ab0d056bf3206f81fb92e68af0174c369611c164c64c", "t": "ImageReference", "n": 376, "laws": 1, "ts": "2026-07-25 18:32 UTC"}
+{"id": "/documentation/storekit/implementing-promotional-offers-in-your-app", "sha": "3b34c201a72c54d21c8dc893fc3029a24c1e6c63cbc0a2aa0daf69e4bc7575e8", "t": "Implementing promotional offers in your app", "n": 7779, "laws": 10, "ts": "2026-07-25 23:21 UTC"}
+{"id": "/documentation/swiftdata/fetchdescriptor", "sha": "982b6ee59de302c445b986c29ea51c226f396a644dd5f0f0f17e12c52d9a142f", "t": "FetchDescriptor", "n": 1477, "laws": 4, "ts": "2026-07-25 23:23 UTC"}

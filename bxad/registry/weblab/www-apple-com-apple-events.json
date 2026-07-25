@@ -1,10 +1,10 @@
 {
  "url": "https://www.apple.com/apple-events/",
  "sections": [
-  "section",
-  "section",
-  "section",
-  "section"
+  "section-hero",
+  "section-announced",
+  "section-recent-events",
+  "section-all-apple-events"
  ],
  "modules": [
   "name:hero",
@@ -30,5 +30,5 @@
   "/ac/ac-video/4.14.1/styles/ac-video.css",
   "/ac/ac-films/7.4.1/styles/modal.css"
  ],
- "typography_laws": 0
+ "typography_laws": 2
 }

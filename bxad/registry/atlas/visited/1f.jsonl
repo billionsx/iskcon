@@ -21,3 +21,7 @@
 {"id": "/documentation/createmlcomponents/videoreader", "sha": "bc1c953fe11fe592b2743ae4641ed2b394b262cd11f648150536a2a02036c178", "t": "VideoReader", "n": 248, "laws": 0, "ts": "2026-07-25 18:24 UTC"}
 {"id": "/documentation/eventkit/retrieving-events-and-reminders", "sha": "dd093e54cd41a942394ce64de54c57e54d85e293d6acfa2fc233a26189f12317", "t": "Retrieving events and reminders", "n": 2780, "laws": 3, "ts": "2026-07-25 18:28 UTC"}
 {"id": "/documentation/groupactivities/groupsessionjournal/add(_:)", "sha": "1c0c3044b42ae165aa812e14f69f8260ceaf670d2a19a4f94025ef77b494d1ed", "t": "add(_:)", "n": 426, "laws": 0, "ts": "2026-07-25 18:35 UTC"}
+{"id": "/documentation/metalperformanceshaders/convolutional-neural-network-kernels", "sha": "190a4ca829cf259187a08eb9d86305fc153e1efa39a1443a9d4d65a9d18c29e8", "t": "Convolutional Neural Network Kernels", "n": 4814, "laws": 9, "ts": "2026-07-25 23:08 UTC"}
+{"id": "/documentation/sirikit/media", "sha": "8ab575c0a15f782bb55704a5169dfc2fe117d528bd7bdee5ac33b2501c9c84e2", "t": "Media", "n": 1929, "laws": 1, "ts": "2026-07-25 23:20 UTC"}
+{"id": "/documentation/swiftui/environmentobject", "sha": "f5e8a9a970205fffc8c26f60c1315123032904c85f0631efed2a9f449b65f45e", "t": "EnvironmentObject", "n": 611, "laws": 2, "ts": "2026-07-25 23:26 UTC"}
+{"id": "/documentation/swiftui/grid", "sha": "67b38d2bb1b4b0c44aa9ae677eed8f601d2c7dd23efb358c004584e53fa84950", "t": "Grid", "n": 4070, "laws": 4, "ts": "2026-07-25 23:27 UTC"}

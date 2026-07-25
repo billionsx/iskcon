@@ -1,11 +1,11 @@
 {
  "url": "https://www.apple.com/ipad-keyboards/",
  "sections": [
-  "section",
-  "section",
-  "section",
-  "section",
-  "section"
+  "section-hero",
+  "section-magic-keyboard-ipad-pro",
+  "section-magic-keyboard-ipad-air",
+  "section-magic-keyboard-folio",
+  "section-compatibility"
  ],
  "modules": [
   "name:hero",
@@ -29,5 +29,5 @@
   "/ac/localnav/9/styles/ac-localnav.built.css",
   "/v/ipad-keyboards/q/built/styles/overview.built.css"
  ],
- "typography_laws": 0
+ "typography_laws": 2
 }

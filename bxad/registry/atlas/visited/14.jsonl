@@ -11,3 +11,9 @@
 {"id": "/documentation/audiotoolbox/auaudiounit/saveuserpreset(_:)", "sha": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855", "t": "saveUserPreset(_:)", "n": 0, "laws": 0, "ts": "2026-07-25 18:13 UTC"}
 {"id": "/documentation/BrowserEngineKit/using-xpc-to-communicate-with-browser-extensions", "sha": "042f49f26d5214f390749a74aac3023306ea43007681bffbd4b40fcdf737fe45", "t": "Using XPC to communicate with browser extensions", "n": 3973, "laws": 5, "ts": "2026-07-25 18:15 UTC"}
 {"id": "/documentation/foundation/nsubiquitouskeyvaluestoreserverchange", "sha": "1d0014939babdd756be3e3bf2ce3ee8e92974df2228e1578e7bff3f72ec9e93f", "t": "NSUbiquitousKeyValueStoreServerChange", "n": 168, "laws": 0, "ts": "2026-07-25 18:31 UTC"}
+{"id": "/documentation/healthkit/hkdocumenttypeidentifier/cda", "sha": "c83b2d05b96dbf92fcc645673310ca4acfb475bf6ed0d0c425e26c5058aa5826", "t": "CDA", "n": 97, "laws": 0, "ts": "2026-07-25 22:58 UTC"}
+{"id": "/documentation/mapkit/mkcirclerenderer", "sha": "ceec9927bdcd8b15608bc40a8834c98266ae3bba4dd3f054b672ed47d6f30e64", "t": "MKCircleRenderer", "n": 541, "laws": 1, "ts": "2026-07-25 23:01 UTC"}
+{"id": "/documentation/metalfx", "sha": "4256a3f3d40c9d3f7dfeb53caf75e3ec6d9ba1adeb8e78214d2f9b6d1ae131cc", "t": "MetalFX", "n": 1554, "laws": 3, "ts": "2026-07-25 23:08 UTC"}
+{"id": "/documentation/realitykit/physicallybasedmaterial/basecolor-swift.property", "sha": "007e6180b227ae2bbcf1f4e664fc2ab7c004ec8260b6db3035ef4c265d225dc4", "t": "baseColor", "n": 918, "laws": 1, "ts": "2026-07-25 23:17 UTC"}
+{"id": "/documentation/swiftdata/unique(_:)", "sha": "7b68c7b6868da2791f268469eb23e19aa0e86a440578f689da84e02d7151f9b7", "t": "Unique(_:)", "n": 673, "laws": 1, "ts": "2026-07-25 23:22 UTC"}
+{"id": "/documentation/Charts/BarMark", "sha": "e1a6ae56e60c7204321285faf09fd55977608a35c86e6d18453abe815ac20013", "t": "BarMark", "n": 1717, "laws": 4, "ts": "2026-07-25 23:27 UTC"}

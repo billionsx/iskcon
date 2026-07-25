@@ -1,10 +1,10 @@
 {
  "url": "https://www.apple.com/tv-home/",
  "sections": [
-  "section",
-  "section",
-  "section",
-  "section"
+  "section-flex-tiles",
+  "section-smart-home",
+  "section-accessories",
+  "section-big-screen"
  ],
  "modules": [
   "name:homepod 2nd gen",
@@ -33,5 +33,5 @@
   "/v/tv-home/q/built/styles/overview.built.css",
   "/ac/ac-films/7.5.1/styles/modal.css"
  ],
- "typography_laws": 0
+ "typography_laws": 2
 }

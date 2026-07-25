@@ -1,19 +1,19 @@
 {
  "url": "https://www.apple.com/ipad-mini/",
  "sections": [
-  "section",
-  "section",
-  "section",
-  "section",
-  "section",
-  "section",
-  "section",
-  "section",
-  "section",
-  "section",
-  "section",
-  "section",
-  "section"
+  "section-hero",
+  "section-design",
+  "section-intelligence",
+  "section-powerful",
+  "section-pencil",
+  "section-apps",
+  "section-download",
+  "section-camera",
+  "section-ar",
+  "section-decarbonizing",
+  "section-values-router",
+  "section-trade-in",
+  "section-compare"
  ],
  "modules": [
   "name:hero",
@@ -58,5 +58,5 @@
   "/v/ipad-mini/v/built/styles/overview.built.css",
   "/v/ipad/shared/compare/r/built/styles/overview.built.css"
  ],
- "typography_laws": 0
+ "typography_laws": 2
 }

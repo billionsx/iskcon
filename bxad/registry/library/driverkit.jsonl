@@ -66,3 +66,14 @@
 {"id": "/documentation/driverkit/type", "law": "Typically, you use this macro to implement DriverKit callbacks using your own custom methods."}
 {"id": "/documentation/driverkit/type", "law": "Your method must still declare the same parameters and return type as the original method."}
 {"id": "/documentation/driverkit/type", "law": "This macro generates the following convenient symbols that you can use when configuring actions involving your custom method: A message ID constant you can pass to the method of ."}
+{"id": "/documentation/DriverKit/IMPL", "law": "Use this macro when overriding any methods that are adorned directly (or indirectly via their class) with the macro."}
+{"id": "/documentation/DriverKit/IMPL", "law": "For example, use it to define the implementation of custom and methods in an subclass."}
+{"id": "/documentation/DriverKit/IMPL", "law": "Don’t add this macro when overriding methods declared with the or macros."}
+{"id": "/documentation/DriverKit/IMPL", "law": "When using the macro to define your method, don’t include the method parameters as part of your definition."}
+{"id": "/documentation/DriverKit/SUPERDISPATCH", "law": "When calling the DriverKit implementation of a method that runs in the kernel, use this macro to bridge from your driver extension’s process space to the superclass’ version of the method."}
+{"id": "/documentation/DriverKit/SUPERDISPATCH", "law": "You must use this macro to call inherited DriverKit methods annotated with the macro."}
+{"id": "/documentation/DriverKit/SUPERDISPATCH", "law": "To use this macro, call the original method without the prefix and insert this macro as the final parameter in the parameter list."}
+{"id": "/documentation/DriverKit/SUPERDISPATCH", "law": "Don’t use this macro when calling the inherited version of a DriverKit method marked with the macro."}
+{"id": "/documentation/DriverKit/IOService/SetPowerState", "law": "Implement this method in your service object and use it to put your driver in a safe state for the new power setting."}
+{"id": "/documentation/DriverKit/driverkit-sample-code", "law": "Use these samples as a starting point to write your own custom drivers."}
+{"id": "/documentation/DriverKit/driverkit-sample-code", "law": "Use your custom driver code to support proprietary features of your hardware devices."}

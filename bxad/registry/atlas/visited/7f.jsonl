@@ -15,3 +15,12 @@
 {"id": "/documentation/driverkit", "sha": "e72b4a0e40f652598ac80a9db2075a7e6ef229dd293d8fd3122a0bcd51278458", "t": "DriverKit", "n": 4059, "laws": 1, "ts": "2026-07-25 18:26 UTC"}
 {"id": "/documentation/FoundationModels/Generable", "sha": "b398b4248997f158535928e191efb55b127dca3b707217918553ba80d9d0e2c0", "t": "Generable", "n": 1462, "laws": 2, "ts": "2026-07-25 18:26 UTC"}
 {"id": "/documentation/gamekit", "sha": "81d2be55b389adb611ab5f0da1c36f6b705a5ec3c41ed080fc15264242d0051b", "t": "GameKit", "n": 3922, "laws": 3, "ts": "2026-07-25 18:33 UTC"}
+{"id": "/documentation/homekit/hmaccessorysetupmanager", "sha": "b5b3a8c886c99a9140f041d9fd819c8d44480d99e7bae642593f1baf52235669", "t": "HMAccessorySetupManager", "n": 391, "laws": 2, "ts": "2026-07-25 22:59 UTC"}
+{"id": "/documentation/MetalKit/MTKView/device", "sha": "14c85ce6d2cf196a1b8185165862431b50cf8cdd4ce0727642029759f4d6d658", "t": "device", "n": 140, "laws": 1, "ts": "2026-07-25 23:08 UTC"}
+{"id": "/documentation/pencilkit/pktool-swift.protocol", "sha": "d82043e78cea03d7358464524b7eefa8a1600a13d7eb6369f1a10a6b9da98523", "t": "PKTool", "n": 379, "laws": 1, "ts": "2026-07-25 23:11 UTC"}
+{"id": "/documentation/realitykit/creating-a-spatial-drawing-app-with-realitykit", "sha": "104d0b8e159804188e8f290b6d01bcc1e767a920cc540a50c09fe4cb97ac1a62", "t": "Creating a spatial drawing app with RealityKit", "n": 478, "laws": 1, "ts": "2026-07-25 23:14 UTC"}
+{"id": "/documentation/realitykit/modelcomponent", "sha": "adb5d64d81a71758f393b5b1d70b89476e7b4263331d789688cdc261a83706a3", "t": "ModelComponent", "n": 915, "laws": 3, "ts": "2026-07-25 23:14 UTC"}
+{"id": "/documentation/realitykit/lowlevelmesh/layout", "sha": "791c1cea86e70b7d7ee1888846ee57c42c18d4f398453e1188d23eb8bdf639be", "t": "LowLevelMesh.Layout", "n": 678, "laws": 2, "ts": "2026-07-25 23:15 UTC"}
+{"id": "/documentation/Intents/INSendPaymentIntentHandling", "sha": "a40d23c53c69f048c1d6733657c7621baff377595168f3a460c0c5b420376c24", "t": "INSendPaymentIntentHandling", "n": 997, "laws": 2, "ts": "2026-07-25 23:19 UTC"}
+{"id": "/documentation/SwiftUI/ForEach", "sha": "821cfb1bd5a7ec22dc46b89559fed4b1a0426b479e08077691b5de8c62b08437", "t": "ForEach", "n": 1362, "laws": 3, "ts": "2026-07-25 23:22 UTC"}
+{"id": "/documentation/swiftui/button", "sha": "7c9ae60ce3bb230979263d14db965ebc4cc11cbbc7acfccd33a2a3407f088dc5", "t": "Button", "n": 3945, "laws": 4, "ts": "2026-07-25 23:23 UTC"}

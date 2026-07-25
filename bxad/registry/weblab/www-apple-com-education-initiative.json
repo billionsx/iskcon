@@ -1,14 +1,14 @@
 {
  "url": "https://www.apple.com/education-initiative/",
  "sections": [
-  "section",
-  "section",
-  "section",
-  "section",
-  "section",
-  "section",
-  "section",
-  "section"
+  "section-hero",
+  "section-intro",
+  "section-educators",
+  "section-opportunities",
+  "section-equity",
+  "section-router",
+  "section-newsroom",
+  "section-values"
  ],
  "modules": [
   "name:hero",
@@ -35,5 +35,5 @@
   "/v/education-initiative/c/built/styles/main.built.css",
   "/v/education-initiative/c/built/styles/overview.built.css"
  ],
- "typography_laws": 0
+ "typography_laws": 2
 }

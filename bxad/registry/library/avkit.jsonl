@@ -126,3 +126,9 @@
 {"id": "/documentation/avkit/working-with-interstitial-content", "law": "If you don’t update to the latest SDK and begin using streams that contain , you need to manage your own interstitials except for AirPlay."}
 {"id": "/documentation/avkit/supporting-continuity-camera-in-your-tvos-app", "law": "You can use a separate Apple ID for each device or the same Apple ID for both."}
 {"id": "/documentation/avkit/supporting-continuity-camera-in-your-tvos-app", "law": "The third step is important for conferencing apps that use Voice over IP (VoIP)."}
+{"id": "/documentation/AVKit/adopting-the-system-player-interface-in-visionos", "law": "The recommended way to provide a video playback interface for your visionOS app is to adopt ."}
+{"id": "/documentation/AVKit/adopting-the-system-player-interface-in-visionos", "law": "In addition to providing the system playback interface, you can also use to present a media-trimming experience similar to QuickTime Player in macOS."}
+{"id": "/documentation/AVKit/adopting-the-system-player-interface-in-visionos", "law": "Use to play video in windowed environments in visionOS."}
+{"id": "/documentation/AVKit/adopting-the-system-player-interface-in-visionos", "law": "You can use the visionOS player UI to present controls contextually, which your app displays for a specific range of time in the content and then dismiss."}
+{"id": "/documentation/AVKit/adopting-the-system-player-interface-in-visionos", "law": "A common use for this type of control is a skip button that displays during the title sequence of a movie or TV show."}
+{"id": "/documentation/AVKit/adopting-the-system-player-interface-in-visionos", "law": "provides a property you can use to specify one or more actions to present."}

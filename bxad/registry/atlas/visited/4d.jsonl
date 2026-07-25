@@ -11,3 +11,7 @@
 {"id": "/documentation/UIKit/UILabel", "sha": "575d3e951d284b2106729e98c038c2031bb117f242fbae128ca1bb89d936f1a3", "t": "UILabel", "n": 4335, "laws": 6, "ts": "2026-07-25 18:05 UTC"}
 {"id": "/documentation/ARKit/ARSessionDelegate/session(_:didUpdate:)-3qtt8", "sha": "0202186f80a5767297b85bb3571c2222dad02394ad2a3d68d54ab234fedbdcf6", "t": "session(_:didUpdate:)", "n": 441, "laws": 0, "ts": "2026-07-25 18:06 UTC"}
 {"id": "/documentation/createmlcomponents/humanbodyposeextractor", "sha": "fd24ee72d2f41190977db9f72c06625b8313324f62ca6792bfd4a7f40d7b2170", "t": "HumanBodyPoseExtractor", "n": 133, "laws": 0, "ts": "2026-07-25 18:24 UTC"}
+{"id": "/documentation/metal/mtl4renderpassdescriptor", "sha": "dd2fde0f09ff21572b0f5846bac21bf36f82d2e53a07c6ba2ad7e3492d906452", "t": "MTL4RenderPassDescriptor", "n": 726, "laws": 1, "ts": "2026-07-25 23:05 UTC"}
+{"id": "/documentation/realitykit/scene-content-content-synchronization", "sha": "296aad82b7ebe2bdcdbc9b93c374dee821ce89ec1e0764384c2b985917293998", "t": "Content synchronization", "n": 552, "laws": 0, "ts": "2026-07-25 23:14 UTC"}
+{"id": "/documentation/AVFoundation/AVURLAsset", "sha": "0953d35f2e2c428a437504ab8cc3a564b4f7844c23e87d94874282aaeebd45a4", "t": "AVURLAsset", "n": 1529, "laws": 1, "ts": "2026-07-25 23:16 UTC"}
+{"id": "/documentation/swiftui/glasseffectcontainer", "sha": "a46ecf85834b9b1e9c3e902845808f6669a7eb69b615fa01a90e592a8ac5e973", "t": "GlassEffectContainer", "n": 714, "laws": 1, "ts": "2026-07-25 23:26 UTC"}

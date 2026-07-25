@@ -14,3 +14,5 @@
 {"id": "/documentation/EventKit/EKCalendarItem/calendar", "sha": "b5b6b5fddc334d7098c06751631cc767f598b96bca2f9a4a94cda366d9e48b7b", "t": "calendar", "n": 35, "laws": 0, "ts": "2026-07-25 18:28 UTC"}
 {"id": "/documentation/EventKit/EKStructuredLocation/init(mapItem:)", "sha": "e041c1d113f64f04c77bf6e29d2f3ba3523c2525247d90e9334aff5d602f416a", "t": "init(mapItem:)", "n": 62, "laws": 0, "ts": "2026-07-25 18:28 UTC"}
 {"id": "/documentation/foundation/uploading-streams-of-data", "sha": "561e00137cf9aa2c7c0f0f2fe2e86fe7ff58d92c6e874cf246adfdb72c6fbe07", "t": "Uploading streams of data", "n": 5000, "laws": 6, "ts": "2026-07-25 18:30 UTC"}
+{"id": "/documentation/hiddriverkit/handling-keyboard-events-from-a-human-interface-device", "sha": "21f91fe574d4ffc2992fc35f78b3d165b54b68e40685e618e2214d5c622ea1ea", "t": "Handling Keyboard Events from a Human Interface Device", "n": 5805, "laws": 5, "ts": "2026-07-25 22:58 UTC"}
+{"id": "/documentation/realitykit/presentation-user-interface", "sha": "f0ec01b86414d1169191d80a532ac570d83033b5612ae5b49495f7786b1094fc", "t": "Presentation UI", "n": 1143, "laws": 0, "ts": "2026-07-25 23:18 UTC"}

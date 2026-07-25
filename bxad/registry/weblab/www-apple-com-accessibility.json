@@ -1,12 +1,12 @@
 {
  "url": "https://www.apple.com/accessibility/",
  "sections": [
-  "section",
-  "section",
-  "section",
-  "section",
-  "section",
-  "section"
+  "section-hero",
+  "section-features",
+  "section-resources",
+  "section-stories",
+  "section-newsroom",
+  "section-values-cards"
  ],
  "modules": [
   "name:hero",
@@ -33,5 +33,5 @@
   "/v/accessibility/ab/built/styles/overview.built.css",
   "/ac/ac-video/4.15.1/styles/ac-video.css"
  ],
- "typography_laws": 0
+ "typography_laws": 2
 }

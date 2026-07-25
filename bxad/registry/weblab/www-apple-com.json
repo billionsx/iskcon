@@ -1,8 +1,8 @@
 {
  "url": "https://www.apple.com/",
  "sections": [
-  "section",
-  "section",
+  "section-hero",
+  "section-promo",
   "section-endless-entertainment-gallery"
  ],
  "modules": [
@@ -35,5 +35,5 @@
   "/v/home/a/styles/home.built.css",
   "/v/home/a/built/styles/home-gallery.built.css"
  ],
- "typography_laws": 0
+ "typography_laws": 2
 }

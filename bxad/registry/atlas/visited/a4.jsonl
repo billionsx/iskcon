@@ -9,3 +9,8 @@
 {"id": "/documentation/appkit/nsresponder/maketouchbar()", "sha": "78edc996d48b6c21d368a6e26d52b5db32fd9dc54ee54e7b59fc232d77ccabb9", "t": "makeTouchBar()", "n": 117, "laws": 1, "ts": "2026-07-25 18:09 UTC"}
 {"id": "/documentation/appkit/nsfilepromisereceiver", "sha": "f8ce96af948ead01cdb63857eda74df854fd5fb6dbaf55a06a8f89095db43649", "t": "NSFilePromiseReceiver", "n": 699, "laws": 0, "ts": "2026-07-25 18:11 UTC"}
 {"id": "/documentation/eventkit/ekvirtualconferenceroomtypedescriptor", "sha": "0e6ee36123b954daac8280e1cf4aeb07942121c1f3c113287de3f29c475ab930", "t": "EKVirtualConferenceRoomTypeDescriptor", "n": 559, "laws": 0, "ts": "2026-07-25 18:27 UTC"}
+{"id": "/documentation/imageio/cgimagesource", "sha": "aed3da14b9af513a66cc77401d61d98c16369daf2c11da8af66b6f4e3621da1d", "t": "CGImageSource", "n": 1902, "laws": 3, "ts": "2026-07-25 22:59 UTC"}
+{"id": "/documentation/network/nw_listener_create_with_port(_:_:)", "sha": "95a8970c8f14702df6bf22f32c0fcdff4a42c44a6c7a2cb465a6e226ff246d8c", "t": "nw_listener_create_with_port(_:_:)", "n": 59, "laws": 0, "ts": "2026-07-25 23:09 UTC"}
+{"id": "/documentation/photos/phassetchangerequest", "sha": "2b8086718f5adae7deef809ef0d2817a1e3a38c28abe44881713f6e6e16e925e", "t": "PHAssetChangeRequest", "n": 1670, "laws": 4, "ts": "2026-07-25 23:12 UTC"}
+{"id": "/documentation/roomplan", "sha": "965b3d049c46bf83a985ad9ef09269d469a813082d17725eda05372e5d32cf5c", "t": "RoomPlan", "n": 2917, "laws": 2, "ts": "2026-07-25 23:18 UTC"}
+{"id": "/documentation/SwiftUI/Making-a-view-into-a-drag-source", "sha": "bd52f4d73f3e0dbbfd2914bf634bf5acdd06511d31f7bbabb780932b17e66c89", "t": "Making a view into a drag source", "n": 2976, "laws": 7, "ts": "2026-07-25 23:23 UTC"}

@@ -2,3 +2,5 @@
 {"id": "/documentation/CoreGraphics/CGColorSpace", "law": "Color spaces that are correctly specified ensure that an image has a consistent appearance regardless of the output device."}
 {"id": "/documentation/CoreGraphics/CGColorSpace", "law": "Core Graphics supports several kinds of color spaces: Calibrated color spaces ensure that colors appear the same when displayed on different devices."}
 {"id": "/documentation/CoreGraphics/CGColorSpace", "law": "Device color spaces are not recommended when high-fidelity color preservation is important."}
+{"id": "/documentation/CoreGraphics/CGBlendMode/colorBurn", "law": "Source image sample values that specify white do not produce a change."}
+{"id": "/documentation/CoreGraphics/CGBlendMode/screen", "law": "Multiplies the inverse of the source image samples with the inverse of the background image samples, resulting in colors that are at least as light as either of the two contributing sample colors."}

@@ -11,3 +11,6 @@
 {"id": "/documentation/corebluetooth", "sha": "fb352b0cb0da1290838d22bc6e00d383d930b37e28d796f833911c8678d196c2", "t": "Core Bluetooth", "n": 2193, "laws": 2, "ts": "2026-07-25 18:18 UTC"}
 {"id": "/documentation/corelocation/cllocationupdate", "sha": "886393b5b6dca4699cb3a8fa2b78b8d8cad61e82a53128f1d92a20a8bf16cf86", "t": "CLLocationUpdate", "n": 594, "laws": 1, "ts": "2026-07-25 18:21 UTC"}
 {"id": "/documentation/Combine/Publisher/map(_:)-99evh", "sha": "ece516ed350fb7ec0b4fc7c354d0237e446ccd1104284e37558730ac3916f757", "t": "map(_:)", "n": 848, "laws": 2, "ts": "2026-07-25 18:24 UTC"}
+{"id": "/documentation/HomeKit/HMCharacteristicPropertySupportsEventNotification-2f0ml", "sha": "974e3a9259150de477aceb72734bdee7293b10363817adee1ebccbbbc4542c7f", "t": "HMCharacteristicPropertySupportsEventNotification", "n": 48, "laws": 0, "ts": "2026-07-25 22:59 UTC"}
+{"id": "/documentation/metal/mtlsizeandalign", "sha": "685a1775ab38247fa6eb76e68ed2b6b9eb942cc74e5c7f8e6fe34673039b35ff", "t": "MTLSizeAndAlign", "n": 145, "laws": 0, "ts": "2026-07-25 23:06 UTC"}
+{"id": "/documentation/pencilkit/customizing-scribble-with-interactions", "sha": "dd6a0cf854c81b0eaaf6cb306c83f4e2350f43a742f63954f04c4767cd8a2e14", "t": "Customizing Scribble with Interactions", "n": 213, "laws": 1, "ts": "2026-07-25 23:12 UTC"}

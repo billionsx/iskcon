@@ -1,15 +1,15 @@
 {
  "url": "https://www.apple.com/os/visionos/?version=no-hero",
  "sections": [
-  "section",
-  "section",
-  "section",
-  "section",
-  "section",
-  "section",
-  "section",
-  "section",
-  "section"
+  "section-welcome",
+  "section-highlights",
+  "section-siri",
+  "section-apple-intelligence",
+  "section-spatial-experiences",
+  "section-improvements",
+  "section-more",
+  "section-developers",
+  "section-avp"
  ],
  "modules": [
   "name:hero",
@@ -36,5 +36,5 @@
   "/ac/localnav/9/styles/ac-localnav.built.css",
   "/v/os/f/built/styles/visionos.built.css"
  ],
- "typography_laws": 0
+ "typography_laws": 2
 }

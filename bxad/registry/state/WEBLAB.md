@@ -4,19 +4,36 @@
 ## Секции (топ-30)
 | Секция | Страниц |
 |---|---|
-| section | 612 |
-| section-endless-entertainment-gallery | 1 |
-| section-design-set-sail | 1 |
-| section-collection | 1 |
-| section-hero | 1 |
-| section-prep-steps | 1 |
-| section-possibilities | 1 |
-| section-faq | 1 |
-| section-support | 1 |
-| section-registration-form | 1 |
-| section-on-device | 1 |
-| section-private-cloud | 1 |
-| section-features-text | 1 |
+| section-hero | 36 |
+| section-welcome | 26 |
+| section-highlights | 22 |
+| section-values | 19 |
+| section-index | 17 |
+| section-incentive | 16 |
+| section-contrast | 16 |
+| section-faq | 15 |
+| section-environment | 12 |
+| section-product-viewer | 9 |
+| section-apple-intelligence | 9 |
+| section-accessories | 9 |
+| section-design | 8 |
+| section-performance | 8 |
+| section-routers | 8 |
+| section-compatibility | 8 |
+| section-router | 8 |
+| section-decarbonizing | 7 |
+| section-values-router | 7 |
+| section-product-stories | 6 |
+| section-privacy | 6 |
+| section-siri | 6 |
+| section-more | 6 |
+| section-developers | 6 |
+| section-battery | 5 |
+| section-apps | 5 |
+| section-improvements | 5 |
+| section-incentive-alt | 5 |
+| section-upgrade | 5 |
+| section-newsroom | 5 |
 
 ## Модули (топ-30)
 | Модуль | Страниц |
@@ -52,4 +69,4 @@
 | name:connectivity | 4 |
 | name:security | 4 |
 
-Страниц разобрано: 85 · типографических законов добыто: 0 (всего в web-landings)
+Страниц разобрано: 85 · типографических законов добыто: 12 (всего в web-landings)

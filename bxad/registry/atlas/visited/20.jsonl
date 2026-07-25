@@ -10,3 +10,6 @@
 {"id": "/documentation/AVFoundation/AVCaptureVideoDataOutput/alwaysDiscardsLateVideoFrames", "sha": "d96ebc079dc9464825c28b8bc23c3be9dc844f7e9979a90359bd16b79f526ffa", "t": "alwaysDiscardsLateVideoFrames", "n": 418, "laws": 0, "ts": "2026-07-25 18:24 UTC"}
 {"id": "/documentation/EventKitUI/EKEventEditViewController", "sha": "a8b991c9ec7813d1c0bc16a8b1992ddae21a623df3654765deeeec0bbb5ec54e", "t": "EKEventEditViewController", "n": 680, "laws": 1, "ts": "2026-07-25 18:27 UTC"}
 {"id": "/documentation/exposurenotification/setting-up-a-key-server", "sha": "544034e81ccd5ab58343ea82a4e3aa9495d8d7aa6f97ac803411a459e53debb1", "t": "Setting Up a Key Server", "n": 4975, "laws": 10, "ts": "2026-07-25 18:28 UTC"}
+{"id": "/documentation/HomeKit/HMHome/roomForEntireHome()", "sha": "b3c559481e6d3ad758a7930081a18217a8a67037389d129b3be556511aa9e464", "t": "roomForEntireHome()", "n": 510, "laws": 2, "ts": "2026-07-25 22:59 UTC"}
+{"id": "/documentation/realitykit/component", "sha": "90670cf10e83b0b214a3ace37035183ff9d612d0218e768b9d19cbbe9a877b71", "t": "Component", "n": 1230, "laws": 2, "ts": "2026-07-25 23:13 UTC"}
+{"id": "/documentation/Combine/ObservableObject/ObjectWillChangePublisher", "sha": "2c92200d41a6af827f6f6f87f12ee2a53d1617362f9acf32156aa8c603c0d2e8", "t": "ObjectWillChangePublisher", "n": 63, "laws": 0, "ts": "2026-07-25 23:26 UTC"}

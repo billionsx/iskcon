@@ -10,3 +10,7 @@
 {"id": "/documentation/ExposureNotification/ENManager/getExposureWindows(summary:completionHandler:)", "sha": "60d275f9eb491b24f5f291c5739d3b210f7506959522873efc6208e7e4fd0056", "t": "getExposureWindows(summary:completionHandler:)", "n": 403, "laws": 1, "ts": "2026-07-25 18:28 UTC"}
 {"id": "/documentation/FinanceKit/FinanceStore", "sha": "79dc96234aa4ac71d603fd3e67432979d321c756b51a3783dbdf71ae495ad418", "t": "FinanceStore", "n": 1038, "laws": 0, "ts": "2026-07-25 18:30 UTC"}
 {"id": "/documentation/foundation/icloud", "sha": "21d18c860a1f8c8a3f2ff79d63f0674d139e2022caf71ac514ad3da816f8a5a0", "t": "iCloud", "n": 582, "laws": 0, "ts": "2026-07-25 18:31 UTC"}
+{"id": "/documentation/metal/mtl4commandqueue", "sha": "f8c334edaaff5dabaa618a0bf4651c5232f6085afa7318905a55bda646b286f8", "t": "MTL4CommandQueue", "n": 591, "laws": 1, "ts": "2026-07-25 23:05 UTC"}
+{"id": "/documentation/proximityreader/mobiledriverslicensedatarequest", "sha": "7952e9fc4c6cb59ac3c46cf6a5d2d73efd69e4c5572d0fc9fd1b7da89d1dc36c", "t": "MobileDriversLicenseDataRequest", "n": 403, "laws": 0, "ts": "2026-07-25 23:13 UTC"}
+{"id": "/documentation/realitykit/physicallybasedmaterial/metallic-swift.property", "sha": "db054c867d7968c3543bfbe3e4bc82017457cf91026277038ce1b2814ab14429", "t": "metallic", "n": 979, "laws": 2, "ts": "2026-07-25 23:17 UTC"}
+{"id": "/documentation/swiftui/app-organization", "sha": "2fef04ae4dae8a21d8cc6ef3af21dfcf767fec292cba21cf43e7bc1177a07078", "t": "App organization", "n": 1391, "laws": 1, "ts": "2026-07-25 23:23 UTC"}

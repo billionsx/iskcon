@@ -21,3 +21,9 @@
 {"id": "/documentation/evaluations/scoredimension", "sha": "939d22dd1be444b192da9b8203f2fe9e9690bdf9b2fb5ba27ab97e21526b89bb", "t": "ScoreDimension", "n": 375, "laws": 0, "ts": "2026-07-25 18:27 UTC"}
 {"id": "/documentation/foundation/url/formatstyle", "sha": "c92b734c00475a83559cb71b1fb427ce34dc9630909a85ed8e5e805d0c80c554", "t": "URL.FormatStyle", "n": 2052, "laws": 4, "ts": "2026-07-25 18:31 UTC"}
 {"id": "/documentation/gamecontroller/gcmouse", "sha": "2435988466688c90091b6364234d103161c993fe2a96a0a7b813303a11e04f03", "t": "GCMouse", "n": 818, "laws": 1, "ts": "2026-07-25 18:33 UTC"}
+{"id": "/documentation/CoreLocation/kCLLocationAccuracyKilometer", "sha": "51efa0ca6b1e2cad36e603ff1e06f012452a1d66a0462f23da0682ba3f3191ef", "t": "kCLLocationAccuracyKilometer", "n": 97, "laws": 0, "ts": "2026-07-25 23:01 UTC"}
+{"id": "/documentation/metal/mtlrendercommandencoder/setvertexbuffer(_:offset:index:)", "sha": "89c199388c6458c1e46db3b793bad4e73634f4ecb678d36a45ee294a288401d8", "t": "setVertexBuffer(_:offset:index:)", "n": 121, "laws": 0, "ts": "2026-07-25 23:06 UTC"}
+{"id": "/documentation/Intents/INStartWorkoutIntentResponseCode", "sha": "c25157f82b8dcbb0eb57ba5de6bb7948a8d3e834800fb6559f8be37a74e2c396", "t": "INStartWorkoutIntentResponseCode", "n": 533, "laws": 0, "ts": "2026-07-25 23:20 UTC"}
+{"id": "/documentation/storekit/subscriptioninfo", "sha": "6415c9b6a2949de766f480a8706cec8d1a21d75dad1298d55191099b7794af09", "t": "SubscriptionInfo", "n": 49, "laws": 0, "ts": "2026-07-25 23:21 UTC"}
+{"id": "/documentation/swiftui/lazyvgrid", "sha": "835116a1cf3ec88cbc3e766577cfc40515f01971b3890fb9351517d1e967f3c8", "t": "LazyVGrid", "n": 1450, "laws": 2, "ts": "2026-07-25 23:24 UTC"}
+{"id": "/documentation/swiftui/view/tabviewcustomization(_:)", "sha": "d258327bf43c50e6941e9f62718d04e64b2158f3e1f92766a7de85ace11cbd23", "t": "tabViewCustomization(_:)", "n": 1209, "laws": 1, "ts": "2026-07-25 23:25 UTC"}

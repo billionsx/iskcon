@@ -17,3 +17,9 @@
 {"id": "/documentation/eventkit/accessing-the-event-store", "sha": "6f2182786fe4b96628cf87d6ec5b3affc11708efb01b7ea9cfe263c7337ff345", "t": "Accessing the event store", "n": 3823, "laws": 10, "ts": "2026-07-25 18:27 UTC"}
 {"id": "/documentation/EventKit/EKStructuredLocation/init(title:)", "sha": "549ad09932ba66d7950df2b18e5b90cf82b31760c712c226a24794f8463288e5", "t": "init(title:)", "n": 107, "laws": 0, "ts": "2026-07-25 18:28 UTC"}
 {"id": "/documentation/GroupActivities/GroupActivitySharingController-ybcy", "sha": "0bbe063dab418901379ba94e0a1a940fae2f348f99b26e40dbc3c36d99976dd1", "t": "GroupActivitySharingController", "n": 1493, "laws": 0, "ts": "2026-07-25 18:34 UTC"}
+{"id": "/documentation/metal/performing-calculations-on-a-gpu", "sha": "c585cfe64552cd0d70517e7d04d98b4b00187041ac5367fde3168f7b853080ef", "t": "Performing calculations on a GPU", "n": 13188, "laws": 10, "ts": "2026-07-25 23:04 UTC"}
+{"id": "/documentation/QuartzCore/CAMetalDrawable", "sha": "4af18310bdbea5fd89c6228b4f22af6b4fa8b126a38b96d21465935d88df5cfa", "t": "CAMetalDrawable", "n": 316, "laws": 1, "ts": "2026-07-25 23:04 UTC"}
+{"id": "/documentation/metal/mtlrendercommandencoder", "sha": "117bb7b045c680f0e4430fa805d6a28bc4d403624876c354b2c1bcd4f3e3de3d", "t": "MTLRenderCommandEncoder", "n": 5876, "laws": 4, "ts": "2026-07-25 23:06 UTC"}
+{"id": "/documentation/metal/mtlfence", "sha": "1677dead638e4b7c9ed65cd6f900cec6127a96c8d14254e1c40b03b135949a5a", "t": "MTLFence", "n": 2413, "laws": 2, "ts": "2026-07-25 23:06 UTC"}
+{"id": "/documentation/realitykit/physicsbodycomponent/isaffectedbygravity", "sha": "b49fa50776ed44855755e6179c39184f17c5abb019e6e227122360e930906c6e", "t": "isAffectedByGravity", "n": 76, "laws": 0, "ts": "2026-07-25 23:17 UTC"}
+{"id": "/documentation/TechnologyOverviews/adopting-liquid-glass", "sha": "98f4dc35bb1a57da18a153c67ce72985a4f9c3f7e19e760fa2a64391626c4a74", "t": "Adopting Liquid Glass", "n": 17716, "laws": 10, "ts": "2026-07-25 23:25 UTC"}

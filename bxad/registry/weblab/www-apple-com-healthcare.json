@@ -1,13 +1,13 @@
 {
  "url": "https://www.apple.com/healthcare/",
  "sections": [
-  "section",
-  "section",
-  "section",
-  "section",
-  "section",
-  "section",
-  "section"
+  "section-hero",
+  "section-hospital-care",
+  "section-home-care",
+  "section-rnd",
+  "section-it-security",
+  "section-values",
+  "section-router"
  ],
  "modules": [
   "name:hero",
@@ -35,5 +35,5 @@
   "/v/healthcare/m/built/styles/overview.built.css",
   "/ac/ac-films/7.5.1/styles/modal.css"
  ],
- "typography_laws": 0
+ "typography_laws": 2
 }

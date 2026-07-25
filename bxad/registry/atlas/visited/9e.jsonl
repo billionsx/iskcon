@@ -14,3 +14,9 @@
 {"id": "/documentation/DriverKit/OSAction", "sha": "2c549c880b94c97200d48fd6bc15318b0d40b773b2a89bc2cf28fe70312ec880", "t": "OSAction", "n": 1132, "laws": 2, "ts": "2026-07-25 18:12 UTC"}
 {"id": "/documentation/UIKit/UICloudSharingControllerDelegate/cloudSharingControllerDidStopSharing(_:)", "sha": "66f68d2a939774fa0ec015b5b79c7683651a09e8d311ec32f6c7648a830a733d", "t": "cloudSharingControllerDidStopSharing(_:)", "n": 219, "laws": 0, "ts": "2026-07-25 18:17 UTC"}
 {"id": "/documentation/FileProvider/NSFileProviderDomain", "sha": "070c6c65e8656e10001dc95fdbf4de80ad97cd7dda2d87606a92cdd6600d9e33", "t": "NSFileProviderDomain", "n": 1248, "laws": 3, "ts": "2026-07-25 18:29 UTC"}
+{"id": "/documentation/HomeKit/HMAccessory", "sha": "643918a8f5804aff82f59a92cebc629f3a6ff91c121a7da81970f65adf70b04a", "t": "HMAccessory", "n": 2135, "laws": 1, "ts": "2026-07-25 22:59 UTC"}
+{"id": "/documentation/metal/mtl4commandallocator", "sha": "e4c90ddc7eb70900313041dd9fac84a7fb5d96a02f34c88e4012518f27458219", "t": "MTL4CommandAllocator", "n": 161, "laws": 0, "ts": "2026-07-25 23:05 UTC"}
+{"id": "/documentation/metal/mtlresidencyset", "sha": "83109b6fbb69972678814a29631469a12026a0fe9e1d4676cbed95f4142381b5", "t": "MTLResidencySet", "n": 4998, "laws": 5, "ts": "2026-07-25 23:05 UTC"}
+{"id": "/documentation/pdfkit/pdfpage", "sha": "f732067513c23d968a77c9354ce0dd68f9516de47d8945c4cc34e17dfc27a238", "t": "PDFPage", "n": 1370, "laws": 1, "ts": "2026-07-25 23:11 UTC"}
+{"id": "/documentation/Swift/OptionSet", "sha": "dc65d46777720b4e9c5a54baf996065a583a9b982bd635d8a5831c2dc5feb2fd", "t": "OptionSet", "n": 2246, "laws": 4, "ts": "2026-07-25 23:14 UTC"}
+{"id": "/documentation/Intents/INPersonResolutionResult/disambiguation(with:)", "sha": "82ee9084fbaa7fd6817397e8bbe9e363121bf928ea3c98f4caf9e7f8f873ec8e", "t": "disambiguation(with:)", "n": 337, "laws": 2, "ts": "2026-07-25 23:19 UTC"}

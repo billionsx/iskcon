@@ -1,22 +1,22 @@
 {
  "url": "https://www.apple.com/mac-mini/",
  "sections": [
-  "section",
-  "section",
-  "section",
-  "section",
-  "section",
-  "section",
-  "section",
-  "section",
-  "section",
-  "section",
-  "section",
-  "section",
-  "section",
-  "section",
-  "section",
-  "section"
+  "section-welcome",
+  "section-highlights",
+  "section-closer-look",
+  "section-product-stories",
+  "section-design",
+  "section-lifestyle",
+  "section-performance",
+  "section-apple-intelligence",
+  "section-macos",
+  "section-mac-iphone",
+  "section-accessories",
+  "section-incentive",
+  "section-contrast",
+  "section-decarbonizing",
+  "section-values",
+  "section-index"
  ],
  "modules": [
   "name:hero",
@@ -52,5 +52,5 @@
   "/v/mac-mini/aa/built/styles/overview.built.css",
   "/ac/ac-films/7.5.1/styles/modal.css"
  ],
- "typography_laws": 0
+ "typography_laws": 2
 }

@@ -60,3 +60,40 @@
 {"id": "/documentation/Swift/Array/max(by:)", "law": "That is, for any elements , , and , the following conditions must hold: is always ."}
 {"id": "/documentation/Swift/Array/max(by:)", "law": "(Transitive incomparability) This example shows how to use the method on a dictionary to find the key-value pair with the highest value."}
 {"id": "/documentation/Swift/Array/max(by:)", "law": "Returns the maximum element in the sequence, using the given predicate as the comparison between elements."}
+{"id": "/documentation/Swift/AsyncStream", "law": "To adapt existing callback code to use - , use the callbacks to provide values to the stream, by using the continuation’s method."}
+{"id": "/documentation/Swift/AsyncStream", "law": "To adapt this to use - , extend the to add a property, of type ."}
+{"id": "/documentation/Swift/AsyncStream", "law": "Because the stream is an , the call point can use the - - syntax to process each instance as the stream produces it: An asynchronous sequence generated from a closure that calls a continuation to produce new elements."}
+{"id": "/documentation/Swift/AsyncSequence", "law": "An may have all, some, or none of its values available when you first use it."}
+{"id": "/documentation/Swift/AsyncSequence", "law": "Instead, you use to receive values as they become available."}
+{"id": "/documentation/Swift/AsyncSequence", "law": "However, because the caller must potentially wait for values, you use the keyword."}
+{"id": "/documentation/Swift/AsyncSequence", "law": "The difference is that the defines its method as , which requires a caller to wait for the next value with the keyword."}
+{"id": "/documentation/Swift/AsyncSequence", "law": "These returned sequences don’t eagerly await the next member of the sequence, which allows the caller to decide when to start work."}
+{"id": "/documentation/Swift/AnyClass", "law": "You can use the protocol as the concrete type for an instance of any class."}
+{"id": "/documentation/Swift/OptionSet", "law": "You use the protocol to represent bitset types, where individual bits represent members of a set."}
+{"id": "/documentation/Swift/OptionSet", "law": "What’s more, when implemented using specific criteria, adoption of this protocol requires no extra work on your part."}
+{"id": "/documentation/Swift/OptionSet", "law": "For your type to automatically receive default implementations for set-related operations, the property must be of a type that conforms to the protocol, such as or ."}
+{"id": "/documentation/Swift/OptionSet", "law": "Use set-related operations to check for membership and to add or remove members from an instance of your custom option set type."}
+{"id": "/documentation/Swift/Bool", "law": "Swift uses only simple Boolean values in conditional contexts to help avoid accidental programming errors and to help maintain the clarity of each control statement."}
+{"id": "/documentation/Swift/Bool", "law": "Unlike in other programming languages, in Swift, integers and strings cannot be used where a Boolean value is required."}
+{"id": "/documentation/Swift/Bool", "law": "For example, the following code sample does not compile, because it attempts to use the integer in a logical context: The correct approach in Swift is to compare the value with zero in the statement."}
+{"id": "/documentation/swift/mixinglanguagesinanxcodeproject", "law": "Before you run the sample code project in Xcode, ensure you’re using macOS 14.0 or later."}
+{"id": "/documentation/swift/mixinglanguagesinanxcodeproject", "law": "Use C++ APIs in Swift – and Swift APIs in C++ – in a single framework target, and consume the framework’s APIs in a separate app target."}
+{"id": "/documentation/swift/callingapisacrosslanguageboundaries", "law": "Before you run the sample code project in Xcode, ensure you’re using macOS 14.0 or later."}
+{"id": "/documentation/swift/callingapisacrosslanguageboundaries", "law": "Use a variety of C++ APIs in Swift – and vice-versa – across multiple targets and frameworks in an Xcode project."}
+{"id": "/documentation/swift/concurrency", "law": "Updating an app to use strict concurrency."}
+{"id": "/documentation/swift/concurrency", "law": "Updating an App to Use Swift Concurrency."}
+{"id": "/documentation/swift/swift-standard-library", "law": "Protocols, such as and , that you use to customize operations that are available to all types."}
+{"id": "/documentation/swift/swift-standard-library", "law": "Protocols, such as , that you use to provide implementations that would otherwise require boilerplate code."}
+{"id": "/documentation/swift/updating-an-app-to-use-strict-concurrency", "law": "Make sure that the complication appears on the active watch face."}
+{"id": "/documentation/swift/updating-an-app-to-use-strict-concurrency", "law": "Each target generates warnings that must be resolved."}
+{"id": "/documentation/swift/updating-an-app-to-use-strict-concurrency", "law": "Use this code to follow along with a guide to migrating your code to take advantage of the full concurrency protection that the Swift 6 language mode provides."}
+{"id": "/documentation/Swift/Array", "law": "You use arrays to organize your app’s data."}
+{"id": "/documentation/Swift/Array", "law": "Specifically, you use the type to hold elements of a single type, the array’s type."}
+{"id": "/documentation/Swift/Array", "law": "For example: If you need an array that is preinitialized with a fixed number of default values, use the initializer."}
+{"id": "/documentation/Swift/Array", "law": "When you need to perform an operation on all of an array’s elements, use a - loop to iterate through the array’s contents."}
+{"id": "/documentation/Swift/Array", "law": "Use the property to check quickly whether an array has any elements, or use the property to find the number of elements in the array."}
+{"id": "/documentation/Swift/Array", "law": "Use the and properties for safe access to the value of the array’s first and last elements."}
+{"id": "/documentation/Swift/Array", "law": "The first element of a nonempty array is always at index zero."}
+{"id": "/documentation/Swift/Array", "law": "To add single elements to the end of an array, use the method."}
+{"id": "/documentation/Swift/Array", "law": "To remove elements from an array, use the , , and methods."}
+{"id": "/documentation/Swift/Array", "law": "If you know approximately how many elements you will need to store, use the method before appending to the array to avoid intermediate reallocations."}

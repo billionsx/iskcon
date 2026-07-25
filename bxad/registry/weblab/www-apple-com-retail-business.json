@@ -1,9 +1,9 @@
 {
  "url": "https://www.apple.com/retail/business/",
  "sections": [
-  "section",
-  "section",
-  "section"
+  "section-page-headline",
+  "section-hero",
+  "section-products-and-services"
  ],
  "modules": [
   "name:page headline",
@@ -27,5 +27,5 @@
   "/v/retail/business/m/built/styles/main.built.css",
   "/v/retail/business/m/built/styles/overview.built.css"
  ],
- "typography_laws": 0
+ "typography_laws": 2
 }

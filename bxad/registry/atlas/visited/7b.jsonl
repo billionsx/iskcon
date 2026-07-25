@@ -15,3 +15,8 @@
 {"id": "/documentation/clockkit/clkcomplication", "sha": "5c872f0bf737f224431a702f4cd504ec5e93d6e9f9ff0d3470f576df7f681e79", "t": "CLKComplication", "n": 1241, "laws": 3, "ts": "2026-07-25 18:17 UTC"}
 {"id": "/documentation/CloudKit/CKFetchRecordZoneChangesOperation", "sha": "12a2adf8f00c444d8d9a269c069b670f8c6cececdd838b64f96b6033c7e24f23", "t": "CKFetchRecordZoneChangesOperation", "n": 2869, "laws": 9, "ts": "2026-07-25 18:17 UTC"}
 {"id": "/documentation/QuartzCore/CAMetalLayer/pixelFormat", "sha": "d954682061fb2ed015f0cd1bee51d3c93610eb3c0118d2e6f487f2cfab489af3", "t": "pixelFormat", "n": 121, "laws": 1, "ts": "2026-07-25 18:21 UTC"}
+{"id": "/documentation/CoreLocation/CLLocationManager/activityType", "sha": "06adbf01fd4e8cc0a554aba68c3e1a035d28731a9fa533802021f198e9d6f6ea", "t": "activityType", "n": 1152, "laws": 2, "ts": "2026-07-25 23:01 UTC"}
+{"id": "/documentation/CoreLocation/CLLocationCoordinate2D", "sha": "33b4cd21b5b96c8c99f4fdf19f401a43a13e27a17c1e63f97fa6e03cfbcfd892", "t": "CLLocationCoordinate2D", "n": 354, "laws": 0, "ts": "2026-07-25 23:01 UTC"}
+{"id": "/documentation/messages/msmessagesappviewcontroller", "sha": "a242c96e06c9b9682fd128a6fbe50e9dba6b28c8e15d21ad80d66eff7d82b6a8", "t": "MSMessagesAppViewController", "n": 712, "laws": 1, "ts": "2026-07-25 23:03 UTC"}
+{"id": "/documentation/metal/running-inline-ml-operations-in-a-shader-with-metal-4", "sha": "d5ed38ba389dfcb205ecf69d028edb9f399380b67dd770b95061df073722ba51", "t": "Running inline ML operations in a shader with Metal 4", "n": 5277, "laws": 6, "ts": "2026-07-25 23:07 UTC"}
+{"id": "/documentation/swiftui/documents", "sha": "3cc83d9c547a6bdda942cfac41f39ff88c9a57d7beaff21735ec261d08358718", "t": "Documents", "n": 2078, "laws": 2, "ts": "2026-07-25 23:24 UTC"}

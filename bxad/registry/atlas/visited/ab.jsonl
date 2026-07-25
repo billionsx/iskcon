@@ -10,3 +10,10 @@
 {"id": "/documentation/CoreAudio", "sha": "9207088c0ef3a73db8b70a03bbc75b70a0bb76a7316caaca08d137bdb8e46da1", "t": "Core Audio", "n": 945, "laws": 1, "ts": "2026-07-24 18:49 UTC"}
 {"id": "/documentation/SwiftUI/View", "sha": "bf88a124014302a506b0d234c5f6e93689cf1debfde423a99e22a17a14dd7278", "t": "View", "n": 1991, "laws": 4, "ts": "2026-07-24 18:57 UTC"}
 {"id": "/documentation/appintents/entityquery/suggestedentities()", "sha": "919749c56aafda6bc9fa9552cc7a2063daa62ddbae6dd24cfb6d16568374ebd1", "t": "suggestedEntities()", "n": 93, "laws": 0, "ts": "2026-07-25 18:08 UTC"}
+{"id": "/documentation/immersivemediasupport/authoring-apple-immersive-video", "sha": "9d4719128a1b818bf36903b637efd6981c66876fb883655e1da7d0766a557ebb", "t": "Authoring Apple Immersive Video", "n": 469, "laws": 1, "ts": "2026-07-25 23:00 UTC"}
+{"id": "/documentation/mapkit/mapkit-annotations", "sha": "38c999dabfbbdd918c9a9f0f148bc61257f424785da78ee4db5a78a00355691b", "t": "MapKit annotations", "n": 591, "laws": 0, "ts": "2026-07-25 23:00 UTC"}
+{"id": "/documentation/networkextension", "sha": "dfc17e88fda8340aab8764a1fcfd003627c7c6ac50f4893a5e41f6f5ebb75b5b", "t": "Network Extension", "n": 2783, "laws": 3, "ts": "2026-07-25 23:09 UTC"}
+{"id": "/documentation/pencilkit/pkstrokepointreference", "sha": "9127aba4fe2bb972d794772da60695b6ec148fbf91476b0de0c79355ab0c8c57", "t": "PKStrokePointReference", "n": 696, "laws": 0, "ts": "2026-07-25 23:12 UTC"}
+{"id": "/documentation/realitykit/videomaterial", "sha": "903cdbc79bccd9dfa697fd1501e3ab5bc8ff54c0112ad50311982667236682c1", "t": "VideoMaterial", "n": 1129, "laws": 3, "ts": "2026-07-25 23:16 UTC"}
+{"id": "/documentation/realitykit/entitygeometricpins/set(named:position:orientation:)", "sha": "bd5b624ab6c6eff81a0709c6c153c03a8cffa5cbe5a85f61a858909dc7192cb6", "t": "set(named:position:orientation:)", "n": 207, "laws": 0, "ts": "2026-07-25 23:17 UTC"}
+{"id": "/documentation/Foundation/IndexSet", "sha": "bb9e9af627bbbfb0aa5c0f7efef4e0ac50ae2907b67352904752ecd4520ea66d", "t": "IndexSet", "n": 1670, "laws": 0, "ts": "2026-07-25 23:22 UTC"}

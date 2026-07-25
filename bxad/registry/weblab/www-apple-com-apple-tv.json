@@ -1,14 +1,14 @@
 {
  "url": "https://www.apple.com/apple-tv/",
  "sections": [
-  "section",
-  "section",
-  "section",
-  "section",
-  "section",
-  "section",
-  "section",
-  "section"
+  "section-hero",
+  "section-value-props",
+  "section-offers",
+  "section-shows",
+  "section-sports",
+  "section-apple-tv-app",
+  "section-faq",
+  "section-routers"
  ],
  "modules": [
   "name:hero",
@@ -35,5 +35,5 @@
   "/ac/localnav/9/styles/ac-localnav.built.css",
   "/v/apple-tv/c/built/styles/overview.built.css"
  ],
- "typography_laws": 0
+ "typography_laws": 2
 }

@@ -1,14 +1,14 @@
 {
  "url": "https://www.apple.com/apple-fitness-plus/",
  "sections": [
-  "section",
-  "section",
-  "section",
-  "section",
-  "section",
-  "section",
-  "section",
-  "section"
+  "section-hero",
+  "section-get-started",
+  "section-inspiration",
+  "section-move",
+  "section-join",
+  "section-compatibility",
+  "section-faq",
+  "section-routing"
  ],
  "modules": [
   "name:hero",
@@ -47,5 +47,5 @@
   "/v/apple-fitness-plus/ac/built/styles/overview.built.css",
   "/ac/ac-films/7.5.1/styles/modal.css"
  ],
- "typography_laws": 0
+ "typography_laws": 2
 }

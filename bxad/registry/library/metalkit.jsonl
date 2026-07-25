@@ -12,3 +12,10 @@
 {"id": "/documentation/MetalKit/MTKView/currentDrawable", "law": "Your app should check that isn’t before attempting to draw."}
 {"id": "/documentation/MetalKit/MTKView/currentDrawable", "law": "Use a object to render into the drawable’s texture and present it for display (typically registered using the method of a command buffer)."}
 {"id": "/documentation/MetalKit/MTKView/currentDrawable", "law": "The drawable to use for the current frame."}
+{"id": "/documentation/MetalKit/MTKTextureLoader", "law": "Use the class to create a Metal texture from existing image data."}
+{"id": "/documentation/MetalKit/MTKTextureLoader", "law": "Then use one of the texture loader’s methods to create a texture."}
+{"id": "/documentation/MetalKit/MTKTextureLoader", "law": "The code example below synchronously creates a texture from data at a URL, using the default options: If you use custom data formats, or change the image data at runtime, use methods instead."}
+{"id": "/documentation/MetalKit/MTKView/currentMTL4RenderPassDescriptor", "law": "The view does not use this descriptor and there is no requirement for an app to use this descriptor."}
+{"id": "/documentation/MetalKit/MTKView/clearColor", "law": "The color to use to clear the color target when creating a render pass descriptor."}
+{"id": "/documentation/MetalKit/MTKView/device", "law": "You must explicitly set the device object."}
+{"id": "/documentation/MetalKit/MTKViewDelegate/mtkView(_:drawableSizeWillChange:)", "law": "Use this method to recompute any view or projection matrices, or to regenerate any buffers to be compatible with the view’s new size."}

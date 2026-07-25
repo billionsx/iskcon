@@ -12,3 +12,13 @@
 {"id": "/documentation/coremidi", "sha": "1118652978726d8ee0e482b7506263ef2ae740f31328384d1f198ac0bb33717f", "t": "Core MIDI", "n": 1057, "laws": 0, "ts": "2026-07-25 18:21 UTC"}
 {"id": "/documentation/Security/SecKeychainItem", "sha": "dcb5b9b0d5d5848901e12829247cf855538221434339d1010a93b411c7a6d3a8", "t": "SecKeychainItem", "n": 154, "laws": 1, "ts": "2026-07-25 18:25 UTC"}
 {"id": "/documentation/evaluations/designing-evaluation-datasets", "sha": "724f67176c8ce592512eb001422a877a90ee571bf8c014288d849340e6c4eb8c", "t": "Designing datasets to test your feature", "n": 8913, "laws": 10, "ts": "2026-07-25 18:26 UTC"}
+{"id": "/documentation/SystemExtensions/OSBundleUsageDescriptionKey", "sha": "2d98e5a46107bdc8c09709f3215ae00822036e9f6a5b82d9b28a5fb4859f9c0d", "t": "OSBundleUsageDescriptionKey", "n": 328, "laws": 2, "ts": "2026-07-25 22:58 UTC"}
+{"id": "/documentation/healthkit/hkworkoutzoneconfiguration", "sha": "50cd22e51976eb65e1c087e4d7ca1671c084ce649236810cb592fbfb6280a630", "t": "HKWorkoutZoneConfiguration", "n": 607, "laws": 0, "ts": "2026-07-25 22:59 UTC"}
+{"id": "/documentation/mapkit/mapkit-overlays", "sha": "95adbaaffb07b54610cd753cac3ebbdb5c695d8bcdb9c810cf075f5b46de7c5a", "t": "MapKit overlays", "n": 618, "laws": 0, "ts": "2026-07-25 23:01 UTC"}
+{"id": "/documentation/mapkit/mkmaprect", "sha": "ffb84bd4a13626a4d374519578b678ffe6168181ebf7e1c452be5245ead51401", "t": "MKMapRect", "n": 1022, "laws": 0, "ts": "2026-07-25 23:01 UTC"}
+{"id": "/documentation/messages/creating-a-sticker-app-with-a-custom-layout", "sha": "da523b389fd1df1324817bebef08f679fd5de8b81169197c0a5697c3292a3256", "t": "Creating a Sticker App with a Custom Layout", "n": 1658, "laws": 1, "ts": "2026-07-25 23:03 UTC"}
+{"id": "/documentation/pdfkit/pdfdocumentdelegate", "sha": "4e9c836b42ba5cb2bc8781caef50e65d31b929f201feaf2ca8eeea46d8b29e73", "t": "PDFDocumentDelegate", "n": 393, "laws": 0, "ts": "2026-07-25 23:11 UTC"}
+{"id": "/documentation/SwiftUI/GeometryProxy3D/frame(in:)", "sha": "46458c3a5926df1bdd0acc8d2efe38efeec5fd296f2518c141e9f871dc621e67", "t": "frame(in:)", "n": 78, "laws": 0, "ts": "2026-07-25 23:17 UTC"}
+{"id": "/documentation/swiftdata/transient()", "sha": "798e0934ec707cf07ed330a3aa8bde3afa951ad4f5338e4cee4f02fb12654159", "t": "Transient()", "n": 623, "laws": 2, "ts": "2026-07-25 23:22 UTC"}
+{"id": "/documentation/swiftui/viewmodifier", "sha": "882aba7d7bc564f51b49972d37dc0adea6d2d8e99b5570ff469eee40005d1d08", "t": "ViewModifier", "n": 1051, "laws": 0, "ts": "2026-07-25 23:26 UTC"}
+{"id": "/documentation/swiftui/scene", "sha": "8a25bc863b8df77d7635e2a2d68b6fdc0d9dcf855216e6100beaf97a9143006d", "t": "Scene", "n": 3640, "laws": 4, "ts": "2026-07-25 23:26 UTC"}

@@ -1,15 +1,15 @@
 {
  "url": "https://www.apple.com/supply-chain/",
  "sections": [
-  "section",
-  "section",
-  "section",
-  "section",
-  "section",
-  "section",
-  "section",
-  "section",
-  "section"
+  "section-hero",
+  "section-highlights",
+  "section-innovation",
+  "section-people",
+  "section-environment",
+  "section-reports",
+  "section-news",
+  "section-feedback",
+  "section-values-router"
  ],
  "modules": [
   "name:hero",
@@ -39,5 +39,5 @@
   "/v/supply-chain/c/built/styles/overview.built.css",
   "/ac/ac-films/7.5.1/styles/modal.css"
  ],
- "typography_laws": 0
+ "typography_laws": 2
 }

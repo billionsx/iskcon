@@ -1,13 +1,13 @@
 {
  "url": "https://www.apple.com/apple-music/",
  "sections": [
-  "section",
-  "section",
-  "section",
-  "section",
-  "section",
-  "section",
-  "section"
+  "section-hero",
+  "section-get-started",
+  "section-cards",
+  "section-devices",
+  "section-plans",
+  "section-faq",
+  "section-working-with"
  ],
  "modules": [
   "name:hero",
@@ -40,5 +40,5 @@
   "/v/apple-music/ag/built/styles/main.built.css",
   "/v/apple-music/ag/built/styles/overview.built.css"
  ],
- "typography_laws": 0
+ "typography_laws": 2
 }

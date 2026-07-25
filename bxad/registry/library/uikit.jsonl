@@ -326,3 +326,45 @@
 {"id": "/documentation/UIKit/UITextInputTraits/textContentType", "law": "Use this property to give the keyboard and the system information about the expected semantic meaning for the content that users enter."}
 {"id": "/documentation/UIKit/UITextInputTraits/textContentType", "law": "Because the expected semantic meaning for each text input area should be identified as specifically as possible, you can’t combine multiple values for one property."}
 {"id": "/documentation/UIKit/UITextInputTraits/textContentType", "law": "For possible values you can use, see ; by default, the value of this property is ."}
+{"id": "/documentation/UIKit/UIViewController/prepare(for:sender:)", "law": "Subclasses override this method and use it to configure the new view controller prior to it being displayed."}
+{"id": "/documentation/UIKit/UIViewController/prepare(for:sender:)", "law": "Because segues can be triggered from multiple sources, you can use the information in the and parameters to disambiguate between different logical paths in your app."}
+{"id": "/documentation/UIKit/UIViewController/prepare(for:sender:)", "law": "You could then use that information to set the data on the destination view controller."}
+{"id": "/documentation/UIKit/UIViewController", "law": "Instead, you often use multiple view controllers, each of which owns a portion of your app’s user interface."}
+{"id": "/documentation/UIKit/UIViewController", "law": "Every app contains at least one custom subclass of ."}
+{"id": "/documentation/UIKit/UIViewController", "law": "If you use a storyboard or a nib file to store your view objects, each view controller object automatically gets its own copy of these views when the view controller asks for them."}
+{"id": "/documentation/UIKit/UIViewController", "law": "However, if you create your views manually, each view controller must have its own unique set of views."}
+{"id": "/documentation/UIKit/UIViewController", "law": "A view controller’s root view is always sized to fit its assigned space."}
+{"id": "/documentation/UIKit/UIViewController", "law": "For other views in your view hierarchy, use Interface Builder to specify the Auto Layout constraints that govern how each view is positioned and sized within its superview’s bounds."}
+{"id": "/documentation/UIKit/UIViewController", "law": "Use a method like to prepare your views to appear onscreen, and use to save changes or other state information."}
+{"id": "/documentation/UIKit/UIViewController", "law": "Use other methods to make appropriate changes."}
+{"id": "/documentation/UIKit/UIViewController", "law": "You need to ensure that if you start a process in a callback method, you end the process in both the corresponding and the opposite callback method."}
+{"id": "/documentation/UIKit/UIViewController", "law": "If a view controller isn’t visible when an orientation change occurs, then the rotation methods are never called."}
+{"id": "/documentation/UIKit/UIBarButtonItem", "law": "You typically use Interface Builder to create and configure bar button items."}
+{"id": "/documentation/UIKit/UIBarButtonItem", "law": "You can use customized buttons in standard places in a object or a instance."}
+{"id": "/documentation/UIKit/UIBarButtonItem", "law": "In general, specify a value for the normal state so that other states without a custom value set can use it."}
+{"id": "/documentation/UIKit/UICollectionViewController", "law": "When you initialize the controller, using the method, you specify the layout the collection view should have."}
+{"id": "/documentation/UIKit/UICollectionViewController", "law": "Because the initially created collection view is without dimensions or content, the collection view’s data source and delegate—typically the collection view controller itself—must provide this information."}
+{"id": "/documentation/UIKit/UICollectionViewController", "law": "You may override the method or any other superclass method, but if you do, be sure to call in the implementation of your method."}
+{"id": "/documentation/UIKit/UICollectionViewController", "law": "If you do not, the collection view controller may not be able to perform all of the tasks needed to maintain the integrity of the collection view."}
+{"id": "/documentation/UIKit/UIImagePickerController", "law": "To use an image picker controller containing its default controls, perform these steps: Verify that the device is capable of picking content from the desired source."}
+{"id": "/documentation/UIKit/UIImagePickerController", "law": "On iPad, the correct way to present an image picker depends on its source type, as summarized in this table: The table indicates that on iPad, if you specify a source type of or , you must present the image picker using a popover controller (to learn how to do this, see )."}
+{"id": "/documentation/UIKit/UIImagePickerController", "law": "For previously saved media, your delegate can then use the image data according to the purpose of your app."}
+{"id": "/documentation/UIKit/UIImagePickerController", "law": "To do this, provide an overlay view containing the controls you want to display, and use the methods described in ."}
+{"id": "/documentation/UIKit/UIImagePickerController", "law": "The view hierarchy for this class is private and must not be modified, with one exception."}
+{"id": "/documentation/UIKit/UIImagePickerController", "law": "You can assign a custom view to the property and use that view to present additional information or manage the interactions between the camera interface and your code."}
+{"id": "/documentation/UIKit/UIImagePickerController", "law": "To use an image picker controller, you must provide a delegate that conforms to the protocol."}
+{"id": "/documentation/UIKit/UIImagePickerController", "law": "Starting in iOS 4.1, you can use the delegate to save still-image metadata to the photo library along with the image."}
+{"id": "/documentation/UIKit/UIImagePickerController", "law": "In iOS 4.0 and later, you can provide custom controls to let the user adjust flash mode (on devices that have a flash LED), pick which camera to use (on devices that have a front and rear camera), and switch between still image and movie capture."}
+{"id": "/documentation/UIKit/UIImagePickerController", "law": "Present a picker interface set to use video capture mode."}
+{"id": "/documentation/UIKit/UIApplicationDelegate/application(_:handle:completionHandler:)", "law": "You might use this method to implement workflows that you can’t implement easily in your extension."}
+{"id": "/documentation/UIKit/UIApplicationDelegate/application(_:handle:completionHandler:)", "law": "For example, you might use it to start or manage a user’s workout session."}
+{"id": "/documentation/UIKit/UIApplicationDelegate/application(_:handle:completionHandler:)", "law": "Your extension’s method must create a response object that resolves and confirms the intent details."}
+{"id": "/documentation/UIKit/UISceneDelegate/scene(_:continue:)", "law": "Use this method to update the specified scene with the data from the provided activity object."}
+{"id": "/documentation/UIKit/elevating-your-ipad-app-with-a-tab-bar-and-sidebar", "law": "If you use SF Symbols for your tab’s image, be sure to select the outline variant."}
+{"id": "/documentation/UIKit/elevating-your-ipad-app-with-a-tab-bar-and-sidebar", "law": "A tab bar is always available and represents the key parts of your app."}
+{"id": "/documentation/UIKit/elevating-your-ipad-app-with-a-tab-bar-and-sidebar", "law": "Use and classes to create a hierarchy of tabs."}
+{"id": "/documentation/UIKit/elevating-your-ipad-app-with-a-tab-bar-and-sidebar", "law": "If the tabs array contains at least one tab group, the system automatically displays the tabs as both a tab bar and a sidebar."}
+{"id": "/documentation/UIKit/elevating-your-ipad-app-with-a-tab-bar-and-sidebar", "law": "You can use to define a section of items in the sidebar."}
+{"id": "/documentation/UIKit/elevating-your-ipad-app-with-a-tab-bar-and-sidebar", "law": "Pinned tabs are always visible on the trailing edge, and only show the tab’s image."}
+{"id": "/documentation/UIKit/elevating-your-ipad-app-with-a-tab-bar-and-sidebar", "law": "Use pinned tabs for prominent items, like search."}
+{"id": "/documentation/UIKit/elevating-your-ipad-app-with-a-tab-bar-and-sidebar", "law": "Also, because pinned tabs only display the tab icon, be sure to select an image that people recognize and can easily understand."}

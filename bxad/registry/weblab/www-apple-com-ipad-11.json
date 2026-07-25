@@ -1,21 +1,21 @@
 {
  "url": "https://www.apple.com/ipad-11/",
  "sections": [
-  "section",
-  "section",
-  "section",
-  "section",
-  "section",
-  "section",
-  "section",
-  "section",
-  "section",
-  "section",
-  "section",
-  "section",
-  "section",
-  "section",
-  "section"
+  "section-hero",
+  "section-features",
+  "section-design",
+  "section-get-things-done",
+  "section-create",
+  "section-connect",
+  "section-watch-learn-play",
+  "section-ipad-accessories",
+  "section-apps",
+  "section-ar",
+  "section-decarbonizing",
+  "section-values-router",
+  "section-giveback",
+  "section-education-savings",
+  "section-compare"
  ],
  "modules": [
   "name:hero",
@@ -63,5 +63,5 @@
   "/v/ipad-11/d/built/styles/overview.built.css",
   "/v/ipad/shared/compare/r/built/styles/overview.built.css"
  ],
- "typography_laws": 0
+ "typography_laws": 2
 }

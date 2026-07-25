@@ -1,25 +1,25 @@
 {
  "url": "https://www.apple.com/macbook-pro/",
  "sections": [
-  "section",
-  "section",
-  "section",
-  "section",
-  "section",
-  "section",
-  "section",
-  "section",
-  "section",
-  "section",
-  "section",
-  "section",
-  "section",
-  "section",
-  "section",
-  "section",
-  "section",
-  "section",
-  "section"
+  "section-welcome",
+  "section-highlights",
+  "section-product-viewer",
+  "section-performance",
+  "section-artificial-intelligence",
+  "section-battery",
+  "section-macos",
+  "section-continuity",
+  "section-apps",
+  "section-display",
+  "section-camera",
+  "section-connectivity",
+  "section-security",
+  "section-upgraders",
+  "section-incentive",
+  "section-contrast",
+  "section-environment",
+  "section-values",
+  "section-index"
  ],
  "modules": [
   "name:hero",
@@ -65,5 +65,5 @@
   "/v/macbook-pro/ax/built/styles/overview.built.css",
   "/ac/ac-films/7.5.1/styles/modal.css"
  ],
- "typography_laws": 0
+ "typography_laws": 2
 }

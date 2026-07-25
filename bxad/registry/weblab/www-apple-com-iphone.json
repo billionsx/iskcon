@@ -1,18 +1,18 @@
 {
  "url": "https://www.apple.com/iphone/",
  "sections": [
-  "section",
-  "section",
-  "section",
-  "section",
-  "section",
-  "section",
-  "section",
-  "section",
-  "section",
-  "section",
-  "section",
-  "section"
+  "section-hero",
+  "section-consider-alt",
+  "section-select",
+  "section-guided-tour",
+  "section-incentive",
+  "section-incentive-alt",
+  "section-upgrade",
+  "section-consider",
+  "section-privacy",
+  "section-essentials",
+  "section-image-accordion",
+  "section-index"
  ],
  "modules": [
   "name:chapternav",
@@ -44,5 +44,5 @@
   "/v/iphone/home/cj/built/styles/overview.built.css",
   "/ac/ac-films/7.5.1/styles/modal.css"
  ],
- "typography_laws": 0
+ "typography_laws": 2
 }

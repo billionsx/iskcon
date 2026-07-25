@@ -11,3 +11,5 @@
 {"id": "/documentation/appstoreconnectapi/get-v1-builds-_id_-diagnosticsignatures", "sha": "7c0cd8125fb2d2bb3a21ba9c0fa191f97d66a5819ebbd059b1e1e2c867c94ec1", "t": "List all diagnostic signatures for a build", "n": 618, "laws": 1, "ts": "2026-07-25 18:11 UTC"}
 {"id": "/documentation/ClassKit/CLSContextType/chapter", "sha": "d99d4a871f8e88933b478ef71dd70ffb21157194c63e58e48e13b57925ef6e0d", "t": "CLSContextType.chapter", "n": 18, "laws": 0, "ts": "2026-07-25 18:16 UTC"}
 {"id": "/documentation/CloudKit/CKSystemSharingUIObserver/systemSharingUIDidSaveShareBlock-39zlv", "sha": "41ada8c1e7368fdf76cf2f6b5cb67651dbecd827f5d5b4718ccde2de30e5ac2c", "t": "systemSharingUIDidSaveShareBlock", "n": 486, "laws": 0, "ts": "2026-07-25 18:19 UTC"}
+{"id": "/documentation/LocalAuthentication/LAContext/invalidate()", "sha": "d6b5d3d7e33a963c73e3229762eae84a37930ae56e53e32bc38b7b6a355204ee", "t": "invalidate()", "n": 319, "laws": 0, "ts": "2026-07-25 23:00 UTC"}
+{"id": "/documentation/mapkit/mkpolyline", "sha": "a122c2ff4df7e54ace75c5846af7a295cbeab526299f61fb78d5ec73e2b90b02", "t": "MKPolyline", "n": 299, "laws": 1, "ts": "2026-07-25 23:01 UTC"}

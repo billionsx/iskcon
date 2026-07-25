@@ -1,16 +1,16 @@
 {
  "url": "https://www.apple.com/education/k12/",
  "sections": [
-  "section",
-  "section",
-  "section",
-  "section",
-  "section",
-  "section",
-  "section",
-  "section",
-  "section",
-  "section"
+  "section-how-to-buy-module",
+  "section-hero",
+  "section-tools",
+  "section-values",
+  "section-investment",
+  "section-built-in-apps",
+  "section-apps",
+  "section-classrooms",
+  "section-how-to-buy-module",
+  "section-sign-up"
  ],
  "modules": [
   "name:hero",
@@ -46,5 +46,5 @@
   "/v/education/k12/home/ai/built/styles/overview.built.css",
   "/v/markets-shared-form/b/built/styles/main.built.css"
  ],
- "typography_laws": 0
+ "typography_laws": 2
 }

@@ -17,3 +17,11 @@
 {"id": "/documentation/Swift/Actor", "sha": "f5df0635a8f7db3cfe2b141ce34a99f7efb5d955dc982e0cfb649e467e3628a9", "t": "Actor", "n": 713, "laws": 1, "ts": "2026-07-25 18:18 UTC"}
 {"id": "/documentation/foundation/pausing-and-resuming-uploads", "sha": "df1df8212e3c2aa60658427bda0dc481b3547dfa5eeb8b419fc87e2e934db921", "t": "Pausing and resuming uploads", "n": 2330, "laws": 6, "ts": "2026-07-25 18:30 UTC"}
 {"id": "/documentation/foundation/jsonencoder", "sha": "932456a7950e54d74d762aeac33edd06a65615cb6d88593f589c0b98278f03c2", "t": "JSONEncoder", "n": 738, "laws": 0, "ts": "2026-07-25 18:31 UTC"}
+{"id": "/documentation/mapkit/mkannotation", "sha": "e696990c6c46d9106966322afd537f6af820f8a3bc0f2d70c32d55d01fda9809", "t": "MKAnnotation", "n": 880, "laws": 0, "ts": "2026-07-25 23:00 UTC"}
+{"id": "/documentation/mapkit/mktileoverlayrenderer", "sha": "4d546008cea2308735261ed0676e05fcf509d404195922add84fd31643724af3", "t": "MKTileOverlayRenderer", "n": 490, "laws": 0, "ts": "2026-07-25 23:02 UTC"}
+{"id": "/documentation/metal/mtl4commandqueue/waitfordrawable(_:)", "sha": "26da97910bee78767da9c67c4baba885f10acf8217bcba463b6fe728ed91ea1a", "t": "waitForDrawable(_:)", "n": 558, "laws": 2, "ts": "2026-07-25 23:05 UTC"}
+{"id": "/documentation/metal/mtlrendercommandencoder/useresource(_:usage:stages:)", "sha": "b55b7540adcdb05bae001dc23c9fca104ade234082bd3545882b3bd229269b80", "t": "useResource(_:usage:stages:)", "n": 1154, "laws": 1, "ts": "2026-07-25 23:06 UTC"}
+{"id": "/documentation/pencilkit/pktoolpicker/init(toolitems:)", "sha": "2a89f18fad43337ce595212dba18c4d8ecffec93938b478fff85bd33e87be008", "t": "init(toolItems:)", "n": 442, "laws": 1, "ts": "2026-07-25 23:12 UTC"}
+{"id": "/documentation/realitykit/scene-content-anchors", "sha": "359ad14cff480a82467b1fb60486d3116d2b6955b27b6dbd696ec459c4dabd3c", "t": "Anchors", "n": 1429, "laws": 1, "ts": "2026-07-25 23:14 UTC"}
+{"id": "/documentation/Spatial/Rect3D", "sha": "95991162061e1c9bf0539c3084ab7ba3317ec2c67f479c7d8082949c60a0e138", "t": "Rect3D", "n": 1341, "laws": 0, "ts": "2026-07-25 23:17 UTC"}
+{"id": "/documentation/storekit/product/subscriptioninfo", "sha": "693edc93af8b655a762e411b7939eeb1a11b1a627b0256a1e00e7a2a59de6481", "t": "Product.SubscriptionInfo", "n": 1082, "laws": 0, "ts": "2026-07-25 23:21 UTC"}

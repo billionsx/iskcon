@@ -2,3 +2,7 @@
 {"id": "/documentation/MetalFX", "law": "Use the GPU time savings to further enhance your app or game’s experience."}
 {"id": "/documentation/MetalFX", "law": "Otherwise, add an instance, which only requires a pixel color input texture."}
 {"id": "/documentation/MetalFX", "law": "Once you’ve created an effect instance, you can use it repeatedly, typically once per frame."}
+{"id": "/documentation/metalfx", "law": "Use the GPU time savings to further enhance your app or game’s experience."}
+{"id": "/documentation/metalfx", "law": "Otherwise, add an instance, which only requires a pixel color input texture."}
+{"id": "/documentation/metalfx", "law": "Once you’ve created an effect instance, you can use it repeatedly, typically once per frame."}
+{"id": "/documentation/metalfx/mtlfxtemporalscaler", "law": "You can use the scaler to upscale every frame of your app’s scene or rendering in real time."}

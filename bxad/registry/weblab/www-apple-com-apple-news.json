@@ -1,18 +1,18 @@
 {
  "url": "https://www.apple.com/apple-news/",
  "sections": [
-  "section",
-  "section",
-  "section",
-  "section",
-  "section",
-  "section",
-  "section",
-  "section",
-  "section",
-  "section",
-  "section",
-  "section"
+  "section-ribbon",
+  "section-hero",
+  "section-offers",
+  "section-publications",
+  "section-puzzles",
+  "section-audio",
+  "section-personalized",
+  "section-devices",
+  "section-plans",
+  "section-tiles-grid",
+  "section-faq",
+  "section-router"
  ],
  "modules": [
   "name:hero",
@@ -42,5 +42,5 @@
   "/v/apple-news/n/built/styles/main.built.css",
   "/v/apple-news/n/built/styles/overview.built.css"
  ],
- "typography_laws": 0
+ "typography_laws": 2
 }

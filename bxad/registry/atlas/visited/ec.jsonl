@@ -14,3 +14,6 @@
 {"id": "/documentation/DockKit/DockAccessory", "sha": "c44ecd69152f6b8a840d7066567bf3de605dd56cb5d846e7e2e435753ab14a9f", "t": "DockAccessory", "n": 2309, "laws": 1, "ts": "2026-07-25 18:25 UTC"}
 {"id": "/documentation/EventKit/EKStructuredLocation/geoLocation", "sha": "4bf33e6df7a7f83e76fe9f39a3632398ec8b39be12da3e9743edfb8fb6962f41", "t": "geoLocation", "n": 18, "laws": 0, "ts": "2026-07-25 18:28 UTC"}
 {"id": "/documentation/FileProvider/NSFileProviderItemDecorationIdentifier", "sha": "61e7e4d0da101d7156022275811c45083e94781c7fe23bfb57e4798d0ac09f66", "t": "NSFileProviderItemDecorationIdentifier", "n": 153, "laws": 0, "ts": "2026-07-25 18:29 UTC"}
+{"id": "/documentation/metal/supporting-simulator-in-a-metal-app", "sha": "190adc9df9fa9ef319e438a47022ae03c86af18eb1665cdea1f4f434f2565e5c", "t": "Supporting Simulator in a Metal app", "n": 169, "laws": 0, "ts": "2026-07-25 23:04 UTC"}
+{"id": "/documentation/swiftui/tab/init(value:role:content:)", "sha": "b5c0cccd1b98f184243a0554a850395fe8a81f7d1ae7ea799b5ef64af419247e", "t": "init(value:role:content:)", "n": 54, "laws": 0, "ts": "2026-07-25 23:25 UTC"}
+{"id": "/documentation/swiftui/view/gridcolumnalignment(_:)", "sha": "7cf3a07302dc64381ed23f22e80cc56ae1e856ac195d088376ac3d3dcf9d35dc", "t": "gridColumnAlignment(_:)", "n": 1046, "laws": 2, "ts": "2026-07-25 23:27 UTC"}

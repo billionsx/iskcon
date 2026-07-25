@@ -8,3 +8,7 @@
 {"id": "/documentation/cloudkit/ckallowedsharingoptions", "sha": "ab0d07992ff2f4e8c433f49cfd1c52c9c33b2819d1d6b33af19b8a3fe30a943c", "t": "CKAllowedSharingOptions", "n": 712, "laws": 0, "ts": "2026-07-25 18:17 UTC"}
 {"id": "/documentation/corebluetooth/cbcentralmanager/retrieveperipherals(withidentifiers:)", "sha": "4f3e8e8933eae173114919872feb0d761314e0949dee6e873853a8b41451694f", "t": "retrievePeripherals(withIdentifiers:)", "n": 166, "laws": 0, "ts": "2026-07-25 18:18 UTC"}
 {"id": "/documentation/EventKit/EKEventStore/authorizationStatus(for:)", "sha": "9c3f56c43896fe0603fed464e5f8bec6cc0afb5c738a74ca877ca31119c7f75d", "t": "authorizationStatus(for:)", "n": 128, "laws": 0, "ts": "2026-07-25 18:28 UTC"}
+{"id": "/documentation/nearbyinteraction/nialgorithmconvergencestatus-2fbmj", "sha": "677d34a1a96eb337b2d4c683639fd74d1b2c702777cbe0ae5c3d674c3932c13e", "t": "NIAlgorithmConvergenceStatus", "n": 206, "laws": 0, "ts": "2026-07-25 23:08 UTC"}
+{"id": "/documentation/photos/phassetcollectionchangerequest", "sha": "27c9705ac65975cf160b942128c9602546a847f7d1f0300e9751f789fd38e3b0", "t": "PHAssetCollectionChangeRequest", "n": 1793, "laws": 5, "ts": "2026-07-25 23:12 UTC"}
+{"id": "/documentation/realitykit/lowleveltexture", "sha": "b46a583380fe9e2dc2faaf813f92e7dad7ce077db50f5d5080160f5dd9e74f99", "t": "LowLevelTexture", "n": 1423, "laws": 3, "ts": "2026-07-25 23:15 UTC"}
+{"id": "/documentation/speech", "sha": "11b94cd4e846b0a8ad9c62074250e0c6387102b28a5c8624785f9673935ebaf7", "t": "Speech", "n": 1590, "laws": 4, "ts": "2026-07-25 23:20 UTC"}

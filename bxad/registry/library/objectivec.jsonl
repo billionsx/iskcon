@@ -2,3 +2,4 @@
 {"id": "/documentation/ObjectiveC/NSObject-swift.class/accessibilityDecrement()", "law": "Use this method to decrement the value of the element."}
 {"id": "/documentation/ObjectiveC/NSObject-swift.class/accessibilityIncrement()", "law": "If your element has the trait, you must implement this method."}
 {"id": "/documentation/ObjectiveC/NSObject-swift.class/accessibilityIncrement()", "law": "Use this method to increment the value of the element."}
+{"id": "/documentation/ObjectiveC/NSObject-swift.class/validateMenuItem:", "law": "The object implementing this method must be the target of ."}

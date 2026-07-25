@@ -7,3 +7,8 @@
 {"id": "/documentation/accelerate/blas-library", "sha": "9ff67ac2eab02a672bf03e3b989cf8d10a38acbb19cb6df3c5f56433b7f02787", "t": "BLAS", "n": 8601, "laws": 1, "ts": "2026-07-25 04:21 UTC"}
 {"id": "/documentation/corelocationui", "sha": "97e2e1aaa37115f2284fcba6d23281565616b3b239670140adcbee516d0163a0", "t": "CoreLocationUI", "n": 860, "laws": 0, "ts": "2026-07-25 18:21 UTC"}
 {"id": "/documentation/Vision/VNDetectHumanBodyPoseRequest", "sha": "a864cec67e143f177f2341e2dbc4e0284d8b4f86229ab8c989d865484b300139", "t": "VNDetectHumanBodyPoseRequest", "n": 370, "laws": 0, "ts": "2026-07-25 18:24 UTC"}
+{"id": "/documentation/CoreLocation/CLLocation", "sha": "b56c34dbe9665db2fa0e04bb7243db654f3c194bd4eeec388b0faa93459789c7", "t": "CLLocation", "n": 1953, "laws": 4, "ts": "2026-07-25 23:01 UTC"}
+{"id": "/documentation/proximityreader/mobiledocumentreader", "sha": "26970ecf04833e0759105aef086b37f27d70ea23f1f0bd13fc8bca80f5b8629b", "t": "MobileDocumentReader", "n": 692, "laws": 1, "ts": "2026-07-25 23:13 UTC"}
+{"id": "/documentation/realitykit/transform", "sha": "68c8631891df303703f44f4dca31216cc89084dcd7db24532f91dc9c326b6193", "t": "Transform", "n": 661, "laws": 0, "ts": "2026-07-25 23:18 UTC"}
+{"id": "/documentation/storekit/skstoreproductviewcontroller/loadproduct(withparameters:completionblock:)", "sha": "31f1fb36a4a94a7e398badd7e6938e892ca87b403aa103a8f9c1abf8c7982206", "t": "loadProduct(withParameters:completionBlock:)", "n": 311, "laws": 0, "ts": "2026-07-25 23:21 UTC"}
+{"id": "/documentation/SwiftUI/View/modelContainer(_:)", "sha": "f13557b8e477ee975f95dd7ec684b87b9ba367ba842d6f69795560bfd4aa1b8c", "t": "modelContainer(_:)", "n": 346, "laws": 2, "ts": "2026-07-25 23:24 UTC"}

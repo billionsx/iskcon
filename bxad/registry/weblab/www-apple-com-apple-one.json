@@ -1,11 +1,11 @@
 {
  "url": "https://www.apple.com/apple-one/",
  "sections": [
-  "section",
-  "section",
-  "section",
-  "section",
-  "section"
+  "section-hero",
+  "section-river",
+  "section-router",
+  "section-plans",
+  "section-faq"
  ],
  "modules": [
   "name:hero",
@@ -29,5 +29,5 @@
   "/v/apple-one/f/built/styles/main.built.css",
   "/v/apple-one/f/built/styles/overview.built.css"
  ],
- "typography_laws": 0
+ "typography_laws": 2
 }

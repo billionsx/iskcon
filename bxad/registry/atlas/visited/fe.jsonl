@@ -11,3 +11,12 @@
 {"id": "/documentation/CoreImage/CIRippleTransition/shadingImage", "sha": "3c0f2f3bc0ea03f88e4e9b3c93a443ecc6812577e1291cc5011dcb445cf335c4", "t": "shadingImage", "n": 62, "laws": 0, "ts": "2026-07-25 18:21 UTC"}
 {"id": "/documentation/FileProvider/NSFileProviderError/Code/serverUnreachable", "sha": "930a0e7791386e9b0614c4aeb41eb258b43d007253acee5ad42b891c8a1684b4", "t": "NSFileProviderError.Code.serverUnreachable", "n": 83, "laws": 0, "ts": "2026-07-25 18:29 UTC"}
 {"id": "/documentation/FileProvider/synchronizing-the-file-provider-extension", "sha": "b494b739cce0cb44653e9986efe8f7adc37f4304791773406a071e95d7e6a36e", "t": "Synchronizing the File Provider Extension", "n": 6826, "laws": 10, "ts": "2026-07-25 18:30 UTC"}
+{"id": "/documentation/metal/mtlsamplerstate", "sha": "dd69b30bf8ee7d4e935950b4ac277d0a46520f3ad3771790a4319d710c13a25a", "t": "MTLSamplerState", "n": 848, "laws": 3, "ts": "2026-07-25 23:05 UTC"}
+{"id": "/documentation/metal/mtlheaptype/placement", "sha": "e5ecf545da602589e7eca7bc283fafcdbb7cb8a13beb192f54fa6dad34323f22", "t": "MTLHeapType.placement", "n": 254, "laws": 2, "ts": "2026-07-25 23:07 UTC"}
+{"id": "/documentation/metal/multi-gpu-systems", "sha": "b351d072a611ac2a8c59b2278723af575fb2d19db8e2b4081c4969e86eb26e2e", "t": "Multi-GPU systems", "n": 1730, "laws": 1, "ts": "2026-07-25 23:07 UTC"}
+{"id": "/documentation/RealityKit/BillboardComponent", "sha": "e56c04033c5e6ddb0d5e713c5430cf0c2b417928dd696cf034d504028ba0abba", "t": "BillboardComponent", "n": 657, "laws": 0, "ts": "2026-07-25 23:16 UTC"}
+{"id": "/documentation/SwiftUI/EnvironmentValues/modelContext", "sha": "8a74ea15b7c8aad56f9d96741f41f675b48cec43a2de97d8a8649acc0d81e5b4", "t": "modelContext", "n": 109, "laws": 0, "ts": "2026-07-25 23:22 UTC"}
+{"id": "/documentation/swiftdata/historydescriptor", "sha": "1b1ae34cdd76016c9f95ab2692996389973f0abe29d2e6fd139a9ab69891da20", "t": "HistoryDescriptor", "n": 237, "laws": 1, "ts": "2026-07-25 23:22 UTC"}
+{"id": "/documentation/swiftui/table", "sha": "78acec46cb3409d4c6087b6e95b7d4e013aec4693efe0a56969d63bc8a189409", "t": "Table", "n": 4676, "laws": 3, "ts": "2026-07-25 23:23 UTC"}
+{"id": "/documentation/Observation/ObservationIgnored()", "sha": "5b72d50506d6f7282becf9206025de8b0122c66182a134a905ba422a43bd552f", "t": "ObservationIgnored()", "n": 253, "laws": 0, "ts": "2026-07-25 23:26 UTC"}
+{"id": "/documentation/swiftui/securefield", "sha": "3cd181972a06225bf72dce43cf9376055756fc1c3d28a95ae29cb49d724bc6bd", "t": "SecureField", "n": 1906, "laws": 2, "ts": "2026-07-25 23:27 UTC"}

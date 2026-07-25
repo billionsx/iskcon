@@ -10,3 +10,5 @@
 {"id": "/documentation/SystemExtensions/installing-system-extensions-and-drivers", "law": "Use the error code to identify the reason for the failure so that you can correct it."}
 {"id": "/documentation/SystemExtensions/installing-system-extensions-and-drivers", "law": "Use that information to determine whether you want to install the new extension or keep the old one."}
 {"id": "/documentation/SystemExtensions/installing-system-extensions-and-drivers", "law": "For more information about how to use the tool, see the man pages."}
+{"id": "/documentation/SystemExtensions/OSBundleUsageDescriptionKey", "law": "This key is required for all DriverKit extensions and must be in the extension’s file."}
+{"id": "/documentation/SystemExtensions/OSBundleUsageDescriptionKey", "law": "For system extensions that are not DriverKit extensions, use instead."}

@@ -11,3 +11,6 @@
 {"id": "/documentation/PCIDriverKit", "law": "Use the PCIDriverKit framework to develop drivers that manage custom features on your Peripheral Component Interconnect (PCI) and PCI-Express hardware."}
 {"id": "/documentation/PCIDriverKit", "law": "Use that object to read and write the configuration and memory of your PCI hardware."}
 {"id": "/documentation/PCIDriverKit", "law": "On macOS, use the framework to install and upgrade your driver."}
+{"id": "/documentation/pcidriverkit", "law": "Use the PCIDriverKit framework to develop drivers that manage custom features on your Peripheral Component Interconnect (PCI) and PCI-Express hardware."}
+{"id": "/documentation/pcidriverkit", "law": "Use that object to read and write the configuration and memory of your PCI hardware."}
+{"id": "/documentation/pcidriverkit", "law": "On macOS, use the framework to install and upgrade your driver."}

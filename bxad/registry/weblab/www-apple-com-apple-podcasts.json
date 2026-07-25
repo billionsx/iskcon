@@ -1,11 +1,11 @@
 {
  "url": "https://www.apple.com/apple-podcasts/",
  "sections": [
-  "section",
-  "section",
-  "section",
-  "section",
-  "section"
+  "section-hero",
+  "section-catalog",
+  "section-tiles",
+  "section-ecosystem",
+  "section-faq"
  ],
  "modules": [
   "name:hero",
@@ -35,5 +35,5 @@
   "/v/apple-podcasts/g/built/styles/main.built.css",
   "/v/apple-podcasts/g/built/styles/overview.built.css"
  ],
- "typography_laws": 0
+ "typography_laws": 2
 }

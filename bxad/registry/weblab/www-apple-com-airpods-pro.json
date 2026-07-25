@@ -1,22 +1,22 @@
 {
  "url": "https://www.apple.com/airpods-pro/",
  "sections": [
-  "section",
-  "section",
-  "section",
-  "section",
-  "section",
-  "section",
-  "section",
-  "section",
-  "section",
-  "section",
-  "section",
-  "section",
-  "section",
-  "section",
-  "section",
-  "section"
+  "section-welcome",
+  "section-highlights",
+  "section-product-viewer",
+  "section-product-stories",
+  "section-noise-control",
+  "section-audio-performance",
+  "section-personalized-listening",
+  "section-fitness",
+  "section-hearing-health",
+  "section-magical",
+  "section-battery",
+  "section-incentive",
+  "section-contrast",
+  "section-environment",
+  "section-values",
+  "section-index"
  ],
  "modules": [
   "name:hero",
@@ -56,5 +56,5 @@
   "/v/airpods-pro/s/built/styles/overview.built.css",
   "/ac/ac-films/7.5.1/styles/modal.css"
  ],
- "typography_laws": 0
+ "typography_laws": 2
 }

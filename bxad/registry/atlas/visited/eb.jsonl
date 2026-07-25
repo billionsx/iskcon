@@ -13,3 +13,6 @@
 {"id": "/documentation/createml/mldatatable", "sha": "d8e6519a4804ba8719b8b2d4cbe715192e734bf446024ea64aa641583d1e153c", "t": "MLDataTable", "n": 2645, "laws": 1, "ts": "2026-07-25 18:23 UTC"}
 {"id": "/documentation/evaluations/structuredtranscript", "sha": "99b615bad372d52b7c572b55e5f8a5647cad4ac42c4857c8c763c707f52eec95", "t": "StructuredTranscript", "n": 234, "laws": 0, "ts": "2026-07-25 18:27 UTC"}
 {"id": "/documentation/exposurenotification", "sha": "83373708bee6cda3b5edff57f037c960b758f622606901f9bc4cc4c00174c9c8", "t": "Exposure Notification", "n": 2796, "laws": 8, "ts": "2026-07-25 18:28 UTC"}
+{"id": "/documentation/mapkit/mkgradientpolylinerenderer", "sha": "d4c1f5a67f70fe8b7439eebcc23e7657bed1f56500278ba1ae2f862205fdc656", "t": "MKGradientPolylineRenderer", "n": 489, "laws": 0, "ts": "2026-07-25 23:01 UTC"}
+{"id": "/documentation/metal/using-system-tone-mapping-on-video-content", "sha": "832e6aae293e152e54b4c4833d7438358dfddb05856292329196783b0cf2fc36", "t": "Using system tone mapping on video content", "n": 863, "laws": 2, "ts": "2026-07-25 23:07 UTC"}
+{"id": "/documentation/MetalKit/MTKView/clearColor", "sha": "08e35b246c7e6ea0fc9ef6077011e9cc459abe6bbe047fe1a9d5b3bf9b78750b", "t": "clearColor", "n": 251, "laws": 1, "ts": "2026-07-25 23:08 UTC"}

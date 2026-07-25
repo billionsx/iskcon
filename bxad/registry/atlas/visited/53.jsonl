@@ -11,3 +11,8 @@
 {"id": "/documentation/dockkit/dockaccessory", "sha": "c44ecd69152f6b8a840d7066567bf3de605dd56cb5d846e7e2e435753ab14a9f", "t": "DockAccessory", "n": 2309, "laws": 1, "ts": "2026-07-25 18:26 UTC"}
 {"id": "/documentation/foundation/nsuseractivity/contentattributeset", "sha": "73d319b6ccd10a6ba29645f2fce8a0d73c5cb83fa9ed03e7e375387bf1f41877", "t": "contentAttributeSet", "n": 152, "laws": 0, "ts": "2026-07-25 18:30 UTC"}
 {"id": "/documentation/gamekit/gkturnbasedmatch/outcome/quit", "sha": "c8c3423843bff2a3afc19b585aac417cf34f3d4d9c299f042ee256f820dac8ed", "t": "GKTurnBasedMatch.Outcome.quit", "n": 35, "laws": 0, "ts": "2026-07-25 18:34 UTC"}
+{"id": "/documentation/healthkit/hkworkoutzonegroup", "sha": "a2634e0d212590a2b6404a36c0efed3dc539444d3bdb5cf322cb226b768b8b2b", "t": "HKWorkoutZoneGroup", "n": 361, "laws": 0, "ts": "2026-07-25 22:59 UTC"}
+{"id": "/documentation/metalperformanceshaders/mpstemporaryimage", "sha": "bbf9615cea9bd8e3e5896b1b40071ff9d814a19e208d1c35d99a23b110b13b39", "t": "MPSTemporaryImage", "n": 3397, "laws": 10, "ts": "2026-07-25 23:08 UTC"}
+{"id": "/documentation/NetworkingDriverKit/IOUserNetworkTxCompletionQueue", "sha": "c17e7aca8ef73af041bfe282abf9e2908579acd667334283c3748f18dc08d788", "t": "IOUserNetworkTxCompletionQueue", "n": 438, "laws": 2, "ts": "2026-07-25 23:10 UTC"}
+{"id": "/documentation/safariservices/troubleshooting-your-safari-web-extension", "sha": "8ef2ce44c7014fabb269cd842d0d150da3d0325cb8eb42714d165040a0f529ce", "t": "Troubleshooting your Safari web extension", "n": 7148, "laws": 9, "ts": "2026-07-25 23:18 UTC"}
+{"id": "/documentation/shazamkit", "sha": "936d2335a623d54053e77cafc62f68b24499b44b4adec068caa42f74758281ef", "t": "ShazamKit", "n": 2511, "laws": 0, "ts": "2026-07-25 23:19 UTC"}

@@ -6,3 +6,5 @@
 {"id": "/documentation/createml/mlregressor/validationmetrics", "sha": "a78629b789703518291b135a36a4eb7bc1c3986637a71d3320d4e1921fd57782", "t": "validationMetrics", "n": 71, "laws": 0, "ts": "2026-07-25 18:24 UTC"}
 {"id": "/documentation/SwiftUI/ImmersionStyle/mixed", "sha": "cd8e4cc248a9e1d392a81ad66f2b368616457f9658ad9f9e42b5547da97656fc", "t": "mixed", "n": 598, "laws": 2, "ts": "2026-07-25 18:32 UTC"}
 {"id": "/documentation/GroupActivities/SystemCoordinator/Configuration-swift.struct", "sha": "2cc6456d510426ea8505a6f92b455a95fdb42f393bb640d837bb21d9ead5c461", "t": "SystemCoordinator.Configuration", "n": 917, "laws": 1, "ts": "2026-07-25 18:34 UTC"}
+{"id": "/documentation/SwiftUI/Gesture/onChanged(_:)", "sha": "0d878f6aca61305be349e2914c7e3d305b335d405c6136aa869d3e588be77ab5", "t": "onChanged(_:)", "n": 134, "laws": 0, "ts": "2026-07-25 23:18 UTC"}
+{"id": "/documentation/swiftui/view/offset(x:y:)", "sha": "52fea88371bdfe8b91ae826b7bc96a751078026cac59e00065349e5442fbed4b", "t": "offset(x:y:)", "n": 400, "laws": 1, "ts": "2026-07-25 23:24 UTC"}

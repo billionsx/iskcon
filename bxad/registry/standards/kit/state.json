@@ -1,6 +1,14 @@
 {
  "page_sha": "",
- "kits": [],
+ "kits": [
+  {
+   "kit": "tvOS-18-Design-Templates-Sketch.dmg",
+   "colors": 0,
+   "text_styles": 0,
+   "radii": 4,
+   "symbols": 7
+  }
+ ],
  "errors": [
   "iOS-27-Icon-Templates-Photoshop-Illustrator.dmg: RuntimeError: в контейнере нет .sketch"
  ],
@@ -47,5 +55,22 @@
   "tvOS-18-Production-Templates-Sketch.dmg",
   "visionOS-2-Design-Templates-Sketch.dmg"
  ],
- "ts": "2026-07-25 18:40 UTC"
+ "fonts": [
+  {
+   "dmg": "SF-Pro.dmg",
+   "faces": 0,
+   "cap_sample": null
+  },
+  {
+   "dmg": "SF-Compact.dmg",
+   "faces": 0,
+   "cap_sample": null
+  },
+  {
+   "dmg": "SF-Mono.dmg",
+   "faces": 0,
+   "cap_sample": null
+  }
+ ],
+ "ts": "2026-07-25 23:32 UTC"
 }

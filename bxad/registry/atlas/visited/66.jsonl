@@ -9,3 +9,9 @@
 {"id": "/documentation/appstoreconnectapi/power-and-performance-metrics-and-logs", "sha": "204d62c420749f854b19fe1fa5798cc79880ec7bd36ab88ebae92c7ab2829f4d", "t": "Power and Performance Metrics and Logs", "n": 1864, "laws": 2, "ts": "2026-07-25 18:11 UTC"}
 {"id": "/documentation/coremidi/midipacketlist", "sha": "fcdbc50e383a20940a934ff4a0585888287a50ac0e7eacafbc4a1786e791ca73", "t": "MIDIPacketList", "n": 288, "laws": 0, "ts": "2026-07-25 18:22 UTC"}
 {"id": "/documentation/foundationmodels/prompt", "sha": "8b5decc3506d296686ed7e4487b58eb89983613552a55a9c1fe6357ef8853904", "t": "Prompt", "n": 882, "laws": 1, "ts": "2026-07-25 18:32 UTC"}
+{"id": "/documentation/HomeKit/enabling-homekit-in-your-app", "sha": "4df0fe992622da62f516040a2bfd6d00bf8649b8057b9cdd1b8ecf5da8310178", "t": "Enabling HomeKit in your app", "n": 3182, "laws": 3, "ts": "2026-07-25 22:59 UTC"}
+{"id": "/documentation/CoreGraphics/CGBlendMode/screen", "sha": "bf9c21d632f4ee666d1be5f9950235405eb5eca3f3331f932b3e90d2cba14b7c", "t": "CGBlendMode.screen", "n": 196, "laws": 1, "ts": "2026-07-25 23:01 UTC"}
+{"id": "/documentation/metal/mtlviewport", "sha": "84704a7c609f4bf12642e42985e41ca00083ebb3abc4edc5d39222ba03388aee", "t": "MTLViewport", "n": 209, "laws": 0, "ts": "2026-07-25 23:05 UTC"}
+{"id": "/documentation/pdfkit/custom-graphics", "sha": "f66e74dfed67e34224d5381eee88aa0f62c4b45d36beb00e079860a5231fb245", "t": "Custom Graphics", "n": 1528, "laws": 3, "ts": "2026-07-25 23:11 UTC"}
+{"id": "/documentation/pencilkit/pkerasertool-swift.struct", "sha": "ffe10168883029cbc7b50c7a886b8552ede369d354d843adad3eb6f5b709fd4e", "t": "PKEraserTool", "n": 682, "laws": 0, "ts": "2026-07-25 23:11 UTC"}
+{"id": "/documentation/UIKit/UIBarButtonItem", "sha": "8c8f9eeb303515db45f4a3e47de264e82e06f6b9af17cd1d1c2e6e0b22c2f2d6", "t": "UIBarButtonItem", "n": 3065, "laws": 3, "ts": "2026-07-25 23:12 UTC"}

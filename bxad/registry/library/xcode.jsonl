@@ -167,3 +167,33 @@
 {"id": "/documentation/Xcode/creating-an-xcode-project-for-an-app", "law": "If you use SwiftUI, you can see an interactive preview of the user interface while you create your app."}
 {"id": "/documentation/Xcode/creating-an-xcode-project-for-an-app", "law": "You can use the controls in the preview to run the app with the debugger, too."}
 {"id": "/documentation/Xcode/creating-an-xcode-project-for-an-app", "law": "Most templates are preconfigured with an asset catalog for the app icon, but you can use a multilayer Icon Composer file that supports instead."}
+{"id": "/documentation/Xcode/Metal-debugger", "law": "To investigate GPU traces from the command line, use , an interactive terminal-based debugger."}
+{"id": "/documentation/Xcode/Metal-developer-workflows", "law": "Locate and fix issues related to your app’s use of the Metal API and GPU functions."}
+{"id": "/documentation/Xcode/Metal-developer-workflows", "law": "Learn how to use runtime tools to discover potential issues in your Metal app."}
+{"id": "/documentation/Xcode/Metal-developer-workflows", "law": "Measuring the GPU’s use of memory bandwidth."}
+{"id": "/documentation/Xcode/Analyzing-your-Metal-workload", "law": "If you don’t select the Profile after Replay checkbox in the Metal Capture popover (see ) or the Profile GPU Trace checkbox in the Replay window (see ), the performance section doesn’t show any statistics."}
+{"id": "/documentation/Xcode/Analyzing-your-Metal-workload", "law": "If your Metal workload is using a large amount of memory, consider optimizing the memory use ."}
+{"id": "/documentation/Xcode/Analyzing-your-Metal-workload", "law": "Further expansion shows all the draw commands and compute dispatches that use that pipeline state."}
+{"id": "/documentation/Xcode/Analyzing-your-Metal-workload", "law": "Use the filter bar at the bottom of the Debug navigator to adjust filtering criteria."}
+{"id": "/documentation/Xcode/configuring-your-project-to-use-mergeable-libraries", "law": "Xcode uses normal linking for targets that don’t have enabled."}
+{"id": "/documentation/Xcode/configuring-your-project-to-use-mergeable-libraries", "law": "For each dependent library that you want to use merging, add the build setting , and set it to ."}
+{"id": "/documentation/Xcode/configuring-your-project-to-use-mergeable-libraries", "law": "You can only use XCFrameworks with mergeable metadata in Xcode 15 and later; in earlier versions, Xcode returns a build error."}
+{"id": "/documentation/Xcode/configuring-your-project-to-use-mergeable-libraries", "law": "To use your XCFramework that contains mergeable metadata, add it to the Link Binaries build phase of a target that you configured for automatic or manual merging."}
+{"id": "/documentation/Xcode/configuring-your-project-to-use-mergeable-libraries", "law": "Use mergeable dynamic libraries to get app launch times similar to static linking in release builds, without losing dynamically linked build times in debug builds."}
+{"id": "/documentation/Xcode/setting-up-storekit-testing-in-xcode", "law": "Testing in-app purchase scenarios with StoreKit in Xcode is useful for: Developing features that use in-app purchases before configuring them in ."}
+{"id": "/documentation/Xcode/setting-up-storekit-testing-in-xcode", "law": "Debugging in-app purchase use cases that are harder to set up in the sandbox environment, such as eligibility for promotional offers."}
+{"id": "/documentation/Xcode/setting-up-storekit-testing-in-xcode", "law": "If you rename the configuration file, be sure to keep its file extension ."}
+{"id": "/documentation/Xcode/setting-up-storekit-testing-in-xcode", "law": "The product names, IDs, prices, localizations, and any other data you provide in the StoreKit configuration file don’t upload to App Store Connect, and don’t appear in App Store-signed apps."}
+{"id": "/documentation/Xcode/setting-up-storekit-testing-in-xcode", "law": "To begin testing, configure at least one in-app purchase product."}
+{"id": "/documentation/Xcode/setting-up-storekit-testing-in-xcode", "law": "To enable StoreKit Testing in Xcode, your project must have an active StoreKit configuration file."}
+{"id": "/documentation/Xcode/setting-up-storekit-testing-in-xcode", "law": "Be sure your code uses the correct certificate in all environments."}
+{"id": "/documentation/Xcode/creating-your-app-icon-using-icon-composer", "law": "Use Icon Composer to create a single multilayer file that you can add to your Xcode project to represent your Liquid Glass app icon everywhere your app icon appears across iOS, iPadOS, macOS, watchOS, and the App Store."}
+{"id": "/documentation/Xcode/creating-your-app-icon-using-icon-composer", "law": "Use your favorite design tool to create the artwork for your app icon, but save some design decisions for Icon Composer, where you can refine the dynamic properties of and customize variants of your app icon for different platforms and appearances."}
+{"id": "/documentation/Xcode/creating-your-app-icon-using-icon-composer", "law": "If your app supports previous releases (in the Minimum Deployments settings in the target’s General pane) that don’t have the same icon and widget style appearances and Liquid Glass material, Xcode automatically generates app icon images at build time for those releases from the Icon Composer file."}
+{"id": "/documentation/Xcode/creating-your-app-icon-using-icon-composer", "law": "If you want your existing icon to appear in previous releases, continue to use asset catalogs to represent your app icon."}
+{"id": "/documentation/Xcode/creating-your-app-icon-using-icon-composer", "law": "For converting older app icons to use the Liquid Glass material, see ."}
+{"id": "/documentation/Xcode/creating-your-app-icon-using-icon-composer", "law": "For tvOS and visionOS targets that still use an asset catalog, see ."}
+{"id": "/documentation/Xcode/creating-your-app-icon-using-icon-composer", "law": "To design your Liquid Glass app icon, use a third-party vector graphics editor of your choice that exports your layers as graphic files in SVG or PNG format."}
+{"id": "/documentation/Xcode/creating-your-app-icon-using-icon-composer", "law": "To give you the most scalability, use vector graphics to draw shapes and export SVG files."}
+{"id": "/documentation/Xcode/creating-your-app-icon-using-icon-composer", "law": "Otherwise, change the canvas size to match the size that you use in Icon Composer, such as 1024 x 1024 pixels for iPhone, iPad, and Mac, and 1088 x 1088 pixels for Apple Watch."}
+{"id": "/documentation/Xcode/creating-your-app-icon-using-icon-composer", "law": "Don’t export the canvas mask because the system applies that automatically to ensure a perfect crop."}

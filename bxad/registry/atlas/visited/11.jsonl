@@ -16,3 +16,6 @@
 {"id": "/documentation/corehaptics/preparing-your-app-to-play-haptics", "sha": "3f17bbb95feb9a207bb12dde2acd24c461897285d4875cd6b72e63ec6318bd38", "t": "Preparing your app to play haptics", "n": 3820, "laws": 4, "ts": "2026-07-25 18:20 UTC"}
 {"id": "/documentation/FileProvider/using-push-notifications-to-signal-changes", "sha": "7e1c209b0a02a36b4422ca0525d04d0a1031168f4fcf7591c598e132cb8575f3", "t": "Using push notifications to signal changes", "n": 4073, "laws": 10, "ts": "2026-07-25 18:30 UTC"}
 {"id": "/documentation/Updates/FinanceKit", "sha": "349f322298c7f5bc04ed2a8ead594d1466699808bd8624a7e0281e13b43c98cb", "t": "FinanceKit updates", "n": 313, "laws": 1, "ts": "2026-07-25 18:30 UTC"}
+{"id": "/documentation/networkextension/wi-fi-configuration", "sha": "9d4e7b58c15a8e30eb9cec95c851fbf831688692fe29622984e69c6dfca037f0", "t": "Wi-Fi configuration", "n": 1161, "laws": 2, "ts": "2026-07-25 23:09 UTC"}
+{"id": "/documentation/photosui/phpickerconfiguration-swift.struct", "sha": "d54a9a2ccd4f6649d297ce670670559b1ba838d5fad272ce23e58f525e9e070d", "t": "PHPickerConfiguration", "n": 714, "laws": 0, "ts": "2026-07-25 23:13 UTC"}
+{"id": "/documentation/realitykit/shadergraphmaterial", "sha": "3499aa715eec1080446d94b75c7c0db22a3c1d5e896aa5620d0c2217fadad12c", "t": "ShaderGraphMaterial", "n": 1450, "laws": 1, "ts": "2026-07-25 23:15 UTC"}

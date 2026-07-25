@@ -1,16 +1,16 @@
 {
  "url": "https://www.apple.com/os/ios/?version=no-hero",
  "sections": [
-  "section",
-  "section",
-  "section",
-  "section",
-  "section",
-  "section",
-  "section",
-  "section",
-  "section",
-  "section"
+  "section-welcome",
+  "section-highlights",
+  "section-event-banner",
+  "section-siri",
+  "section-apple-intelligence",
+  "section-child-safety",
+  "section-improvements",
+  "section-more",
+  "section-compatibility",
+  "section-developers"
  ],
  "modules": [
   "name:hero",
@@ -39,5 +39,5 @@
   "/v/os/f/built/styles/ios.built.css",
   "/ac/ac-films/7.5.1/styles/modal.css"
  ],
- "typography_laws": 0
+ "typography_laws": 2
 }

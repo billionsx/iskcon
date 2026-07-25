@@ -12,3 +12,10 @@
 {"id": "/documentation/audiotoolbox/audiocomponentdescription", "sha": "c5275ee476d1afd0c7b7d46083508ee7e69cca70246bcbb0b6d94ba4162a5d07", "t": "AudioComponentDescription", "n": 272, "laws": 0, "ts": "2026-07-25 18:13 UTC"}
 {"id": "/documentation/ClassKit/CLSDataStoreDelegate", "sha": "4aecf9226b86a22c27bbfcc2e0c3da78902df341e931cbf09fee48b6b1c64194", "t": "CLSDataStoreDelegate", "n": 929, "laws": 1, "ts": "2026-07-25 18:16 UTC"}
 {"id": "/documentation/eventkit/ekevent", "sha": "1275896aecf84bb81e4abee35a2b7844cbe51d49992130476c9ff4e09c06d8bd", "t": "EKEvent", "n": 682, "laws": 2, "ts": "2026-07-25 18:28 UTC"}
+{"id": "/documentation/homekit/hmhomemanager", "sha": "153baf7bbd825d1ea31eb7a36510fe1fc082b8bcd0847ab1ef56193548a9f8dc", "t": "HMHomeManager", "n": 1210, "laws": 0, "ts": "2026-07-25 22:59 UTC"}
+{"id": "/documentation/mapkit/mkoverlayrenderer/point(for:)", "sha": "7a34cc7c41a65f1171085947edd4fe3fd76faf0adec290ac8ad45fa6949398ce", "t": "point(for:)", "n": 267, "laws": 0, "ts": "2026-07-25 23:02 UTC"}
+{"id": "/documentation/MetalKit/MTKTextureLoader", "sha": "c8629084b17e39b2797fcde733f902194b69b09f4b502c3c0f5289b0bb0028f1", "t": "MTKTextureLoader", "n": 2189, "laws": 3, "ts": "2026-07-25 23:04 UTC"}
+{"id": "/documentation/storekit/subscriptions-and-offers", "sha": "2b6ce5ab1d07f1bf1a5edac34ab6c579d9c8f54402d6dae729b893448caedb85", "t": "Subscriptions and offers", "n": 1003, "laws": 0, "ts": "2026-07-25 23:21 UTC"}
+{"id": "/documentation/swiftdata/modelcontext/autosaveenabled", "sha": "92617f4bbb3d8a46e4744c0dc9ba4fe63a2290b822b95aefd24dee68a73e193c", "t": "autosaveEnabled", "n": 420, "laws": 1, "ts": "2026-07-25 23:22 UTC"}
+{"id": "/documentation/swiftdata/modelcontext/delete(model:where:includesubclasses:)", "sha": "95aee2ae5ad10f48ed4c91bda3e386a730019e2137068fc2f3eae36af99dd28e", "t": "delete(model:where:includeSubclasses:)", "n": 243, "laws": 1, "ts": "2026-07-25 23:23 UTC"}
+{"id": "/documentation/swiftui/environmentvalues", "sha": "093f78329a8134d5ff2ee7edc22110a8e52a9ef5080c5593a29e9cf68a7a0139", "t": "EnvironmentValues", "n": 5592, "laws": 2, "ts": "2026-07-25 23:26 UTC"}

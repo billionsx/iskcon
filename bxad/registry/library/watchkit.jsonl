@@ -3,3 +3,8 @@
 {"id": "/documentation/WatchKit", "law": "You can also use WatchKit to design your app’s user interface in a storyboard, connecting UI elements to an interface controller."}
 {"id": "/documentation/WatchKit", "law": "Build watchOS apps that use features the app delegate monitors or controls, such as background tasks and extended runtime sessions."}
 {"id": "/documentation/WatchKit/WKApplicationDelegate/userDidAcceptCloudKitShare(with:)", "law": "Use this method to respond to a CloudKit Sharing invitation."}
+{"id": "/documentation/WatchKit/WKInterfacePaymentButton", "law": "Use a payment button to initiate an Apple Pay transaction on Apple Watch."}
+{"id": "/documentation/WatchKit/WKInterfacePaymentButton", "law": "You must connect this button to an action method that creates an Apple Pay payment request."}
+{"id": "/documentation/WatchKit/WKInterfacePaymentButton", "law": "Do not subclass or create instances of this class yourself."}
+{"id": "/documentation/WatchKit/WKInterfacePaymentButton", "law": "At that point, you can use the object in your outlet to make changes to the payment button."}
+{"id": "/documentation/WatchKit/WKInterfacePaymentButton", "law": "A button that you can use to trigger payments through Apple Pay."}

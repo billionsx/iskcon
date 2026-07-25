@@ -17,3 +17,6 @@
 {"id": "/documentation/CoreData/NSPersistentHistoryTrackingKey", "sha": "75098e2d751086fb50f565c17f3e77a4740b1325660dd86156fb04f53fc03a5e", "t": "NSPersistentHistoryTrackingKey", "n": 115, "laws": 1, "ts": "2026-07-25 18:19 UTC"}
 {"id": "/documentation/foundationmodels/generable", "sha": "b398b4248997f158535928e191efb55b127dca3b707217918553ba80d9d0e2c0", "t": "Generable", "n": 1462, "laws": 2, "ts": "2026-07-25 18:31 UTC"}
 {"id": "/documentation/foundationmodels/attachment", "sha": "0844ff8a46cfb7639a84e4fdc16a86b61de9d21f95ee3e08bbd4050c1ab89629", "t": "Attachment", "n": 373, "laws": 2, "ts": "2026-07-25 18:32 UTC"}
+{"id": "/documentation/metal/mtl4compiler/newrenderpipelinestatewithdescriptor:compilertaskoptions:error:", "sha": "020f28101199a6411e84c128833a6ec296fee9ef50d933c66d74249e12d9f23c", "t": "newRenderPipelineStateWithDescriptor:compilerTaskOptions:error:", "n": 409, "laws": 1, "ts": "2026-07-25 23:05 UTC"}
+{"id": "/documentation/network", "sha": "f86a15787d34a54e25c426029d04e363dfaaaa687118761e13fdeffe9069ecc1", "t": "Network", "n": 2992, "laws": 4, "ts": "2026-07-25 23:09 UTC"}
+{"id": "/documentation/pencilkit/pkinkingtoolreference", "sha": "b3677fa50a042deea2be2f9544da77b368e688b86d5ecc7d9ece5bd20ece2151", "t": "PKInkingToolReference", "n": 1326, "laws": 1, "ts": "2026-07-25 23:11 UTC"}

@@ -1,12 +1,10 @@
 {
  "url": "https://www.apple.com/compliance/",
  "sections": [
-  "section",
-  "section",
-  "section",
-  "section",
-  "section",
-  "section"
+  "section-lgl-one-up-tile",
+  "section-lgl-one-up-tile",
+  "section-lgl-one-up-tile",
+  "section-lgl-one-up-tile"
  ],
  "modules": [],
  "imgs": 0,
@@ -25,5 +23,5 @@
   "/compliance/css/compliance-quote.css",
   "/ac/localnav/4/styles/ac-localnav.built.css"
  ],
- "typography_laws": 0
+ "typography_laws": 2
 }

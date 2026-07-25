@@ -1,18 +1,18 @@
 {
  "url": "https://www.apple.com/apple-intelligence/",
  "sections": [
-  "section",
-  "section",
-  "section",
-  "section",
-  "section",
-  "section",
-  "section",
-  "section",
-  "section",
-  "section",
-  "section",
-  "section"
+  "section-welcome",
+  "section-highlights",
+  "section-siri",
+  "section-visual-intelligence",
+  "section-images",
+  "section-communication",
+  "section-productivity",
+  "section-more",
+  "section-privacy",
+  "section-experience-ai",
+  "section-compatibility",
+  "section-developers"
  ],
  "modules": [
   "name:hero",
@@ -42,5 +42,5 @@
   "/ac/localnav/9/styles/ac-localnav.built.css",
   "/v/apple-intelligence/h/built/styles/overview.built.css"
  ],
- "typography_laws": 0
+ "typography_laws": 2
 }

@@ -253,3 +253,28 @@
 {"id": "/documentation/foundation/archives-and-serialization", "law": "When working with external systems, such as URL endpoints, use the JSON and XML APIs to serialize your app’s types to standard formats."}
 {"id": "/documentation/foundation/jsonserialization", "law": "You use the class to convert JSON to Foundation objects and convert Foundation objects to JSON."}
 {"id": "/documentation/foundation/jsonserialization", "law": "To convert a Foundation object to JSON, the object must have the following properties: The top level object is an or , unless you set the option."}
+{"id": "/documentation/Foundation/NSAttributedString", "law": "is a type you use to manage strings of stylized Unicode text."}
+{"id": "/documentation/Foundation/NSAttributedString", "law": "If you need to modify the contents of an attributed string later, use the type instead."}
+{"id": "/documentation/Foundation/NSAttributedString", "law": "If an HTML file contains tags or constructs that attributed strings don’t support, the import process ignores them and imports what it can."}
+{"id": "/documentation/Foundation/NSAttributedString", "law": "To change the rendering behavior of your Markdown content, remove the intent attributes and add the style attributes you prefer."}
+{"id": "/documentation/Foundation/NSAttributedString", "law": "and use attributed strings extensively during the layout and rendering processes."}
+{"id": "/documentation/Foundation/NSAttributedString", "law": "These technologies use the string’s text and rendering-related attributes to calculate the text metrics needed during layout."}
+{"id": "/documentation/Foundation/NSAttributedString", "law": "The technologies use only attributes that directly affect the appearance of the text, and ignore most other attributes."}
+{"id": "/documentation/Foundation/NSAttributedString", "law": "Because these methods use TextKit to draw the string, they recognize the same rendering-related attributes as that technology."}
+{"id": "/documentation/Foundation/NSAttributedString", "law": "The class and its Core Foundation counterpart, , are toll-free bridged, which means you can use the two types interchangeably in your code without losing any text or attribute information."}
+{"id": "/documentation/Foundation/NSData", "law": "In Swift, the buffer bridges to ; use when you need reference semantics or other Foundation-specific behavior."}
+{"id": "/documentation/Foundation/NSData", "law": "The size of the data is subject to a theoretical limit of about 8 exabytes (1 EB = 10¹⁸ bytes; in practice, the limit should not be a factor)."}
+{"id": "/documentation/Foundation/NSData", "law": "Avoid using the method (and the related methods) when working inside a publicly accessible directory."}
+{"id": "/documentation/Foundation/NSData", "law": "Instead, use with an existing file descriptor to securely write the file."}
+{"id": "/documentation/Foundation/Date", "law": "Use date values in conjunction with instances to create localized representations of dates and times and with instances to perform calendar arithmetic."}
+{"id": "/documentation/Foundation/Date", "law": "You can use these interchangeably in code that interacts with Objective-C APIs."}
+{"id": "/documentation/Foundation/URLSession", "law": "Your app can also use this API to perform background downloads when your app isn’t running or, in iOS, while your app is suspended."}
+{"id": "/documentation/Foundation/URLSession", "law": "You can use the related and to support authentication and receive events like redirection and task completion."}
+{"id": "/documentation/Foundation/URLSession", "law": "For example, if you’re creating a web browser, your app might create one session per tab or window, or one session for interactive use and another for background downloads."}
+{"id": "/documentation/Foundation/URLSession", "law": "The tasks within a given URL session share a common session configuration object, which defines connection behavior, like the maximum number of simultaneous connections to make to a single host, whether connections can use the cellular network, and so on."}
+{"id": "/documentation/Foundation/URLSession", "law": "Ephemeral sessions are similar to shared sessions, but don’t write caches, cookies, or credentials to disk."}
+{"id": "/documentation/Foundation/URLSession", "law": "If you don’t need the features provided by a delegate, you can use this API without providing one by passing when you create a session."}
+{"id": "/documentation/Foundation/URLSession", "law": "If you don’t invalidate the session, your app leaks memory until the app terminates."}
+{"id": "/documentation/Foundation/URLSession", "law": "It returns data to your app in one of three ways, depending on the methods you call: If you’re using Swift, you can use the methods marked with the keyword to perform common tasks."}
+{"id": "/documentation/Foundation/URLSession", "law": "You can also use the method to receive data as an ."}
+{"id": "/documentation/Foundation/URLSession", "law": "With this approach, you use the - - syntax to iterate over the data as your app receives it."}

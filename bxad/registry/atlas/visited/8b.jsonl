@@ -12,3 +12,9 @@
 {"id": "/documentation/clockkit/graphic", "sha": "a26ffb59bc9615f1ba3ce7b4222973a2a2f8af1ce19d86f1758292a437555221", "t": "Graphic", "n": 2195, "laws": 4, "ts": "2026-07-25 18:17 UTC"}
 {"id": "/documentation/corelocation/clbeaconidentitycondition", "sha": "22e6b3e0381225fdbfe9a196ccc09448404d7fef80b4eedd3eca2201a4b729b9", "t": "CLBeaconIdentityCondition", "n": 675, "laws": 0, "ts": "2026-07-25 18:21 UTC"}
 {"id": "/documentation/coreml/model-personalization", "sha": "2edc54fd1ea9ca0389e8e5bbd16c75843f69e2713f96a396818e58711a85e224", "t": "Model Personalization", "n": 498, "laws": 0, "ts": "2026-07-25 18:22 UTC"}
+{"id": "/documentation/imageio/kcgimagepropertypixelheight", "sha": "a9e5c79b1908f89c615d85f90951538484d140382ecf963128e6f8f39a2455f4", "t": "kCGImagePropertyPixelHeight", "n": 99, "laws": 0, "ts": "2026-07-25 23:00 UTC"}
+{"id": "/documentation/metal/mtlresource", "sha": "640c73a340d8999fa3b55ae6569a62263606a242c18982bb635b8bda9a12a45a", "t": "MTLResource", "n": 899, "laws": 1, "ts": "2026-07-25 23:06 UTC"}
+{"id": "/documentation/metal/hdr-content", "sha": "bd73e12005526bc5ec4a4602f43b40567148d6ce2d594d81254873c4cd036866", "t": "HDR content", "n": 792, "laws": 1, "ts": "2026-07-25 23:07 UTC"}
+{"id": "/documentation/musickit", "sha": "04838f2260c313f2296d004551d8d9e23d40bca62af87eab2b182af34ffcffc8", "t": "MusicKit", "n": 5358, "laws": 7, "ts": "2026-07-25 23:08 UTC"}
+{"id": "/documentation/pdfkit", "sha": "fd7a8fe1802c4554adc553b8c1d827f01e4c8fb8ef5716f720e7fc10271e61c7", "t": "PDFKit", "n": 390, "laws": 0, "ts": "2026-07-25 23:10 UTC"}
+{"id": "/documentation/AVFoundation/AVSampleBufferRenderSynchronizer/addBoundaryTimeObserver(forTimes:queue:using:)", "sha": "057a992e6e74370a8b4919cc06510e0cddf249d8031eb5d6ba08f18c3bc0c9fd", "t": "addBoundaryTimeObserver(forTimes:queue:using:)", "n": 418, "laws": 2, "ts": "2026-07-25 23:16 UTC"}

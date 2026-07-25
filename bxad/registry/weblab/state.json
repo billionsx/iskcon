@@ -310,7 +310,7 @@
  },
  "www-apple-com-today-groups": {
   "url": "https://www.apple.com/today/groups/",
-  "sections": 4,
+  "sections": 1,
   "cta": 17
  },
  "www-apple-com-shop-refurbished": {
@@ -424,7 +424,7 @@
  },
  "www-apple-com-compliance": {
   "url": "https://www.apple.com/compliance/",
-  "sections": 6,
+  "sections": 4,
   "cta": 25
  },
  "www-apple-com-apple-events": {

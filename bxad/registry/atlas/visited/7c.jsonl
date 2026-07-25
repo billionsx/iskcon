@@ -12,3 +12,6 @@
 {"id": "/documentation/AVFoundation/AVCapturePhoto", "sha": "03c61e409ec0f875f963df2f6eabc51a5b1c80810be8e9ae7e92f6973551c97d", "t": "AVCapturePhoto", "n": 1907, "laws": 0, "ts": "2026-07-25 04:23 UTC"}
 {"id": "/documentation/ARKit/ARAppClipCodeAnchor", "sha": "de1efa3957c7048f3714e55faf6cf3c5017f6105e94ba0ef3245f7b670ea935e", "t": "ARAppClipCodeAnchor", "n": 2029, "laws": 1, "ts": "2026-07-25 18:06 UTC"}
 {"id": "/documentation/FileProvider/NSFileProviderManager/signalErrorResolved(_:completionHandler:)", "sha": "3a65b084fff58bedcc4206fedc2c0992ede7b616491e6f0b6f4b713b2646c95c", "t": "signalErrorResolved(_:completionHandler:)", "n": 487, "laws": 1, "ts": "2026-07-25 18:29 UTC"}
+{"id": "/documentation/mapkit/mklocalsearchcompleter/queryfragment", "sha": "7e2177b81dbe06d6625054a6c2121e53eabc3c5da8bf1d27078e41b81016e091", "t": "queryFragment", "n": 509, "laws": 1, "ts": "2026-07-25 23:02 UTC"}
+{"id": "/documentation/CoreMedia/CMTaggedDynamicBuffer", "sha": "df03f1d8f31e79dab7864bc9ac16cc5e1dda89bd7999047273d863a2904e5f4e", "t": "CMTaggedDynamicBuffer", "n": 325, "laws": 0, "ts": "2026-07-25 23:16 UTC"}
+{"id": "/documentation/realitykit/particleemittercomponent/particleemitter", "sha": "eb2d75c6136a12a1dcd7126f405e54afd1f13281580e3eb9b044d450d51b299f", "t": "ParticleEmitterComponent.ParticleEmitter", "n": 995, "laws": 0, "ts": "2026-07-25 23:16 UTC"}

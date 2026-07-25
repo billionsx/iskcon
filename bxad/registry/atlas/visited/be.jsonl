@@ -15,3 +15,8 @@
 {"id": "/documentation/foundationmodels/managing-the-context-window", "sha": "165dd8dc22e4226f59e78a4d62fcfb06781eaa425f8a01bfb3a6325db27ac450", "t": "Managing the context window", "n": 8532, "laws": 10, "ts": "2026-07-25 18:32 UTC"}
 {"id": "/documentation/foveatedstreaming/foveatedstreamingsession/endpoint/local(ipaddress:port:)", "sha": "7dcba9784d9337ba5a3557df8a1867462733612f9504d52397a203f754b27048", "t": "local(ipAddress:port:)", "n": 185, "laws": 0, "ts": "2026-07-25 18:32 UTC"}
 {"id": "/documentation/groupactivities/spatialtemplateseatelement", "sha": "550d59a8bdb6842fc0adb6d812daafbba78315813518e29a6b869862c5d5cba7", "t": "SpatialTemplateSeatElement", "n": 922, "laws": 2, "ts": "2026-07-25 18:34 UTC"}
+{"id": "/documentation/imageio", "sha": "b295ed1e81c3bd68af391cd8634670bd8abfaeccdd871caac43364eefe56c5be", "t": "Image I/O", "n": 2614, "laws": 0, "ts": "2026-07-25 22:59 UTC"}
+{"id": "/documentation/nearbyinteraction/algorithm-convergence-status", "sha": "f572f3602dc26e886a6f722c21bc2425e589f39f2cbe0d0273ea002b216e3721", "t": "Algorithm Convergence Status", "n": 440, "laws": 2, "ts": "2026-07-25 23:08 UTC"}
+{"id": "/documentation/pencilkit/pkstrokereference", "sha": "4e1b7ff0dfeb18d14cc194d38a577fb4a2dfa549dafe49d5b6377b3c16294c1c", "t": "PKStrokeReference", "n": 577, "laws": 0, "ts": "2026-07-25 23:12 UTC"}
+{"id": "/documentation/speech/dictationtranscriber", "sha": "56dab8f6a78c5bf6348c9d1a8339987f972a318e076af0a5b787d8347f9e8f46", "t": "DictationTranscriber", "n": 1649, "laws": 1, "ts": "2026-07-25 23:21 UTC"}
+{"id": "/documentation/swiftui/groupelementsofcontent", "sha": "b25b83bb950aaeb374de90846f803ea971c7a146bd9d19a0e1532f1329e33264", "t": "GroupElementsOfContent", "n": 166, "laws": 1, "ts": "2026-07-25 23:25 UTC"}

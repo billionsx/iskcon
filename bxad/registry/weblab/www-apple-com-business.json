@@ -1,15 +1,15 @@
 {
  "url": "https://www.apple.com/business/",
  "sections": [
-  "section",
-  "section",
-  "section",
-  "section",
-  "section",
-  "section",
-  "section",
-  "section",
-  "section"
+  "section-welcome",
+  "section-news",
+  "section-innovation",
+  "section-real-companies",
+  "section-apple-business",
+  "section-compare",
+  "section-next-step",
+  "section-faq",
+  "section-router"
  ],
  "modules": [
   "name:hero",
@@ -40,5 +40,5 @@
   "/v/business/g/built/styles/overview.built.css",
   "/ac/ac-films/7.5.1/styles/modal.css"
  ],
- "typography_laws": 0
+ "typography_laws": 2
 }

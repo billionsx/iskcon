@@ -115,3 +115,15 @@
 {"id": "/documentation/coredata/sharing-core-data-objects-between-icloud-users", "law": "Apps must not call it in the production environment or in the normal development process that doesn’t include model changes."}
 {"id": "/documentation/coredata/sharing-core-data-objects-between-icloud-users", "law": "After running the target, use to ensure each Core Data entity and attribute has a CloudKit counterpart."}
 {"id": "/documentation/coredata/sharing-core-data-objects-between-icloud-users", "law": "For apps that use the CloudKit public database, use CloudKit Console to manually add the index for the field, and the and indexes for the field for all record types, including the type that Core Data generates to manage many-to-many relationships."}
+{"id": "/documentation/CoreData/NSBatchDeleteRequest", "law": "Subsequently, you must remove any deleted objects from memory after the request finishes."}
+{"id": "/documentation/CoreData/NSBatchDeleteRequest", "law": "Ensure that a request’s changes don’t violate the validation rules in your data model beyond basic delete rules, such as reducing a relationship count below the specified minimum."}
+{"id": "/documentation/CoreData/NSManagedObjectContext", "law": "Prior to OS X v10.7 and iOS v5.0, the parent store is always a persistent store coordinator."}
+{"id": "/documentation/CoreData/NSManagedObjectContext", "law": "Ultimately the root of a context’s ancestry must be a persistent store coordinator."}
+{"id": "/documentation/CoreData/NSManagedObjectContext", "law": "You cannot, therefore, use parent contexts created with the thread confinement type (see )."}
+{"id": "/documentation/CoreData/NSManagedObjectContext", "law": "You must save a child context if you want ultimately to commit the changes."}
+{"id": "/documentation/CoreData/NSManagedObjectContext", "law": "Typically, you should register to receive these notifications only from known contexts: Several system frameworks use Core Data internally."}
+{"id": "/documentation/CoreData/NSManagedObjectContext", "law": "Don’t, therefore, initialize a context on one thread then pass it to another."}
+{"id": "/documentation/CoreData/NSManagedObjectContext", "law": "If you use , you must create the context in (for a serial queue) or (for a concurrent queue)."}
+{"id": "/documentation/CoreData/NSManagedObjectContext", "law": "When you create a context you specify the concurrency type with which you’ll use it."}
+{"id": "/documentation/CoreData/NSManagedObjectContext", "law": "Use this type for contexts that update view controllers and other user interface elements."}
+{"id": "/documentation/CoreData/NSManagedObjectContext", "law": "You use contexts using the queue-based concurrency types in conjunction with and ."}

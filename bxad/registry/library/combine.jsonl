@@ -10,3 +10,4 @@
 {"id": "/documentation/Combine/Publisher/map(_:)-99evh", "law": "If your closure can throw an error, use Combine’s operator instead."}
 {"id": "/documentation/Combine/Publisher/scan(_:_:)", "law": "Use to accumulate all previously-published values into a single value, which you then combine with each newly-published value."}
 {"id": "/documentation/Combine/Subject", "law": "A subject is a publisher that you can use to ”inject” values into a stream, by calling its method."}
+{"id": "/documentation/Combine/Published", "law": "Use it with properties of classes, not with non-class types like structures."}

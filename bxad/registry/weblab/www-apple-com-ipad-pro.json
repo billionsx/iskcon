@@ -1,15 +1,15 @@
 {
  "url": "https://www.apple.com/ipad-pro/",
  "sections": [
-  "section",
-  "section",
-  "section",
-  "section",
-  "section",
-  "section",
-  "section",
-  "section",
-  "section"
+  "section-welcome",
+  "section-highlights",
+  "section-closer-look",
+  "section-themes",
+  "section-incentive",
+  "section-contrast",
+  "section-environment",
+  "section-values",
+  "section-index"
  ],
  "modules": [
   "name:hero",
@@ -47,5 +47,5 @@
   "/v/ipad-pro/aw/built/styles/main.built.css",
   "/v/ipad-pro/aw/built/styles/overview.built.css"
  ],
- "typography_laws": 0
+ "typography_laws": 2
 }

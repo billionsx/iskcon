@@ -11,3 +11,5 @@
 {"id": "/documentation/appclip/associating-your-app-clip-with-your-website", "sha": "9ef4e2397a2a17bffbba8afd18c5bf4240aa01f275971e4ec068bf90b6f62bd1", "t": "Associating your App Clip with your website", "n": 4910, "laws": 7, "ts": "2026-07-25 18:06 UTC"}
 {"id": "/documentation/appkit/creating-and-customizing-the-touch-bar", "sha": "4d255686f23f3ca10f7597d71f26ae6fdf82ab36ee1e64c26b008357f50d3804", "t": "Creating and Customizing the Touch Bar", "n": 2324, "laws": 7, "ts": "2026-07-25 18:09 UTC"}
 {"id": "/documentation/applemapsserverapi", "sha": "4cbd750d23366cdc381e9eb789c0ab87fe21acdbce71c749b28e1c94821475d9", "t": "Apple Maps Server API", "n": 2335, "laws": 5, "ts": "2026-07-25 18:12 UTC"}
+{"id": "/documentation/HomeKit/HMAccessory/isBridged", "sha": "cad2af5f9a25306c0be770b1d40a0809f11b48cf1651842c184029f4bcb0cd34", "t": "isBridged", "n": 1465, "laws": 2, "ts": "2026-07-25 22:59 UTC"}
+{"id": "/documentation/mapkit/mkgeojsondecoder", "sha": "4f40a909b92740d0d7f7c1a24ef95871cd835daab73a562cd5112f478b357c46", "t": "MKGeoJSONDecoder", "n": 175, "laws": 0, "ts": "2026-07-25 23:01 UTC"}

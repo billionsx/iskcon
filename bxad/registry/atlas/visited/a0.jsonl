@@ -17,3 +17,13 @@
 {"id": "/documentation/eventkit/ekeventstore", "sha": "8e963fa3361e1ad4c2851c4757fe06b4796a892c1bd8a69748f5fc8e5ea47e29", "t": "EKEventStore", "n": 2740, "laws": 4, "ts": "2026-07-25 18:27 UTC"}
 {"id": "/documentation/fskit/fsvolume/operations", "sha": "28e56d9912be59c7ca1c0dd76763bd887ee3dd8c27eb730807f0dd6fbe8ae555", "t": "FSVolume.Operations", "n": 1756, "laws": 2, "ts": "2026-07-25 18:29 UTC"}
 {"id": "/documentation/foundation/formatter", "sha": "270192d65bfe85b4899f030f85fdd91b7b06048a2e8c15f578408d849b4da86a", "t": "Formatter", "n": 1551, "laws": 3, "ts": "2026-07-25 18:30 UTC"}
+{"id": "/documentation/homekit", "sha": "9c639e5099ac552ea792e7356fd11ed420c9b920935f64e9a4c87ac48fca8517", "t": "HomeKit", "n": 1165, "laws": 0, "ts": "2026-07-25 22:59 UTC"}
+{"id": "/documentation/mediaaccessibility/madimflashinglightsenabled()", "sha": "c408a3159ff9e3c4c6a1fb242c4e65e136b85388f2b5b96f9989acc48315be71", "t": "MADimFlashingLightsEnabled()", "n": 100, "laws": 0, "ts": "2026-07-25 23:03 UTC"}
+{"id": "/documentation/metal/onscreen-presentation", "sha": "9352b75e0e79a0675b1c684544d4c69fefd9586df8a5c25a4e9b1b0a2f27deea", "t": "Onscreen presentation", "n": 1891, "laws": 4, "ts": "2026-07-25 23:03 UTC"}
+{"id": "/documentation/pencilkit/pktoolpickercustomitem/configuration-swift.struct/imageprovider", "sha": "8a4f19cbf0aaeb9fa440eb825f6619c30a4dc4e7bc0ee67429389778e66aeed9", "t": "imageProvider", "n": 67, "laws": 0, "ts": "2026-07-25 23:12 UTC"}
+{"id": "/documentation/realitykit/hasbodytracking", "sha": "886e8810b95d72078a775d16178a3190d85d3f309fbb7fcb2ba2655d600cb808", "t": "HasBodyTracking", "n": 257, "laws": 1, "ts": "2026-07-25 23:15 UTC"}
+{"id": "/documentation/SwiftUI/Gesture/onEnded(_:)", "sha": "739b17653b60e1c7fad31a5e53a8108605a1813ed8067bbfd18d7ad180451a79", "t": "onEnded(_:)", "n": 268, "laws": 1, "ts": "2026-07-25 23:18 UTC"}
+{"id": "/documentation/screencapturekit/scstreamframeinfo", "sha": "c4cb18b2da81bd66ba954d9fe74d6734bf05fac3bd86daf93a9c5fc6deb1476c", "t": "SCStreamFrameInfo", "n": 513, "laws": 1, "ts": "2026-07-25 23:19 UTC"}
+{"id": "/documentation/SiriKit/creating-an-intents-app-extension", "sha": "aa6e5dc07d0fe9af21c0112ed647e78ab215a6e42b1f0fe881a54071ef6857cf", "t": "Creating an Intents App Extension", "n": 4907, "laws": 9, "ts": "2026-07-25 23:19 UTC"}
+{"id": "/documentation/speech/speechanalyzer/finalizeandfinish(through:)", "sha": "b2a8a27de51ba22ff183d9f914c82f467acc525b90607e335a78bafbc3a02ce0", "t": "finalizeAndFinish(through:)", "n": 219, "laws": 0, "ts": "2026-07-25 23:21 UTC"}
+{"id": "/documentation/swiftui/tabcontent/customizationid(_:)", "sha": "3ad8216879bcdc47c9619c54fc2595cc66d197c6e5e6827f832845775beb167f", "t": "customizationID(_:)", "n": 709, "laws": 2, "ts": "2026-07-25 23:25 UTC"}

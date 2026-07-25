@@ -9,3 +9,6 @@
 {"id": "/documentation/Swift/Array/max(by:)", "sha": "458e9029e9445eb19802a25f176d7f3b0e98ba3cb4c61cb7864d6bdadd737517", "t": "max(by:)", "n": 798, "laws": 5, "ts": "2026-07-25 18:24 UTC"}
 {"id": "/documentation/createmlcomponents/downsampler", "sha": "8dc5ce1d4c07fb5587a72c91b3bc6b782111bb1f4576ab1ac398abadd3ac82b1", "t": "Downsampler", "n": 228, "laws": 0, "ts": "2026-07-25 18:24 UTC"}
 {"id": "/documentation/fskit/fsvolume/readwriteoperations/read(from:at:length:into:replyhandler:)", "sha": "b5fa233eb5e318bb6104f1fbc7b06f2cb00085fee4c55407eacd47002097579a", "t": "read(from:at:length:into:replyHandler:)", "n": 285, "laws": 1, "ts": "2026-07-25 18:29 UTC"}
+{"id": "/documentation/mapkit/mapkit-for-swiftui", "sha": "e14d282bed74a3cc6614fde5375b0a01817eea3395f2665cceee57fc637b9f27", "t": "MapKit for SwiftUI", "n": 2058, "laws": 1, "ts": "2026-07-25 23:02 UTC"}
+{"id": "/documentation/realitykit/game-development-sample-code", "sha": "607a9e34c57241b3f16a22221595c72be05d44a29df54802d48376164a321aa2", "t": "Gaming sample code projects", "n": 304, "laws": 0, "ts": "2026-07-25 23:13 UTC"}
+{"id": "/documentation/swiftui/stateobject", "sha": "d17dd2dde363f8dfa1e10b42fc8de348801f53fa82835d59404a2b0102afe11f", "t": "StateObject", "n": 4703, "laws": 8, "ts": "2026-07-25 23:26 UTC"}

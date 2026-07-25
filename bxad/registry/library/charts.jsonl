@@ -19,3 +19,7 @@
 {"id": "/documentation/charts/creating-a-chart-using-swift-charts", "law": "In this case, creating a bar chart is a good way to convey the number of each type of toy shape, so you use : The resulting chart clearly communicates that the cube toy shape appears the most: Scale determines the position, height, and color of each ."}
 {"id": "/documentation/charts/creating-a-chart-using-swift-charts", "law": "However, for regular, repetitive data, you can use a structure to represent the same chart more concisely:"}
 {"id": "/documentation/charts/creating-a-chart-using-swift-charts", "law": "However, in this case, the colors that the framework assigns to each mark don’t match the shape colors that they represent."}
+{"id": "/documentation/Charts/BarMark", "law": "To create a simple vertical bar chart that plots categories with x positions and numbers with y positions, use ."}
+{"id": "/documentation/Charts/BarMark", "law": "To differentiate the product categories, add a modifer that specifies a visual encoding for the : You can use the optional parameter in the initializer to modify the stacking mechanism."}
+{"id": "/documentation/Charts/BarMark", "law": "To build a one dimensional chart, use one of the initializers that only requires a for one dimension, like for plotting with x."}
+{"id": "/documentation/Charts/BarMark", "law": "Use to represent intervals by using the , , or ."}

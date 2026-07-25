@@ -1,14 +1,14 @@
 {
  "url": "https://www.apple.com/wallet/",
  "sections": [
-  "section",
-  "section",
-  "section",
-  "section",
-  "section",
-  "section",
-  "section",
-  "section"
+  "section-hero",
+  "section-payments",
+  "section-identity",
+  "section-transit-and-tickets",
+  "section-keys",
+  "section-privacy",
+  "section-faq",
+  "section-routers"
  ],
  "modules": [
   "name:hero",
@@ -56,5 +56,5 @@
   "/v/wallet/j/built/styles/overview.built.css",
   "/ac/ac-films/7.5.1/styles/modal.css"
  ],
- "typography_laws": 0
+ "typography_laws": 2
 }

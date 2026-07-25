@@ -368,3 +368,11 @@
 {"id": "/documentation/AppKit/NSScreen", "law": "If you need additional information or want to change the attributes relating to a display, you must use Quartz Services."}
 {"id": "/documentation/AppKit/NSScreen/maximumPotentialExtendedDynamicRangeColorComponentValue", "law": "The actual maximum value might be lower than this property’s value, and can change dynamically, depending on the capabilities of the display hardware and other conditions."}
 {"id": "/documentation/AppKit/NSScreen/maximumPotentialExtendedDynamicRangeColorComponentValue", "law": "The maximum possible color component value for the screen when it’s in extended dynamic range (EDR) mode."}
+{"id": "/documentation/AppKit/NSView", "law": "You typically don’t use objects directly."}
+{"id": "/documentation/AppKit/NSView", "law": "Instead, you use objects that descend from or you subclass yourself and override its methods to implement the behavior you need."}
+{"id": "/documentation/AppKit/NSView", "law": "Unless you’re implementing a concrete subclass of or working intimately with the content of the view hierarchy at runtime, you don’t need to know much about this class’s interface."}
+{"id": "/documentation/AppKit/NSView", "law": "For any view, there are many methods that you can use as-is."}
+{"id": "/documentation/AppKit/NSView", "law": "(All subclasses must implement this method, but it’s rarely invoked explicitly.) An alternative to drawing is to update the layer directly using the method."}
+{"id": "/documentation/AppKit/NSView", "law": "If you subclass directly and handle specific types of events, don’t call in the implementations of your event-related methods."}
+{"id": "/documentation/AppKit/NSView", "law": "Therefore, don’t call if your view implements any of the following methods and handles the event: changes the default behavior of so that it calls and, if non , presents the contextual menu."}
+{"id": "/documentation/AppKit/NSView", "law": "If your view descends from a class other than , call to let the parent view handle any events that you don’t."}
