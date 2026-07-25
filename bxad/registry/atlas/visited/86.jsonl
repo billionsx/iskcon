@@ -1,3 +1,4 @@
 {"id": "/documentation/PCIDriverKit/connecting-a-network-driver", "sha": "b421f672ac0063a6e562ce49792dc023c4883532c725ff566ff4def2d70b178d", "t": "Connecting a network driver", "n": 8367, "laws": 10, "ts": "2026-07-24 17:51 UTC"}
 {"id": "/documentation/Swift/CallingAPIsAcrossLanguageBoundaries", "sha": "f7c8fc6a27dca87a7dbe76ae93e2b03e24189fbc6a1b97edeb854f76a888ea0c", "t": "Calling APIs Across Language Boundaries", "n": 335, "laws": 2, "ts": "2026-07-24 17:53 UTC"}
 {"id": "/documentation/Spatial", "sha": "d71f1b28258cb51d1dabfff8373413114f119642377def79e1975aebb92f3645", "t": "Spatial", "n": 1527, "laws": 0, "ts": "2026-07-24 18:53 UTC"}
+{"id": "/documentation/accelerate/fast-fourier-transforms", "sha": "284bdf94f924d85e529ca352742494692cfee9bfef9547895434e42d8661552d", "t": "Fast Fourier transforms", "n": 1734, "laws": 1, "ts": "2026-07-25 04:23 UTC"}

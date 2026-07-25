@@ -27,3 +27,17 @@
 {"id": "/documentation/Swift/withTaskGroup(of:returning:isolation:body:)", "law": "Even canceled tasks must run until completion before this function returns."}
 {"id": "/documentation/Swift/withTaskGroup(of:returning:isolation:body:)", "law": "After this function returns, the task group is always empty."}
 {"id": "/documentation/Swift/withTaskGroup(of:returning:isolation:body:)", "law": "To collect the results of the group’s child tasks, you can use a - - loop: If you need more control or only a few results, you can call directly: Refer to documentation for detailed discussion of semantics shared between all task groups."}
+{"id": "/documentation/Swift/UnsafePointer", "law": "You use instances of the type to access data of a specific type in memory."}
+{"id": "/documentation/Swift/UnsafePointer", "law": "You are responsible for handling the life cycle of any memory you work with through unsafe pointers to avoid leaks or undefined behavior."}
+{"id": "/documentation/Swift/UnsafePointer", "law": "You use the type to access and manage memory that has been bound to a specific type."}
+{"id": "/documentation/Swift/UnsafePointer", "law": "Many pointer operations must only be applied to pointers with memory in a specific state—you must keep track of the state of the memory you are working with and understand the changes to that state that different operations perform."}
+{"id": "/documentation/Swift/UnsafePointer", "law": "Uninitialized memory must be initialized before it can be accessed for reading."}
+{"id": "/documentation/Swift/UnsafePointer", "law": "When you access memory through an instance, the type must be consistent with the bound type of the memory."}
+{"id": "/documentation/Swift/UnsafePointer", "law": "When you only need to temporarily access a pointer’s memory as a different type, use the method."}
+{"id": "/documentation/Swift/UnsafePointer", "law": "For example, you can use this method to call an API that expects a pointer to a different type that is layout compatible with your pointer’s ."}
+{"id": "/documentation/Swift/UnsafePointer", "law": "Convert your pointer to an instance and then use the raw pointer’s method to read values."}
+{"id": "/documentation/Swift/UnsafePointer", "law": "You can also use subscript notation to access the value in memory at a specific offset."}
+{"id": "/documentation/Swift/withUnsafePointer(to:_:)-35wrn", "law": "Do not store or return the pointer for later use."}
+{"id": "/documentation/Swift/UnsafeMutableRawPointer/copyMemory(from:byteCount:)", "law": "If the bytes of memory referenced by this pointer are bound to a type , then must be a trivial type, this pointer and must be properly aligned for accessing , and must be a multiple of ."}
+{"id": "/documentation/Swift/UnsafeMutableRawPointer/allocate(byteCount:alignment:)", "law": "Be sure to deallocate any memory that you manually allocate."}
+{"id": "/documentation/Swift/UnsafeMutableRawPointer/allocate(byteCount:alignment:)", "law": "The allocated memory is not bound to any specific type and must be bound before performing any typed operations."}

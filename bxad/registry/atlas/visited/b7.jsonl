@@ -5,3 +5,4 @@
 {"id": "/documentation/UserNotifications/handling-communication-notifications-and-focus-status-updates", "sha": "cd8cf100cceaf9f43d17746fb13b643aae3ac90a1a46e8551fe4138816de60fd", "t": "Handling Communication Notifications and Focus Status Updates", "n": 4171, "laws": 10, "ts": "2026-07-24 17:55 UTC"}
 {"id": "/documentation/QuickLookUI", "sha": "b55bbefb50c6c29dc3c8308af67b6a662fb0b5471ce09e10013929d8f35fe038", "t": "Quick Look UI", "n": 1579, "laws": 2, "ts": "2026-07-24 18:53 UTC"}
 {"id": "/documentation/UIKit/UITapGestureRecognizer", "sha": "461cb1487089b3ff15ea044bbd7e473f94f3757e8a5768a9d8f3a0c7ad8dfc57", "t": "UITapGestureRecognizer", "n": 1058, "laws": 2, "ts": "2026-07-24 18:56 UTC"}
+{"id": "/documentation/Compression/compression_stream", "sha": "853b8b857f92519e34a9a969e4a3cd9aef9369d6232d87fc2d652994d1d6b915", "t": "compression_stream", "n": 909, "laws": 1, "ts": "2026-07-25 04:22 UTC"}

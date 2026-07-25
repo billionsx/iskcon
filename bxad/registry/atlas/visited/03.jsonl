@@ -5,3 +5,4 @@
 {"id": "/documentation/CoreImage", "sha": "7c704d3f90d44818b8e022532d6c00eba0d27513ff5f458ae479ccea89a22afc", "t": "Core Image", "n": 2102, "laws": 2, "ts": "2026-07-24 18:50 UTC"}
 {"id": "/documentation/PencilKit", "sha": "26a4a3acf797fba6c7eb339f3730abca2708aa5c770631b6e40a0b62677f0aee", "t": "PencilKit", "n": 1597, "laws": 0, "ts": "2026-07-24 18:52 UTC"}
 {"id": "/documentation/avfoundation/avmetadataobject/objecttype/face", "sha": "aed371636ee1ba114293c561f585c6ec1c81c3cc4474d17c969e8639f6c984b7", "t": "face", "n": 148, "laws": 0, "ts": "2026-07-24 19:04 UTC"}
+{"id": "/documentation/accelerate/applying-vimage-operations-to-video-sample-buffers", "sha": "849c26ffbd55a5dc6addc7f4648dd78f4f74d19ea1a1d1d2cc55eec1889d48cb", "t": "Applying vImage operations to video sample buffers", "n": 3046, "laws": 4, "ts": "2026-07-25 04:23 UTC"}

@@ -4,3 +4,4 @@
 {"id": "/documentation/arkit/arraycastquery", "sha": "a9534ba472f59fdb38d262ee3180e1a2a24aa6adaa349c40a574fa2a802e38b1", "t": "ARRaycastQuery", "n": 754, "laws": 2, "ts": "2026-07-24 18:58 UTC"}
 {"id": "/documentation/RealityKit/ModelEntity", "sha": "b08e983a5d8edba433b630045a35f1566d10caf0ac21f226a9a0903caac45a66", "t": "ModelEntity", "n": 1282, "laws": 1, "ts": "2026-07-24 18:58 UTC"}
 {"id": "/documentation/arkit/arskview", "sha": "829b49f22b8124dce1426aef529eb8c4ad9be6fa90b712fd45d3a351ed5c157d", "t": "ARSKView", "n": 854, "laws": 1, "ts": "2026-07-24 18:59 UTC"}
+{"id": "/documentation/accelerate/finding-the-sharpest-image-in-a-sequence-of-captured-images", "sha": "4006d3137cd9ed96eedaf4902a65e7f286b68d888f5b50dac47a8cef5f2bcc3e", "t": "Finding the sharpest image in a sequence of captured images", "n": 5489, "laws": 3, "ts": "2026-07-25 04:21 UTC"}

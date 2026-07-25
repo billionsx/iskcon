@@ -7,3 +7,4 @@
 {"id": "/documentation/arkit/arsession/currentframe", "sha": "ba076a2d060bad77901da7f5727ce8ff7ef1ef99f90e0f251c48c5f8ebfdcd51", "t": "currentFrame", "n": 103, "laws": 0, "ts": "2026-07-24 18:57 UTC"}
 {"id": "/documentation/arkit/arobjectscanningconfiguration", "sha": "32bbe4c1965ff9847eac5bd97442dcc8bddcfe05e17ac056ee08d18a3a24bb46", "t": "ARObjectScanningConfiguration", "n": 927, "laws": 3, "ts": "2026-07-24 18:58 UTC"}
 {"id": "/documentation/VideoToolbox/kVTCompressionPropertyKey_HasLeftStereoEyeView", "sha": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855", "t": "kVTCompressionPropertyKey_HasLeftStereoEyeView", "n": 0, "laws": 0, "ts": "2026-07-24 19:03 UTC"}
+{"id": "/documentation/accelerate/conversion", "sha": "35a856fc2154b395260d706d4cacfc44c88eb6fefcd3a725c0dc9c47753b97c6", "t": "Conversion", "n": 1362, "laws": 0, "ts": "2026-07-25 04:22 UTC"}

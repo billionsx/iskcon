@@ -1,2 +1,4 @@
 {"id": "/documentation/TechnologyOverviews/tools-and-distribution", "sha": "273c7b3383ff5cb84e7809e24e323c9e947beb8348cff26649e41bed8c8030da", "t": "Tools and distribution", "n": 1471, "laws": 3, "ts": "2026-07-24 17:44 UTC"}
 {"id": "/documentation/HealthKit/accessing-workout-zone-data", "sha": "9d0919cba90fa328d2a3d45a08bb18e548b90f967cc91ed29c71f00943f2112d", "t": "Accessing workout zone data", "n": 4997, "laws": 8, "ts": "2026-07-24 18:45 UTC"}
+{"id": "/documentation/accelerate/vdsp_biquad_setcoefficientssingle", "sha": "3a51c6914dbe8bbb532d9ae3161360bf40e4e48bbb2bb8ed133100d1aab3027e", "t": "vDSP_biquad_SetCoefficientsSingle", "n": 365, "laws": 2, "ts": "2026-07-25 04:20 UTC"}
+{"id": "/documentation/accelerate/vdsp/sum(_:)-8hq9", "sha": "73d3056aa4fa3e3ec57875b0206c3218275e8f4d4bf2492e1c35f0cfc6877b1b", "t": "sum(_:)", "n": 176, "laws": 0, "ts": "2026-07-25 04:22 UTC"}

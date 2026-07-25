@@ -6,3 +6,4 @@
 {"id": "/documentation/arkit/arlightestimate", "sha": "6a946fca040fa2ab191c3fb290fc7d7b3894afa6291970cd4c02865803a2f3f2", "t": "ARLightEstimate", "n": 566, "laws": 1, "ts": "2026-07-24 18:55 UTC"}
 {"id": "/documentation/arkit/arpointcloud", "sha": "5a6b9e28f6dcd689d367b7b9138b4035cb7303ad86aad99b37314e2800055644", "t": "ARPointCloud", "n": 299, "laws": 1, "ts": "2026-07-24 18:56 UTC"}
 {"id": "/documentation/avfoundation/avcapturestillimageoutput", "sha": "d815e9dd944d727e3967f00cc0d2dac489102f91d2a078fe3f566bd091b32b42", "t": "AVCaptureStillImageOutput", "n": 1069, "laws": 0, "ts": "2026-07-24 19:03 UTC"}
+{"id": "/documentation/Compression/COMPRESSION_STATUS_OK", "sha": "a02189c6b45d594ad15d653d6b02363ae01e45667e12ace78fcb7b512833da07", "t": "COMPRESSION_STATUS_OK", "n": 109, "laws": 0, "ts": "2026-07-25 04:22 UTC"}

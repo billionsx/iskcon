@@ -150,3 +150,6 @@
 {"id": "/documentation/AVFAudio/AVAudioSession/Mode-swift.struct/voiceChat", "law": "VoIP apps should also use the as it provides useful voice features, including automatic gain correction, adjustment of voice processing, and muting."}
 {"id": "/documentation/AVFAudio/AVAudioSession/Mode-swift.struct/voiceChat", "law": "For apps that use one or more chat modes (voice, video, or game), but don’t use or with , the system reduces the processing it applies to audio signals."}
 {"id": "/documentation/AVFAudio/AVAudioSession/isInputAvailable", "law": "Use this property to determine whether the device currently supports audio input."}
+{"id": "/documentation/AVFAudio/creating-an-audio-unit-extension", "law": "The identifier value you specify is what you use to reference the parameter from your host app."}
+{"id": "/documentation/AVFAudio/creating-an-audio-unit-extension", "law": "Add the custom member variable at the end of the source file, and use the and functions to access it."}
+{"id": "/documentation/AVFAudio/creating-an-audio-unit-extension", "law": "Use the function to implement your custom signal-processing algorithm."}

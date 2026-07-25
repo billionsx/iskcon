@@ -8,3 +8,6 @@
 {"id": "/documentation/visionOS/tracking-images-in-3d-space", "sha": "45cb0235c237ba483886b194233ed08cf2727990529584d1ddabd25b1dfe06e6", "t": "Tracking preregistered images in 3D space", "n": 941, "laws": 3, "ts": "2026-07-24 18:59 UTC"}
 {"id": "/documentation/arkit/arfaceanchor/blendshapelocation/eyeblinkleft", "sha": "44e325b5305b2022fb84043b6239692161782a0b6d458dcceade47b83c5f2e6b", "t": "eyeBlinkLeft", "n": 260, "laws": 0, "ts": "2026-07-24 18:59 UTC"}
 {"id": "/documentation/RealityKit/PhysicsBodyComponent/mode", "sha": "9a08cf68045d9f1d32e7447bf807a208915e12752065f0fb0907e6c7969f1a55", "t": "mode", "n": 1578, "laws": 2, "ts": "2026-07-24 19:00 UTC"}
+{"id": "/documentation/accelerate/vdsp-library", "sha": "b1498b08b7e02cec6abcda41e6c7b0a67ea75794ff6d8d0b98e1a29dd90de47c", "t": "vDSP", "n": 3541, "laws": 1, "ts": "2026-07-25 04:20 UTC"}
+{"id": "/documentation/accelerate/vimagemdtableusagehint", "sha": "da79e5c7335acb49ee17c44e087138a81b2ef71a40318638fa275e56da0d4270", "t": "vImageMDTableUsageHint", "n": 195, "laws": 1, "ts": "2026-07-25 04:21 UTC"}
+{"id": "/documentation/accelerate/normalization-functions", "sha": "977564d72d6fff458127f56733dadce663e273fc33bb6753b1fe4b6006d68c6e", "t": "Normalization functions", "n": 217, "laws": 0, "ts": "2026-07-25 04:23 UTC"}

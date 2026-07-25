@@ -3,3 +3,5 @@
 {"id": "/documentation/arkit/arkit-in-visionos", "sha": "a10dccf811410d9e0903a4604052e0452e3452813b67e2a30d01ed58e8d61887", "t": "ARKit in visionOS", "n": 3563, "laws": 5, "ts": "2026-07-24 18:57 UTC"}
 {"id": "/documentation/arkit/arobjectanchor", "sha": "c5fe97e041562bfe59d5d48099ccc41d3c8bcfe4b910f76bd10039f3d27b9a6e", "t": "ARObjectAnchor", "n": 621, "laws": 1, "ts": "2026-07-24 18:58 UTC"}
 {"id": "/documentation/AVFoundation/AVSampleBufferAudioRenderer", "sha": "7be3fa8edb888222b0c0a4bce7bb089f1e4037c863ba928a2d9f52d80403ace3", "t": "AVSampleBufferAudioRenderer", "n": 663, "laws": 1, "ts": "2026-07-24 19:01 UTC"}
+{"id": "/documentation/accelerate/vimage_buffer", "sha": "09a228954825825bc8a957e84d7d6095d42fc10bc2fe6accea31a97bb037dabb", "t": "vImage_Buffer", "n": 1202, "laws": 1, "ts": "2026-07-25 04:21 UTC"}
+{"id": "/documentation/simd/simd_double3", "sha": "2ddddf17ee0c1d6fe33d56edc61c5ec504b8be82b59d84ca21a6aaec0a2ac707", "t": "simd_double3", "n": 2338, "laws": 0, "ts": "2026-07-25 04:24 UTC"}

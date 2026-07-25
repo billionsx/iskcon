@@ -4,3 +4,4 @@
 {"id": "/documentation/professional_video_applications", "sha": "945c589d864c1c13e4494d3c8cb52c686ae331f2564fd542da692ae4910d936b", "t": "Professional Video Applications", "n": 1860, "laws": 3, "ts": "2026-07-24 18:55 UTC"}
 {"id": "/documentation/UIKit/UIStackView", "sha": "59197ee00cc4d76089a4dce1eba68af31f302d0bf6d9f0a5d377d60b35222f55", "t": "UIStackView", "n": 11924, "laws": 10, "ts": "2026-07-24 18:59 UTC"}
 {"id": "/documentation/avfoundation/avassetdownloadurlsession", "sha": "ed43b46593fd157d7d32ee84b0561294ec246f17cf93255a87bf3cecce4ebf86", "t": "AVAssetDownloadURLSession", "n": 2241, "laws": 2, "ts": "2026-07-24 19:06 UTC"}
+{"id": "/documentation/CoreVideo/cvdisplaylink-k0k", "sha": "a32ed4abc99ab47c803e7c5e8e81a78481661d87f470bfe9664f9b205c9a1f88", "t": "CVDisplayLink", "n": 1418, "laws": 1, "ts": "2026-07-25 04:24 UTC"}

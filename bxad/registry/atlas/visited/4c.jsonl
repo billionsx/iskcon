@@ -6,3 +6,4 @@
 {"id": "/documentation/WiFiInfrastructure", "sha": "c58fbb047728cf66d1d96a1dd27c44fa8ef4e3ef1782706f994914d891b5b1c3", "t": "Wi-Fi Infrastructure", "n": 2005, "laws": 3, "ts": "2026-07-24 18:54 UTC"}
 {"id": "/documentation/arkit/arconfiguration/scenereconstruction/meshwithclassification", "sha": "4cf7af4202c08b2a0aaeda031d57ff8f3f55889fc68924c397230667b8985d75", "t": "meshWithClassification", "n": 111, "laws": 0, "ts": "2026-07-24 19:00 UTC"}
 {"id": "/documentation/AVFAudio/AVAudioEngine/inputNode", "sha": "50901658e6bb3ace551118953cbea0079c44c7536aaeaf0eb495faf6312fe678", "t": "inputNode", "n": 957, "laws": 0, "ts": "2026-07-24 19:07 UTC"}
+{"id": "/documentation/accelerate/vimage/pixelbuffer/init(width:height:pixelformat:)", "sha": "5cd05e943d5705103fdac57ee21cea7fef7561b16751b164808b56ca400f95f4", "t": "init(width:height:pixelFormat:)", "n": 232, "laws": 0, "ts": "2026-07-25 04:23 UTC"}

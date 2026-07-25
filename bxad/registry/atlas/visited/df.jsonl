@@ -5,3 +5,4 @@
 {"id": "/documentation/QuickLook", "sha": "ecf78ea316360be695157909b56ff01aca33507304c421fad39458316039eed1", "t": "Quick Look", "n": 2313, "laws": 4, "ts": "2026-07-24 18:52 UTC"}
 {"id": "/documentation/arkit/arsessionobserver/sessionshouldattemptrelocalization(_:)", "sha": "df45518a2ce420e72d573cea89948e82ddc2552dc6d02a44ad90d13bb504913d", "t": "sessionShouldAttemptRelocalization(_:)", "n": 1943, "laws": 1, "ts": "2026-07-24 18:58 UTC"}
 {"id": "/documentation/avfoundation/avsamplebuffergenerator", "sha": "cd42f0436c2ea2943637ae30bb5cbd5c824175fc6530080aa30bc33a602ac062", "t": "AVSampleBufferGenerator", "n": 498, "laws": 0, "ts": "2026-07-24 19:05 UTC"}
+{"id": "/documentation/accelerate/vdsp/fft/transform(input:output:direction:)", "sha": "c0375f2a247a912f6e71e2f19faf425649e4ffc67020e4ef831509b9005c08ed", "t": "transform(input:output:direction:)", "n": 48, "laws": 0, "ts": "2026-07-25 04:23 UTC"}

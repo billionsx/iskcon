@@ -5,3 +5,4 @@
 {"id": "/documentation/avfoundation/avassetreadersamplereferenceoutput", "sha": "04f71e9a54bdacce3e951c6610e0b66d43fbc87ea25d5d7b1475040cdef8f4af", "t": "AVAssetReaderSampleReferenceOutput", "n": 779, "laws": 1, "ts": "2026-07-24 19:05 UTC"}
 {"id": "/documentation/Foundation/FileManager/removeItem(at:)", "sha": "45d9e80c0d8ab8f8db7c347cc470833f2ab28caa677d50e005fb8381fe7c9e53", "t": "removeItem(at:)", "n": 711, "laws": 1, "ts": "2026-07-24 19:06 UTC"}
 {"id": "/documentation/avkit/avcaptureeventinteraction", "sha": "1e6a8a3e115f74ad869818c0a4dd03cc1eb0a214cee22d5587bee467d80fd326", "t": "AVCaptureEventInteraction", "n": 1478, "laws": 4, "ts": "2026-07-24 19:07 UTC"}
+{"id": "/documentation/accelerate/vimage/pixelbuffer/tentconvolve(kernelsize:edgemode:destination:)-150xp", "sha": "48b01c5cdb3d756afcd6717bc4ea495e7a7259dcc7b655379861f3cd228cc3c2", "t": "tentConvolve(kernelSize:edgeMode:destination:)", "n": 86, "laws": 0, "ts": "2026-07-25 04:21 UTC"}

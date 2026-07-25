@@ -361,3 +361,44 @@
 {"id": "/documentation/AVFoundation/AVCaptureDevice", "law": "You should also query the device’s capabilities to ensure that the new modes you intend to set are valid for the device."}
 {"id": "/documentation/AVFoundation/AVCaptureDevice", "law": "However, holding the device lock unnecessarily may degrade capture quality in other apps sharing the device and isn’t recommended."}
 {"id": "/documentation/AVFoundation/AVCaptureDeviceInput", "law": "This class is a concrete subclass of that you use to connect a capture device to a capture session."}
+{"id": "/documentation/AVFoundation/AVCaptureVideoDataOutput", "law": "Use this output to process compressed or uncompressed frames from the captured video."}
+{"id": "/documentation/AVFoundation/AVCaptureVideoDataOutput", "law": "Avoid defaulting to a BGRA format, because BGRA formats aren’t native and require conversion."}
+{"id": "/documentation/AVFoundation/AVCaptureVideoDataOutput", "law": "Additionally, BGRA formats requires significantly more memory than many of the native formats."}
+{"id": "/documentation/AVFoundation/AVCaptureVideoDataOutput/videoSettings", "law": "In iOS 16 and later, the supported keys include the following: For compressed video output, only use , , , , and ."}
+{"id": "/documentation/AVFoundation/AVCaptureVideoDataOutput/videoSettings", "law": "For uncompressed video output, you can also use , , and , in addition to the compressed video output keys."}
+{"id": "/documentation/AVFoundation/AVCaptureVideoDataOutput/videoSettings", "law": "You can use and to get a list of the supported pixel formats and video codecs, respectively."}
+{"id": "/documentation/AVFoundation/AVCaptureVideoDataOutput/videoSettings", "law": "Don’t change the width and height if is , otherwise the system throws an ."}
+{"id": "/documentation/AVFoundation/AVCaptureVideoDataOutputSampleBufferDelegate/captureOutput(_:didOutput:from:)", "law": "Delegates can use the provided video frame in conjunction with other APIs for further processing."}
+{"id": "/documentation/AVFoundation/AVCaptureVideoDataOutputSampleBufferDelegate/captureOutput(_:didOutput:from:)", "law": "It is called periodically, so it must be efficient to prevent capture performance problems, including dropped frames."}
+{"id": "/documentation/AVFoundation/AVCaptureVideoDataOutputSampleBufferDelegate/captureOutput(_:didOutput:from:)", "law": "If you need to reference the object outside of the scope of this method, you must it and then it when you are finished with it."}
+{"id": "/documentation/AVFoundation/AVAssetReader", "law": "Use an asset reader to read media data from instances of ."}
+{"id": "/documentation/AVFoundation/AVAssetReaderTrackOutput", "law": "For audio output settings, this means that must be ."}
+{"id": "/documentation/AVFoundation/AVAssetReaderTrackOutput", "law": "For video output settings, this means that the dictionary must contain values for uncompressed video output, as defined in ."}
+{"id": "/documentation/AVFoundation/AVAssetReaderTrackOutput", "law": "For optimal performance when decompressing video, the requested pixel format should be one that the decoder supports natively to avoid unnecessary conversions."}
+{"id": "/documentation/AVFoundation/AVAssetReaderTrackOutput", "law": "Below are some recommendations: For H.264, use or when you know the video is full range."}
+{"id": "/documentation/AVFoundation/AVAssetReaderTrackOutput", "law": "In iOS, use for JPEG output."}
+{"id": "/documentation/AVFoundation/AVAssetReaderTrackOutput", "law": "If you need to work in the RGB domain, use in iOS, and in macOS."}
+{"id": "/documentation/AVFoundation/AVAssetReaderTrackOutput", "law": "For ProRes-encoded sources that you wish to preserve more than 8 bits per channel during decompression, use one of the following pixel formats: , , , or ."}
+{"id": "/documentation/AVFoundation/AVAssetReaderTrackOutput", "law": "If you use the above pixel formats, don’t specify or in the dictionary."}
+{"id": "/documentation/AVFoundation/AVAssetReaderTrackOutput", "law": "To preserve the alpha channel during decompression, use a pixel format with an alpha component such as or ."}
+{"id": "/documentation/AVFoundation/AVPartialAsyncProperty/naturalTimeScale", "law": "Use the method to retrieve the property value."}
+{"id": "/documentation/AVFoundation/AVCaptureAutoExposureBracketedStillImageSettings", "law": "An instance defines the exposure target bias setting that should be applied to one image in a bracket."}
+{"id": "/documentation/AVFoundation/AVCaptureAutoExposureBracketedStillImageSettings", "law": "The minimum and maximum exposure target bias are properties of the instance supplying data to an instance."}
+{"id": "/documentation/AVFoundation/AVCapturePhoto/pixelBuffer", "law": "If you requested photo capture in a RAW format, or in a processed format without compression such as TIFF, you can use this property to access the underlying sample buffer."}
+{"id": "/documentation/AVFoundation/AVCapturePhoto/pixelBuffer", "law": "Use the or method to obtain compressed image data."}
+{"id": "/documentation/AVFoundation/AVCapturePhotoBracketSettings", "law": "Capturing a multiple-image bracket may require allocation of additional resources."}
+{"id": "/documentation/AVFoundation/AVCapturePhotoBracketSettings", "law": "Capturing a Multi-Exposure Bracket A specification of the features and settings to use for a photo capture request that captures multiple images with varied settings."}
+{"id": "/documentation/AVFoundation/AVCapturePhotoCaptureDelegate/photoOutput(_:didFinishProcessingPhoto:error:)", "law": "Use this method to receive the results of photo capture regardless of format."}
+{"id": "/documentation/AVFoundation/AVCapturePhotoCaptureDelegate/photoOutput(_:didFinishProcessingPhoto:error:)", "law": "Implementing this method is recommended for all still image (as opposed to Live Photo) capture workflows, and required if you request depth data delivery."}
+{"id": "/documentation/AVFoundation/AVCapturePhotoOutput", "law": "Use its properties to determine supported capture settings and to enable certain features (for example, whether to capture Live Photos)."}
+{"id": "/documentation/AVFoundation/AVCapturePhotoOutput", "law": "For such settings, the photo output determines whether to use that feature at the moment of capture—you don’t know when requesting a capture whether the feature will be enabled when the capture completes."}
+{"id": "/documentation/AVFoundation/AVCapturePhotoOutput", "law": "Enabling certain photo features (Live Photo capture and high resolution capture) requires a reconfiguration of the capture render pipeline."}
+{"id": "/documentation/AVFoundation/AVCapturePhotoOutput", "law": "(As an alternative, you can use the class to output video buffers at the same resolution as a simultaneous Live Photo capture)."}
+{"id": "/documentation/AVFoundation/AVCapturePhotoOutput/maxBracketedCapturePhotoCount", "law": "The maximum number of photos per capture depends on the size and format of images to be captured."}
+{"id": "/documentation/AVFoundation/AVCapturePhotoOutput/maxBracketedCapturePhotoCount", "law": "The maximum number of images that the photo capture output can support in a single bracketed capture."}
+{"id": "/documentation/AVFoundation/setting-up-a-capture-session", "law": "All capture sessions need at least one capture input and capture output."}
+{"id": "/documentation/AVFoundation/setting-up-a-capture-session", "law": "Capture outputs ( subclasses) use data provided by capture inputs to produce media, like image and movie files."}
+{"id": "/documentation/AVFoundation/setting-up-a-capture-session", "law": "To use a camera for video input (to capture photos or movies), select an appropriate , create a corresponding , and add it to the session: iOS offers several other ways to select a camera device."}
+{"id": "/documentation/AVFoundation/setting-up-a-capture-session", "law": "Then, to use the preview layer with a capture session, set the layer’s property: If your app supports multiple interface orientations, use the preview layer’s to the capture session to set a matching that of your UI."}
+{"id": "/documentation/AVFoundation/setting-up-a-capture-session", "law": "With other capture outputs, you first start the session running, then use the capture output class itself to initiate capture."}
+{"id": "/documentation/AVFoundation/setting-up-a-capture-session", "law": "In a photography app, for example, running the session enables a viewfinder-style preview, but you use the method to snap a picture."}

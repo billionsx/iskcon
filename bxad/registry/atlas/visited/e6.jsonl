@@ -7,3 +7,4 @@
 {"id": "/documentation/avfoundation/avcapturedataoutputsynchronizer", "sha": "84012979f9fbd152870caa2698157d1d9ddb1e23bd7aa9e4adff54ec1240421b", "t": "AVCaptureDataOutputSynchronizer", "n": 646, "laws": 2, "ts": "2026-07-24 19:03 UTC"}
 {"id": "/documentation/avfoundation/editing-and-playing-hdr-video", "sha": "2bd3f31c0e4f7c2e996e51d9f5cd7d33d096d4215444a6dd5cdfa324443ed7b1", "t": "Editing and playing HDR video", "n": 199, "laws": 0, "ts": "2026-07-24 19:04 UTC"}
 {"id": "/documentation/avkit/avinputpickerinteraction", "sha": "3ae95326662c9c40a4a8d9a04e3ee07ea5595595a7d731e695726c73890e3514", "t": "AVInputPickerInteraction", "n": 262, "laws": 1, "ts": "2026-07-24 19:07 UTC"}
+{"id": "/documentation/accelerate/vforce-library", "sha": "e68825b40cbc6681f4a71ea7e296aff1b007a4bd4a294befca44e40bc6e51de5", "t": "vForce", "n": 5776, "laws": 0, "ts": "2026-07-25 04:24 UTC"}

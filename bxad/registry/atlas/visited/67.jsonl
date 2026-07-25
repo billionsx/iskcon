@@ -7,3 +7,6 @@
 {"id": "/documentation/RealityKit/Entity", "sha": "080702c4bc41b46179ca3f5e82bc0deaad875f214344da42c1b99d48ed09ab73", "t": "Entity", "n": 4755, "laws": 0, "ts": "2026-07-24 18:57 UTC"}
 {"id": "/documentation/arkit/displaying-an-ar-experience-with-metal", "sha": "461fbf490d227e1f6338634a065efc15224c55fc79342225344a85821b9836b7", "t": "Displaying an AR Experience with Metal", "n": 4932, "laws": 9, "ts": "2026-07-24 18:57 UTC"}
 {"id": "/documentation/arkit/arskviewdelegate/view(_:didadd:for:)", "sha": "9b8aa1fab681253ae99dfbe3205dbc5bfd97d051ffd03f3f96850ebf52523849", "t": "view(_:didAdd:for:)", "n": 556, "laws": 0, "ts": "2026-07-24 18:58 UTC"}
+{"id": "/documentation/accelerate/vimage/planarfx3", "sha": "3d0b001b4815d7be8cbece2d796554b36e39807b916822d65a7baeeb430fd44f", "t": "vImage.PlanarFx3", "n": 95, "laws": 0, "ts": "2026-07-25 04:20 UTC"}
+{"id": "/documentation/accelerate/vimagemultidimensionaltable_retain(_:)", "sha": "bb99866b843a3228bc852eb2b135fae6450addd85004cbaa92d8df3a701eedd2", "t": "vImageMultidimensionalTable_Retain(_:)", "n": 175, "laws": 0, "ts": "2026-07-25 04:21 UTC"}
+{"id": "/documentation/Swift/withUnsafePointer(to:_:)-35wrn", "sha": "7c84787f6b4953afd31819e3d621defc78a60c0de7c6162509d4fd26012b9bf8", "t": "withUnsafePointer(to:_:)", "n": 343, "laws": 1, "ts": "2026-07-25 04:21 UTC"}

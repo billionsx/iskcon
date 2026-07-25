@@ -8,3 +8,4 @@
 {"id": "/documentation/XPC", "sha": "8ab2cfa962a13c2f40e79863860e81b95996a69939612e8df91e4f7afcc0b5f2", "t": "XPC", "n": 2478, "laws": 4, "ts": "2026-07-24 18:54 UTC"}
 {"id": "/documentation/iAd", "sha": "2c21155fe81d9a764b753b2ba1ce25b8d0dc3b75342bee38117534cecb9ac9c4", "t": "iAd", "n": 1355, "laws": 1, "ts": "2026-07-24 18:55 UTC"}
 {"id": "/documentation/avfoundation/avcapturedevice/activeformat", "sha": "496fdf5597635e305dd5685e9253d2f9d5ebbcb2b0ab492887885f1c9fa270c6", "t": "activeFormat", "n": 875, "laws": 4, "ts": "2026-07-24 19:05 UTC"}
+{"id": "/documentation/accelerate/vimage/pixelbuffer/rowstride", "sha": "2b9f513a7729508b8041f3b25fbb6c3ec3c1b5029f0326afa60db089be4b52de", "t": "rowStride", "n": 1853, "laws": 5, "ts": "2026-07-25 04:22 UTC"}

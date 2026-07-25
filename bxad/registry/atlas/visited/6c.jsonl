@@ -5,3 +5,4 @@
 {"id": "/documentation/apple_ads", "sha": "ef293c6c9042a985cef603a48cf59ad704e5f7cd0fb662bedab8540588326861", "t": "Apple Ads", "n": 1412, "laws": 0, "ts": "2026-07-24 18:54 UTC"}
 {"id": "/documentation/arkit/content-anchors", "sha": "fd90e6adf889e6ffd17297c5b7803f40dcd3af7f0388be4d456004fbf065697b", "t": "Content Anchors", "n": 1405, "laws": 2, "ts": "2026-07-24 18:55 UTC"}
 {"id": "/documentation/arkit/arscnview/session", "sha": "696b226357b252040b204e167e2ef30ed274955f21af3f02e2007bdc31420e58", "t": "session", "n": 211, "laws": 1, "ts": "2026-07-24 18:59 UTC"}
+{"id": "/documentation/accelerate/core-video-interoperability", "sha": "2248de2d5b8d572929b8308fcfc059c9dd773341f2d86365fe5115c54a88599f", "t": "Core Video interoperability", "n": 2717, "laws": 9, "ts": "2026-07-25 04:21 UTC"}

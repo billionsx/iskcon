@@ -6,3 +6,6 @@
 {"id": "/documentation/PHASE", "sha": "da1d5ac26a426156286548ad1b6e5fa4d4f0aaa2cf6b7d71ff82d1450554a2d0", "t": "PHASE", "n": 3650, "laws": 2, "ts": "2026-07-24 18:52 UTC"}
 {"id": "/documentation/coreservices", "sha": "21868c8facd6fd3e4bf796e9b566e51553ed7225a11340321e85bba7f455542c", "t": "Core Services", "n": 453, "laws": 0, "ts": "2026-07-24 18:55 UTC"}
 {"id": "/documentation/GameController/GCController/controllers()", "sha": "f41984162f1dfa1c0855ddb8f8d5e24804f7bda04c80738e401623512ca81841", "t": "controllers()", "n": 489, "laws": 0, "ts": "2026-07-24 18:58 UTC"}
+{"id": "/documentation/AVFoundation/AVCaptureVideoDataOutput/videoSettings", "sha": "f4b8377e2c87e44f8f0cf494cd7288c5501fc8e8ae7c2dee7cc65cb5c715efc9", "t": "videoSettings", "n": 1130, "laws": 4, "ts": "2026-07-25 04:21 UTC"}
+{"id": "/documentation/Compression/Algorithm/zlib", "sha": "fedb31a1d32cab62aa96a052c7c388253f07738581d168135a4de35ebe27178e", "t": "Algorithm.zlib", "n": 464, "laws": 1, "ts": "2026-07-25 04:22 UTC"}
+{"id": "/documentation/Compression/OutputFilter", "sha": "07d974c61fef73ced0226f02fda85f6ee1b6c08d6500fb6c8e4a2121ef9ba2a9", "t": "OutputFilter", "n": 219, "laws": 0, "ts": "2026-07-25 04:22 UTC"}

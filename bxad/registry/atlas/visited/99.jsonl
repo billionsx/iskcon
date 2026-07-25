@@ -6,3 +6,5 @@
 {"id": "/documentation/arkit/argeoanchor", "sha": "fe65c1801d91253eaaa66a96574d9ab9e9f2f1c0cbce0b04facfdc25cc549d9b", "t": "ARGeoAnchor", "n": 2823, "laws": 1, "ts": "2026-07-24 18:59 UTC"}
 {"id": "/documentation/AudioToolbox/AUAudioUnitFactory", "sha": "8f234651b2c0955a018326a4f687c9946828f97c1140a02f08281367aceb9c40", "t": "AUAudioUnitFactory", "n": 536, "laws": 2, "ts": "2026-07-24 19:01 UTC"}
 {"id": "/documentation/avkit/supporting-continuity-camera-in-your-tvos-app", "sha": "8436a997ab731cf08945a6a7b00b99f571f9dfe03aad28433a6e3bcadce01344", "t": "Supporting Continuity Camera in your tvOS app", "n": 5867, "laws": 2, "ts": "2026-07-24 19:08 UTC"}
+{"id": "/documentation/accelerate/vimage/planarfx4", "sha": "8cb3c82b678cbe377703502fdb18ffc1fb5e162622f5f153d2214dc5b6a50f15", "t": "vImage.PlanarFx4", "n": 103, "laws": 0, "ts": "2026-07-25 04:21 UTC"}
+{"id": "/documentation/Compression/Algorithm", "sha": "871dff6bc1ea9a1b7419b1f469af49e73b16f1d5668f15da2439d76b4af35d3d", "t": "Algorithm", "n": 172, "laws": 0, "ts": "2026-07-25 04:22 UTC"}

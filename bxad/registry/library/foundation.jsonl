@@ -28,3 +28,12 @@
 {"id": "/documentation/Foundation/NotificationCenter", "law": "When a caller adds itself as an observer, it specifies which notifications it should receive."}
 {"id": "/documentation/Foundation/NotificationCenter", "law": "and instances for use with Swift code, providing strong typing, appropriate actor isolation, and a more idiomatic Swift experience."}
 {"id": "/documentation/Foundation/NotificationCenter", "law": "On macOS, if you want to post a notification to other processes or receive notifications from other processes, use instead."}
+{"id": "/documentation/Foundation/FileHandle", "law": "You use file handle objects to access data associated with files, sockets, pipes, and devices."}
+{"id": "/documentation/Foundation/FileHandle", "law": "For sockets, pipes, and devices, you can use a file handle object to monitor the device and process data asynchronously."}
+{"id": "/documentation/Foundation/FileHandle", "law": "If you want to use a file handle object with a file descriptor that you created, use the method or use the method and pass for the parameter."}
+{"id": "/documentation/Foundation/FileHandle", "law": "When using a file handle object to communicate asynchronously with a socket, you must initiate the corresponding operations from a thread with an active run loop."}
+{"id": "/documentation/Foundation/FileHandle", "law": "Therefore, you must call those methods from your application’s main thread or from any thread where you’ve configured a run loop and are using it to process events."}
+{"id": "/documentation/Foundation/FileHandle/closeFile()", "law": "If you initialized the file handle object using the method, or you initialized it using the and passed for the parameter, you can use this method to close the file descriptor; otherwise, you must close the file descriptor yourself."}
+{"id": "/documentation/Foundation/FileHandle/closeFile()", "law": "After calling this method, you may still use the file handle object but must not attempt to read or write data or use the object to operate on the file descriptor."}
+{"id": "/documentation/Foundation/FileHandle/readData(ofLength:)", "law": "The data available through the receiver up to a maximum of bytes, or the maximum size that can be represented by an object, whichever is the smaller."}
+{"id": "/documentation/Foundation/Data/withUnsafeBytes(_:)", "law": "The byte pointer argument should not be stored and used outside of the lifetime of the call to the closure."}

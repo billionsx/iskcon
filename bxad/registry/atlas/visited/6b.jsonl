@@ -7,3 +7,4 @@
 {"id": "/documentation/WorkoutKit", "sha": "fd9045cba662df0e7b06e8524877946d9ee77e241ebf4b31a7b392478dcbc2b9", "t": "WorkoutKit", "n": 1393, "laws": 3, "ts": "2026-07-24 18:54 UTC"}
 {"id": "/documentation/avfaudio/routing-audio-to-specific-devices-in-multidevice-sessions", "sha": "cdf99819fa245bacd1f90a12432a259046c353c1e027a219ab0818b654cc61e7", "t": "Routing audio to specific devices in multidevice sessions", "n": 4019, "laws": 9, "ts": "2026-07-24 19:00 UTC"}
 {"id": "/documentation/avkit/avplayerviewcontroller/isreadyfordisplay", "sha": "dc3cc024331eda58264af41dcee3acf695c14d31dcd1ad2b78af051fc98c998f", "t": "isReadyForDisplay", "n": 149, "laws": 0, "ts": "2026-07-24 19:07 UTC"}
+{"id": "/documentation/accelerate/vimage/multidimensionallookuptable", "sha": "8b67b3a62419e848c5bcd289d735cc4e875bb48c925fe9ebbd983404c4b7d577", "t": "vImage.MultidimensionalLookupTable", "n": 1409, "laws": 3, "ts": "2026-07-25 04:21 UTC"}

@@ -1,3 +1,4 @@
 {"id": "/documentation/technotes/tn3155-debugging-universal-links", "sha": "3e9a69514e087ce2cde34408d0463507828481ac60fdb862b27751d371a65d90", "t": "TN3155: Debugging universal links", "n": 9171, "laws": 10, "ts": "2026-07-24 18:43 UTC"}
 {"id": "/documentation/updates/callkit", "sha": "b1cd253d2f32606574ef4b536bf21050eff37874776e9307f69d8737e158d9b6", "t": "CallKit updates", "n": 186, "laws": 1, "ts": "2026-07-24 18:46 UTC"}
 {"id": "/documentation/avfoundation/avcamfilter-applying-filters-to-a-capture-stream", "sha": "06dcc50ee0db723a3c2bf60b8fe8a99c3ff0a0b49ce32cd2e9f233f03d822880", "t": "AVCamFilter: Applying filters to a capture stream", "n": 4901, "laws": 2, "ts": "2026-07-24 19:03 UTC"}
+{"id": "/documentation/CoreGraphics/CGImage", "sha": "47c783e16a640f616360f3f31847e7155ff8bee8d469d9aa85b4d1f522c1ad22", "t": "CGImage", "n": 1556, "laws": 0, "ts": "2026-07-25 04:21 UTC"}

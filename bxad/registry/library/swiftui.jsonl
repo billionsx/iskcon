@@ -169,3 +169,18 @@
 {"id": "/documentation/SwiftUI/Binding", "law": "To create bindings to properties of a type that conforms to the protocol, use the property wrapper."}
 {"id": "/documentation/SwiftUI/View/continuityDevicePicker(isPresented:onDidConnect:)", "law": "A should be used to discover and connect nearby continuity device through a button interface or other form of activation."}
 {"id": "/documentation/SwiftUI/Toggle", "law": "Toggles use a default style that varies based on both the platform and the context."}
+{"id": "/documentation/SwiftUI/Picker", "law": "Alternatively, you can use the initializer to compose the label from other views."}
+{"id": "/documentation/SwiftUI/Picker", "law": "For example, a string enumeration might use the case’s string as the ."}
+{"id": "/documentation/SwiftUI/Picker", "law": "To set a specific style for all picker instances within a view, use the modifier."}
+{"id": "/documentation/SwiftUI/Image", "law": "Use an instance when you want to add images to your SwiftUI app."}
+{"id": "/documentation/SwiftUI/Image", "law": "The following example shows how to load an image from the app’s asset library or bundle and scale it to fit within its container: You can use methods on the type as well as standard view modifiers to adjust the size of the image to fit your app’s interface."}
+{"id": "/documentation/SwiftUI/Image", "law": "An is a late-binding token; the system resolves its actual value only when it’s about to use the image in an environment."}
+{"id": "/documentation/SwiftUI/Image", "law": "To use an image as a control, use one of the initializers that takes a parameter."}
+{"id": "/documentation/SwiftUI/Image", "law": "This allows the system’s accessibility frameworks to use the label as the name of the control for users who use features like VoiceOver."}
+{"id": "/documentation/SwiftUI/Image", "law": "For images that are only present for aesthetic reasons, use an initializer with the parameter; the accessibility systems ignore these images."}
+{"id": "/documentation/SwiftUI/ProgressView", "law": "Use a progress view to show that a task is incomplete but advancing toward completion."}
+{"id": "/documentation/SwiftUI/ProgressView", "law": "A “More” button below the progress view allows people to increment the progress in increments of five percent: To create an indeterminate progress view, use an initializer that doesn’t take a progress value: You can also create a progress view that covers a closed range of values."}
+{"id": "/documentation/SwiftUI/ProgressView", "law": "To set a specific style for all progress view instances within a view, use the modifier."}
+{"id": "/documentation/SwiftUI/Slider", "law": "The ends of the track represent the minimum and maximum possible values."}
+{"id": "/documentation/SwiftUI/Slider", "law": "You can also use a parameter to provide incremental steps along the path of the slider."}
+{"id": "/documentation/SwiftUI/Slider", "law": "The following example shows this approach, and also adds optional minimum and maximum value labels."}

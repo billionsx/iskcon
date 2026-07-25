@@ -6,3 +6,5 @@
 {"id": "/documentation/updates/applemapsserverapi", "sha": "fe1ea03eab69bceb4fe11bcc3f17f1f52891a693495ee8224d74747d347d9121", "t": "AppleMapsServerAPI Updates", "n": 181, "laws": 0, "ts": "2026-07-24 18:46 UTC"}
 {"id": "/documentation/DiskArbitration", "sha": "fd68f883a0f3568c5e2771fa4d884fc598636f29980d29eca2d1b5b789b49af9", "t": "Disk Arbitration", "n": 379, "laws": 0, "ts": "2026-07-24 18:50 UTC"}
 {"id": "/documentation/PermissionKit", "sha": "53abf2592b67034c4c03e3f4180b4edcb11f246970faee8ce933a3f7935d66e7", "t": "PermissionKit", "n": 874, "laws": 1, "ts": "2026-07-24 18:52 UTC"}
+{"id": "/documentation/accelerate/vdsp/divide(_:_:)-1uqmz", "sha": "76d50880fe9f837b1bd8a0aef9f8ea9c04c5d34e0802e9c66764070f5eb0757a", "t": "divide(_:_:)", "n": 310, "laws": 0, "ts": "2026-07-25 04:22 UTC"}
+{"id": "/documentation/accelerate/vdsp_normalize", "sha": "08bfaca79bf8fa6cb70d2b057129c6a248f82e6a26114b866e8efb9605c50791", "t": "vDSP_normalize", "n": 416, "laws": 0, "ts": "2026-07-25 04:23 UTC"}

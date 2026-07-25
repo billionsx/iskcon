@@ -4,3 +4,4 @@
 {"id": "/documentation/NaturalLanguage", "sha": "cefb27a8991acc2fc3003f92464aff0ef0a4b216372ca5484e4e88e20a975c15", "t": "Natural Language", "n": 1576, "laws": 3, "ts": "2026-07-24 18:52 UTC"}
 {"id": "/documentation/arkit/aranchor", "sha": "156448cfb3b4e9b53c390dcec173f011177ff42a2cd23fd839190583bc4e8559", "t": "ARAnchor", "n": 1822, "laws": 5, "ts": "2026-07-24 18:56 UTC"}
 {"id": "/documentation/GroupActivities/GroupActivityActivationResult/activationDisabled", "sha": "3196f71fa36cafc8bbcbba7e512f5b82797d07ee7f5799422c2ee63ffd60f2d4", "t": "GroupActivityActivationResult.activationDisabled", "n": 440, "laws": 1, "ts": "2026-07-24 19:05 UTC"}
+{"id": "/documentation/accelerate/kvimageconvert_dithernone", "sha": "4fcb07e61aeaf145bd14311cd3140320bafc03360f53338c52f668c8d437a483", "t": "kvImageConvert_DitherNone", "n": 225, "laws": 0, "ts": "2026-07-25 04:23 UTC"}

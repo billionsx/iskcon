@@ -3,3 +3,4 @@
 {"id": "/documentation/swift/tictacfish_implementing_a_game_using_distributed_actors", "sha": "3e8e370114a1a1bc68273c151c1f855de42171da7c16228d6a09342364a33d55", "t": "TicTacFish: Implementing a game using distributed actors", "n": 812, "laws": 1, "ts": "2026-07-24 17:56 UTC"}
 {"id": "/documentation/Xcode/localizing-your-app-using-agents", "sha": "bcff34b6a9c6a1a6b6f73fa4d54c14ebed2a26415f0f8062c6e62178d09e3a28", "t": "Localizing your app using agents", "n": 4736, "laws": 8, "ts": "2026-07-24 18:46 UTC"}
 {"id": "/documentation/MetalKit/MTKView", "sha": "dc28025ee9dbd652b8884b10e650f7400b4a7d74c2d263ccc04d62454d6d90ff", "t": "MTKView", "n": 4600, "laws": 9, "ts": "2026-07-24 18:57 UTC"}
+{"id": "/documentation/CoreImage/CIImageProcessorKernel/outputFormat", "sha": "cf73af38f59d96f5f5f16c05aafb1289094d142b25d40838e7d2e5b77f7b3710", "t": "outputFormat", "n": 546, "laws": 1, "ts": "2026-07-25 04:24 UTC"}

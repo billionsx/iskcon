@@ -8,3 +8,5 @@
 {"id": "/documentation/Combine", "sha": "79706a0ea32afdb48d9028f1858eeed540a970aab44c16b4ca0346b0514ecfe5", "t": "Combine", "n": 2595, "laws": 2, "ts": "2026-07-24 18:49 UTC"}
 {"id": "/documentation/avfoundation/reading-multiview-3d-video-files", "sha": "5d71cad017f53bba2a854855a430fd32e8afa4bcd6e9b715457523238572c57e", "t": "Reading multiview 3D video files", "n": 2946, "laws": 2, "ts": "2026-07-24 19:04 UTC"}
 {"id": "/documentation/AVFoundation/AVPlayerItem", "sha": "aa28622ac5daeb1647b3c8b8437e77ce7353532fa0d533e6dfb541638da7df61", "t": "AVPlayerItem", "n": 4643, "laws": 3, "ts": "2026-07-24 19:06 UTC"}
+{"id": "/documentation/accelerate/vimagecvimageformat", "sha": "5436033e9fb229ed7deb25f19a28660add8cf587c85ac65ea3474817c0d4794e", "t": "vImageCVImageFormat", "n": 1039, "laws": 0, "ts": "2026-07-25 04:21 UTC"}
+{"id": "/documentation/accelerate/signal-extraction-from-noise", "sha": "1cfafc2ae4657d91f30269d84499d994f12eec977c2407a3813cb57c86960eed", "t": "Signal extraction from noise", "n": 3257, "laws": 3, "ts": "2026-07-25 04:23 UTC"}

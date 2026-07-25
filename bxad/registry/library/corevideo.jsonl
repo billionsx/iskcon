@@ -3,3 +3,8 @@
 {"id": "/documentation/CoreVideo/CVBufferSetAttachment(_:_:_:_:)", "law": "To retrieve attachments, use the or functions."}
 {"id": "/documentation/CoreVideo/kCVPixelBufferIOSurfacePropertiesKey", "law": "Provide a value for this key if you want Core Video to use the framework to allocate the pixel buffer."}
 {"id": "/documentation/CoreVideo/kCVPixelBufferIOSurfacePropertiesKey", "law": "Provide an empty dictionary to use the default options."}
+{"id": "/documentation/CoreVideo/CVPixelBufferLockBaseAddress(_:_:)", "law": "You must call the function before accessing pixel data with the CPU, and call the function afterward."}
+{"id": "/documentation/CoreVideo/CVPixelBufferLockBaseAddress(_:_:)", "law": "If you include the value in the parameter when locking the buffer, you must also include it when unlocking the buffer."}
+{"id": "/documentation/CoreVideo/CVPixelBufferUnlockBaseAddress(_:_:)", "law": "You must call the function before accessing pixel data with the CPU, and call the function afterward."}
+{"id": "/documentation/CoreVideo/CVPixelBufferUnlockBaseAddress(_:_:)", "law": "If you include the value in the parameter when locking the buffer, you must also include it when unlocking the buffer."}
+{"id": "/documentation/CoreVideo/cvdisplaylink-k0k", "law": "You can use a display link to easily synchronize with the refresh rate of a display."}

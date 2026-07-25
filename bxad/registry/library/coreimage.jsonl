@@ -16,3 +16,15 @@
 {"id": "/documentation/CoreImage/CIImage", "law": "Multiple threads can use the same GPU or CPU object to render objects."}
 {"id": "/documentation/CoreImage/CIImage", "law": "If you app is multithreaded, each thread must create its own objects."}
 {"id": "/documentation/CoreImage/CIImage", "law": "(See Getting Autoadjustment Filters.) For a discussion of all the methods you can use to create objects on iOS and macOS, see ."}
+{"id": "/documentation/CoreImage/CIImageProcessorKernel", "law": "The method can accept zero, one or more inputs: kernels that generate imagery (such as a noise or pattern generator) need no inputs, while kernels that composite source images together require multiple inputs."}
+{"id": "/documentation/CoreImage/CIImageProcessorKernel", "law": "To get the best performance, you should only use objects when your image processing algorithms can’t be expressed as Core Image Kernel Language."}
+{"id": "/documentation/CoreImage/CIImageProcessorKernel", "law": "You do not directly create instances of a custom subclass."}
+{"id": "/documentation/CoreImage/CIImageProcessorKernel", "law": "Image processors must not carry or use state specific to any single invocation of the processor, so all methods (and accessors for readonly properties) of an image processor kernel class are class methods."}
+{"id": "/documentation/CoreImage/CIImageProcessorKernel", "law": "Your subclass should override at least the method to perform its image processing."}
+{"id": "/documentation/CoreImage/CIImageProcessorKernel", "law": "If your image processor needs to work with a larger or smaller region of interest in the input image than each corresponding region of the output image (for example, a blur filter, which samples several input pixels for each output pixel), you should also override the method."}
+{"id": "/documentation/CoreImage/CIImageProcessorKernel", "law": "(Do not override this method.) The abstract class you extend to create custom image processors that can integrate with Core Image workflows."}
+{"id": "/documentation/CoreImage/CIImageProcessorKernel/formatForInput(at:)", "law": "The format must be one of , , or ."}
+{"id": "/documentation/CoreImage/CIImageProcessorKernel/outputFormat", "law": "The format must be one of , , or ."}
+{"id": "/documentation/CoreImage/CIImageProcessorKernel/process(with:arguments:output:)", "law": "When your implementation of this class method is called, use the provided and objects to return processed pixel data to Core Image via ."}
+{"id": "/documentation/CoreImage/CIImageProcessorKernel/process(with:arguments:output:)", "law": "This is a class method so that you cannot use or capture any state by accident."}
+{"id": "/documentation/CoreImage/CIImageProcessorKernel/process(with:arguments:output:)", "law": "All the parameters that affect the output results must be passed to ."}

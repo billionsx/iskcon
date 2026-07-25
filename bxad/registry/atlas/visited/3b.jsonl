@@ -3,3 +3,4 @@
 {"id": "/documentation/visionOS/associating-a-window-with-an-immersive-space", "sha": "f7b38e20b10880715df0a590135fb7c7c09e8d35ed2b469caa2f3ccf0d0b14a8", "t": "Associating a window with an immersive space", "n": 2047, "laws": 0, "ts": "2026-07-24 17:56 UTC"}
 {"id": "/documentation/visionOS/locating-and-decoding-barcodes-in-3d-space", "sha": "f2e2d4813287e861741b0c4d10b2d12d41de1aa702906ade23ccc206cb932f2c", "t": "Locating and decoding barcodes in 3D space", "n": 3187, "laws": 7, "ts": "2026-07-24 17:57 UTC"}
 {"id": "/documentation/AVFoundation/AVPlayer/play()", "sha": "7f7c33441c5e283368c5ff46aef8173888ba7ec05b0c47b3979e3328d5fbd2fe", "t": "play()", "n": 210, "laws": 0, "ts": "2026-07-24 19:07 UTC"}
+{"id": "/documentation/accelerate/transforming-with-lookup-tables", "sha": "0b72a87f7f137acb1160a204a4e34eb548040ac4fc1000e403b420f0d733fa1d", "t": "Transforming with lookup tables", "n": 1663, "laws": 3, "ts": "2026-07-25 04:21 UTC"}

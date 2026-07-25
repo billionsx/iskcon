@@ -5,3 +5,5 @@
 {"id": "/documentation/USD", "sha": "44b01b8f9cce1e93c97d3e92ac4f5510b982404b20629dc2cf4db42603c6f7fd", "t": "USD", "n": 2203, "laws": 3, "ts": "2026-07-24 18:54 UTC"}
 {"id": "/documentation/arkit/environmental-analysis", "sha": "725a6dbd9a7e2318ada1c24b6124f492551b22c540150c384bdd2718ae3bed91", "t": "Environmental Analysis", "n": 430, "laws": 1, "ts": "2026-07-24 18:56 UTC"}
 {"id": "/documentation/ReplayKit/RPScreenRecorder", "sha": "b83ed3e76f472c22def0630144681d8584ead6d5cfc3bb2d50b18a1e8a7fa7db", "t": "RPScreenRecorder", "n": 1333, "laws": 2, "ts": "2026-07-24 18:58 UTC"}
+{"id": "/documentation/accelerate/kvimageconvert_ditherfloydsteinberg", "sha": "1f7e8c27bf003dd346a5dff568a0125db4e7733837c9f2773a22c25f29aa42ae", "t": "kvImageConvert_DitherFloydSteinberg", "n": 248, "laws": 0, "ts": "2026-07-25 04:23 UTC"}
+{"id": "/documentation/CoreImage/CIImageProcessorKernel/process(with:arguments:output:)", "sha": "be3042e5bbfaeccf32ab22e6747513c9656fd4eec8ab538af9f2f0beeca1f095", "t": "process(with:arguments:output:)", "n": 600, "laws": 3, "ts": "2026-07-25 04:24 UTC"}

@@ -8,3 +8,4 @@
 {"id": "/documentation/RelevanceKit", "sha": "17ad7c1dc21322c2ce98f65e7b2a3a280533726b349a73ae96c6874a2bee5b55", "t": "RelevanceKit", "n": 1831, "laws": 3, "ts": "2026-07-24 18:53 UTC"}
 {"id": "/documentation/XCTest", "sha": "a364820ffc832cef7a953be7924b0ad54905388e6664cf9f92de4fee490c29ea", "t": "XCTest", "n": 1760, "laws": 4, "ts": "2026-07-24 18:54 UTC"}
 {"id": "/documentation/SceneKit/SCNAudioSource", "sha": "ec6405e67052742587b5b08101344098abd28bc2455d8a06b45bdfac7e16df73", "t": "SCNAudioSource", "n": 683, "laws": 1, "ts": "2026-07-24 18:56 UTC"}
+{"id": "/documentation/accelerate/vimage/pixelbuffer/convolve(with:divisor:bias:edgemode:destination:)-1oul9", "sha": "a93d583bc70277981eefa396d7f3d203da40d97a3aa7251b86a284e9fc140f9d", "t": "convolve(with:divisor:bias:edgeMode:destination:)", "n": 67, "laws": 0, "ts": "2026-07-25 04:21 UTC"}

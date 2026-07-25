@@ -1,0 +1,48 @@
+{
+ "url": "https://www.apple.com/iphone/",
+ "sections": [
+  "section",
+  "section",
+  "section",
+  "section",
+  "section",
+  "section",
+  "section",
+  "section",
+  "section",
+  "section",
+  "section",
+  "section"
+ ],
+ "modules": [
+  "name:chapternav",
+  "name:switch to iphone",
+  "name:compare",
+  "name:guided tour",
+  "name:why apple",
+  "name:why apple",
+  "name:upgrade",
+  "name:get to know iphone",
+  "name:privacy",
+  "name:iphone essentials",
+  "name:iphone compatibility",
+  "name:router"
+ ],
+ "imgs": 213,
+ "videos": 0,
+ "cta": 134,
+ "h_levels": {
+  "1": 1,
+  "2": 41,
+  "3": 75,
+  "4": 56
+ },
+ "css": [
+  "/api-www/global-elements/global-header/v1/assets/globalheader.css",
+  "/ac/globalfooter/8/en_US/styles/ac-globalfooter.built.css",
+  "/ac/localnav/9/styles/ac-localnav.built.css",
+  "/v/iphone/home/cj/built/styles/overview.built.css",
+  "/ac/ac-films/7.5.1/styles/modal.css"
+ ],
+ "typography_laws": 0
+}

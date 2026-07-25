@@ -7,3 +7,5 @@
 {"id": "/documentation/avfoundation/avassetwriter/canadd(_:)-6al7j", "sha": "22571cc48c0949db8c84a94d5de846dacb60055ff2818aa0e2cee39f65285cfc", "t": "canAdd(_:)", "n": 136, "laws": 0, "ts": "2026-07-24 19:03 UTC"}
 {"id": "/documentation/GroupActivities/GroupActivity", "sha": "e4952a796f663fa6b9d1da8019debece49997b7816cd705c350246bca56d616e", "t": "GroupActivity", "n": 1620, "laws": 5, "ts": "2026-07-24 19:05 UTC"}
 {"id": "/documentation/avkit/avpictureinpicturecontroller", "sha": "54df4388cb26527e12b786f221a15d3a324848728cf0d0d14ec8d2beadf8d981", "t": "AVPictureInPictureController", "n": 1418, "laws": 1, "ts": "2026-07-24 19:06 UTC"}
+{"id": "/documentation/CoreImage/CIImageProcessorKernel", "sha": "dd6038159442dbf58855a89a7f104f1470e32a93df18dcd96ac2ff5b7c91a554", "t": "CIImageProcessorKernel", "n": 3314, "laws": 7, "ts": "2026-07-25 04:24 UTC"}
+{"id": "/documentation/accelerate/image-shearing", "sha": "bd06c3da63bd224c6e233d23341e720762ce89e703db76f4f5d5b45980762af0", "t": "Image shearing", "n": 488, "laws": 0, "ts": "2026-07-25 04:24 UTC"}

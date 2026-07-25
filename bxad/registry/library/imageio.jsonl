@@ -18,3 +18,5 @@
 {"id": "/documentation/ImageIO/Creating-spatial-photos-and-videos-with-spatial-metadata", "law": "Don’t write spatial metadata to a stereo video if the baseline, horizontal field of view, or recommended disparity adjustment of your stereo video varies over time."}
 {"id": "/documentation/ImageIO/Creating-spatial-photos-and-videos-with-spatial-metadata", "law": "For this kind of content, prefer or for stereo playback presentation."}
 {"id": "/documentation/ImageIO/Creating-spatial-photos-and-videos-with-spatial-metadata", "law": "Spatial media is always rectilinear, typically with a field of view less than 90 degrees."}
+{"id": "/documentation/ImageIO/CGImagePropertyOrientation/left", "law": "(That is, to present the image in its intended orientation, you must rotate 90° counter-clockwise.) The encoded image data is rotated 90° clockwise from the image’s intended display orientation."}
+{"id": "/documentation/ImageIO/CGImagePropertyOrientation/right", "law": "(That is, to present the image in its intended orientation, you must rotate it 90° clockwise.) The encoded image data is rotated 90° counter-clockwise from the image’s intended display orientation."}

@@ -3,3 +3,5 @@
 {"id": "/documentation/ThreadNetwork", "sha": "7feae22dade270faac13bff32810165b6a2540573261bb6a2ed8a5a67aa42490", "t": "ThreadNetwork", "n": 2275, "laws": 2, "ts": "2026-07-24 18:54 UTC"}
 {"id": "/documentation/arkit/arsession/run(_:options:)", "sha": "5d0537690cee73ece9174c75724a3c1ade4ca92cc077430e91012d8a2bad6a3d", "t": "run(_:options:)", "n": 810, "laws": 0, "ts": "2026-07-24 18:57 UTC"}
 {"id": "/documentation/avfoundation/avmutablecomposition", "sha": "6aacc24826e2427ff03e2b7ef9ca9b59cb7980854621320f21aec42be7ca8735", "t": "AVMutableComposition", "n": 1224, "laws": 3, "ts": "2026-07-24 19:04 UTC"}
+{"id": "/documentation/accelerate/vimage/pixelbuffer/makedynamicpixelbufferandcgimageformat(cgimage:)", "sha": "90aaca0cd0c869ee0d0af240aaff89d5b8198b8eace5932c06077d003c723511", "t": "makeDynamicPixelBufferAndCGImageFormat(cgImage:)", "n": 1008, "laws": 2, "ts": "2026-07-25 04:20 UTC"}
+{"id": "/documentation/accelerate/reducing-spectral-leakage-with-windowing", "sha": "5af7f05f12baefaedf87820407a2c1822baf86e5228e4709394269274eeb63a4", "t": "Reducing spectral leakage with windowing", "n": 4818, "laws": 5, "ts": "2026-07-25 04:23 UTC"}

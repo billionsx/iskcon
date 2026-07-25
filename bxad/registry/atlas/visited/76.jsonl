@@ -9,3 +9,4 @@
 {"id": "/documentation/AppKit/supporting-continuity-camera-in-your-mac-app", "sha": "e39ac6720e0590e63eb2b0b65047f17a114b42eb3bf3efbd910f9937913e54b2", "t": "Supporting Continuity Camera in Your Mac App", "n": 5560, "laws": 7, "ts": "2026-07-24 19:03 UTC"}
 {"id": "/documentation/avfoundation/avassetreaderoutputmetadataadaptor", "sha": "e9be2030879ec78a4a5ad179fe7b197d3275608b546c84a4386ac5f7af000aeb", "t": "AVAssetReaderOutputMetadataAdaptor", "n": 250, "laws": 0, "ts": "2026-07-24 19:05 UTC"}
 {"id": "/documentation/avkit/avplayerviewcontroller/contentoverlayview", "sha": "9b484c9fa198c418f82c3a5b23a500543986d4fc944bb1c20a6936f7ab12ab66", "t": "contentOverlayView", "n": 225, "laws": 1, "ts": "2026-07-24 19:07 UTC"}
+{"id": "/documentation/accelerate/vdsp_ctoz", "sha": "572bed03a5c7cdf4b0e48d9d451a271a42c0316e1f546a2369bad864f2a7c9f9", "t": "vDSP_ctoz", "n": 206, "laws": 0, "ts": "2026-07-25 04:23 UTC"}

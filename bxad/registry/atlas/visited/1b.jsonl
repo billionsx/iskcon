@@ -1,3 +1,4 @@
 {"id": "/documentation/arkit/arcoachingoverlayviewdelegate/coachingoverlayviewdiddeactivate(_:)", "sha": "badd1029151a07dec98b3f4380af8fab7abcc48d7a409b6a4fef84327f5d8c14", "t": "coachingOverlayViewDidDeactivate(_:)", "n": 493, "laws": 1, "ts": "2026-07-24 18:57 UTC"}
 {"id": "/documentation/arkit/referenceimage", "sha": "63502b685d22c05a0d48ef47d4160278dd2934e156a0f313709e9cd1f74ec109", "t": "ReferenceImage", "n": 389, "laws": 0, "ts": "2026-07-24 18:59 UTC"}
 {"id": "/documentation/AVFAudio/AVAudioSession/isInputAvailable", "sha": "0c92d1159c560a9ff8eb4e2a359fefe06975c52b702007821aa506c7fe4daded", "t": "isInputAvailable", "n": 267, "laws": 1, "ts": "2026-07-24 19:07 UTC"}
+{"id": "/documentation/ImageIO/CGImagePropertyOrientation/left", "sha": "6bb5db5079c6bf7e288398fd6fb9c4b760db3124128154ba9940e38f0a864850", "t": "CGImagePropertyOrientation.left", "n": 536, "laws": 1, "ts": "2026-07-25 04:23 UTC"}

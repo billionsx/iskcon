@@ -7,3 +7,4 @@
 {"id": "/documentation/safari-developer-tools", "sha": "400e3dfe3fb71a6d8c403fc6fce93c2683cf2fc3110dfb124655c8fa0002ed3f", "t": "Safari Developer Features", "n": 1923, "laws": 4, "ts": "2026-07-24 18:55 UTC"}
 {"id": "/documentation/UIKit/UIWindowSceneDelegate", "sha": "dc15c3ee16963fac27b00bcc70aa0a2769808ac44059dc2b893b3bfdb26fcbf4", "t": "UIWindowSceneDelegate", "n": 1371, "laws": 6, "ts": "2026-07-24 19:06 UTC"}
 {"id": "/documentation/UIKit/UIViewController/didMove(toParent:)", "sha": "a707ac87d55df7c1117174a9dada249b9ef5cc9726471f37b34839e125de93e8", "t": "didMove(toParent:)", "n": 536, "laws": 1, "ts": "2026-07-24 19:07 UTC"}
+{"id": "/documentation/SwiftUI/ProgressView", "sha": "4eabb4061b4e3f1060cbdf5d555328ebfa68da1b3558e804052a8ffd0a62898c", "t": "ProgressView", "n": 2402, "laws": 3, "ts": "2026-07-25 04:22 UTC"}

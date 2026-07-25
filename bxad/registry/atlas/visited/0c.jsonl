@@ -4,3 +4,4 @@
 {"id": "/documentation/BrowserEngineKit", "sha": "63904fe6f82d89970d55d9e85e6dd75250ab6f1ffc2a3ea9223ba7cd8260ffc2", "t": "BrowserEngineKit", "n": 3689, "laws": 7, "ts": "2026-07-24 18:49 UTC"}
 {"id": "/documentation/MediaToolbox", "sha": "24aaec2b3beb071c2e1793a82776c6a32580ef200bc6687d0a1d7805f333b732", "t": "Media Toolbox", "n": 691, "laws": 2, "ts": "2026-07-24 18:52 UTC"}
 {"id": "/documentation/VideoToolbox/kVTCompressionPropertyKey_MVHEVCLeftAndRightViewIDs", "sha": "1f4234d847aebe6dbd148d64b46fae66efe90d5cd8a3cda987e408ea1a03018f", "t": "kVTCompressionPropertyKey_MVHEVCLeftAndRightViewIDs", "n": 419, "laws": 0, "ts": "2026-07-24 19:03 UTC"}
+{"id": "/documentation/accelerate/resamplingfilter", "sha": "f7f32b8808340466c882263c371547de51bcd0a12102d3584f33d8ac477dd271", "t": "ResamplingFilter", "n": 333, "laws": 1, "ts": "2026-07-25 04:24 UTC"}

@@ -6,3 +6,10 @@
 {"id": "/documentation/Compression/compression_algorithm", "law": "If speed is critical, and you’re willing to sacrifice compression ratio to achieve it, use ."}
 {"id": "/documentation/Compression/compression_algorithm", "law": "If compression ratio is critical, and you can sacrifice speed to achieve it, use ."}
 {"id": "/documentation/Compression/compression_algorithm", "law": "When compression ratio and performance are equally important, use to favor compression ratio and to favor performance."}
+{"id": "/documentation/Compression/Algorithm/lzfse", "law": "LZFSE is Apple’s proprietary compression algorithm, matching the compression ratio of zlib level 5, but with much higher energy efficiency and speed (between 2x and 3x) for both encode and decode operations."}
+{"id": "/documentation/Compression/Algorithm/lzfse", "law": "Use LZFSE when compressing a payload for iOS, macOS, watchOS, and tvOS."}
+{"id": "/documentation/Compression/Algorithm/lzfse", "law": "If you need to compress a payload for another platform (for example, Linux or Windows), use LZ4, LZMA, or zlib."}
+{"id": "/documentation/Compression/Algorithm/lzfse", "law": "The LZFSE compression algorithm, which is recommended for use on Apple platforms."}
+{"id": "/documentation/Compression/Algorithm/zlib", "law": "The encoded format is the raw format as described in , the following obtains the equivalent configuration of the encoder: The zlib compression algorithm, which is recommended for cross-platform compression."}
+{"id": "/documentation/Compression/compression_stream", "law": "If no further input will be added to the stream via subsequent calls, should be (otherwise 0)."}
+{"id": "/documentation/Compression/compression_stream_process(_:_:)", "law": "If you don’t provide any more input data, set to and call again."}

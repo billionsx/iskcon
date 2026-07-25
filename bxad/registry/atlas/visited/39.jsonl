@@ -4,3 +4,4 @@
 {"id": "/documentation/SuggestedActions", "sha": "647250ee47430525f8f6c880538935b6c98dd2bce50415ab21c8fa16a792fe82", "t": "Suggested Actions", "n": 1120, "laws": 1, "ts": "2026-07-24 18:45 UTC"}
 {"id": "/documentation/CreateMLComponents", "sha": "4ce66cdd7faf6ce7051c427037e428513587f24a31cde4cc003e4a56d615f7b3", "t": "Create ML Components", "n": 5753, "laws": 1, "ts": "2026-07-24 18:50 UTC"}
 {"id": "/documentation/ScreenCaptureKit", "sha": "8e25ca55ca60b0082f14fcef3528e5ef50c70dae188fa992241deea12bdbabc8", "t": "ScreenCaptureKit", "n": 2001, "laws": 3, "ts": "2026-07-24 18:53 UTC"}
+{"id": "/documentation/Swift/UnsafeMutableRawPointer/copyMemory(from:byteCount:)", "sha": "cdd60c601441b42bd3fdb5b7240d966272d8676ec995995064383514e4374918", "t": "copyMemory(from:byteCount:)", "n": 542, "laws": 1, "ts": "2026-07-25 04:23 UTC"}

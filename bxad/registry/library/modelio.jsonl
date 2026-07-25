@@ -8,3 +8,6 @@
 {"id": "/documentation/ModelIO", "law": "Use the class to generate light sources whose illumination is based on the contents of a scene."}
 {"id": "/documentation/ModelIO", "law": "Use the class to work with a volumetric description of a model."}
 {"id": "/documentation/ModelIO", "law": "The and classes describe realistic lighting properties for use in rendering, and the class also supports physically based rendering parameters."}
+{"id": "/documentation/ModelIO/MDLSkyCubeTexture", "law": "Like other procedural subclasses, the class generates texel data only when that data is first referenced, and then caches it for future use."}
+{"id": "/documentation/ModelIO/MDLSkyCubeTexture/update()", "law": "After you first create a sky cube texture, Model I/O does not generate texture data until you use one of the methods listed inAccessing Texture Data."}
+{"id": "/documentation/ModelIO/MDLTexture", "law": "You use the class or one of its subclasses to identify, load, or create texture data, and then associate textures with materials using the and classes."}

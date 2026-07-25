@@ -1,2 +1,4 @@
 {"id": "/documentation/MapKit/displaying-overlays-on-a-map", "sha": "1d8fcfdaf9bd536c937db2c7cf6db6af24b68b1a06d3bf1e31341a193a3cad2c", "t": "Displaying overlays on a map", "n": 9728, "laws": 10, "ts": "2026-07-24 17:49 UTC"}
 {"id": "/documentation/arkit/arworldtrackingconfiguration/detectionobjects", "sha": "0fc26778b2713a44dfb6fa5cc77a964f75ffbba816bd967962d22b33abef42df", "t": "detectionObjects", "n": 464, "laws": 2, "ts": "2026-07-24 18:58 UTC"}
+{"id": "/documentation/Foundation/FileHandle/closeFile()", "sha": "ae76866aa2650369bbf1e3fd88244006b9439f0f7540505cc6d147b456d8649a", "t": "closeFile()", "n": 743, "laws": 2, "ts": "2026-07-25 04:22 UTC"}
+{"id": "/documentation/Foundation/NSTemporaryDirectory()", "sha": "95ec33f5614d09e5b738d31f4154c5e554eabfcceba5c0e25e75bdfce243f989", "t": "NSTemporaryDirectory()", "n": 306, "laws": 0, "ts": "2026-07-25 04:22 UTC"}

@@ -9,3 +9,4 @@
 {"id": "/documentation/Translation", "sha": "4c978ddc62c6eb7164b7bb23d0290e8db36fdbba1c11545ece8fbc873ed333bf", "t": "Translation", "n": 1108, "laws": 4, "ts": "2026-07-24 18:54 UTC"}
 {"id": "/documentation/AudioToolbox/AUAudioUnit/presetState(for:)", "sha": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855", "t": "presetState(for:)", "n": 0, "laws": 0, "ts": "2026-07-24 19:01 UTC"}
 {"id": "/documentation/avfoundation/avsamplebufferrequest", "sha": "9c7283fe9e66cb435bf803c408468d8e73aeebe8917f9cde6225f6d019a8d0b4", "t": "AVSampleBufferRequest", "n": 337, "laws": 0, "ts": "2026-07-24 19:05 UTC"}
+{"id": "/documentation/AVFoundation/AVAssetReaderTrackOutput", "sha": "3de8e5c95a539053088bc9386a594ce75828a36e13bf06eb5b0a91ad2c2ec86b", "t": "AVAssetReaderTrackOutput", "n": 2061, "laws": 9, "ts": "2026-07-25 04:22 UTC"}

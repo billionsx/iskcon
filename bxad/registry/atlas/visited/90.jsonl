@@ -4,3 +4,4 @@
 {"id": "/documentation/updates/videosubscriberaccount", "sha": "051f7d835dcfc9b6b78edeb4984c700f58399f69b936c7cddd4f0c1a96f7ea75", "t": "Video Subscriber Account updates", "n": 268, "laws": 0, "ts": "2026-07-24 18:47 UTC"}
 {"id": "/documentation/UIKit/UIView", "sha": "7188be96fb97628121abeedef34f7744af8c9c620fa2d24ee559582f8d51832d", "t": "UIView", "n": 17441, "laws": 10, "ts": "2026-07-24 18:57 UTC"}
 {"id": "/documentation/AVFAudio/AVAudioSession/availableInputs", "sha": "72a7a1c62b42af0546d469d0ded79aa913525e84f94364d65a257eff5e5ee291", "t": "availableInputs", "n": 386, "laws": 0, "ts": "2026-07-24 19:07 UTC"}
+{"id": "/documentation/Compression/compression_stream_process(_:_:)", "sha": "23510cf311980c403e7c732835d67609b0ea55873d95724c52eadc639b37d246", "t": "compression_stream_process(_:_:)", "n": 1521, "laws": 1, "ts": "2026-07-25 04:22 UTC"}

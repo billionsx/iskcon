@@ -6,3 +6,4 @@
 {"id": "/documentation/arkit/ardepthdata/confidencemap", "sha": "87263aa028aa49741134fc39a9b1d2001347c3253b88e0dd5d0655e2ca167925", "t": "confidenceMap", "n": 700, "laws": 1, "ts": "2026-07-24 18:56 UTC"}
 {"id": "/documentation/GameController/GCController", "sha": "0a8a9071925c48963df6875ee1f765b6f41ccea9ec4a560b573ab6131ce6ebd8", "t": "GCController", "n": 3469, "laws": 6, "ts": "2026-07-24 18:58 UTC"}
 {"id": "/documentation/avfoundation/avcapturephoto", "sha": "03c61e409ec0f875f963df2f6eabc51a5b1c80810be8e9ae7e92f6973551c97d", "t": "AVCapturePhoto", "n": 1907, "laws": 0, "ts": "2026-07-24 19:03 UTC"}
+{"id": "/documentation/accelerate/vdsp_biquad_setup", "sha": "44fb484434f598d8f3cfe376dc96eff1913756e5e9afa65e8c3550545b8456ae", "t": "vDSP_biquad_Setup", "n": 123, "laws": 1, "ts": "2026-07-25 04:22 UTC"}

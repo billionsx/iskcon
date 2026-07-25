@@ -2,3 +2,6 @@
 {"id": "/documentation/CoreMotion", "sha": "a285f959dff2d0961c08e3bbc815a63ec3b8b7875314da1caf2cd03184b770a8", "t": "Core Motion", "n": 3613, "laws": 5, "ts": "2026-07-24 18:50 UTC"}
 {"id": "/documentation/DeviceDiscoveryUI", "sha": "8d95ae415e750a868b96802766c507408be8460399c0ef62cfec07c493e76297", "t": "DeviceDiscoveryUI", "n": 4136, "laws": 6, "ts": "2026-07-24 18:50 UTC"}
 {"id": "/documentation/avfoundation/converting-side-by-side-3d-video-to-multiview-hevc-and-spatial-video", "sha": "12f2c59c5c3f91a7d40fa46608ffe38292a4023d1743195781714c5f666b89bf", "t": "Converting side-by-side 3D video to multiview HEVC and spatial video", "n": 8595, "laws": 8, "ts": "2026-07-24 19:02 UTC"}
+{"id": "/documentation/accelerate/vdsp_biquad_createsetup", "sha": "73e262b371e94e3cde7b7a99a8cc28f42f400b231bf571d72c56b0e77b02ae37", "t": "vDSP_biquad_CreateSetup", "n": 736, "laws": 3, "ts": "2026-07-25 04:20 UTC"}
+{"id": "/documentation/accelerate/vimage/interleaved8x4", "sha": "d99b76fd2529a92c3440a055c955987075bdf4935fb0f6ca6186565526135c07", "t": "vImage.Interleaved8x4", "n": 53, "laws": 0, "ts": "2026-07-25 04:21 UTC"}
+{"id": "/documentation/accelerate/simd-library", "sha": "a1c430dc6101a4e54e75ec3625a162d5def22ebc639c3b615504bc7a0b9c5fc4", "t": "simd", "n": 1461, "laws": 1, "ts": "2026-07-25 04:24 UTC"}

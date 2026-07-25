@@ -9,3 +9,4 @@
 {"id": "/documentation/arkit/arraycastquery/targetalignment-swift.enum/any", "sha": "4ff04b88150cb2578192cdf99140c44b188c49f3f11e8b22a901a1d0018b863a", "t": "ARRaycastQuery.TargetAlignment.any", "n": 83, "laws": 0, "ts": "2026-07-24 19:00 UTC"}
 {"id": "/documentation/avfaudio/avaudiosession/setpreferredmicrophoneinjectionmode(_:)", "sha": "807de8f7b8e43b1e4272bd5c37a9a6c2233cc0539e68c83d63fe540e66841c5b", "t": "setPreferredMicrophoneInjectionMode(_:)", "n": 75, "laws": 0, "ts": "2026-07-24 19:00 UTC"}
 {"id": "/documentation/avfaudio/avspeechsynthesisprovideraudiounit", "sha": "74228a04a596451bdd21f520c117a9b9398ff1fb970d30fea3606ad3a059d20e", "t": "AVSpeechSynthesisProviderAudioUnit", "n": 874, "laws": 3, "ts": "2026-07-24 19:01 UTC"}
+{"id": "/documentation/ImageIO/CGImagePropertyOrientation/down", "sha": "fbf12529fff6db408700f129dcd67d9db27e8a2ef78484f08ecd7d8258500707", "t": "CGImagePropertyOrientation.down", "n": 413, "laws": 0, "ts": "2026-07-25 04:23 UTC"}

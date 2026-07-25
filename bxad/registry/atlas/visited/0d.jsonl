@@ -5,3 +5,4 @@
 {"id": "/documentation/updates/watchos", "sha": "fd0986175792546f35484d77fe6328ee7e868b7aef5db2e855d41a3ac704c4e3", "t": "watchOS updates", "n": 2959, "laws": 7, "ts": "2026-07-24 18:47 UTC"}
 {"id": "/documentation/AppleMapsServerAPI", "sha": "4cbd750d23366cdc381e9eb789c0ab87fe21acdbce71c749b28e1c94821475d9", "t": "Apple Maps Server API", "n": 2335, "laws": 5, "ts": "2026-07-24 18:48 UTC"}
 {"id": "/documentation/AVKit/AVPlayerViewController", "sha": "75e09e8e6a12785a014357fdd643d90ba31c6def0f959a7d424bd016a13f578b", "t": "AVPlayerViewController", "n": 5179, "laws": 4, "ts": "2026-07-24 19:04 UTC"}
+{"id": "/documentation/accelerate/improving-the-quality-of-quantized-images-with-dithering", "sha": "f20802dbfdaa7804724ffd4b387e98625a47a58d2bbdc3c703ec975f7ba6bab5", "t": "Improving the quality of quantized images with dithering", "n": 2912, "laws": 1, "ts": "2026-07-25 04:21 UTC"}

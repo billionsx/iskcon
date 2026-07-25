@@ -7,3 +7,4 @@
 {"id": "/documentation/arkit/arreferenceobject/applyingtransform(_:)", "sha": "aa689ee051ae900f987ceac8d284fdba3db1c0267032149f239bc2d5d6732aad", "t": "applyingTransform(_:)", "n": 921, "laws": 2, "ts": "2026-07-24 18:58 UTC"}
 {"id": "/documentation/CoreMedia/CMMetadataFormatDescription", "sha": "8aae3e4e3993decf4ccc861aaa3bf049286e85916d7645d5d10de4ac1d442c47", "t": "CMMetadataFormatDescription", "n": 61, "laws": 1, "ts": "2026-07-24 19:01 UTC"}
 {"id": "/documentation/avfoundation/avplayerinterstitialeventmonitorschedulerequestresponsekey", "sha": "d47bcae13cb2a5782c5980232fe7aa518f1be4cc42ffe9157e3c96f1e3683207", "t": "AVPlayerInterstitialEventMonitorScheduleRequestResponseKey", "n": 148, "laws": 0, "ts": "2026-07-24 19:05 UTC"}
+{"id": "/documentation/CoreImage/CIFormat/R8", "sha": "fb0acb448cf8286f3051434082943e294d2fd5d41c8f54b66c6fe6ec2dfc1bb5", "t": "R8", "n": 94, "laws": 0, "ts": "2026-07-25 04:24 UTC"}

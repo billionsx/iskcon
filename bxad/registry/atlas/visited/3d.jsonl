@@ -10,3 +10,4 @@
 {"id": "/documentation/avfoundation/audio-and-video-capture", "sha": "e6daa0593b1b92ad55ffb6c57fae9d0bfea99a6292a86e677b79df44f7fb8942", "t": "Audio and video capture", "n": 613, "laws": 0, "ts": "2026-07-24 19:03 UTC"}
 {"id": "/documentation/BundleResources/Information-Property-List/NSAppTransportSecurity", "sha": "12b2b811a214f5cfd0e226a7a7b99f40afe3d54d18fdd6f5a3a5d26b9f7f4b9a", "t": "NSAppTransportSecurity", "n": 2460, "laws": 3, "ts": "2026-07-24 19:06 UTC"}
 {"id": "/documentation/avkit/avexperiencecontroller/delegate-swift.protocol", "sha": "d6f7a8674dac1a252bccb44dadbbd580034e2129eaf4798b7cae1327477e4af6", "t": "AVExperienceController.Delegate", "n": 438, "laws": 1, "ts": "2026-07-24 19:06 UTC"}
+{"id": "/documentation/AVFoundation/AVCapturePhotoOutput", "sha": "136eaec5d7cb3d88dc456cd160384f7541932b262dee087a882bfc17ee3d9661", "t": "AVCapturePhotoOutput", "n": 5703, "laws": 4, "ts": "2026-07-25 04:23 UTC"}

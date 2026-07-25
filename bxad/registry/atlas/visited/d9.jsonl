@@ -5,3 +5,4 @@
 {"id": "/documentation/arkit", "sha": "8185a9c90c33fa82aa8ee4d40ea4db0da26f0166c13fd9aae4c7a6d3add60bed", "t": "ARKit", "n": 607, "laws": 0, "ts": "2026-07-24 18:55 UTC"}
 {"id": "/documentation/VideoToolbox/VTPixelTransferSession", "sha": "4323410d7ddc3b6d9c0a165b839815005e50aa21107a79fb6d18fdaface1f3b1", "t": "VTPixelTransferSession", "n": 232, "laws": 0, "ts": "2026-07-24 19:03 UTC"}
 {"id": "/documentation/avfoundation/avassetwriter/startsession(atsourcetime:)", "sha": "bc47c6b230fc30bfffda53d10987543e7bd7c62a51607bbedf1661d6705b8591", "t": "startSession(atSourceTime:)", "n": 933, "laws": 2, "ts": "2026-07-24 19:04 UTC"}
+{"id": "/documentation/CoreVideo/CVPixelBuffer", "sha": "92b33a4b8ce831238252cdf89329282b268ad553ff52684358814d852f162794", "t": "CVPixelBuffer", "n": 111, "laws": 0, "ts": "2026-07-25 04:21 UTC"}

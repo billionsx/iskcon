@@ -4,3 +4,4 @@
 {"id": "/documentation/WalletOrders", "sha": "5c02cc1fda59b686cc3c9cdd3249449f1d8664ef8714aa40806e908c43d4161d", "t": "Wallet Orders", "n": 862, "laws": 1, "ts": "2026-07-24 18:54 UTC"}
 {"id": "/documentation/arkit/artrackedraycast/stoptracking()", "sha": "d2982cdd8d7c019d63e72c7cd8e761565757e33eea602893331268b5302d9b1f", "t": "stopTracking()", "n": 244, "laws": 0, "ts": "2026-07-24 18:58 UTC"}
 {"id": "/documentation/arkit/arkitsession", "sha": "f1af1ff4ea384c863116169647254f412db650f7f8c5a9d10531e00fec053823", "t": "ARKitSession", "n": 1042, "laws": 2, "ts": "2026-07-24 18:59 UTC"}
+{"id": "/documentation/accelerate/vimagegetresamplingfiltersize(_:_:_:_:)", "sha": "9b077644218709af965cf0f24b553e81e3c85f900d0bc23147cedb130bab2e1a", "t": "vImageGetResamplingFilterSize(_:_:_:_:)", "n": 155, "laws": 2, "ts": "2026-07-25 04:24 UTC"}

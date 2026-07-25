@@ -7,3 +7,4 @@
 {"id": "/documentation/avfoundation/avcapturedevice/devicetype-swift.struct/builtinlidardepthcamera", "sha": "a472fef2d0d381725ed260fff3674c2df82724552ec219a26877ce7d895c8529", "t": "builtInLiDARDepthCamera", "n": 522, "laws": 1, "ts": "2026-07-24 19:03 UTC"}
 {"id": "/documentation/CoreMedia/CMTag-swift.class/stereoView(_:)", "sha": "ce58fb97fc1014c2ab5afbb681b94096f108ab275190bb36aabefe57385f6184", "t": "stereoView(_:)", "n": 149, "laws": 0, "ts": "2026-07-24 19:05 UTC"}
 {"id": "/documentation/accelerate/adjusting-the-brightness-and-contrast-of-an-image", "sha": "1ceaacc8c6cf6274322e666bd192afc16978d85f25e86c1498da77f7376dea2d", "t": "Adjusting the brightness and contrast of an image", "n": 4622, "laws": 5, "ts": "2026-07-24 19:08 UTC"}
+{"id": "/documentation/Foundation/FileHandle", "sha": "005a0254cdf42920af1a74b2cdaa7ea966c2a7eb9b4f77ed40c7a71e9c6970ac", "t": "FileHandle", "n": 3291, "laws": 5, "ts": "2026-07-25 04:22 UTC"}

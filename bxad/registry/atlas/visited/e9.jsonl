@@ -5,3 +5,4 @@
 {"id": "/documentation/DriverKit", "sha": "e72b4a0e40f652598ac80a9db2075a7e6ef229dd293d8fd3122a0bcd51278458", "t": "DriverKit", "n": 4059, "laws": 1, "ts": "2026-07-24 18:50 UTC"}
 {"id": "/documentation/avfoundation/avcapturedeferredphotoproxy", "sha": "dbf586783eee06ea6a905815f260d3cfac345b6523f48067d7afd012c70dc537", "t": "AVCaptureDeferredPhotoProxy", "n": 443, "laws": 1, "ts": "2026-07-24 19:03 UTC"}
 {"id": "/documentation/avfoundation/observing-playback-state-in-swiftui", "sha": "0609a8332dafc46e7e95e56957e6ca58e11bf5081164b3167c580584b701e119", "t": "Observing playback state in SwiftUI", "n": 2790, "laws": 7, "ts": "2026-07-24 19:04 UTC"}
+{"id": "/documentation/accelerate/transforming-with-a-gamma-function", "sha": "07111905f15eb4f9b17b40ba70a48d714a843ea8764b55285969342f555a750c", "t": "Transforming with a gamma function", "n": 1315, "laws": 2, "ts": "2026-07-25 04:20 UTC"}

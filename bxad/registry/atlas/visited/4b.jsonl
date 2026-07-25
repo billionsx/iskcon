@@ -8,3 +8,5 @@
 {"id": "/documentation/arkit/creating-a-multiuser-ar-experience", "sha": "89a356ecdc460e50f572774a85dd13233ce6e179ef719a586f42687281923cc5", "t": "Creating a multiuser AR experience", "n": 6763, "laws": 10, "ts": "2026-07-24 18:56 UTC"}
 {"id": "/documentation/arkit/aranchorcopying", "sha": "70c77dba930d450450e77b9c87172397c8293c7c1e23a2d0cb09ef99bf2ff363", "t": "ARAnchorCopying", "n": 836, "laws": 3, "ts": "2026-07-24 18:58 UTC"}
 {"id": "/documentation/avfoundation/avcapturespatialaudiometadatasamplegenerator", "sha": "0b88ede8c6e65f8e0c9e457122ee9e64fa98c2bf47209fd7b447dc9d33e1662f", "t": "AVCaptureSpatialAudioMetadataSampleGenerator", "n": 226, "laws": 0, "ts": "2026-07-24 19:03 UTC"}
+{"id": "/documentation/accelerate/vimage/pixelbuffer/makecgimage(cgimageformat:)", "sha": "6970c6378f8bfc9942bac06df3c54644f8a430eef857854b7ddd591d0c9b3869", "t": "makeCGImage(cgImageFormat:)", "n": 145, "laws": 0, "ts": "2026-07-25 04:20 UTC"}
+{"id": "/documentation/accelerate/bnns-library", "sha": "0183c5bab0c653a9ce374e4c366901e9efe808b7568c97a4da3d0a51c70de23a", "t": "BNNS", "n": 4189, "laws": 1, "ts": "2026-07-25 04:21 UTC"}

@@ -5,3 +5,4 @@
 {"id": "/documentation/AccessoryAccess", "sha": "5c3fe7a96139841005dccdff3176a1b49541c8b2b8b4c35c5197617c83e958dd", "t": "Accessory Access", "n": 479, "laws": 1, "ts": "2026-07-24 18:48 UTC"}
 {"id": "/documentation/IdentityDocumentServices", "sha": "a5183693eaf4a7b1e74f0acc9d3430fe810277a0547bcf359b1dee4c4f1ae65c", "t": "IdentityDocumentServices", "n": 1365, "laws": 0, "ts": "2026-07-24 18:51 UTC"}
 {"id": "/documentation/arkit/arscnviewdelegate/renderer(_:nodefor:)", "sha": "997b1cad7edf5ca2d7d12d8d15a6f8d8327ca1b373ef856f7f937f754386930d", "t": "renderer(_:nodeFor:)", "n": 1039, "laws": 2, "ts": "2026-07-24 18:59 UTC"}
+{"id": "/documentation/ModelIO/MDLTexture", "sha": "5c380f3dbb45983d602f05cee4a41befddcabc7fe35e65c1ca9954ddef244953", "t": "MDLTexture", "n": 1422, "laws": 1, "ts": "2026-07-25 04:24 UTC"}

@@ -5,3 +5,4 @@
 {"id": "/documentation/AutomatedDeviceEnrollment", "sha": "2f7ff3e0ec5685d56fafebd3d683dc5fca3509622ae921ecf4aa3d28b41aa5ca", "t": "Automated Device Enrollment", "n": 842, "laws": 2, "ts": "2026-07-24 18:49 UTC"}
 {"id": "/documentation/os", "sha": "8b9c45b0c166669fe5a00eaadef40292dd426e225c8198aa5a3da4204ddb152a", "t": "os", "n": 312, "laws": 0, "ts": "2026-07-24 18:55 UTC"}
 {"id": "/documentation/avkit/avportalviewport", "sha": "8968843bd3775505c54b8d930f763b0bcc5ff92043e5a4c21ae918fcfb793ec5", "t": "AVPortalViewport", "n": 671, "laws": 2, "ts": "2026-07-24 19:07 UTC"}
+{"id": "/documentation/accelerate/vimage/sheardirection/vertical", "sha": "fef41861f646aec68affd676c8a194fbc59bffba04d1fa08a4d3ac303dcb8c66", "t": "vImage.ShearDirection.vertical", "n": 25, "laws": 0, "ts": "2026-07-25 04:24 UTC"}

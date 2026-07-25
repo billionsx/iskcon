@@ -4,3 +4,5 @@
 {"id": "/documentation/Symbols", "sha": "c8d1102d67beb1d8e21403d7bc735e725296a1113c3b21a78c1eb85c7ce6951e", "t": "Symbols", "n": 1575, "laws": 2, "ts": "2026-07-24 18:53 UTC"}
 {"id": "/documentation/arkit/argeotrackingconfiguration/checkavailability(at:completionhandler:)", "sha": "472a3371e66e70a74bfb541ec0f7ecfa43150bfe328591dc9dc7cee2575a9a91", "t": "checkAvailability(at:completionHandler:)", "n": 425, "laws": 1, "ts": "2026-07-24 18:59 UTC"}
 {"id": "/documentation/avfoundation/avassetreaderoutput/copynextsamplebuffer()", "sha": "6f02a4860022fb5994165f7e6d91b96ff93621dc2aa3215011747fae0750f465", "t": "copyNextSampleBuffer()", "n": 790, "laws": 0, "ts": "2026-07-24 19:05 UTC"}
+{"id": "/documentation/SwiftUI/Slider", "sha": "2645b2b314631966b6847fcba14601f9e54899525d2f0c2857b048eca826d55d", "t": "Slider", "n": 2197, "laws": 3, "ts": "2026-07-25 04:22 UTC"}
+{"id": "/documentation/accelerate/performing-fourier-transforms-on-multiple-signals", "sha": "adda0b3677a746abd8fb20bf3708e2709df7be953128f3ea3e93cd04c3007cd4", "t": "Performing Fourier Transforms on Multiple Signals", "n": 2590, "laws": 5, "ts": "2026-07-25 04:23 UTC"}

@@ -3,3 +3,7 @@
 {"id": "/documentation/MarketplaceKit", "sha": "19abca1dba79d65641c5d74749edfb8bf197e156f37ac9ccd2efb437e1fcae98", "t": "MarketplaceKit", "n": 2700, "laws": 1, "ts": "2026-07-24 18:52 UTC"}
 {"id": "/documentation/OpenGLES", "sha": "10167a9382de2b01e2aaf4a16f57f184049d2db2bb651c36f84e5720c3f5783f", "t": "OpenGL ES", "n": 1436, "laws": 1, "ts": "2026-07-24 18:52 UTC"}
 {"id": "/documentation/RealityKit/PhysicsBodyMode/dynamic", "sha": "4b0038b83b51a4d7960b05b2fc82d91cb8a2b5159743dc9b7ca4ce64853fc57b", "t": "PhysicsBodyMode.dynamic", "n": 44, "laws": 0, "ts": "2026-07-24 19:00 UTC"}
+{"id": "/documentation/CoreGraphics/CGColorSpace", "sha": "89f0eebd94cf46e4fbd26a8dc59cb612a2a18238842712794cdf44bb02b57d81", "t": "CGColorSpace", "n": 3018, "laws": 3, "ts": "2026-07-25 04:20 UTC"}
+{"id": "/documentation/accelerate/sharing-texture-data-between-the-model-io-framework-and-the-vimage-library", "sha": "c3c034f52f25dbb449eb0776d602a5c8481fa9ed0c47ea6f2bb2528661896fc8", "t": "Sharing texture data between the Model I/O framework and the vImage library", "n": 2056, "laws": 0, "ts": "2026-07-25 04:21 UTC"}
+{"id": "/documentation/accelerate/kvimageconvert_ditheratkinson", "sha": "8ffd7104ba2d7cb412f76dbbd19a80f55b2cd5754483d67bf8aa07e19523838f", "t": "kvImageConvert_DitherAtkinson", "n": 241, "laws": 0, "ts": "2026-07-25 04:23 UTC"}
+{"id": "/documentation/accelerate/resampling-in-vimage", "sha": "1ff220119f5c2d7b840ad550ae3e78ce7f32c1281b80f333bd43d620091392df", "t": "Resampling in vImage", "n": 1272, "laws": 4, "ts": "2026-07-25 04:24 UTC"}

@@ -9,3 +9,4 @@
 {"id": "/documentation/WalletPasses", "sha": "17f9f44e45e633136141491be5ea643601563ddd45193b21694b963b178d8aeb", "t": "Wallet Passes", "n": 2076, "laws": 1, "ts": "2026-07-24 18:54 UTC"}
 {"id": "/documentation/avfoundation/avvideocompositionlayerinstruction", "sha": "6220f5cb56ad7269dd541fe7394a8eab989f175c9eff1634f33df1e457c81716", "t": "AVVideoCompositionLayerInstruction", "n": 715, "laws": 0, "ts": "2026-07-24 19:04 UTC"}
 {"id": "/documentation/CoreImage/CIImage/init(cvPixelBuffer:)-3wng7", "sha": "f8af09005609eaad8cf2e44b819bb82af93ebbdd0ff6c0cbed9bc45c9f51ea45", "t": "init(cvPixelBuffer:)", "n": 121, "laws": 0, "ts": "2026-07-24 19:05 UTC"}
+{"id": "/documentation/accelerate/vimage/pixelbuffer", "sha": "73ae299d186319192bb59e4afd7ed2a8e78436b5d4374297c09b50f33eac50ff", "t": "vImage.PixelBuffer", "n": 2212, "laws": 2, "ts": "2026-07-25 04:20 UTC"}

@@ -6,3 +6,4 @@
 {"id": "/documentation/RealityKit/ARView", "sha": "dae19b88206c827edf0a841cf96083e177be817a5a0df032108f3c7c1134cc16", "t": "ARView", "n": 3237, "laws": 2, "ts": "2026-07-24 18:57 UTC"}
 {"id": "/documentation/arkit/arworldtrackingconfiguration/scenereconstruction", "sha": "cc31c7c1bb55638b0cde42b4fda20ab3b5b156ab4adf587897a45c18561f72e1", "t": "sceneReconstruction", "n": 747, "laws": 1, "ts": "2026-07-24 19:00 UTC"}
 {"id": "/documentation/avfoundation/avassetwriterinputtaggedpixelbuffergroupadaptor", "sha": "2ddf7c24c3d87d24361b6ddf9f7535e77f353d4c8ffb7880bde80b43aadb4a93", "t": "AVAssetWriterInputTaggedPixelBufferGroupAdaptor", "n": 674, "laws": 1, "ts": "2026-07-24 19:01 UTC"}
+{"id": "/documentation/accelerate/vdsp", "sha": "6404c120e17eda23e96216500eb197622ecc14a05259853b08fda543271da58f", "t": "vDSP", "n": 12155, "laws": 0, "ts": "2026-07-25 04:22 UTC"}

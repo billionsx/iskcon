@@ -5,3 +5,4 @@
 {"id": "/documentation/Speech", "sha": "11b94cd4e846b0a8ad9c62074250e0c6387102b28a5c8624785f9673935ebaf7", "t": "Speech", "n": 1590, "laws": 4, "ts": "2026-07-24 18:53 UTC"}
 {"id": "/documentation/UniformTypeIdentifiers", "sha": "6d929eefc5e24150f82cb0b64292d3ffbd0a17ce72ee370dd17e8de7737119b1", "t": "Uniform Type Identifiers", "n": 1150, "laws": 1, "ts": "2026-07-24 18:54 UTC"}
 {"id": "/documentation/avfoundation/avvideocomposition/configuration", "sha": "b345af7729dbad62bf1610ca6b6c86d2afa35b5faf8a84893f95c3175e587755", "t": "AVVideoComposition.Configuration", "n": 1011, "laws": 0, "ts": "2026-07-24 19:04 UTC"}
+{"id": "/documentation/accelerate/vimagemultidimensionalinterpolatedlookuptable_planar16q12(_:_:_:_:_:_:)", "sha": "3e053f2da6b1579cc8c1d0db37f448d690711392be9551fddf70fb70d9c218b7", "t": "vImageMultiDimensionalInterpolatedLookupTable_Planar16Q12(_:_:_:_:_:_:)", "n": 1934, "laws": 7, "ts": "2026-07-25 04:21 UTC"}

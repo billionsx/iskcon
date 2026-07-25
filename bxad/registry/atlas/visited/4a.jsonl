@@ -3,3 +3,5 @@
 {"id": "/documentation/updates/screencapturekit", "sha": "315bfa26237ee2125bc1a92e82f61ff9735ec0632f98c4337da6cc17355ffe21", "t": "ScreenCaptureKit updates", "n": 2052, "laws": 2, "ts": "2026-07-24 18:47 UTC"}
 {"id": "/documentation/updates/tipkit", "sha": "ff94b5cb64cff2078b1033515e1f5dfe9f2d12367075485cafb2e652e6e16f66", "t": "TipKit updates", "n": 451, "laws": 0, "ts": "2026-07-24 18:47 UTC"}
 {"id": "/documentation/ExternalAccessory", "sha": "2f852d1dc4a15966bfc28e0f14e46db84f1c0fd2f99431b69b4f8f4f048b15b0", "t": "External Accessory", "n": 1513, "laws": 1, "ts": "2026-07-24 18:50 UTC"}
+{"id": "/documentation/accelerate/vimage_cgimageformat", "sha": "00b1897f3f50573a2a699bf8380957963e1dc62ad76f927eeb33f55eebf6641b", "t": "vImage_CGImageFormat", "n": 643, "laws": 0, "ts": "2026-07-25 04:20 UTC"}
+{"id": "/documentation/AVFoundation/AVCaptureVideoDataOutputSampleBufferDelegate/captureOutput(_:didOutput:from:)", "sha": "37aee3a03b7ddb8003de82d18d893b8f051fbc82eb4d6d5db4fba0c7c39d6380", "t": "captureOutput(_:didOutput:from:)", "n": 1423, "laws": 3, "ts": "2026-07-25 04:21 UTC"}

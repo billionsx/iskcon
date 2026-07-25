@@ -2,3 +2,4 @@
 {"id": "/documentation/Translation/translating-text-within-your-app", "sha": "bac679bb615efe8a1ed5b9d578b6cb499b3b8b13ed6545f62b5dc3b0ac62b379", "t": "Translating text within your app", "n": 6888, "laws": 5, "ts": "2026-07-24 17:54 UTC"}
 {"id": "/documentation/VideoToolbox/VTDecompressionSession", "sha": "865579133cbec8bbc215d65ef2297dd687f56147f4837b647630d91063f8cc08", "t": "VTDecompressionSession", "n": 197, "laws": 0, "ts": "2026-07-24 18:58 UTC"}
 {"id": "/documentation/avkit/avcontinuitydevicepickerviewcontroller", "sha": "05b70ba2015e96efa6a9e22ea9342ba2ffc0a4f618133e6eb6f3857cfd9973c7", "t": "AVContinuityDevicePickerViewController", "n": 717, "laws": 1, "ts": "2026-07-24 19:08 UTC"}
+{"id": "/documentation/Compression/COMPRESSION_STREAM_FINALIZE", "sha": "0782a2e6bd4f9d81aced2ea4f2f42c45a7c642f5811c7f485e9839f5b6d25eb9", "t": "COMPRESSION_STREAM_FINALIZE", "n": 76, "laws": 0, "ts": "2026-07-25 04:22 UTC"}

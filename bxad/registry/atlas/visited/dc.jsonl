@@ -7,3 +7,4 @@
 {"id": "/documentation/CoreData", "sha": "9b10538ac1f3a85dc86ef044901848b85c5a4fedfe4d54a943b153e4df51dcb1", "t": "Core Data", "n": 2675, "laws": 1, "ts": "2026-07-24 18:49 UTC"}
 {"id": "/documentation/PCIDriverKit", "sha": "2de780c487318b717113478833e63833f118f09426e2a05e46341494da4362ce", "t": "PCIDriverKit", "n": 3136, "laws": 3, "ts": "2026-07-24 18:52 UTC"}
 {"id": "/documentation/SiriEventSuggestionsMarkup", "sha": "15b3acc0133ff7807957721ebe29b03277540262262426e493142b6e12b020e8", "t": "Siri Event Suggestions Markup", "n": 2162, "laws": 3, "ts": "2026-07-24 18:53 UTC"}
+{"id": "/documentation/accelerate/vimage/pixelbuffer/multiply(by:divisor:prebias:postbias:destination:)-4q614", "sha": "2df771f06d98ba2ed7f69e1a0147b06e556207039bd3cd45d929c7d7fae0eb09", "t": "multiply(by:divisor:preBias:postBias:destination:)", "n": 266, "laws": 0, "ts": "2026-07-25 04:20 UTC"}

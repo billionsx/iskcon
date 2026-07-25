@@ -9,3 +9,4 @@
 {"id": "/documentation/arkit/arcoachingoverlayview/activatesautomatically", "sha": "d2477a4943726600790fb4965f52c9bd3569fe6dc6cb9b65f48629ddbc28d92f", "t": "activatesAutomatically", "n": 404, "laws": 0, "ts": "2026-07-24 18:57 UTC"}
 {"id": "/documentation/avfoundation/avmutablevideocompositionlayerinstruction", "sha": "0d5d59687fcf393845ddddd10be4f7985098cd8b98f89d0b38015020ada93b73", "t": "AVMutableVideoCompositionLayerInstruction", "n": 500, "laws": 0, "ts": "2026-07-24 19:04 UTC"}
 {"id": "/documentation/avfoundation/avplayer/pause()", "sha": "5dfa0b4233711899464921725130372a0e8f4256fbf42f7ce05a6da06a6025bb", "t": "pause()", "n": 102, "laws": 0, "ts": "2026-07-24 19:06 UTC"}
+{"id": "/documentation/accelerate/finding-the-component-frequencies-in-a-composite-sine-wave", "sha": "91ec2c9e489e4a9743cd13c96121adcd9f355b335b1be3373034acecd08cc9fc", "t": "Finding the component frequencies in a composite sine wave", "n": 4498, "laws": 7, "ts": "2026-07-25 04:23 UTC"}

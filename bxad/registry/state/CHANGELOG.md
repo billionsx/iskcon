@@ -486,3 +486,18 @@
 ### 2026-07-25 03:51 UTC · macOS-плечо
 - Xcode зафиксирован · SF Symbols установлен · символов выгружено: 9184
 
+### 2026-07-25 04:24 UTC · атлас · шаг дня
+- пройдено 1500 · в очередь 2893 · законов добыто 322 · изменилось 1
+- фронтир 7594 · всего пройдено 2200 · библиотека 5894 законов / 316 фреймворков
+- закон изменился: /documentation/RealityComposerPro · «Reality Composer Pro»
+
+### · веб-атлас лендингов
+- страниц 85 · секций-видов 13 · модулей-видов 528 · новых типографических законов 145
+
+### 2026-07-25 04:29 UTC · кит
+- ОШИБКА руки: iOS-27-Icon-Templates-Photoshop-Illustrator.dmg: RuntimeError: в контейнере нет .sketch
+- все ссылки страницы: Bezel-Apple-TV.dmg · Bezel-Apple-Watch-Series-11-2025.dmg · Bezel-Apple-Watch-Ultra-2-2024.dmg · Bezel-Apple-Watch-Ultra-3-2025.dmg · Bezel-MacBook-Air-M5.dmg · Bezel-MacBook-Neo.dmg · Bezel-MacBook-Pro-M5.dmg · Bezel-Studio-Displays.dmg · Bezel-iMac-M4.dmg · Bezel-iPad-(A16).dmg · Bezel-iPad-Air-(M4).dmg · Bezel-iPad-Pro-(M5).dmg · Bezel-iPad-mini-(A17-Pro).dmg · Bezel-iPhone-16.dmg · Bezel-iPhone-17.dmg · Glyph-ARKit.dmg · Glyph-Add-Apple-Watch-Face.dmg · Glyph-AirPlay.dmg · Icon-Apple-Health.dmg · Icon-Game-Center.dmg · Icon-HomeKit.dmg · Icon-Siri.dmg · Keynote-Live-Video-Product-Bezel.dmg · Logo-Sign-in-with-Apple.dmg · NY.dmg · Parallax%20Previewer.dmg · Parallax%20Previewer_1_0.dmg · ParallaxExporter_Apps.zip · ParallaxExporter_Windows.zip · SF-Arabic.dmg · SF-Armenian.dmg · SF-Compact.dmg · SF-Georgian.dmg · SF-Hebrew.dmg · SF-Mono.dmg · SF-Pro.dmg · iOS-27-Icon-Templates-Photoshop-Illustrator.dmg · tvOS-18-Design-Templates-Sketch.dmg · tvOS-18-Production-Templates-Photoshop.dmg · tvOS-18-Production-Templates-Sketch.dmg · visionOS-2-Design-Templates-Sketch.dmg
+
+### живой взгляд
+- https://brajs.com/: элементов 0 · находок 0
+
