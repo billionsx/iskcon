@@ -527,6 +527,22 @@ def cmd_selftest(root: Path) -> int:
     finally:
         shutil.rmtree(tmpw, ignore_errors=True)
 
+    print("SELFTEST · живой взгляд (мок: обе стороны)")
+    import liveview as lv
+    tok = json.loads((root / "registry" / "standards" / "tokens.json").read_text(encoding="utf-8"))
+    bad_els = [
+        {"sel": "div.card", "backgroundColor": "rgb(20, 20, 24)", "boxShadow": "none", "textShadow": "none",
+         "backdropFilter": "blur(20px)", "fontFamily": "Papyrus, fantasy", "transition": "0.3s|ease"},
+        {"sel": "span.dup", "backgroundColor": "rgb(142, 142, 142)", "boxShadow": "0 0 4px #000",
+         "textShadow": "none", "backdropFilter": "none", "fontFamily": "-apple-system"},
+    ]
+    got_lv = {r for r, *_ in lv.check_dump(bad_els, tok)}
+    check("живые нарушения пойманы: AE1·AE2·AE6·AE7·AE10",
+          {"AE1", "AE2", "AE6", "AE7", "AE10"} <= got_lv)
+    good_els = [{"sel": "div.ok", "backgroundColor": "rgb(28, 28, 30)", "boxShadow": "none", "textShadow": "none",
+                 "backdropFilter": "blur(20px) saturate(180%)", "fontFamily": "-apple-system, system-ui"}]
+    check("чистый живой DOM → находок нет", lv.check_dump(good_els, tok) == [])
+
     print("SELFTEST · конституция (ст. 45: полнота мандата машиной)")
     const_t = (root / "CONSTITUTION.md").read_text(encoding="utf-8")
     missing = [d for d, anchor in FOUNDER_MANDATE.items() if anchor not in const_t]

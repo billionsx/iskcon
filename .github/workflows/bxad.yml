@@ -74,23 +74,6 @@ jobs:
         if: steps.kind.outputs.net == 'yes'
         run: python3 bxad/bin/bxad.py digest
 
-      - name: "Атлас — ежедневный шаг по всей документации (ст. 37.1)"
-        if: steps.kind.outputs.net == 'yes'
-        run: python3 bxad/bin/bxad.py atlas --budget 1500
-
-      - name: "Кит — величины официальных китов Apple без аккаунтов (ст. 36.1)"
-        if: steps.kind.outputs.net == 'yes'
-        env:
-          FIGMA_TOKEN: ${{ secrets.FIGMA_TOKEN }}
-          FIGMA_KIT_KEY: ${{ secrets.FIGMA_KIT_KEY }}
-        run: |
-          command -v 7z >/dev/null || sudo apt-get -yq install p7zip-full >/dev/null
-          python3 bxad/bin/bxad.py kit
-
-      - name: "Веб-атлас — кит лендингов Apple (ст. 36.3)"
-        if: steps.kind.outputs.net == 'yes'
-        run: python3 bxad/bin/bxad.py weblab || true
-
       - name: "Сверка — конституция ↔ реестр ↔ знание Apple (ст. 45)"
         run: python3 bxad/bin/bxad.py verify
 

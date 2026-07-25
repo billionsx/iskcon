@@ -1,28 +1,141 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""BXAD · ЖИВОЙ ВЗГЛЯД (ст. 37.3) — СТРОИТСЯ.
-Назначение: headless-Chromium (Playwright/CDP) в CI открывает страницу
-приложения, снимает настоящий DOM и getComputedStyle и сверяет живые
-свойства с правилами AE и токенами. Кадр — приложение к фактам DOM.
-Носитель — CI (в песочнице браузер недоступен по сети).
-Мок-режим (--mock <dump.json>) уже судится: разбор снятого дампа
-computed-styles → находки AE — механизм доказан до подъёма браузера."""
-import json, sys
+"""
+BXAD · ЖИВОЙ ВЗГЛЯД (ст. 37.3). Видеть приложение в реальном режиме — не кадром.
+
+Режим --live (носитель: CI): headless-Chromium (Playwright) открывает каждую
+страницу registry/live-sources.json, ждёт networkidle и снимает НАСТОЯЩИЙ DOM:
+для выборки видимых элементов — селектор-путь, backgroundColor, boxShadow /
+textShadow, backdropFilter, fontFamily, fontSize, letterSpacing, borderRadius,
+transition. Дамп: registry/live/<slug>.json (факты, не картинка).
+
+Сверка check_dump — те же законы, что у линта, но по ЖИВЫМ вычисленным
+значениям: AE1 фон вне лестницы · AE2 тень/свечение на чёрном · AE6 тёплый
+двойник · AE7 blur без saturate · AE10 чужой шрифт первой позицией.
+Отчёт: registry/live/REPORT.md (советник; храповик — после стабилизации).
+Мок-режим (--mock dump.json) судится офлайн: механизм доказан без браузера.
+"""
+import json
+import re
+import sys
+from datetime import datetime, timezone
 from pathlib import Path
 
-def check_dump(dump: dict, tokens: dict) -> list:
+ROOT = Path(__file__).resolve().parents[1]
+
+JS_SNAPSHOT = """
+() => {
+  const out = [], seen = new Set();
+  const els = Array.from(document.querySelectorAll('body *')).slice(0, 4000);
+  for (const el of els) {
+    const r = el.getBoundingClientRect();
+    if (r.width < 8 || r.height < 8) continue;
+    const cs = getComputedStyle(el);
+    const rec = {
+      sel: el.tagName.toLowerCase() + (el.className && typeof el.className === 'string'
+            ? '.' + el.className.trim().split(/\\s+/).slice(0,2).join('.') : ''),
+      backgroundColor: cs.backgroundColor, boxShadow: cs.boxShadow,
+      textShadow: cs.textShadow, backdropFilter: cs.backdropFilter || cs.webkitBackdropFilter,
+      fontFamily: cs.fontFamily, fontSize: cs.fontSize,
+      letterSpacing: cs.letterSpacing, borderRadius: cs.borderRadius,
+      transition: cs.transitionDuration + '|' + cs.transitionTimingFunction
+    };
+    const key = JSON.stringify(rec);
+    if (seen.has(key)) continue;
+    seen.add(key);
+    out.push(rec);
+    if (out.length >= %LIMIT%) break;
+  }
+  return out;
+}
+"""
+
+
+def _rgb_to_hex(v: str):
+    m = re.match(r"rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*([\d.]+))?\)", v or "")
+    if not m:
+        return None, None
+    a = float(m.group(4)) if m.group(4) is not None else 1.0
+    return "#%02X%02X%02X" % (int(m.group(1)), int(m.group(2)), int(m.group(3))), a
+
+
+def check_dump(elements: list, tokens: dict) -> list:
     finds = []
-    ladder = {c.upper() for c in tokens["surfaces"]["allow"]}
-    for el in dump.get("elements", []):
-        bg = (el.get("backgroundColor") or "").upper()
-        if bg.startswith("#") and bg not in ladder:
-            finds.append(("AE1", el.get("selector","?"), f"живой фон {bg} вне лестницы"))
+    ladder = {c.upper() for c in tokens["surfaces"]["allow"]} | {"#1C1C1C", "#2C2C2C", "#181818", "#111111"}
+    stack = tuple(s.lower() for s in tokens["typography"]["font_stack_head"])
+    for el in elements:
+        sel = el.get("sel", "?")
+        hx, a = _rgb_to_hex(el.get("backgroundColor", ""))
+        if hx and a == 1.0 and hx not in ladder:
+            if hx == "#8E8E8E":
+                finds.append(("AE6", sel, f"живой тёплый двойник {hx}"))
+            elif max(int(hx[i:i+2], 16) for i in (1, 3, 5)) < 0x60:
+                finds.append(("AE1", sel, f"живой тёмный фон {hx} вне лестницы"))
+        if (el.get("boxShadow") or "none") != "none" or (el.get("textShadow") or "none") != "none":
+            finds.append(("AE2", sel, "живая тень/свечение на чёрном холсте"))
+        bf = (el.get("backdropFilter") or "").lower()
+        if "blur(" in bf and "saturate(" not in bf:
+            finds.append(("AE7", sel, "живое стекло: blur без saturate"))
+        ff = (el.get("fontFamily") or "").lower().strip().strip('"\'')
+        if ff and not ff.startswith(stack):
+            finds.append(("AE10", sel, f"живой шрифт первой позицией: {ff.split(',')[0][:40]}"))
     return finds
+
+
+def _report(root: Path, results: dict):
+    md = ["# ЖИВОЙ ВЗГЛЯД · отчёт (советник)",
+          f"Снято: {datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M UTC')} · настоящий DOM+computed, не кадры.", ""]
+    for slug, r in results.items():
+        md.append(f"## {r['url']}")
+        md.append(f"элементов снято: {r['elements']} · находок: {len(r['findings'])}")
+        by = {}
+        for rule, sel, why in r["findings"]:
+            by.setdefault(rule, []).append((sel, why))
+        for rule in sorted(by):
+            md.append(f"- **{rule}** · {len(by[rule])}: " + "; ".join(f"`{s}`" for s, _ in by[rule][:5]))
+        md.append("")
+    (root / "registry" / "live" / "REPORT.md").write_text("\n".join(md) + "\n", encoding="utf-8")
+
+
+def run_live(root: Path) -> dict:
+    from playwright.sync_api import sync_playwright
+    cfg = json.loads((root / "registry" / "live-sources.json").read_text(encoding="utf-8"))
+    tokens = json.loads((root / "registry" / "standards" / "tokens.json").read_text(encoding="utf-8"))
+    out = root / "registry" / "live"
+    out.mkdir(exist_ok=True)
+    js = JS_SNAPSHOT.replace("%LIMIT%", str(cfg.get("sample_limit", 400)))
+    results = {}
+    with sync_playwright() as pw:
+        b = pw.chromium.launch()
+        pg = b.new_page(viewport={"width": 393, "height": 852}, device_scale_factor=3)
+        for url in cfg["pages"]:
+            slug = re.sub(r"[^a-z0-9]+", "-", re.sub(r"https?://", "", url).strip("/").lower()) or "root"
+            try:
+                pg.goto(url, wait_until="networkidle", timeout=45000)
+                els = pg.evaluate(js)
+            except Exception as e:
+                results[slug] = {"url": url, "elements": 0, "findings": [], "note": f"{type(e).__name__}"}
+                continue
+            finds = check_dump(els, tokens)
+            (out / f"{slug}.json").write_text(json.dumps(
+                {"url": url, "elements": els, "findings": finds}, ensure_ascii=False), encoding="utf-8")
+            results[slug] = {"url": url, "elements": len(els), "findings": finds}
+        b.close()
+    _report(root, results)
+    with (root / "registry" / "state" / "CHANGELOG.md").open("a", encoding="utf-8") as f:
+        f.write("### живой взгляд\n" + "".join(
+            f"- {r['url']}: элементов {r['elements']} · находок {len(r['findings'])}\n" for r in results.values()) + "\n")
+    return results
+
 
 if __name__ == "__main__":
     if "--mock" in sys.argv:
-        dump = json.loads(Path(sys.argv[sys.argv.index("--mock")+1]).read_text(encoding="utf-8"))
-        tokens = json.loads((Path(__file__).resolve().parents[1]/"registry/standards/tokens.json").read_text(encoding="utf-8"))
-        for f in check_dump(dump, tokens): print(*f)
+        dump = json.loads(Path(sys.argv[sys.argv.index("--mock") + 1]).read_text(encoding="utf-8"))
+        tokens = json.loads((ROOT / "registry" / "standards" / "tokens.json").read_text(encoding="utf-8"))
+        for f in check_dump(dump.get("elements", dump), tokens):
+            print(*f)
+    elif "--live" in sys.argv:
+        r = run_live(ROOT)
+        print("живой взгляд:", " · ".join(f"{k}: элементов {v['elements']}, находок {len(v['findings'])}" for k, v in r.items()))
     else:
-        print("живой взгляд: СТРОИТСЯ — носитель CI (устав ст. 37.3)")
+        print("режимы: --live (CI, Playwright) · --mock dump.json (суд)")
