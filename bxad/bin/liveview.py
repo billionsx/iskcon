@@ -88,6 +88,8 @@ def _report(root: Path, results: dict):
     for slug, r in results.items():
         md.append(f"## {r['url']}")
         md.append(f"элементов снято: {r['elements']} · находок: {len(r['findings'])}")
+        if r.get("diag"):
+            md.append(f"диагностика пустоты: {json.dumps(r['diag'], ensure_ascii=False)}")
         by = {}
         for rule, sel, why in r["findings"]:
             by.setdefault(rule, []).append((sel, why))
@@ -107,7 +109,9 @@ def run_live(root: Path) -> dict:
     results = {}
     with sync_playwright() as pw:
         b = pw.chromium.launch()
-        pg = b.new_page(viewport={"width": 393, "height": 852}, device_scale_factor=3)
+        pg = b.new_page(viewport={"width": 393, "height": 852}, device_scale_factor=3,
+                        user_agent="Mozilla/5.0 (iPhone; CPU iPhone OS 26_0 like Mac OS X) "
+                                   "AppleWebKit/605.1.15 (KHTML, like Gecko) Version/26.0 Mobile/15E148 Safari/604.1")
         for url in cfg["pages"]:
             slug = re.sub(r"[^a-z0-9]+", "-", re.sub(r"https?://", "", url).strip("/").lower()) or "root"
             try:
@@ -120,10 +124,15 @@ def run_live(root: Path) -> dict:
             except Exception as e:
                 results[slug] = {"url": url, "elements": 0, "findings": [], "note": f"{type(e).__name__}"}
                 continue
+            diag = None
+            if not els:
+                diag = pg.evaluate("() => ({url: location.href, title: document.title,"
+                                   " ready: document.readyState, htmlLen: document.documentElement.outerHTML.length,"
+                                   " bodyChildren: document.body ? document.body.childElementCount : -1})")
             finds = check_dump(els, tokens)
             (out / f"{slug}.json").write_text(json.dumps(
-                {"url": url, "elements": els, "findings": finds}, ensure_ascii=False), encoding="utf-8")
-            results[slug] = {"url": url, "elements": len(els), "findings": finds}
+                {"url": url, "elements": els, "findings": finds, "diag": diag}, ensure_ascii=False), encoding="utf-8")
+            results[slug] = {"url": url, "elements": len(els), "findings": finds, "diag": diag}
         b.close()
     _report(root, results)
     with (root / "registry" / "state" / "CHANGELOG.md").open("a", encoding="utf-8") as f:

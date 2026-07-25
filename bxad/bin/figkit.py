@@ -250,6 +250,16 @@ def run_fonts_arm(root: Path, links: list, tmp: Path) -> list:
             out = tmp / ("f_" + name)
             out.mkdir(exist_ok=True)
             subprocess.run(["7z", "x", "-y", f"-o{out}", str(src)], capture_output=True, timeout=600)
+            for depth in range(2):  # dmg → pkg → Payload(cpio): вскрываем вложенные контейнеры
+                inner = [p for p in out.rglob("*") if p.is_file() and
+                         (p.suffix.lower() == ".pkg" or p.name.startswith("Payload"))]
+                if not inner:
+                    break
+                for i, p in enumerate(inner):
+                    sub = out / f"in{depth}_{i}"
+                    sub.mkdir(exist_ok=True)
+                    subprocess.run(["7z", "x", "-y", f"-o{sub}", str(p)], capture_output=True, timeout=600)
+                    p.unlink(missing_ok=True)
             faces = []
             for p in sorted(out.rglob("*.otf")) + sorted(out.rglob("*.ttf")):
                 try:
