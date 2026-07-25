@@ -9,3 +9,9 @@
 {"id": "/documentation/DeveloperToolsSupport", "sha": "2c160cc8615f8fdc97c215bece0d617079edf58c927f568ed193379b66a32186", "t": "DeveloperToolsSupport", "n": 1156, "laws": 0, "ts": "2026-07-24 18:50 UTC"}
 {"id": "/documentation/GameplayKit", "sha": "2ffc5bd1f6145ae10eca0f7b5f9d6b8eddfb0dbe11af6b8798180069b6ba2652", "t": "GameplayKit", "n": 3907, "laws": 3, "ts": "2026-07-24 18:51 UTC"}
 {"id": "/documentation/accelerate/acceleratemutablebuffer", "sha": "6fc39d17d939b244542e6fdef5c5e769350e40b1723723c18c158565ed6986a4", "t": "AccelerateMutableBuffer", "n": 366, "laws": 0, "ts": "2026-07-25 04:23 UTC"}
+{"id": "/documentation/appkit/nswindow", "sha": "e346a80c2ce3fa5d50d7db08132bfdb5ab635948a21698d754039b5f606c0d39", "t": "NSWindow", "n": 10542, "laws": 1, "ts": "2026-07-25 18:09 UTC"}
+{"id": "/documentation/BundleResources/Entitlements/com.apple.developer.applesignin", "sha": "ffcca5f8e7aaff469a92976ba380eeb028407695998aa8e30740c557bcff1094", "t": "Sign in with Apple Entitlement", "n": 288, "laws": 1, "ts": "2026-07-25 18:14 UTC"}
+{"id": "/documentation/clockkit/clkcomplication/family", "sha": "c07036a696f157a97cc2f6071c517d4bbbe8c86e7f9bd89e23f5d455efa626c2", "t": "family", "n": 642, "laws": 2, "ts": "2026-07-25 18:16 UTC"}
+{"id": "/documentation/Security/storing-keys-in-the-keychain", "sha": "b466422a4dc689644e131e983317e9eccbb0b75058770daf1cb1a36614f985d9", "t": "Storing Keys in the Keychain", "n": 3277, "laws": 7, "ts": "2026-07-25 18:25 UTC"}
+{"id": "/documentation/gamekit/gkmatchmaker", "sha": "36904a3ee9ab3adb8c4932c8cd4ecbaa14e8e7bcca81976b72a1ee0dc89ce157", "t": "GKMatchmaker", "n": 2256, "laws": 4, "ts": "2026-07-25 18:33 UTC"}
+{"id": "/documentation/gamekit/gkturnbasedparticipant/status-swift.enum/done", "sha": "5b378eeea61a5b19d84bc31844d3894db547a05fd40e5ea93844a892b3971fa0", "t": "GKTurnBasedParticipant.Status.done", "n": 114, "laws": 0, "ts": "2026-07-25 18:34 UTC"}

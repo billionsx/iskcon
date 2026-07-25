@@ -7,3 +7,7 @@
 {"id": "/documentation/PushToTalk", "sha": "684dda077690a0619541f108be5d1f51d4bd49aec8ed1eda793531a07e538d43", "t": "Push to Talk", "n": 1090, "laws": 0, "ts": "2026-07-24 18:52 UTC"}
 {"id": "/documentation/AudioToolbox/AUAudioUnit", "sha": "d351ae8af661960446ec1fdfc6bb3cfb064a9516ab8364b76ecb84f8595af3d6", "t": "AUAudioUnit", "n": 4391, "laws": 4, "ts": "2026-07-24 19:01 UTC"}
 {"id": "/documentation/avkit/working-with-overlays-and-parental-controls-in-tvos", "sha": "2b0e331fd3ee22842dc8a82ff7b4320b8c1579d4630a4e70e8e400f157e55307", "t": "Working with Overlays and Parental Controls in tvOS", "n": 1104, "laws": 0, "ts": "2026-07-24 19:08 UTC"}
+{"id": "/documentation/cloudkit", "sha": "a58a34f7c46205bfc5e584505639dc583eac6d0dd1ff847bbbf385497972a900", "t": "CloudKit", "n": 3001, "laws": 5, "ts": "2026-07-25 18:17 UTC"}
+{"id": "/documentation/CloudKit/CKSystemSharingUIObserver/systemSharingUIDidStopSharingBlock-4g5bn", "sha": "1b74af44986bb6b533ecdb7bdcd05d11edc4b8d71af234e5bd195ea2ecb8fa82", "t": "systemSharingUIDidStopSharingBlock", "n": 364, "laws": 0, "ts": "2026-07-25 18:19 UTC"}
+{"id": "/documentation/createml/mlclassifier", "sha": "169a2b06475d62493ed9f3a0eaffcfd7d144619b8421d9ade1aa1ccb8076dfe6", "t": "MLClassifier", "n": 1505, "laws": 3, "ts": "2026-07-25 18:23 UTC"}
+{"id": "/documentation/DockKit/DockAccessory/TrackingStates-swift.struct", "sha": "3d9d5231e628418a234ed5ea05ae158ac2e44731e09c611b7833e19655d3e723", "t": "DockAccessory.TrackingStates", "n": 200, "laws": 0, "ts": "2026-07-25 18:26 UTC"}

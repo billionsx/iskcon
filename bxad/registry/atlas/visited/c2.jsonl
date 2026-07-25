@@ -8,3 +8,6 @@
 {"id": "/documentation/CoreMedia/CMTag-swift.class/stereoView(_:)", "sha": "ce58fb97fc1014c2ab5afbb681b94096f108ab275190bb36aabefe57385f6184", "t": "stereoView(_:)", "n": 149, "laws": 0, "ts": "2026-07-24 19:05 UTC"}
 {"id": "/documentation/accelerate/adjusting-the-brightness-and-contrast-of-an-image", "sha": "1ceaacc8c6cf6274322e666bd192afc16978d85f25e86c1498da77f7376dea2d", "t": "Adjusting the brightness and contrast of an image", "n": 4622, "laws": 5, "ts": "2026-07-24 19:08 UTC"}
 {"id": "/documentation/Foundation/FileHandle", "sha": "005a0254cdf42920af1a74b2cdaa7ea966c2a7eb9b4f77ed40c7a71e9c6970ac", "t": "FileHandle", "n": 3291, "laws": 5, "ts": "2026-07-25 04:22 UTC"}
+{"id": "/documentation/classkit/clsdatastore", "sha": "244129b990b7ad293d67965562e54ad39b3375d4acb94020e629fb44151b73e2", "t": "CLSDataStore", "n": 1710, "laws": 6, "ts": "2026-07-25 18:16 UTC"}
+{"id": "/documentation/createml/mldatatable/init(namedcolumns:)", "sha": "b30688589f33c5c48f149d59f3673d821f42426634895fc80547e8e0fa5606c1", "t": "init(namedColumns:)", "n": 317, "laws": 2, "ts": "2026-07-25 18:23 UTC"}
+{"id": "/documentation/iokit/1514274-ioconnectcallstructmethod", "sha": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855", "t": "IOConnectCallStructMethod(_:_:_:_:_:_:)", "n": 0, "laws": 0, "ts": "2026-07-25 18:26 UTC"}

@@ -14,3 +14,40 @@
 {"id": "/documentation/CarPlay", "law": "Use the CarPlay framework to create an in-car experience for your app."}
 {"id": "/documentation/CarPlay", "law": "You can use other technologies to drive portions of your app’s CarPlay interface."}
 {"id": "/documentation/CarPlay", "law": "VoIP apps can use to manage incoming and outgoing calls, often in combination with SiriKit call support."}
+{"id": "/documentation/CarPlay/CPListTemplate", "law": "Use the list template to display a list of items, grouped into one or more sections."}
+{"id": "/documentation/CarPlay/CPListTemplate", "law": "If your list displays hierarchical data, use the handler to add templates to the navigation hierarchy."}
+{"id": "/documentation/CarPlay/CPListTemplate", "law": "At runtime, use to determine the maximum number of sections your list can display."}
+{"id": "/documentation/CarPlay/CPListTemplate", "law": "Use to determine the maximum number of items across all sections that your list can display."}
+{"id": "/documentation/CarPlay/CPListTemplate", "law": "Food-ordering apps must not exceed two levels."}
+{"id": "/documentation/CarPlay/CPListTemplate", "law": "For audio and communication apps, CarPlay provides an assistant cell to let users interact with your app using Siri_._ To enable the assistant cell, your app must support specific Siri intents: To play audio, audio apps must support ."}
+{"id": "/documentation/CarPlay/CPListTemplate", "law": "To make phone calls, communication apps must support ."}
+{"id": "/documentation/CarPlay/CPListTemplate", "law": "To enable the assistant cell in your list template, use and provide the required configuration."}
+{"id": "/documentation/CarPlay/CPNowPlayingTemplate", "law": "When enabling your Now Playing template’s Album-Artist and Up Next buttons, you must create an object that implements the protocol and register it as an observer by calling the template’s method."}
+{"id": "/documentation/CarPlay/requesting-carplay-entitlements", "law": "To integrate with CarPlay, you must request the appropriate entitlement for your app’s category at and agree to the CarPlay Entitlement Addendum."}
+{"id": "/documentation/CarPlay/requesting-carplay-entitlements", "law": "After you receive the entitlement, you need to configure your Xcode project to use it, which involves several steps."}
+{"id": "/documentation/CarPlay/requesting-carplay-entitlements", "law": "Your project’s code signing settings also require minor changes."}
+{"id": "/documentation/CarPlay/requesting-carplay-entitlements", "law": "Update the App ID of your CarPlay-enabled app to include the necessary CarPlay capabilities by following these steps: Complete the actions in to create an App ID if you don’t already have one."}
+{"id": "/documentation/CarPlay/requesting-carplay-entitlements", "law": "Enable the CarPlay capabilities that your app requires."}
+{"id": "/documentation/CarPlay/requesting-carplay-entitlements", "law": "Configure your Xcode project to use the new provisioning profile when it code signs your CarPlay-enabled app by following these steps: In Xcode, select your project in the Project navigator."}
+{"id": "/documentation/CarPlay/requesting-carplay-entitlements", "law": "Use an file to specify the entitlements that your CarPlay-enabled app requires."}
+{"id": "/documentation/CarPlay/requesting-carplay-entitlements", "law": "They must match the capabilities you add to your App ID."}
+{"id": "/documentation/CarPlay/requesting-carplay-entitlements", "law": "Use the search box to find the Code Signing Entitlements setting."}
+{"id": "/documentation/CarPlay/requesting-carplay-entitlements", "law": "In Xcode, use a simulator to build and run your project."}
+{"id": "/documentation/carplay", "law": "Use the CarPlay framework to create an in-car experience for your app."}
+{"id": "/documentation/carplay", "law": "You can use other technologies to drive portions of your app’s CarPlay interface."}
+{"id": "/documentation/carplay", "law": "VoIP apps can use to manage incoming and outgoing calls, often in combination with SiriKit call support."}
+{"id": "/documentation/carplay/cpnowplayingtemplate", "law": "When enabling your Now Playing template’s Album-Artist and Up Next buttons, you must create an object that implements the protocol and register it as an observer by calling the template’s method."}
+{"id": "/documentation/CarPlay/CPGridTemplate", "law": "Use this template to display a grid of items as buttons."}
+{"id": "/documentation/carplay/cpmaptemplate", "law": "Use these buttons to provide users access to actions, such as entering panning mode or zooming in and out on the map."}
+{"id": "/documentation/carplay/cpsearchtemplate", "law": "Use this template to provide the ability to search for a destination."}
+{"id": "/documentation/carplay/cpsearchtemplate", "law": "To use a search template, create an instance of and set its to an object that conforms to the protocol."}
+{"id": "/documentation/carplay/cpsearchtemplate", "law": "As the user enters text into the search field, the system calls the delegate method , indicating that your app should retrieve the search result."}
+{"id": "/documentation/carplay/cptemplateapplicationdashboardscene", "law": "Use the dashboard controller the scene provides to supply shortcut buttons to display when there’s no active navigation session, further customizing you app’s presence on the CarPlay Dashboard."}
+{"id": "/documentation/carplay/cptemplateapplicationdashboardscene", "law": "You don’t create an instance of the dashboard scene directly."}
+{"id": "/documentation/carplay/cptemplateapplicationdashboardscenedelegate", "law": "You don’t create instances of your dashboard scene delegate directly."}
+{"id": "/documentation/carplay/cpvoicecontroltemplate", "law": "CarPlay navigation apps must show a voice control indicator during audio input by presenting a voice control template."}
+{"id": "/documentation/CarPlay/CPPointOfInterestTemplate", "law": "You must create an object that implements the protocol and set it as the template’s delegate using the property."}
+{"id": "/documentation/carplay/cpinformationtemplate", "law": "You use an information template to display informative, actionable content to the user."}
+{"id": "/documentation/carplay/cpinformationtemplate", "law": "You can’t use in apps with the audio entitlement."}
+{"id": "/documentation/carplay/cppointofinteresttemplate", "law": "You must create an object that implements the protocol and set it as the template’s delegate using the property."}
+{"id": "/documentation/carplay/cptextbutton", "law": "You use a text button to attach custom actions to an instance of or ."}

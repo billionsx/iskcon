@@ -7,3 +7,5 @@
 {"id": "/documentation/CoreSpotlight/adding-your-app-s-content-to-spotlight-indexes", "law": "The following example creates a named index for the app’s main content and a second index for content that requires extra security: Use the index only for prototyping and testing your code."}
 {"id": "/documentation/CoreSpotlight/adding-your-app-s-content-to-spotlight-indexes", "law": "Don’t use it to store content in the production version of your app."}
 {"id": "/documentation/CoreSpotlight/adding-your-app-s-content-to-spotlight-indexes", "law": "You can specify any information you want for the client data, but must limit the total size of it to 250 bytes."}
+{"id": "/documentation/CoreSpotlight/CSSearchableItemAttributeSet", "law": "During the indexing process, you create objects and use a to fill in the attributes for that item."}
+{"id": "/documentation/CoreSpotlight/CSSearchableItemAttributeSet", "law": "You don’t have to provide values for every attribute."}

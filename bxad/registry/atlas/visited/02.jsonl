@@ -7,3 +7,9 @@
 {"id": "/documentation/Testing", "sha": "94fa043fbf8b51f2fe0a49095a5ca690fbb009983e3c3b9ca7717f472914642f", "t": "Swift Testing", "n": 1421, "laws": 0, "ts": "2026-07-24 18:54 UTC"}
 {"id": "/documentation/WebKit", "sha": "550f5d8040ed1f279316a098266eba90c77c2837fb8cfe33568e222b69d2937d", "t": "WebKit", "n": 1066, "laws": 1, "ts": "2026-07-24 18:54 UTC"}
 {"id": "/documentation/avfaudio/adding-synthesized-speech-to-calls", "sha": "56fdd0df08a1a91ff1d94df2f0ab53fd39868fdcc57f9e857491a28f32d82e78", "t": "Adding synthesized speech to calls", "n": 4451, "laws": 10, "ts": "2026-07-24 19:00 UTC"}
+{"id": "/documentation/appclip/testing-the-launch-experience-of-your-app-clip", "sha": "9ca1802f2fc0906ecc69e5829a71f9f5975e695584dd05fbc5accf95775dd9b5", "t": "Testing the launch experience of your App Clip", "n": 11062, "laws": 10, "ts": "2026-07-25 18:07 UTC"}
+{"id": "/documentation/appkit/nstreenode", "sha": "fbef4fec474f0ce45b6053dd54b77022b173ed7207741e8055191146cb21cf98", "t": "NSTreeNode", "n": 435, "laws": 0, "ts": "2026-07-25 18:10 UTC"}
+{"id": "/documentation/classkitui", "sha": "f2700ac2874e14ac7357d87e684f7052fdb308e65a2ea91ddfeac91458dc26c5", "t": "ClassKit UI", "n": 1217, "laws": 2, "ts": "2026-07-25 18:16 UTC"}
+{"id": "/documentation/clockkit/clkcomplication/identifier", "sha": "38ba46986c2e7f2524dae7f44b8d59aa924c8100aff3321449fa05cffdc44fc1", "t": "identifier", "n": 818, "laws": 2, "ts": "2026-07-25 18:16 UTC"}
+{"id": "/documentation/FileProvider/NSFileProviderCustomAction", "sha": "51cc7b0836f40c93b3656f656faa07af1f3da4fe7a0e736f2e434fa4ee55a0f2", "t": "NSFileProviderCustomAction", "n": 410, "laws": 0, "ts": "2026-07-25 18:29 UTC"}
+{"id": "/documentation/Xcode/adding-capabilities-to-your-app", "sha": "95bc325fe0d0a1dbb8ceb20d859bd25a9855c810fdccc49131ddd5b350a0993e", "t": "Adding capabilities to your app", "n": 3484, "laws": 4, "ts": "2026-07-25 18:30 UTC"}

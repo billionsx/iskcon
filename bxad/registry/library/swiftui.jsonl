@@ -184,3 +184,65 @@
 {"id": "/documentation/SwiftUI/Slider", "law": "The ends of the track represent the minimum and maximum possible values."}
 {"id": "/documentation/SwiftUI/Slider", "law": "You can also use a parameter to provide incremental steps along the path of the slider."}
 {"id": "/documentation/SwiftUI/Slider", "law": "The following example shows this approach, and also adds optional minimum and maximum value labels."}
+{"id": "/documentation/SwiftUI/App", "law": "Implement the required computed property to define the app’s content: Precede the structure’s declaration with the attribute to indicate that your custom protocol conformer provides the entry point into your app."}
+{"id": "/documentation/SwiftUI/App-organization", "law": "Create a type that conforms to the protocol and use it to enumerate the that represent aspects of your app’s user interface."}
+{"id": "/documentation/SwiftUI/WindowGroup", "law": "Use a as a container for a view hierarchy that your app presents."}
+{"id": "/documentation/SwiftUI/WindowGroup", "law": "To enable an iPadOS app to simultaneously display multiple windows, be sure to include the key with a value of in the dictionary of your app’s Information Property List."}
+{"id": "/documentation/SwiftUI/WindowGroup", "law": "For document-based apps, use to define windows instead."}
+{"id": "/documentation/SwiftUI/WindowGroup", "law": "For example, you can give the mail viewer scene from the previous example an identifier: Elsewhere in your code, you can use the action from the environment to create a new window from the group: Be sure to use unique strings for identifiers that you apply to window groups in your app."}
+{"id": "/documentation/SwiftUI/WindowGroup", "law": "For example, you can define a button that opens a message by passing the message’s identifier: Be sure that the type you present conforms to both the and protocols."}
+{"id": "/documentation/SwiftUI/WindowGroup", "law": "Also, prefer lightweight data for the presentation value."}
+{"id": "/documentation/SwiftUI/WindowGroup", "law": "To avoid receiving a value, you can optionally specify a default value in your window group initializer."}
+{"id": "/documentation/SwiftUI/WindowGroup", "law": "If you don’t provide a title for a window, the system refers to the window using the app’s name instead."}
+{"id": "/documentation/SwiftUI/WindowGroup", "law": "To programmatically distinguish between windows that present the same type of data, like when you use a as the identifier for more than one model type, add the parameter to the group’s initializer to provide a unique string identifier: Then use both the identifer and a value to open the window:"}
+{"id": "/documentation/SwiftUI/App/init()", "law": "Swift synthesizes a default initializer for structures that don’t provide one."}
+{"id": "/documentation/SwiftUI/HStack", "law": "Use the regular when you have a small number of subviews or don’t want the delayed rendering behavior of the “lazy” version."}
+{"id": "/documentation/SwiftUI/HStack", "law": "The following example shows a simple horizontal stack of five text views: If you need a horizontal stack that conforms to the protocol, like when you want to create a conditional layout using , use instead."}
+{"id": "/documentation/SwiftUI/View/appEntityIdentifier(_:)", "law": "Use this modifier to make your app entity discoverable by Apple Intelligence and Siri and provide additional context to the system when the view appears onscreen."}
+{"id": "/documentation/SwiftUI/TextEditor", "law": "You create a text editor by adding a instance to the body of your view, and initialize it by passing in a to a string variable in your app: To style the text, use the standard view modifiers to configure a system font, set a custom font, or change the color of the view’s text."}
+{"id": "/documentation/SwiftUI/TextEditor", "law": "In this example, the view renders the editor’s text in gray with a custom font: If you want to change the spacing or font scaling aspects of the text, you can use modifiers like , , and to configure how the view displays text depending on the space constraints."}
+{"id": "/documentation/SwiftUI/TextEditor", "law": "Use to configure visibility of system text formatting controls."}
+{"id": "/documentation/SwiftUI/ImmersionStyle/full", "law": "Use the scene modifier to specify this style for an ."}
+{"id": "/documentation/SwiftUI/ImmersionStyle/full", "law": "In immersion, windows always render in front of virtual content, no matter how someone positions the window or the content."}
+{"id": "/documentation/SwiftUI/ImmersionStyle/full", "law": "This helps people to avoid losing track of windows behind virtual content when passthrough is off."}
+{"id": "/documentation/SwiftUI/ImmersiveSpace", "law": "Use an immersive space as a container for a view hierarchy that your app presents."}
+{"id": "/documentation/SwiftUI/ImmersiveSpace", "law": "The hierarchy that you declare as the immersive space’s content serves as a template for it: If you want to create a bounded scene instead, use one of the types that creates a window or a volume, like or ."}
+{"id": "/documentation/SwiftUI/ImmersiveSpace", "law": "By default, immersive spaces use the style which places virtual content in a person’s surroundings."}
+{"id": "/documentation/SwiftUI/ImmersiveSpace", "law": "For example, you can completely control the visual experience using the immersion style: You can change the immersion style after presenting the immersive space by changing the modifier’s input, although you can only use one of the values that you specify in the modifier’s second parameter."}
+{"id": "/documentation/SwiftUI/ImmersiveSpace", "law": "For other styles, windows always render in front of virtual content, no matter how someone positions the window or the content."}
+{"id": "/documentation/SwiftUI/ImmersiveSpace", "law": "This helps people to avoid losing track of windows behind virtual content when passthrough is partially or completely off."}
+{"id": "/documentation/SwiftUI/ImmersiveSpace", "law": "For example, you can label the solar system view from the previous example: Elsewhere in your code, you use the environment value to get the instance of the structure for a given ."}
+{"id": "/documentation/SwiftUI/ImmersiveSpace", "law": "Be sure to close the open immersive space before opening another one."}
+{"id": "/documentation/SwiftUI/ImmersiveSpace", "law": "You don’t need to specify an identifier when dismissing an immersive space because there can only be one immersive space open at a time."}
+{"id": "/documentation/SwiftUI/ImmersiveSpace", "law": "Use the key together with a value that indicates one of the mixed, full, or progressive styles."}
+{"id": "/documentation/SwiftUI/ShareLink", "law": "For example, you can use a to display a link with a custom icon: If you only wish to customize the link’s title, you can use one of the convenience initializers that takes a string and creates a for you: The link can share any content that is ."}
+{"id": "/documentation/SwiftUI/ShareLink", "law": "For example, you can use to resolve your own type to a framework type: Sometimes the content that your app shares isn’t immediately available."}
+{"id": "/documentation/SwiftUI/ShareLink", "law": "You can use or when you need an asynchronous operation, like a network request, to retrieve and prepare the content."}
+{"id": "/documentation/SwiftUI/ShareLink", "law": "If you don’t see a particular sharing service in the presented , try adding a to the type’s conformance."}
+{"id": "/documentation/SwiftUI/ShareLink", "law": "A preview isn’t required when sharing URLs or non-attributed strings."}
+{"id": "/documentation/SwiftUI/NSViewRepresentable", "law": "Use an instance to create and manage an object in your SwiftUI interface."}
+{"id": "/documentation/SwiftUI/NSViewRepresentable", "law": "Adopt this protocol in one of your app’s custom instances, and use its methods to create, update, and tear down your view."}
+{"id": "/documentation/SwiftUI/NSViewRepresentable", "law": "The creation and update processes parallel the behavior of SwiftUI views, and you use them to configure your view with your app’s current state information."}
+{"id": "/documentation/SwiftUI/NSViewRepresentable", "law": "Use the teardown process to remove your view cleanly from your SwiftUI."}
+{"id": "/documentation/SwiftUI/NSViewRepresentable", "law": "For example, you might use the teardown process to notify other objects that the view is disappearing."}
+{"id": "/documentation/SwiftUI/NSViewRepresentable", "law": "When you want your view controller to coordinate with other SwiftUI views, you must provide a object to facilitate those interactions."}
+{"id": "/documentation/SwiftUI/NSViewRepresentable", "law": "For example, you use a coordinator to forward target-action and delegate messages from your view controller to any SwiftUI views."}
+{"id": "/documentation/SwiftUI/NSViewRepresentable", "law": "Don’t directly set these layout-related properties on the view managed by an instance from your own code because that conflicts with SwiftUI and results in undefined behavior."}
+{"id": "/documentation/SwiftUI/NSViewRepresentable", "law": "A wrapper that you use to integrate an AppKit view into your SwiftUI view hierarchy."}
+{"id": "/documentation/SwiftUI/View/body-8kl5o", "law": "When you implement a custom view, you must implement a computed property to provide the content for your view."}
+{"id": "/documentation/SwiftUI/EnvironmentValues/openImmersiveSpace", "law": "Use this environment value to get the instance of the structure for a given ."}
+{"id": "/documentation/SwiftUI/EnvironmentValues/openImmersiveSpace", "law": "For best performance, use lightweight data for the presentation value."}
+{"id": "/documentation/SwiftUI/ImmersionStyle/mixed", "law": "Use the scene modifier to specify this style for an ."}
+{"id": "/documentation/SwiftUI/ImmersionStyle/mixed", "law": "However, this is the default immersion style if you don’t specify one."}
+{"id": "/documentation/SwiftUI/ImmersionStyle/progressive", "law": "People can interactively adjust the size of the portal by turning the Digital Crown, including down to a minimum amount of immersion defined by the system and up to the point where the portal fully covers passthrough."}
+{"id": "/documentation/SwiftUI/ImmersionStyle/progressive", "law": "If someone tries to reduce the portal size below the minimum value, the portal smoothly bounces back to the minimum size."}
+{"id": "/documentation/SwiftUI/ImmersionStyle/progressive", "law": "The portal’s behavior at the maximum size matches the behavior of the immersion style, including the configurable visibility of the viewer’s upper limbs."}
+{"id": "/documentation/SwiftUI/ImmersionStyle/progressive", "law": "Use the scene modifier to specify this style for an : The immersion style affects how windows interact with virtual objects in the environment."}
+{"id": "/documentation/SwiftUI/ImmersionStyle/progressive", "law": "In immersion, windows always render in front of virtual content, no matter how someone positions the window or the content."}
+{"id": "/documentation/SwiftUI/ImmersionStyle/progressive", "law": "This helps people avoid losing track of windows behind virtual content when passthrough is off."}
+{"id": "/documentation/SwiftUI/ScenePhase", "law": "You can use that opportunity to free any resources: An indication of a scene’s operational state."}
+{"id": "/documentation/SwiftUI/View/hoverEffect(in:isEnabled:body:)", "law": "You use this modifier to describe how a view should change when hovered."}
+{"id": "/documentation/SwiftUI/View/hoverEffect(in:isEnabled:body:)", "law": "The given block is provided an empty effect that you use to compose effects, as well as a boolean describing which phase is being requested."}
+{"id": "/documentation/SwiftUI/View/hoverEffect(in:isEnabled:body:)", "law": "In the following example, the will have a scale of 1.0 when inactive, and then scale to 1.1 when hovered: Use the modifier to specify how visual changes should be animated."}
+{"id": "/documentation/SwiftUI/View/hidden()", "law": "Use this modifier if you want to include a view for layout purposes, but don’t want it to display."}
+{"id": "/documentation/SwiftUI/View/hidden()", "law": "If you want to conditionally include a view in the view hierarchy, use an statement instead: Depending on the current value of the state variable in the example above, controlled by the instance, SwiftUI draws the circle or completely omits it from the layout."}

@@ -4,3 +4,9 @@
 {"id": "/documentation/arkit/arplaneanchor/extent", "sha": "2e92f753d672a93fbe9f6f4c90aac348e65e8a3ed5c69d644eaa8b43ab99d183", "t": "extent", "n": 239, "laws": 0, "ts": "2026-07-24 18:59 UTC"}
 {"id": "/documentation/avfoundation/avcapturedevice/userpreferredcamera", "sha": "c2fb849a0f790bcfb42da6f043d841f300f2916e6e77dcf9de9b51f36b7cb83c", "t": "userPreferredCamera", "n": 574, "laws": 2, "ts": "2026-07-24 19:05 UTC"}
 {"id": "/documentation/accelerate/vimageconvert_argb8888to420yp8_cbcr8(_:_:_:_:_:_:)", "sha": "86e78ac61a8dec2fd84ce6023c491ad34d61819b41e8507fff821798b8d66add", "t": "vImageConvert_ARGB8888To420Yp8_CbCr8(_:_:_:_:_:_:)", "n": 160, "laws": 0, "ts": "2026-07-25 04:20 UTC"}
+{"id": "/documentation/accelerate/bnnsgraph/builder/tensor", "sha": "f7590d627ffb784dd87be7484ac2d6bb45a82bcb10e5291caf7feab078f80c6c", "t": "BNNSGraph.Builder.Tensor", "n": 3224, "laws": 3, "ts": "2026-07-25 18:04 UTC"}
+{"id": "/documentation/alarmkit/alarmmanager", "sha": "63b64696ab2cca4c53e8cf40a73a44a783c9337191838c1bd474e1ce93eeec77", "t": "AlarmManager", "n": 759, "laws": 0, "ts": "2026-07-25 18:06 UTC"}
+{"id": "/documentation/appkit/writing-tools", "sha": "b1f91eff508a4a44c748e34841f76496639c3c6627c00984c6b12cf85fd29559", "t": "Writing Tools", "n": 1178, "laws": 0, "ts": "2026-07-25 18:09 UTC"}
+{"id": "/documentation/callkit", "sha": "b40e0b3b1ac8a45f1df088c87517bcd76700792a699a034f28888e827c553950", "t": "CallKit", "n": 3037, "laws": 7, "ts": "2026-07-25 18:15 UTC"}
+{"id": "/documentation/createml/mlregressor/write(to:metadata:)", "sha": "5d983534c7ee8f60274608e088fb1b04a3520e720650c68febb23c0b334d15e7", "t": "write(to:metadata:)", "n": 49, "laws": 1, "ts": "2026-07-25 18:24 UTC"}
+{"id": "/documentation/Combine/Publisher/scan(_:_:)", "sha": "528d4731227e856962a129784887f63f1b278b2d252eff8971dc9a56311b18c4", "t": "scan(_:_:)", "n": 545, "laws": 1, "ts": "2026-07-25 18:24 UTC"}

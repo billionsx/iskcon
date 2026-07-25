@@ -16,3 +16,4 @@
 {"id": "/documentation/Network", "law": "Continue to use , which is built upon this framework, for loading HTTP- and URL-based resources."}
 {"id": "/documentation/Network", "law": "watchOS supports Network framework for specific use cases."}
 {"id": "/documentation/Network", "law": "Configure protocol options to use with connections and listeners, and inspect the results of protocol handshakes."}
+{"id": "/documentation/Network/NWEndpoint/Port", "law": "A port number you use along with a host to identify a network endpoint."}

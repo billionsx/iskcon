@@ -232,3 +232,15 @@
 {"id": "/documentation/updates/xpc", "law": "Use to create clients that connect to servers and exchange messages."}
 {"id": "/documentation/updates/xpc", "law": "For C and Objective-C projects, use the corresponding and APIs."}
 {"id": "/documentation/updates/xpc", "law": "In Xcode, use the updated XPC services target template to choose whether you want to use the high-level or the low-level APIs."}
+{"id": "/documentation/Updates/CallKit", "law": "Configure a call to include an option to use the system’s translation capabilities with a ."}
+{"id": "/documentation/Updates/FinanceKit", "law": "Use the FinanceKit API to get access to on device financial data."}
+{"id": "/documentation/Updates/FoundationModels", "law": "Use the improved error types, like for model-specific errors, for on-device Apple Foundation model errors, and for errors related to the session but not the model."}
+{"id": "/documentation/Updates/FoundationModels", "law": "Use the latest on-device that follows instructions more accurately and produces better results, including in complex scenarios."}
+{"id": "/documentation/Updates/FoundationModels", "law": "Adopt the protocol to use any large language model — server or on-device — with the Foundation Models framework."}
+{"id": "/documentation/Updates/FoundationModels", "law": "Use to access more reasoning capabilities and a larger context size."}
+{"id": "/documentation/Updates/FoundationModels", "law": "Use the updated to get detailed insight into the complex workflows you build."}
+{"id": "/documentation/Updates/FoundationModels", "law": "Use and to integrate on-device models with the Foundation Models framework."}
+{"id": "/documentation/Updates/FoundationModels", "law": "Use the to access the on-device foundation model at the core of Apple Intelligence."}
+{"id": "/documentation/Updates/FoundationModels", "law": "Use the latest on-device large language model that improves instruction-following and tool-calling abilities."}
+{"id": "/documentation/Updates/FoundationModels", "law": "Use the property to get the maximum context size — in tokens — that the supports."}
+{"id": "/documentation/Updates/FoundationModels", "law": "Use the macro in Xcode to view an estimate of the usage of 4,096 tokens in the available context window."}

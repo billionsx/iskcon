@@ -31,3 +31,7 @@
 {"id": "/documentation/StoreKit/understanding-storekit-workflows", "law": "The design of this sample doesn’t require any special setup, or even the creation of products in App Store Connect; it uses StoreKit Testing in Xcode and the Transaction Manager window in Xcode to test In-App Purchase."}
 {"id": "/documentation/StoreKit/understanding-storekit-workflows", "law": "For more information on the product types that App Store Connect supports, see The transactions this app demonstrates don’t get information from App Store Connect and don’t incur charges."}
 {"id": "/documentation/StoreKit", "law": "Use the StoreKit framework to provide the following features and services for your apps and In-App Purchases: The StoreKit framework also provides functionality for , , , and ."}
+{"id": "/documentation/StoreKit/AppTransaction/originalAppVersion", "law": "Use this value to determine which app version the customer first purchased or downloaded."}
+{"id": "/documentation/StoreKit/AppTransaction/originalAppVersion", "law": "In the sandbox testing environment, the value is always ."}
+{"id": "/documentation/StoreKit/testing-age-assurance-in-sandbox", "law": "Make sure your app implements age restrictions and processes permission revocation as parents or guardians instruct."}
+{"id": "/documentation/StoreKit/testing-age-assurance-in-sandbox", "law": "Calling for an adult user throws this error because they don’t meet the requirements for parental permission requests."}

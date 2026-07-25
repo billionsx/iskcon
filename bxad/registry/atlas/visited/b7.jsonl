@@ -6,3 +6,6 @@
 {"id": "/documentation/QuickLookUI", "sha": "b55bbefb50c6c29dc3c8308af67b6a662fb0b5471ce09e10013929d8f35fe038", "t": "Quick Look UI", "n": 1579, "laws": 2, "ts": "2026-07-24 18:53 UTC"}
 {"id": "/documentation/UIKit/UITapGestureRecognizer", "sha": "461cb1487089b3ff15ea044bbd7e473f94f3757e8a5768a9d8f3a0c7ad8dfc57", "t": "UITapGestureRecognizer", "n": 1058, "laws": 2, "ts": "2026-07-24 18:56 UTC"}
 {"id": "/documentation/Compression/compression_stream", "sha": "853b8b857f92519e34a9a969e4a3cd9aef9369d6232d87fc2d652994d1d6b915", "t": "compression_stream", "n": 909, "laws": 1, "ts": "2026-07-25 04:22 UTC"}
+{"id": "/documentation/accessibility/wwdc22_challenge_learn_switch_control_through_gaming", "sha": "ec5af45abf34081c9aaed82b4a6a774fbf4d24d695941effc85a469d417e5b79", "t": "WWDC22 Challenge: Learn Switch Control through gaming", "n": 1484, "laws": 5, "ts": "2026-07-25 18:05 UTC"}
+{"id": "/documentation/CoreBluetooth/CBPeripheralManagerDelegate/peripheralManagerDidUpdateState(_:)", "sha": "05eb93f81273b6d9f31f041a8b1cddcb09985aaafe929b23dedc8805c3c96d2c", "t": "peripheralManagerDidUpdateState(_:)", "n": 812, "laws": 3, "ts": "2026-07-25 18:19 UTC"}
+{"id": "/documentation/SharedWithYou/SWCollaborationView", "sha": "e6af2493fe76ea6b945c822ddbce0d3ae018465ba7186560ae05c01ab884004f", "t": "SWCollaborationView", "n": 955, "laws": 0, "ts": "2026-07-25 18:20 UTC"}

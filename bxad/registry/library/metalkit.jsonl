@@ -8,3 +8,7 @@
 {"id": "/documentation/MetalKit/MTKView", "law": "After rendering the contents, you must present the drawable to update the view’s contents."}
 {"id": "/documentation/MetalKit/MTKView", "law": "Don’t wait for the command buffer to finish executing before registering the drawable’s presentation."}
 {"id": "/documentation/MetalKit/MTKViewDelegate", "law": "Use a delegate to provide a drawing method to a object and respond to rendering events without subclassing the class."}
+{"id": "/documentation/MetalKit/MTKView/currentDrawable", "law": "If all drawable objects are in use, the value of this property is ."}
+{"id": "/documentation/MetalKit/MTKView/currentDrawable", "law": "Your app should check that isn’t before attempting to draw."}
+{"id": "/documentation/MetalKit/MTKView/currentDrawable", "law": "Use a object to render into the drawable’s texture and present it for display (typically registered using the method of a command buffer)."}
+{"id": "/documentation/MetalKit/MTKView/currentDrawable", "law": "The drawable to use for the current frame."}

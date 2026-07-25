@@ -5,3 +5,6 @@
 {"id": "/documentation/BackgroundTasks", "sha": "014f1b54fed9e28e1b16edad467b9a6cb69bcaace82414a13d4ba7d85b491fe0", "t": "Background Tasks", "n": 1356, "laws": 2, "ts": "2026-07-24 18:49 UTC"}
 {"id": "/documentation/Foundation/NSNotification/Name-swift.struct/GCControllerDidConnect", "sha": "e753eb754787ed80a1721fce36751e8717f384d80e78829ada81283c694dbf37", "t": "GCControllerDidConnect", "n": 203, "laws": 0, "ts": "2026-07-24 18:58 UTC"}
 {"id": "/documentation/UIKit/UIViewController/present(_:animated:completion:)", "sha": "2443ec843af0e2186925083374b663d8b7e8675aa6d87dddbaa6ab0b2375bdbe", "t": "present(_:animated:completion:)", "n": 1494, "laws": 2, "ts": "2026-07-24 19:07 UTC"}
+{"id": "/documentation/appkit/nstabview", "sha": "b787ee874cac102f0c6e79ce706cf4d008f164983f0435176b8e25b32f98faa1", "t": "NSTabView", "n": 1312, "laws": 0, "ts": "2026-07-25 18:10 UTC"}
+{"id": "/documentation/authenticationservices/asauthorizationappleidcredential", "sha": "a64e7239f3b38f0e5322c49009c815ac5780053144425bc645f84a021ec0b63b", "t": "ASAuthorizationAppleIDCredential", "n": 343, "laws": 0, "ts": "2026-07-25 18:14 UTC"}
+{"id": "/documentation/groupactivities/systemcoordinator", "sha": "0ff4b9973c3b34e3e89a4c9875cf80bd9719e8aadb5828ee4d321e4783c82f22", "t": "SystemCoordinator", "n": 2067, "laws": 3, "ts": "2026-07-25 18:34 UTC"}

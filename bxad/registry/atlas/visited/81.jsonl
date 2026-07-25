@@ -5,3 +5,7 @@
 {"id": "/documentation/AVFoundation/configuring-your-app-for-media-playback", "sha": "6996a11333748ade9e28be7bebc36636fb8b74fbcbbecbc6b3527adfc28938ad", "t": "Configuring your app for media playback", "n": 4067, "laws": 10, "ts": "2026-07-24 19:07 UTC"}
 {"id": "/documentation/AVFoundation/setting-up-a-capture-session", "sha": "d95309c8fb326acfc13f085730437203daf03b42048284abbe092b6731445026", "t": "Setting up a capture session", "n": 3060, "laws": 6, "ts": "2026-07-25 04:23 UTC"}
 {"id": "/documentation/ImageIO/CGImagePropertyOrientation/up", "sha": "c5aa50948fad53256a85bbb4703e9b42903a08f9085abb52a92804cb3734fbc0", "t": "CGImagePropertyOrientation.up", "n": 457, "laws": 0, "ts": "2026-07-25 04:23 UTC"}
+{"id": "/documentation/accessorysetupkit", "sha": "94918c40c87efc988239e21e2b704717ba5aee0077552c43dde4ef1e72a3ec01", "t": "AccessorySetupKit", "n": 1423, "laws": 3, "ts": "2026-07-25 18:05 UTC"}
+{"id": "/documentation/cinematic/cnscript-9e1zn", "sha": "31075d886db8f7706e598e7adbdd1a297f612ef1eff9ad72dffb520b6d00db32", "t": "CNScript", "n": 1380, "laws": 0, "ts": "2026-07-25 18:16 UTC"}
+{"id": "/documentation/UIKit/UIScreen/currentEDRHeadroom", "sha": "442f3540f31d35fc5b042d32065100147037e6e63ae60e12be77eaf9e72c18b1", "t": "currentEDRHeadroom", "n": 485, "laws": 0, "ts": "2026-07-25 18:21 UTC"}
+{"id": "/documentation/FileProvider/NSFileProviderManager/remove(_:mode:completionHandler:)", "sha": "3f83cb1d59dfcc78b12537006164d62d0f4c8b51755b96e34542e1674771d169", "t": "remove(_:mode:completionHandler:)", "n": 343, "laws": 0, "ts": "2026-07-25 18:29 UTC"}

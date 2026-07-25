@@ -67,3 +67,178 @@
 {"id": "/documentation/AppIntents/making-app-entities-available-in-spotlight", "law": "Each method also receives a type you can use to determine which of your app’s searchable indexes to update."}
 {"id": "/documentation/AppIntents/making-app-entities-available-in-spotlight", "law": "When an open intent is present, Spotlight can use it to provide that behavior."}
 {"id": "/documentation/AppIntents/making-app-entities-available-in-spotlight", "law": "When a search query yields more than ten results, Spotlight can use this intent to launch your app and display the results in your custom search interface."}
+{"id": "/documentation/AppIntents/AppEntity", "law": "To use a data model object to app intents, update it to conform to the protocol."}
+{"id": "/documentation/AppIntents/AppEntity/defaultQuery-4khg7", "law": "The default query to use to retrieve entity property instances."}
+{"id": "/documentation/AppIntents/AppIntent", "law": "The protocol defines the interface you use to make your app’s actions discoverable by Apple Intelligence and Siri, the Shortcuts app, and other system experiences."}
+{"id": "/documentation/AppIntents/AppIntent", "law": "In your type, use the method to perform the action and return a result back to the system."}
+{"id": "/documentation/AppIntents/AppIntent", "law": "If you require input from the person performing the action, add one or more variables to your type and apply the property wrapper to each."}
+{"id": "/documentation/AppIntents/AppIntent", "law": "For example, an app intent to start a workout might require the person to specify which workout they want."}
+{"id": "/documentation/AppIntents/AppIntent", "law": "If your app intent requires app-specific data to perform its action, apply the property wrapper to any variables with that data."}
+{"id": "/documentation/AppIntents/AppIntent", "law": "The intent requires the person to specify the album name at order time."}
+{"id": "/documentation/AppIntents/AppIntent", "law": "For example, the intent requires conformance to the protocol and a property with an type for the photo album."}
+{"id": "/documentation/AppIntents/AppIntent", "law": "An interface you use to express app-specific actions and make them available to the rest of the system."}
+{"id": "/documentation/AppIntents/AppIntent/perform()", "law": "You can use the result to tell the system to perform additional actions."}
+{"id": "/documentation/AppIntents/AppIntent/perform()", "law": "Use your implementation to perform the action using the provided information and deliver a result back to the system."}
+{"id": "/documentation/AppIntents/AppIntent/perform()", "law": "At any point in your implementation, you can also use methods of the protocol to request confirmation or ask someone to choose from a set of options you provide."}
+{"id": "/documentation/AppIntents/AppShortcut", "law": "Machine learning models use this data when training to help improve the App Shortcuts experience."}
+{"id": "/documentation/AppIntents/AppShortcutsProvider", "law": "Machine learning models use this data when training to help improve the App Shortcuts experience."}
+{"id": "/documentation/AppIntents/EntityPropertyQuery", "law": "Then you can use those in to construct the correct to fetch entities."}
+{"id": "/documentation/AppIntents/EntityStringQuery", "law": "The value against which entities are matched typically represents the name a user would use to refer to a particular instance."}
+{"id": "/documentation/AppIntents/EnumerableEntityQuery", "law": "Use it in cases where the count of entities is relatively small, and their size in memory is limited."}
+{"id": "/documentation/AppIntents/EnumerableEntityQuery", "law": "For situations where there may be many thousands of entities, or where individual entities may become large in memory usage, use to allow better performance by fetching only the entities matching the criteria from your model."}
+{"id": "/documentation/AppIntents/EnumerableEntityQuery", "law": "An interface you use to provide a short list of entities that are relatively small in size."}
+{"id": "/documentation/AppIntents/IndexedEntity", "law": "Use the properties of this protocol to configure additional Spotlight metadata to accompany your app entity in the index."}
+{"id": "/documentation/AppIntents/IntentParameter/needsDisambiguationError(among:dialog:)", "law": "An error that should be thrown within the intent method."}
+{"id": "/documentation/AppIntents/OpenIntent", "law": "Use this intent to open both dynamic items such as and static items such as an with voice commands; for example, “Open ‘Vacation Ideas’” or “Open bookmarks”."}
+{"id": "/documentation/AppIntents/SiriTipView", "law": "Use a to display the spoken phrase for the intent you specify."}
+{"id": "/documentation/AppIntents/SiriTipView", "law": "Note that you must use the in an ."}
+{"id": "/documentation/AppIntents/URLRepresentableEntity", "law": "Note that you need to use a universal link for your URL representation, you can’t use a custom URL scheme."}
+{"id": "/documentation/AppIntents/URLRepresentableIntent", "law": "Note that you need to use a universal link for your URL representation, you can’t use a custom URL scheme."}
+{"id": "/documentation/appintents", "law": "Apps also have data, such as songs or photos, that people might want to use outside your app."}
+{"id": "/documentation/appintents", "law": "With App Intents, you express your app’s actions and data in a structured way that makes them discoverable by Apple Intelligence and provides deeper integration with system features people use frequently."}
+{"id": "/documentation/appintents", "law": ", , and can use your app’s actions to perform relevant tasks."}
+{"id": "/documentation/appintents", "law": "Use this framework to declare the actions your app performs as one or more app intents ."}
+{"id": "/documentation/appintents", "law": "During compilation, the compiler generates information that Apple Intelligence, Siri, and other system features need to discover and use your intents, entities, and app enum types."}
+{"id": "/documentation/appintents", "law": "Avoid deprecated classes and protocols in your apps."}
+{"id": "/documentation/appintents/app-intent-types", "law": "For example, use the protocol if your app intent launches your app and displays a specific item."}
+{"id": "/documentation/appintents/app-intents", "law": "For example, if your app intent launches your app and displays some content, use the protocol instead."}
+{"id": "/documentation/appintents/app-intents", "law": "If your app intent requires data to complete its action, specify those data requirements using parameters."}
+{"id": "/documentation/appintents/appintent", "law": "The protocol defines the interface you use to make your app’s actions discoverable by Apple Intelligence and Siri, the Shortcuts app, and other system experiences."}
+{"id": "/documentation/appintents/appintent", "law": "In your type, use the method to perform the action and return a result back to the system."}
+{"id": "/documentation/appintents/appintent", "law": "If you require input from the person performing the action, add one or more variables to your type and apply the property wrapper to each."}
+{"id": "/documentation/appintents/appintent", "law": "For example, an app intent to start a workout might require the person to specify which workout they want."}
+{"id": "/documentation/appintents/appintent", "law": "If your app intent requires app-specific data to perform its action, apply the property wrapper to any variables with that data."}
+{"id": "/documentation/appintents/appintent", "law": "The intent requires the person to specify the album name at order time."}
+{"id": "/documentation/appintents/appintent", "law": "For example, the intent requires conformance to the protocol and a property with an type for the photo album."}
+{"id": "/documentation/appintents/appintent", "law": "An interface you use to express app-specific actions and make them available to the rest of the system."}
+{"id": "/documentation/appintents/creating-your-first-app-intent", "law": "Similarly, people use the Shortcuts app to assemble workflows from the app intents that various apps make available."}
+{"id": "/documentation/appintents/creating-your-first-app-intent", "law": "As you build your app, create app intents for features that people might want to use from Siri or other parts of the system."}
+{"id": "/documentation/appintents/creating-your-first-app-intent", "law": "For common features that multiple apps share, the system provides templates to use when defining your app intent."}
+{"id": "/documentation/appintents/creating-your-first-app-intent", "law": "An app intent is a structure that implements the protocol, which defines the required behavior for all app intents."}
+{"id": "/documentation/appintents/creating-your-first-app-intent", "law": "You use this structure to provide the basic information about your app intent’s action, and to store the data and code you need to perform the action."}
+{"id": "/documentation/appintents/creating-your-first-app-intent", "law": "However, if you support app intents from one of the system-defined schemas, you can also use Xcode code completion to generate it for you."}
+{"id": "/documentation/appintents/creating-your-first-app-intent", "law": "To use Xcode code generation to create your initial type, type the domain you support followed by an underscore character and select an app intent from the list Xcode provides."}
+{"id": "/documentation/appintents/creating-your-first-app-intent", "law": "When you add this property wrapper manually, you’re responsible for adding any properties or methods the schema requires."}
+{"id": "/documentation/appintents/creating-your-first-app-intent", "law": "During compilation, the compiler generates errors for any required schema elements missing from your code."}
+{"id": "/documentation/appintents/creating-your-first-app-intent", "law": "For example, if your app intent needs to open your app and display some data, use the protocol as your starting point instead."}
+{"id": "/documentation/AppIntents/EntityCollection", "law": "Use an type to manage large numbers of entities in an app intent or app entity."}
+{"id": "/documentation/AppIntents/EntityCollection", "law": "Storing only the identifiers initially can save memory and speed up operations that don’t require the entire entity instance."}
+{"id": "/documentation/AppIntents/EntityCollection", "law": "If you need to store the identifiers for multiple entities, use as the type of your variable."}
+{"id": "/documentation/AppIntents/EntityCollection", "law": "If you use an for a parameter in an app intent, the system doesn’t force the resolution of each identifier to the full instance during parameter resolution."}
+{"id": "/documentation/AppIntents/EntityCollection", "law": "The following example shows the use of an in an app intent to disable multiple alarms."}
+{"id": "/documentation/AppIntents/EntityCollection", "law": "Because the code to disable the alarms requires only the identifier for each entity, the type stores those values using an entity collection."}
+{"id": "/documentation/AppIntents/EntityCollection", "law": "An array of entity identifiers that you use to improve the efficiency of operations involving large numbers of entities."}
+{"id": "/documentation/AppIntents/IntentValueRepresentation", "law": "For entities that directly contain a system intent value property, you can use a simplified key path syntax: A transfer representation that enables bidirectional conversion between app entities and system intent values."}
+{"id": "/documentation/AppIntents/SnippetIntent", "law": "Similar to widgets and Live Activities, a snippet can include buttons or toggles that use an for their functionality."}
+{"id": "/documentation/AppIntents/SnippetIntent", "law": "In your snippet intent’s implementation, make sure to handle multiple calls of ."}
+{"id": "/documentation/AppIntents/SnippetIntent", "law": "For example, the example above would need to fetch the list of tasks to make sure it displays the most recent data."}
+{"id": "/documentation/AppIntents/SnippetIntent", "law": "Additionally, make sure to conform your intent to this protocol so that the system knows to call again your function to render the new state of the snippet after it performed the action of a button or toggle."}
+{"id": "/documentation/AppIntents/SyncableEntity", "law": "For example, if you initialize entities with a UUID you retrieve from your server, you can use that value for the identifier and not make any additional changes to your type."}
+{"id": "/documentation/AppIntents/SyncableEntity", "law": "When you need to refer to an entity in your code, use the local identifier."}
+{"id": "/documentation/AppIntents/displaying-static-and-interactive-snippets", "law": "People might use it to create shortcuts and perform its action from Spotlight or the Action button."}
+{"id": "/documentation/AppIntents/displaying-static-and-interactive-snippets", "law": "When the app intent finds information about a nearby landmark, it displays an interactive snippet with the most important information, a button to add it to a list favorites, and a button to search for available tickets if the landmark requires people to pay an entrance fee."}
+{"id": "/documentation/AppIntents/displaying-static-and-interactive-snippets", "law": "If your app intent doesn’t require a follow-up action, return a static snippet that enables someone to view the outcome of the app intent."}
+{"id": "/documentation/AppIntents/displaying-static-and-interactive-snippets", "law": "To display an interactive snippet as a result of an app intent, create an app intent for your action - or use an existing app intent."}
+{"id": "/documentation/AppIntents/displaying-static-and-interactive-snippets", "law": "By keeping an existing result type and additionally returning a snippet intent, you avoid breaking people’s custom shortcuts that use the previous version of your intent."}
+{"id": "/documentation/AppIntents/displaying-static-and-interactive-snippets", "law": "Make sure the intent’s method returns a ."}
+{"id": "/documentation/AppIntents/displaying-static-and-interactive-snippets", "law": "Snippets are great candidates to reuse views you use in your widgets, and, like widgets, you must initialize the snippet’s or with an that performs the underlying action."}
+{"id": "/documentation/AppIntents/displaying-static-and-interactive-snippets", "law": "People can use them in their custom shortcuts, and you can reuse them."}
+{"id": "/documentation/AppIntents/displaying-static-and-interactive-snippets", "law": "For example, the sample app might use in an App Shortcut or interactive widget."}
+{"id": "/documentation/AppIntents/displaying-static-and-interactive-snippets", "law": "Because the system creates and performs your repeatedly, make sure calling its method doesn’t produce side effects: If you pass data between intents, pass a minimum amount of immutable data."}
+{"id": "/documentation/appintents/app-shortcuts", "law": "An App Shortcut combines the action from your app intent with other data, such as a title, image, and spoken phrases that someone might use to run the shortcut."}
+{"id": "/documentation/appintents/app-shortcuts", "law": "For example, a hiking app might offer an app intent to start a hike, but require you to select a trail before starting the action."}
+{"id": "/documentation/appintents/app-shortcuts", "law": "Without a shortcut, someone must provide the trail information each time they run the intent."}
+{"id": "/documentation/appintents/app-shortcuts", "law": "You create App Shortcuts programmatically in your code, and the compiler generates the information the rest of the system needs to use it."}
+{"id": "/documentation/appintents/app-shortcuts", "law": "This approach means that the shortcuts you create are available as soon as someone installs your app, and you don’t have to register them yourself."}
+{"id": "/documentation/appintents/app-shortcuts", "law": "Include this type in your app, app extension, Swift package, or library that you use to manage your intents-related code."}
+{"id": "/documentation/appintents/app-shortcuts", "law": "Define your shortcuts in the same place you define the app intents that those shortcuts use."}
+{"id": "/documentation/appintents/app-shortcuts", "law": "Machine learning models use this data when training to help improve the App Shortcuts experience."}
+{"id": "/documentation/appintents/app-shortcuts", "law": "You can also use a or to open your app’s page in the Shortcuts app."}
+{"id": "/documentation/appintents/apple-intelligence-and-siri-ai", "law": "People use Siri AI to interact with content that’s visible onscreen, but that content is private to your app."}
+{"id": "/documentation/appintents/cancellableintent", "law": "Use it to let the system know that you need additional time to perform cleanup operations when your app intent receives a cancellation notification."}
+{"id": "/documentation/appintents/cancellableintent", "law": "To use this protocol, use the method to wrap your app intent’s task."}
+{"id": "/documentation/appintents/cancellableintent", "law": "You can use that function in your app intent’s method to perform any cleanup tasks if you don’t need to know the reason cancellation occurred."}
+{"id": "/documentation/appintents/cancellableintent", "law": "If you want to know the reason for cancellation, use the method that this protocol offers instead."}
+{"id": "/documentation/appintents/cancellableintent", "law": "However, supporting this protocol provides additional time compared to app intents that don’t support this protocol."}
+{"id": "/documentation/appintents/focus", "law": "People use Focus on macOS, iOS, and iPadOS to minimize distractions."}
+{"id": "/documentation/appintents/focus", "law": "For example, someone might use a Work Focus to hide notifications from personal email or message accounts."}
+{"id": "/documentation/appintents/getting-started-with-the-app-intents-framework", "law": "People use apps to view and interact with their content, but they can also interact with that content in other ways."}
+{"id": "/documentation/appintents/getting-started-with-the-app-intents-framework", "law": "Someone might use Siri while driving to perform actions using your app, like sending a message or creating a note."}
+{"id": "/documentation/appintents/getting-started-with-the-app-intents-framework", "law": "With the App Intents framework, your code remains the source of truth and you use the framework’s protocols and other types to make your content available to the system."}
+{"id": "/documentation/appintents/getting-started-with-the-app-intents-framework", "law": "An app intent defines one of your app’s actions and the data you require to perform that action, and the system uses the app intents you create as the gateway to your app’s features."}
+{"id": "/documentation/appintents/getting-started-with-the-app-intents-framework", "law": "Make sure each app intent performs a unique action within your app, and use its parameters to configure it for different types of data."}
+{"id": "/documentation/appintents/getting-started-with-the-app-intents-framework", "law": "For example, instead of creating one app intent to play songs and a separate app intent to play albums, create a single app intent to play music and use a parameter to specify which song or album to play."}
+{"id": "/documentation/appintents/getting-started-with-the-app-intents-framework", "law": "Whether you define a custom app intent or use one of the predefined schemas, the protocol defines the common behaviors for all app intents."}
+{"id": "/documentation/appintents/getting-started-with-the-app-intents-framework", "law": "Use this protocol, or one of several as the starting point for your app intent type."}
+{"id": "/documentation/appintents/getting-started-with-the-app-intents-framework", "law": "Each app intent you create needs to have the following minimum set of behaviors: It performs an action in its method."}
+{"id": "/documentation/appintents/getting-started-with-the-app-intents-framework", "law": "It declares any required or optional parameters it needs to perform the action."}
+{"id": "/documentation/appintents/intentexecutiontargets", "law": "Use to tell the system which targets can perform your or ."}
+{"id": "/documentation/appintents/longrunningintent", "law": "If your app intent performs a task that might exceed the built-in time limits, incorporate this protocol and use its methods to perform that task."}
+{"id": "/documentation/appintents/longrunningintent", "law": "While your code runs, the system requires you to report progress regularly, which you do using the property of the inherited protocol."}
+{"id": "/documentation/appintents/longrunningintent", "law": "If you don’t update this property regularly, the system can cancel the background runtime extension and end your task prematurely."}
+{"id": "/documentation/appintents/longrunningintent", "law": "In iOS, iPadOS, tvOS, visionOS, and watchOS, the system gives tasks 30 seconds to run in the background unless you use the methods of this protocol to extend that runtime."}
+{"id": "/documentation/appintents/longrunningintent", "law": "An interface you use to extend the background execution time of an app intent that performs a long-running task."}
+{"id": "/documentation/appintents/making-actions-and-content-discoverable-by-apple-intelligence", "law": "A big part of people’s personal context is the apps they use every day."}
+{"id": "/documentation/appintents/making-actions-and-content-discoverable-by-apple-intelligence", "law": "The following domains require that your app supports every schema in the group: In other words, if you decide to support one schema in those domains, you need to adopt them all."}
+{"id": "/documentation/appintents/making-actions-and-content-discoverable-by-apple-intelligence", "law": "If your type is missing a required property, Xcode generates an error at build time with a Fix-It that adds it for you."}
+{"id": "/documentation/appintents/making-actions-and-content-discoverable-by-apple-intelligence", "law": "For example, if your app has an with a property typed to a photo entity, that’s exactly what requires."}
+{"id": "/documentation/appintents/making-actions-and-content-discoverable-by-apple-intelligence", "law": "Removing or changing the older intent breaks any shortcuts that use it."}
+{"id": "/documentation/appintents/making-actions-and-content-discoverable-by-apple-intelligence", "law": "You can also make your entities transferable so other apps can use them directly."}
+{"id": "/documentation/appintents/spotlight", "law": "When a search finds your content, the system can use the associated entity to open your app and navigate to that content."}
+{"id": "/documentation/appintents/undoableintent", "law": "This protocol provides access to an instance of the type suitable for use in your app intent’s code."}
+{"id": "/documentation/appintents/undoableintent", "law": "You can use this undo manager from either your app or an app extension you use to run app intents."}
+{"id": "/documentation/appintents/undoableintent", "law": "An interface you use to register undoable actions in your app intent code."}
+{"id": "/documentation/appintents/visual-intelligence", "law": "People use visual intelligence to learn about the places and objects they see in their environment or on their device."}
+{"id": "/documentation/appintents/widgets-live-activities-and-controls", "law": "Use those app intents to perform the associated actions in your app."}
+{"id": "/documentation/appintents/focusfiltersuggestioncontext", "law": "A type you use to suggest app configurations for a given Focus."}
+{"id": "/documentation/appintents/setfocusfilterintent", "law": "An interface for providing an app intent that you use to adapt your app’s behavior when Focus changes."}
+{"id": "/documentation/appintents/app-schema-domains", "law": "Schemas in these domains work with the Shortcuts app but don’t make your conforming types discoverable by Apple Intelligence and Siri."}
+{"id": "/documentation/appintents/integrating-your-messaging-app-with-apple-intelligence", "law": "Use Siri to perform app actions like drafting and sending a message or reacting to a message using natural language."}
+{"id": "/documentation/appintents/integrating-your-messaging-app-with-apple-intelligence", "law": "This code snippet shows how the app’s conforms to the entity schema, including all properties that the schema requires."}
+{"id": "/documentation/appintents/integrating-your-messaging-app-with-apple-intelligence", "law": "People use Siri to interact with onscreen content."}
+{"id": "/documentation/appintents/integrating-your-messaging-app-with-apple-intelligence", "law": "The domain requires several intents to provide a consistent user experience."}
+{"id": "/documentation/appintents/integrating-your-messaging-app-with-apple-intelligence", "law": "The example also shows the implementation of the required union value type that the property uses: For more information about making actions discoverable by Apple Intelligence, see ."}
+{"id": "/documentation/appintents/integrating-your-photo-app-with-apple-intelligence", "law": "After choosing photos from their camera roll, people use Siri to perform actions like rotating a photo, adding it to their Favorites, and more."}
+{"id": "/documentation/appintents/integrating-your-photo-app-with-apple-intelligence", "law": "To make sure the system can pass the sample app’s content to other apps, the app adopts the protocol for its app entities:"}
+{"id": "/documentation/appintents/appentity", "law": "To use a data model object to app intents, update it to conform to the protocol."}
+{"id": "/documentation/appintents/appschema/messagesentity/message", "law": "If your app’s functionality aligns with the domain and its content matches the schema, you can generate the properties and protocol conformance the schema requires for your app entity implementation with the Swift macro."}
+{"id": "/documentation/appintents/defining-app-entities-for-your-custom-data-types", "law": "Typically, you define app entity types only for the subset of data people are likely to use outside your app."}
+{"id": "/documentation/appintents/defining-app-entities-for-your-custom-data-types", "law": "In your code, include app entities in places where the system can use them."}
+{"id": "/documentation/appintents/defining-app-entities-for-your-custom-data-types", "law": "In app intents, include entities as parameters when an action requires your app’s custom data."}
+{"id": "/documentation/appintents/defining-app-entities-for-your-custom-data-types", "law": "Indexing your content also makes your entities discoverable by Apple Intelligence and Siri, which can use the data to process requests involving your content."}
+{"id": "/documentation/appintents/defining-app-entities-for-your-custom-data-types", "law": "The following example creates an entity for a photo album and adds the required properties for that schema."}
+{"id": "/documentation/appintents/defining-app-entities-for-your-custom-data-types", "law": "Although you use entities to reflect your app’s underlying data, you don’t have to reflect all of that data."}
+{"id": "/documentation/appintents/defining-app-entities-for-your-custom-data-types", "law": "Apps use the framework to build a fast, searchable index of their content."}
+{"id": "/documentation/appintents/defining-app-entities-for-your-custom-data-types", "law": "The protocol requires each entity instance to have a unique identifier value, but enforces that uniqueness only on the current device."}
+{"id": "/documentation/appintents/defining-app-entities-for-your-custom-data-types", "law": "If you store your data in CloudKit or generate UUIDs from your server, you can use the identifiers from those technologies in your entities."}
+{"id": "/documentation/appintents/defining-app-entities-for-your-custom-data-types", "law": "You can use this type with the protocol to tell the system that the identifer for each entity is the same on each of the person’s devices."}
+{"id": "/documentation/appintents/donations-and-discovery", "law": "Donate entities to Spotlight with the rest of your app’s content so the system can use them to display content directly in your app."}
+{"id": "/documentation/appintents/donations-and-discovery", "law": "Apple Intelligence and Siri use your donations to improve conversational results."}
+{"id": "/documentation/appintents/indexedentity", "law": "Use the properties of this protocol to configure additional Spotlight metadata to accompany your app entity in the index."}
+{"id": "/documentation/appintents/intentdonationmanager", "law": "Use the shared instance to share your app’s actions with the system."}
+{"id": "/documentation/appintents/intentdonationmanager", "law": "You don’t need to donate app intents that the system creates on your behalf, because the system already donates them for you."}
+{"id": "/documentation/appintents/intentdonationmanager", "law": "Use the asynchronous methods when you need to know whether a donation succeeds or fails."}
+{"id": "/documentation/appintents/intentdonationmanager", "law": "For example, use the asynchronous methods to identify issues during testing or to ensure a donation actually succeeded in your production code."}
+{"id": "/documentation/appintents/intentdonationmanager", "law": "A type you use to teach the system about the actions people take using your app."}
+{"id": "/documentation/appintents/providing-contextual-cues-to-apple-intelligence-and-siri", "law": "Although your app’s interface contains data, the system can’t use that data directly because it’s private to your app."}
+{"id": "/documentation/appintents/providing-contextual-cues-to-apple-intelligence-and-siri", "law": "For example, when someone refers to parts of your app’s content during a Siri conversation, Apple Intelligence can use the contextual information you provide to understand what the person meant."}
+{"id": "/documentation/appintents/providing-contextual-cues-to-apple-intelligence-and-siri", "law": "If your content matches one of the existing schemas, apply that schema to your type and implement the required content."}
+{"id": "/documentation/appintents/providing-contextual-cues-to-apple-intelligence-and-siri", "law": "Features like Apple Intelligence and Siri use this consistency to improve the quality of responses they offer for that type of content."}
+{"id": "/documentation/appintents/providing-contextual-cues-to-apple-intelligence-and-siri", "law": "To adopt one of the predefined schemas for an app entity, type the macro before your type declaration and use code completion to specify the schema you want."}
+{"id": "/documentation/appintents/providing-contextual-cues-to-apple-intelligence-and-siri", "law": "For properties that are part of the schema definition, the system infers the macro automatically, so you don’t need to add it."}
+{"id": "/documentation/appintents/providing-contextual-cues-to-apple-intelligence-and-siri", "law": "Although you can use the protocol to provide alternate representations of your content, there are limitations to how other apps can use that content."}
+{"id": "/documentation/appintents/providing-contextual-cues-to-apple-intelligence-and-siri", "law": "For example, Maps can’t use a picture of a landmark to generate directions to that landmark."}
+{"id": "/documentation/appintents/providing-contextual-cues-to-apple-intelligence-and-siri", "law": "For locations, names, and contacts, you can use the type to provide a version of your data that other apps can use directly."}
+{"id": "/documentation/appintents/providing-contextual-cues-to-apple-intelligence-and-siri", "law": "To share your app’s content with the system, attach app entities to the views you use to show content: In SwiftUI, assign the identifier of your app entity to a view using the or modifier."}
+{"id": "/documentation/appintents/appschema/photosentity/asset", "law": "If your app’s functionality aligns with the domain and its content matches the schema, you can generate the properties and protocol conformance the schema requires for your app entity implementation with the Swift macro."}
+{"id": "/documentation/appintents/appschema/photosintent/createalbum", "law": "If your app’s functionality aligns with the domain and one of your app’s actions matches the schema, you can generate the properties and protocol conformance the schema requires for your intent implementation with the Swift macro."}
+{"id": "/documentation/appintents/making-app-entities-available-in-spotlight", "law": "These types offer a common way for your app and features like Siri to refer to your data, and their structure lets the system make better use of your data."}
+{"id": "/documentation/appintents/making-app-entities-available-in-spotlight", "law": "You can implement some of the properties yourself and use them to provide Spotlight with additional information about your entity."}
+{"id": "/documentation/appintents/making-app-entities-available-in-spotlight", "law": "These property wrappers add metadata to your type that features like Siri and Shortcuts can use when displaying your entity in conversations."}
+{"id": "/documentation/appintents/making-app-entities-available-in-spotlight", "law": "Use the variant to associate the property with an existing Spotlight key, and use the to associate it with a key that’s custom to your app."}
+{"id": "/documentation/appintents/making-app-entities-available-in-spotlight", "law": "To differentiate entities from one another in the index, Spotlight uses the entity’s unique identifier, which the protocol requires you to provide."}
+{"id": "/documentation/appintents/making-app-entities-available-in-spotlight", "law": "When indexing your app’s content, use a named type and not the default index."}
+{"id": "/documentation/appintents/making-app-entities-available-in-spotlight", "law": "Use the default index only for prototyping and testing your code during development."}
+{"id": "/documentation/appintents/making-app-entities-available-in-spotlight", "law": "Each method also receives a type you can use to determine which of your app’s searchable indexes to update."}
+{"id": "/documentation/appintents/making-app-entities-available-in-spotlight", "law": "When an open intent is present, Spotlight can use it to provide that behavior."}
+{"id": "/documentation/appintents/making-app-entities-available-in-spotlight", "law": "When a search query yields more than ten results, Spotlight can use this intent to launch your app and display the results in your custom search interface."}

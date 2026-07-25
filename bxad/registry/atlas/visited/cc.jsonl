@@ -3,3 +3,6 @@
 {"id": "/documentation/updates/xcuiautomation", "sha": "ee0f75ca3b6979596a220be9068e09fced5a86ad04c641c9c5862d2f65204136", "t": "XCUIAutomation updates", "n": 324, "laws": 0, "ts": "2026-07-24 18:48 UTC"}
 {"id": "/documentation/MultipeerConnectivity/MCNearbyServiceBrowser/invitePeer(_:to:withContext:timeout:)", "sha": "13d3ad564379ebf5c4b53ba3e98275572f7baed4abd61d73927d35a0243be757", "t": "invitePeer(_:to:withContext:timeout:)", "n": 67, "laws": 0, "ts": "2026-07-24 18:56 UTC"}
 {"id": "/documentation/arkit/arframe/capturedimage", "sha": "a00eb589b25d8bba2ec9f855732a77e363a5bfcdead9b5b7a5df298d9dc6271a", "t": "capturedImage", "n": 895, "laws": 1, "ts": "2026-07-24 18:57 UTC"}
+{"id": "/documentation/appintents/app-schema-domain-photos", "sha": "446230b3ba480b4ef60567a3f9f0beb8dfa06e9353628e0f56a468371b9d5af2", "t": "Photos", "n": 1757, "laws": 0, "ts": "2026-07-25 18:08 UTC"}
+{"id": "/documentation/callkit/making-and-receiving-voip-calls", "sha": "8918d596f249002d7df18df1dd54bf94a386ef0632056511c1ee963fb247506d", "t": "Making and receiving VoIP calls", "n": 2921, "laws": 0, "ts": "2026-07-25 18:15 UTC"}
+{"id": "/documentation/Foundation/URL", "sha": "9306f9d4f2a1e6f2c0e48ab2174cafcf48c6cbc1e1a7c36b948731fa4c1f060e", "t": "URL", "n": 5403, "laws": 4, "ts": "2026-07-25 18:22 UTC"}

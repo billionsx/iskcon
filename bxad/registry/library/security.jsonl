@@ -6,3 +6,32 @@
 {"id": "/documentation/Security", "law": "Always use the highest level API that meets your needs."}
 {"id": "/documentation/Security", "law": "The Security framework is not always your best option."}
 {"id": "/documentation/Security", "law": "Only if your app requires lower level access to security protocol functions would you use the secure transport API directly."}
+{"id": "/documentation/Security/disabling-and-enabling-system-integrity-protection", "law": "You don’t need to disable SIP to run and debug apps from Xcode, but you might need to disable it to install system extensions, such as DriverKit drivers."}
+{"id": "/documentation/Security/complying-with-encryption-export-regulations", "law": "You can bypass these questions and streamline the submission process by providing the required information in your app’s file."}
+{"id": "/documentation/Security/complying-with-encryption-export-regulations", "law": "Set the value to if your app—including any third-party libraries it links against—doesn’t use encryption, or if it only uses forms of encryption that are exempt from export compliance documentation requirements."}
+{"id": "/documentation/Security/complying-with-encryption-export-regulations", "law": "Typically, the use of encryption that’s built into the operating system—for example, when your app makes HTTPS connections using —is exempt from export documentation upload requirements, whereas the use of proprietary encryption is not."}
+{"id": "/documentation/Security/complying-with-encryption-export-regulations", "law": "To determine whether your use of encryption is considered exempt, see ."}
+{"id": "/documentation/Security/complying-with-encryption-export-regulations", "law": "If your app uses exempt forms of encryption, you might alternatively be required to submit a year-end self-classification report to the U.S."}
+{"id": "/documentation/Security/complying-with-encryption-export-regulations", "law": "(If you use non-exempt encryption and provide documentation to Apple, the self-classification report isn’t necessary.) To learn more, see ."}
+{"id": "/documentation/Security/complying-with-encryption-export-regulations", "law": "If your app requires export compliance documentation, upload the required items to App Store Connect, as described in ."}
+{"id": "/documentation/Security/complying-with-encryption-export-regulations", "law": "Declare the use of encryption in your app to streamline the app submission process."}
+{"id": "/documentation/Security/SecItemAdd(_:_:)", "law": "To add multiple items to a keychain at once use the key in the dictionary with an array of dictionaries (each corresponding to one of the items) as its value."}
+{"id": "/documentation/Security/SecItemAdd(_:_:)", "law": "When you use Xcode to create an application, Xcode adds an entitlement to the application bundle."}
+{"id": "/documentation/Security/SecItemAdd(_:_:)", "law": "The value of this key must be the name of a keychain access group to which all the programs that share this item belong."}
+{"id": "/documentation/Security/SecItemCopyMatching(_:_:)", "law": "You can’t combine the and options when copying password items (items of class or ), because copying each password item could require additional authentication."}
+{"id": "/documentation/Security/SecItemCopyMatching(_:_:)", "law": "Instead, request a reference or persistent reference to the items, then request the data for only the specific passwords that you actually require."}
+{"id": "/documentation/Security/SecItemCopyMatching(_:_:)", "law": "The objects in the provided array must all be of the same type."}
+{"id": "/documentation/Security/SecItemCopyMatching(_:_:)", "law": "The objects in the provided array must all be of the same type."}
+{"id": "/documentation/Security/SecItemCopyMatching(_:_:)", "law": "When you use Xcode to create an application, Xcode adds an entitlement to the application bundle."}
+{"id": "/documentation/Security/SecItemCopyMatching(_:_:)", "law": "When you call the function to add an item to the keychain, you can specify the access group to which that item should belong."}
+{"id": "/documentation/Security/SecKeyCopyExternalRepresentation(_:_:)", "law": "All of these representations use constant size integers, including leading zeros as needed."}
+{"id": "/documentation/Security/SecKeychainItem", "law": "A object for a certificate that is stored in a keychain can be safely cast to a for use with ."}
+{"id": "/documentation/Security/kSecClassGenericPassword", "law": "The following keychain item attributes apply to a generic password item, and don’t form part of its composite primary key: (macOS only) (on macOS, this key only applies if you set or to ) The value that indicates a generic password item."}
+{"id": "/documentation/Security/keychain-services", "law": "You use the keychain to store these items as well."}
+{"id": "/documentation/Security/storing-keys-in-the-keychain", "law": "You use the functions of the keychain services API to add, retrieve, delete, or modify keychain items."}
+{"id": "/documentation/Security/storing-keys-in-the-keychain", "law": "Use the function to actually store the item:"}
+{"id": "/documentation/Security/storing-keys-in-the-keychain", "law": "When you want to retrieve the key, you construct another query dictionary using the same application tag: The above dictionary indicates that the key should be of type , as in , and that it should have the tag used in that example and above."}
+{"id": "/documentation/Security/storing-keys-in-the-keychain", "law": "The last line says that the retrieval should return a key reference (as opposed, for example, to the actual key data)."}
+{"id": "/documentation/Security/storing-keys-in-the-keychain", "law": "You use this query with the function to execute a search and populate an empty reference that you supply: If the call is successful, as indicated by the status result, you can then use the returned key reference to carry out cryptographic operations."}
+{"id": "/documentation/Security/storing-keys-in-the-keychain", "law": "Unless you use unique tags for all of your keys of a given type, you might not get the key you were looking for when you run the search."}
+{"id": "/documentation/Security/storing-keys-in-the-keychain", "law": "Avoid reusing tags in the first place."}

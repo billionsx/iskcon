@@ -28,3 +28,10 @@
 {"id": "/documentation/CoreImage/CIImageProcessorKernel/process(with:arguments:output:)", "law": "When your implementation of this class method is called, use the provided and objects to return processed pixel data to Core Image via ."}
 {"id": "/documentation/CoreImage/CIImageProcessorKernel/process(with:arguments:output:)", "law": "This is a class method so that you cannot use or capture any state by accident."}
 {"id": "/documentation/CoreImage/CIImageProcessorKernel/process(with:arguments:output:)", "law": "All the parameters that affect the output results must be passed to ."}
+{"id": "/documentation/CoreImage/CILinearGradient", "law": "The properties you use to configure a linear gradient filter."}
+{"id": "/documentation/CoreImage/CILinearGradient/color0", "law": "The first color to use in the gradient."}
+{"id": "/documentation/CoreImage/CILinearGradient/color1", "law": "The second color to use in the gradient."}
+{"id": "/documentation/CoreImage/CIRenderDestination", "law": "You can create a object for each surface or buffer to which you must render."}
+{"id": "/documentation/coreimage", "law": "Use the many built-in image filters to process images and build complex effects by chaining filters."}
+{"id": "/documentation/coreimage", "law": "Use built-in or custom filters to process still and video images."}
+{"id": "/documentation/coreimage/cirenderdestination", "law": "You can create a object for each surface or buffer to which you must render."}

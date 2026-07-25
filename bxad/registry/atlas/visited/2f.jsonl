@@ -3,3 +3,6 @@
 {"id": "/documentation/SceneKit/SCNNode/simdWorldTransform", "sha": "92736bf0e3715bc5fe5c7b8a69a047418dcfe81c273ad62fbd5c43f6707aa3b1", "t": "simdWorldTransform", "n": 306, "laws": 0, "ts": "2026-07-24 18:57 UTC"}
 {"id": "/documentation/avfaudio/playing-custom-audio-with-your-own-player", "sha": "ae083fe5c3de4f9f68eab7d16d90993beb7c15751ba805d68736ffe1bd41d0ed", "t": "Playing custom audio with your own player", "n": 8944, "laws": 10, "ts": "2026-07-24 19:00 UTC"}
 {"id": "/documentation/UIKit/UIViewController/addChild(_:)", "sha": "6fbcf6ce02293fd36ed5f7256b2e840435e08160259cefeec2791717a58c3f44", "t": "addChild(_:)", "n": 640, "laws": 1, "ts": "2026-07-24 19:07 UTC"}
+{"id": "/documentation/AppIntents/AppEntity", "sha": "ec72035302f09789a98de7a28991e16f927cbef67f1ac2fc47c84cf2d7a73cc5", "t": "AppEntity", "n": 1129, "laws": 1, "ts": "2026-07-25 18:07 UTC"}
+{"id": "/documentation/applearchive/archiveencryptioncontext", "sha": "fb104a935f7c2d377b992fe34ba94e7c8acab89249b6d7357993dc6c3ecc8be4", "t": "ArchiveEncryptionContext", "n": 1039, "laws": 0, "ts": "2026-07-25 18:12 UTC"}
+{"id": "/documentation/foundationmodels/generationoptions/samplingmode-swift.struct/greedy", "sha": "090b6412d81bac87ce6e7605377b58e73b54dd4d3c610f3017dd5ec5a399cee1", "t": "greedy", "n": 308, "laws": 2, "ts": "2026-07-25 18:31 UTC"}

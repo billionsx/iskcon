@@ -241,3 +241,88 @@
 {"id": "/documentation/UIKit/UIViewControllerTransitionCoordinator/animate(alongsideTransition:completion:)", "law": "All of the animations you specify must occur inside the animation context’s container view (or one of its descendants)."}
 {"id": "/documentation/UIKit/UIViewControllerTransitionCoordinator/animate(alongsideTransition:completion:)", "law": "Use the property of the context object to get the container view."}
 {"id": "/documentation/UIKit/UIViewControllerTransitionCoordinator/animate(alongsideTransition:completion:)", "law": "To perform animations in a view that doesn’t descend from the container view, use the method instead."}
+{"id": "/documentation/UIKit/UIAccessibilityCustomAction", "law": "Apps that support custom actions can create instances of this class, specifying the user-readable name of the action and the object and selector to use when performing the action."}
+{"id": "/documentation/UIKit/UIAccessibilityElement", "law": "You can use to provide information about an icon or text image that isn’t automatically accessible because it doesn’t inherit from (or )."}
+{"id": "/documentation/UIKit/UIAccessibilityElement", "law": "You might need to set an element’s property even if you don’t need to create an instance of to represent it."}
+{"id": "/documentation/UIKit/UIAccessibilityElement", "law": "An element that should be accessible to users with disabilities, but that isn’t accessible by default."}
+{"id": "/documentation/UIKit/UIAccessibilityElement/accessibilityFrameInContainerSpace", "law": "Use this property to set the frame rectangle of an element whose frame rectangle could be affected by its container view."}
+{"id": "/documentation/UIKit/UIAccessibilityElement/accessibilityFrameInContainerSpace", "law": "For example, use this property to set the frame rectangle for an element in a scroll view’s content view."}
+{"id": "/documentation/UIKit/UIAccessibilityTraits/adjustable", "law": "Use this trait to characterize an accessibility element that users can adjust in a continuous manner, such as a slider or a picker view."}
+{"id": "/documentation/UIKit/UIAccessibilityTraits/adjustable", "law": "If you specify this trait on an accessibility element, you must also implement the and methods in the protocol."}
+{"id": "/documentation/UIKit/UILabel", "law": "You can configure the overall appearance of a label’s text, and use attributed strings to customize the appearance of substrings within the text."}
+{"id": "/documentation/UIKit/UILabel", "law": "Specify the maximum number of lines for the label to use when laying out the text with the property."}
+{"id": "/documentation/UIKit/UILabel", "law": "Setting a value of allows the label to use as many lines as necessary to lay out the text within the label’s width."}
+{"id": "/documentation/UIKit/UILabel", "law": "Use the property to control how the label splits the text into multiple lines, and the truncation behavior associated with the final line."}
+{"id": "/documentation/UIKit/UILabel", "law": "Use Auto Layout to position and optionally size the label."}
+{"id": "/documentation/UIKit/UILabel", "law": "To make sure that information reaches a wide audience, internationalize text and support accessibility in your labels."}
+{"id": "/documentation/UIKit/UIWindowScene", "law": "Use the delegate object or notification observers to respond to any changes."}
+{"id": "/documentation/UIKit/UIWindowScene", "law": "Don’t create window scene objects directly."}
+{"id": "/documentation/UIKit/using-background-tasks-to-update-your-app", "law": "You can configure your app to launch and run tasks in the background to take advantage of processing time when the device isn’t in use."}
+{"id": "/documentation/UIKit/using-background-tasks-to-update-your-app", "law": "Your app can use one or both of these."}
+{"id": "/documentation/UIKit/using-background-tasks-to-update-your-app", "law": "An extension can schedule a task, but your main app must register the task."}
+{"id": "/documentation/UIKit/using-background-tasks-to-update-your-app", "law": "To submit a task request for the system to launch your app in the background at a later time, use ."}
+{"id": "/documentation/UIKit/using-background-tasks-to-update-your-app", "law": "Configure your app to perform tasks in the background to make efficient use of processing time and power."}
+{"id": "/documentation/UIKit/UIApplicationDelegate/application(_:didFinishLaunchingWithOptions:)", "law": "Use this method (and the corresponding method) to complete your app’s initialization."}
+{"id": "/documentation/UIKit/UIApplicationDelegate/application(_:didFinishLaunchingWithOptions:)", "law": "If you don’t implement one of the methods, the system only considers the return value of the implemented method."}
+{"id": "/documentation/UIKit/UIViewController/viewDidAppear(_:)", "law": "If you override this method, you must call at some point in your implementation."}
+{"id": "/documentation/UIKit/UIViewController/viewWillDisappear(_:)", "law": "Subclasses can override this method and use it to commit editing changes, resign the first responder status of the view, or perform other relevant tasks."}
+{"id": "/documentation/UIKit/UIViewController/viewWillDisappear(_:)", "law": "For example, you might use this method to revert changes to the orientation or style of the status bar that were made in the method when the view was first presented."}
+{"id": "/documentation/UIKit/UIViewController/viewWillDisappear(_:)", "law": "If you override this method, you must call at some point in your implementation."}
+{"id": "/documentation/UIKit/UICloudSharingController", "law": "To provide these steps to a user, you must make changes to your app."}
+{"id": "/documentation/UIKit/UICloudSharingController", "law": "With , the changes require minimum effort."}
+{"id": "/documentation/UIKit/UICloudSharingController", "law": "You use this initializer method only when the owner isn’t already sharing the record."}
+{"id": "/documentation/UIKit/UICloudSharingController", "law": "However, before the owner can send the share link, CloudKit must generate the link."}
+{"id": "/documentation/UIKit/UICloudSharingController", "law": "is designed for use in a popover."}
+{"id": "/documentation/UIKit/UICloudSharingController", "law": "Therefore, you should always set the source information before presenting the Cloud sharing controller."}
+{"id": "/documentation/UIKit/UICloudSharingController/init(preparationHandler:)", "law": "Use the initializer method to create a new instance when the user who owns a wants to share the record with other people."}
+{"id": "/documentation/UIKit/UICloudSharingController/init(preparationHandler:)", "law": "If the property value is , the record is not shared, and this method is the one to use."}
+{"id": "/documentation/UIKit/UICloudSharingController/init(preparationHandler:)", "law": "You must initialize the controller with the correct initializer method."}
+{"id": "/documentation/UIKit/UICloudSharingController/init(preparationHandler:)", "law": "Do not use if the is already shared."}
+{"id": "/documentation/UIKit/UICloudSharingController/init(preparationHandler:)", "law": "Likewise, do not use if the is not shared."}
+{"id": "/documentation/UIKit/UICloudSharingController/init(share:container:)", "law": "Use the initializer method to create the instance when the user who owns the record wants to manage the participants and restrictions associated with the share."}
+{"id": "/documentation/UIKit/UICloudSharingController/init(share:container:)", "law": "(For more information, see .) You also use this initializer method when users are participants who want to remove themselves from a share."}
+{"id": "/documentation/UIKit/UICloudSharingController/init(share:container:)", "law": "(For more information, see .) You must initialize the controller with the correct initializer method."}
+{"id": "/documentation/UIKit/UICloudSharingController/init(share:container:)", "law": "Do not use if the is already shared."}
+{"id": "/documentation/UIKit/UICloudSharingController/init(share:container:)", "law": "Likewise, do not use if the is not shared."}
+{"id": "/documentation/UIKit/UICloudSharingController/init(share:container:)", "law": "requires a reference to the instance associated with the instance that represents the shared data."}
+{"id": "/documentation/UIKit/UISceneDelegate/sceneWillEnterForeground(_:)", "law": "To use this method, you must implement the protocol and configure scenes for your app (see )."}
+{"id": "/documentation/UIKit/UIActivityViewController", "law": "Configuration for the view controller involves specifying the data objects on which the view controller should act."}
+{"id": "/documentation/UIKit/UIActivityViewController", "law": "(You can also specify the list of custom services your app supports.) When presenting the view controller, you must do so using the appropriate means for the current device."}
+{"id": "/documentation/UIKit/UIActivityViewController", "law": "On iPad, you must present the view controller in a popover."}
+{"id": "/documentation/UIKit/UIActivityViewController", "law": "On iPhone and iPod touch, you must present it modally."}
+{"id": "/documentation/UIKit/UIActivityViewController", "law": "A view controller that you use to offer standard services from your app."}
+{"id": "/documentation/UIKit/UICollisionBehavior", "law": "You can use a custom object as a dynamic item for such purposes as reacting to rotation or position changes computed by a dynamic animator—an instance of the class."}
+{"id": "/documentation/UIKit/UICollisionBehavior", "law": "To use a collision behavior with a dynamic item, perform these two steps: Associate the item with the behavior using the method, or initialize a new collision behavior with an array of items using the method."}
+{"id": "/documentation/UIKit/UICollisionBehavior", "law": "Enable the behavior by adding it to an animator using the method The coordinate system that pertains to a collision behavior, and the types of dynamic items you can use with the behavior, depend on how you initialized the associated animator."}
+{"id": "/documentation/UIKit/UICollisionBehavior", "law": "When you use a collision behavior with a dynamic animator you’ve initialized with a reference view or a collection view layout, you can also specify a collision boundary according to the bounds of the dynamic animator’s coordinate system (see the method)."}
+{"id": "/documentation/UIKit/UICollisionBehavior", "law": "When setting the initial position for a dynamic item, you must ensure that its bounds do not intersect any collision boundaries."}
+{"id": "/documentation/UIKit/UIDynamicAnimator", "law": "You can implement this protocol to use a dynamic animator with custom objects for such purposes as reacting to rotation or position changes computed by an animator."}
+{"id": "/documentation/UIKit/UIDynamicAnimator", "law": "To use dynamics, configure one or more dynamic behaviors—including providing each with a set of dynamic items—and then add those behaviors to a dynamic animator."}
+{"id": "/documentation/UIKit/UIDynamicAnimator", "law": "The three ways to initialize an animator, the dynamic items you can then use, and the resulting coordinate system, are as follows: To animate views, create an animator with the method."}
+{"id": "/documentation/UIKit/UIDynamicAnimator", "law": "Each dynamic item you associate with this sort of animator must be a object and must descend from the reference view."}
+{"id": "/documentation/UIKit/UIDynamicAnimator", "law": "The dynamic items in this sort of animator must be objects that are part of the layout."}
+{"id": "/documentation/UIKit/UIDynamicAnimator", "law": "There is no reference boundary to refer to when defining a collision boundary for use with this sort of animator."}
+{"id": "/documentation/uikit/uicollisionbehavior", "law": "You can use a custom object as a dynamic item for such purposes as reacting to rotation or position changes computed by a dynamic animator—an instance of the class."}
+{"id": "/documentation/uikit/uicollisionbehavior", "law": "To use a collision behavior with a dynamic item, perform these two steps: Associate the item with the behavior using the method, or initialize a new collision behavior with an array of items using the method."}
+{"id": "/documentation/uikit/uicollisionbehavior", "law": "Enable the behavior by adding it to an animator using the method The coordinate system that pertains to a collision behavior, and the types of dynamic items you can use with the behavior, depend on how you initialized the associated animator."}
+{"id": "/documentation/uikit/uicollisionbehavior", "law": "When you use a collision behavior with a dynamic animator you’ve initialized with a reference view or a collection view layout, you can also specify a collision boundary according to the bounds of the dynamic animator’s coordinate system (see the method)."}
+{"id": "/documentation/uikit/uicollisionbehavior", "law": "When setting the initial position for a dynamic item, you must ensure that its bounds do not intersect any collision boundaries."}
+{"id": "/documentation/UIKit/UILongPressGestureRecognizer", "law": "The user must press one or more fingers on a view and hold them there for a minimum period of time before the action triggers."}
+{"id": "/documentation/UIKit/UILongPressGestureRecognizer", "law": "The gesture begins ( ) when the user presses the number of allowable fingers ( ) for the specified period ( ) and the touches don’t move beyond the allowable range of movement ( )."}
+{"id": "/documentation/UIKit/UIScreen", "law": "In a compatible iPad or iPhone app running in visionOS, don’t rely on screen-related properties to configure your app."}
+{"id": "/documentation/UIKit/UIScreen", "law": "You don’t create any of these screen objects directly."}
+{"id": "/documentation/UIKit/UIScreen", "law": "Avoid using screen objects to make decisions about your app’s interface."}
+{"id": "/documentation/UIKit/UIScreen", "law": "Use a screen object only as needed to retrieve screen-related information, such as the screen’s bounds rectangle, brightness, and overscan settings."}
+{"id": "/documentation/UIKit/UIScreen", "law": "Apps that rely on the screen dimensions can use the object in the property as a fixed point of reference for any calculations they must make."}
+{"id": "/documentation/UIKit/UIApplicationDelegate/application(_:continue:restorationHandler:)", "law": "If you don’t implement this method or if your implementation returns , iOS tries to create a document for your app to open using a URL."}
+{"id": "/documentation/UIKit/UIApplicationDelegate/application(_:continue:restorationHandler:)", "law": "Your app should seamlessly continue the interaction that began in Siri."}
+{"id": "/documentation/UIKit/UIApplicationDelegate/application(_:continue:restorationHandler:)", "law": "Avoid accidentally repeating actions (such as making double payments)."}
+{"id": "/documentation/UIKit/UIApplicationDelegate/application(_:continue:restorationHandler:)", "law": "Intents may launch your app under the following circumstances: Some intents always launch the app after the intent is successfully handled (for example, intents with a response code)."}
+{"id": "/documentation/UIKit/UIApplicationDelegate/application(_:continue:restorationHandler:)", "law": "The user can always decide to launch the app at any point in a Siri transaction."}
+{"id": "/documentation/UIKit/UIResponder/restoreUserActivityState(_:)", "law": "The override should use the state data contained in the given user activity’s dictionary to restore the object."}
+{"id": "/documentation/UIKit/UIResponder/restoreUserActivityState(_:)", "law": "You may also call this method directly if the app delegate chooses not to use the restoration handler."}
+{"id": "/documentation/UIKit/UIResponder/updateUserActivityState(_:)", "law": "You should add state representing the user’s activity into the object using its method."}
+{"id": "/documentation/UIKit/UIResponder/updateUserActivityState(_:)", "law": "When the state is dirty, you should set the property of the to , and this method will be called at an appropriate time."}
+{"id": "/documentation/UIKit/UITextInputTraits/textContentType", "law": "Use this property to give the keyboard and the system information about the expected semantic meaning for the content that users enter."}
+{"id": "/documentation/UIKit/UITextInputTraits/textContentType", "law": "Because the expected semantic meaning for each text input area should be identified as specifically as possible, you can’t combine multiple values for one property."}
+{"id": "/documentation/UIKit/UITextInputTraits/textContentType", "law": "For possible values you can use, see ; by default, the value of this property is ."}

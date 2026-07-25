@@ -41,3 +41,22 @@
 {"id": "/documentation/Swift/UnsafeMutableRawPointer/copyMemory(from:byteCount:)", "law": "If the bytes of memory referenced by this pointer are bound to a type , then must be a trivial type, this pointer and must be properly aligned for accessing , and must be a multiple of ."}
 {"id": "/documentation/Swift/UnsafeMutableRawPointer/allocate(byteCount:alignment:)", "law": "Be sure to deallocate any memory that you manually allocate."}
 {"id": "/documentation/Swift/UnsafeMutableRawPointer/allocate(byteCount:alignment:)", "law": "The allocated memory is not bound to any specific type and must be bound before performing any typed operations."}
+{"id": "/documentation/Swift/Identifiable", "law": "Use the protocol to provide a stable notion of identity to a class or value type."}
+{"id": "/documentation/Swift/Identifiable", "law": "You could use the property to identify a particular user even if other data fields change, such as the user’s name."}
+{"id": "/documentation/Swift/Identifiable", "law": "Identities can have any of the following characteristics: Guaranteed always unique, like UUIDs."}
+{"id": "/documentation/Swift/String", "law": "Strings always have value semantics."}
+{"id": "/documentation/Swift/String", "law": "Comparing strings for equality using the equal-to operator ( ) or a relational operator (like or ) is always performed using Unicode canonical representation."}
+{"id": "/documentation/Swift/String", "law": "Basic string operations are not sensitive to locale settings, ensuring that string comparisons and other operations always have a single, stable result, allowing strings to be used as keys in instances and for other purposes."}
+{"id": "/documentation/Swift/String", "law": "If you need to access the contents of a string as encoded in different Unicode encodings, use one of the string’s , , or properties."}
+{"id": "/documentation/Swift/String", "law": "To demonstrate the different views available for every string, the following examples use this instance: The string is a collection of the nine characters that are visible when the string is displayed."}
+{"id": "/documentation/Swift/String", "law": "When you need to know the length of a string, you must first consider what you’ll use the length for."}
+{"id": "/documentation/Swift/String", "law": "To check whether a string is empty, use its property instead of comparing the length of one of the views to ."}
+{"id": "/documentation/Swift/String", "law": "Unlike with , calculating a view’s property requires iterating through the elements of the string."}
+{"id": "/documentation/Swift/String", "law": "To find individual elements of a string, use the appropriate view for your task."}
+{"id": "/documentation/Swift/String", "law": "If you need to validate that an index from one string’s view corresponds with an exact position in another view, use the index’s method or the initializer."}
+{"id": "/documentation/Swift/Actor", "law": "It is possible to configure an actor to use a specific , as well as impact the scheduling of default tasks and actors by using a ."}
+{"id": "/documentation/Swift/Array/max(by:)", "law": "The sequence’s maximum element if the sequence is not empty; otherwise, ."}
+{"id": "/documentation/Swift/Array/max(by:)", "law": "The predicate must be a strict weak ordering over the elements."}
+{"id": "/documentation/Swift/Array/max(by:)", "law": "That is, for any elements , , and , the following conditions must hold: is always ."}
+{"id": "/documentation/Swift/Array/max(by:)", "law": "(Transitive incomparability) This example shows how to use the method on a dictionary to find the key-value pair with the highest value."}
+{"id": "/documentation/Swift/Array/max(by:)", "law": "Returns the maximum element in the sequence, using the given predicate as the comparison between elements."}

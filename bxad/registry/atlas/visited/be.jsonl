@@ -7,3 +7,11 @@
 {"id": "/documentation/arkit/arpointcloud", "sha": "5a6b9e28f6dcd689d367b7b9138b4035cb7303ad86aad99b37314e2800055644", "t": "ARPointCloud", "n": 299, "laws": 1, "ts": "2026-07-24 18:56 UTC"}
 {"id": "/documentation/avfoundation/avcapturestillimageoutput", "sha": "d815e9dd944d727e3967f00cc0d2dac489102f91d2a078fe3f566bd091b32b42", "t": "AVCaptureStillImageOutput", "n": 1069, "laws": 0, "ts": "2026-07-24 19:03 UTC"}
 {"id": "/documentation/Compression/COMPRESSION_STATUS_OK", "sha": "a02189c6b45d594ad15d653d6b02363ae01e45667e12ace78fcb7b512833da07", "t": "COMPRESSION_STATUS_OK", "n": 109, "laws": 0, "ts": "2026-07-25 04:22 UTC"}
+{"id": "/documentation/alarmkit/alarmpresentation/alert-swift.struct", "sha": "4ebecd23317bae837310c62aaf1b4a42123369930143ee8a3e7fda79f0c70ffa", "t": "AlarmPresentation.Alert", "n": 633, "laws": 1, "ts": "2026-07-25 18:06 UTC"}
+{"id": "/documentation/appintents", "sha": "26abac68aa2925d77da3a5c168c033de8f923c33c3a2f375fb31bad57071ecee", "t": "App Intents", "n": 2912, "laws": 6, "ts": "2026-07-25 18:07 UTC"}
+{"id": "/documentation/coreaudio", "sha": "9207088c0ef3a73db8b70a03bbc75b70a0bb76a7316caaca08d137bdb8e46da1", "t": "Core Audio", "n": 945, "laws": 1, "ts": "2026-07-25 18:18 UTC"}
+{"id": "/documentation/CoreData/NSManagedObject", "sha": "bb0c786dc61312dbcbfe85e7e8ebafab4152a72b91032ddbecddc505e46baa04", "t": "NSManagedObject", "n": 9537, "laws": 10, "ts": "2026-07-25 18:19 UTC"}
+{"id": "/documentation/foundationmodels", "sha": "6f9027d7262c3001fa17ebb43ea4a0554266419794c2f01ab84993c56233f020", "t": "Foundation Models", "n": 3557, "laws": 4, "ts": "2026-07-25 18:31 UTC"}
+{"id": "/documentation/foundationmodels/managing-the-context-window", "sha": "165dd8dc22e4226f59e78a4d62fcfb06781eaa425f8a01bfb3a6325db27ac450", "t": "Managing the context window", "n": 8532, "laws": 10, "ts": "2026-07-25 18:32 UTC"}
+{"id": "/documentation/foveatedstreaming/foveatedstreamingsession/endpoint/local(ipaddress:port:)", "sha": "7dcba9784d9337ba5a3557df8a1867462733612f9504d52397a203f754b27048", "t": "local(ipAddress:port:)", "n": 185, "laws": 0, "ts": "2026-07-25 18:32 UTC"}
+{"id": "/documentation/groupactivities/spatialtemplateseatelement", "sha": "550d59a8bdb6842fc0adb6d812daafbba78315813518e29a6b869862c5d5cba7", "t": "SpatialTemplateSeatElement", "n": 922, "laws": 2, "ts": "2026-07-25 18:34 UTC"}

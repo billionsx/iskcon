@@ -7,3 +7,5 @@
 {"id": "/documentation/Vision/VNDetectFaceRectanglesRequest", "sha": "47e67b483d9b5fd44c026e22aedcbdd3b7ad17d15ed2d9803c8bbec6c62e3cb4", "t": "VNDetectFaceRectanglesRequest", "n": 340, "laws": 0, "ts": "2026-07-24 19:04 UTC"}
 {"id": "/documentation/CoreMedia/CMTag-swift.class/value(onlyIfMatching:)", "sha": "7457a957f7961768a1be3c82efe0aadc4295a619dafe6801dd0dcd6964aac777", "t": "value(onlyIfMatching:)", "n": 197, "laws": 0, "ts": "2026-07-24 19:05 UTC"}
 {"id": "/documentation/avkit/avcontentproposalviewcontroller", "sha": "8c3d58a10e0a4d73fa739a9c95429bd1cf3fa2b7030790edcaea86f339ff3ead", "t": "AVContentProposalViewController", "n": 442, "laws": 0, "ts": "2026-07-24 19:08 UTC"}
+{"id": "/documentation/appkit/nstouchbar", "sha": "13df5e594ede3a4c1e129132d6916aba7b6604070865e9ab1ab4045aa7e11399", "t": "NSTouchBar", "n": 24661, "laws": 10, "ts": "2026-07-25 18:09 UTC"}
+{"id": "/documentation/Combine/Subject/send(_:)", "sha": "872ed94a3a8617291dd9a4d00773ad1585df4923438e2983ce69cba074cfc9d8", "t": "send(_:)", "n": 32, "laws": 0, "ts": "2026-07-25 18:24 UTC"}

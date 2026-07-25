@@ -1,2 +1,11 @@
 {"id": "/documentation/SigninwithApple", "law": "Sign in with Apple at Work & School provides the same ease of use for users with managed Apple Accounts in Apple School Manager (ASM) or Apple Business Manager (ABM)."}
 {"id": "/documentation/SigninwithApple", "law": "For website support, see , and use the to communicate with Apple servers."}
+{"id": "/documentation/signinwithapple/displaying-sign-in-with-apple-buttons-in-your-app", "law": "For SwiftUI, use to create and customize a Sign in with Apple button in your app."}
+{"id": "/documentation/signinwithapple/displaying-sign-in-with-apple-buttons-in-your-app", "law": "For Swift and Objective-C apps on iOS, iPadOS, macOS and tvOS use the class."}
+{"id": "/documentation/signinwithapple/displaying-sign-in-with-apple-buttons-in-your-app", "law": "For watchOS, use the class."}
+{"id": "/documentation/signinwithapple/incorporating-sign-in-with-apple-into-other-platforms", "law": "To add Sign in with Apple to apps that don’t have access to the framework, you control the sign-in request manually."}
+{"id": "/documentation/signinwithapple/incorporating-sign-in-with-apple-into-other-platforms", "law": "Perform this request by adding a custom Sign in with Apple button, sending the required query parameters, handling the return request, and returning control back to the app."}
+{"id": "/documentation/signinwithapple/incorporating-sign-in-with-apple-into-other-platforms", "law": "Use this file to customize and embed your button of choice in your application or service."}
+{"id": "/documentation/signinwithapple/incorporating-sign-in-with-apple-into-other-platforms", "law": "Use the , , and parameters to control what data is returned."}
+{"id": "/documentation/signinwithapple/incorporating-sign-in-with-apple-into-other-platforms", "law": "Platforms that support custom URL schemes — iOS 12.0 and earlier and Android — must handle the data resulting from the authorization flow by storing it on their app server in the logic of their endpoint."}
+{"id": "/documentation/signinwithapple/incorporating-sign-in-with-apple-into-other-platforms", "law": "Use the following API endpoints to create a custom Sign in with Apple button: Add Sign in with Apple capabilities to apps that can’t directly access Sign in with Apple JS."}

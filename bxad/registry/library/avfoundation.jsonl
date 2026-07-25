@@ -402,3 +402,10 @@
 {"id": "/documentation/AVFoundation/setting-up-a-capture-session", "law": "Then, to use the preview layer with a capture session, set the layer’s property: If your app supports multiple interface orientations, use the preview layer’s to the capture session to set a matching that of your UI."}
 {"id": "/documentation/AVFoundation/setting-up-a-capture-session", "law": "With other capture outputs, you first start the session running, then use the capture output class itself to initiate capture."}
 {"id": "/documentation/AVFoundation/setting-up-a-capture-session", "law": "In a photography app, for example, running the session enables a viewfinder-style preview, but you use the method to snap a picture."}
+{"id": "/documentation/AVFoundation/AVAssetWriter", "law": "You use an asset writer to write media to file formats such as the QuickTime movie file format and MPEG-4 file format."}
+{"id": "/documentation/AVFoundation/AVAssetWriter", "law": "An asset writer is a single-use object that writes one output file."}
+{"id": "/documentation/AVFoundation/AVAssetWriter", "law": "Create multiple asset writer instances if your app requires writing multiple output files."}
+{"id": "/documentation/AVFoundation/AVCaptureDeviceInput/multichannelAudioMode", "law": "The system ignores the value when an external microphone is in use."}
+{"id": "/documentation/AVFoundation/AVCaptureDeviceInput/multichannelAudioMode", "law": "The default value is , which indicates to use single channel audio recording."}
+{"id": "/documentation/AVFoundation/AVCaptureVideoDataOutput/setSampleBufferDelegate(_:queue:)", "law": "If your frame processing is consistently unable to keep up with the rate of incoming frames, you should consider using the property, which will generally yield better performance characteristics and more consistent frame rates than frame dropping alone."}
+{"id": "/documentation/AVFoundation/AVCaptureVideoDataOutput/setSampleBufferDelegate(_:queue:)", "law": "If you need to minimize the chances of frames being dropped, you should specify a queue on which a sufficiently small amount of processing is being done outside of receiving sample buffers."}

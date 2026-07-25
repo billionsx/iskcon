@@ -11,3 +11,8 @@
 {"id": "/documentation/accelerate/vdsp-library", "sha": "b1498b08b7e02cec6abcda41e6c7b0a67ea75794ff6d8d0b98e1a29dd90de47c", "t": "vDSP", "n": 3541, "laws": 1, "ts": "2026-07-25 04:20 UTC"}
 {"id": "/documentation/accelerate/vimagemdtableusagehint", "sha": "da79e5c7335acb49ee17c44e087138a81b2ef71a40318638fa275e56da0d4270", "t": "vImageMDTableUsageHint", "n": 195, "laws": 1, "ts": "2026-07-25 04:21 UTC"}
 {"id": "/documentation/accelerate/normalization-functions", "sha": "977564d72d6fff458127f56733dadce663e273fc33bb6753b1fe4b6006d68c6e", "t": "Normalization functions", "n": 217, "laws": 0, "ts": "2026-07-25 04:23 UTC"}
+{"id": "/documentation/appintents/appintent", "sha": "be4a0a520703ad26d6466b08fb6867c97a423ec03198015787575b5ba9da2753", "t": "AppIntent", "n": 4072, "laws": 8, "ts": "2026-07-25 18:07 UTC"}
+{"id": "/documentation/appkit/nstoolbaritem/identifier", "sha": "049d5de214ab204087b1c20cecda607b528931eeb15448464a8b4ec167845994", "t": "NSToolbarItem.Identifier", "n": 857, "laws": 0, "ts": "2026-07-25 18:10 UTC"}
+{"id": "/documentation/Metal/MTLPixelFormat/r8Uint", "sha": "e5bb2ab9d96de87ea97199fed7513558d38d830dd1f4079697ce2f11df0c55db", "t": "MTLPixelFormat.r8Uint", "n": 58, "laws": 0, "ts": "2026-07-25 18:18 UTC"}
+{"id": "/documentation/FileProvider/NSFileProviderError/Code/syncAnchorExpired", "sha": "f139985b570864644f80c19309249a3db4c885e56e66fc071412d6d89a7aef59", "t": "NSFileProviderError.Code.syncAnchorExpired", "n": 124, "laws": 1, "ts": "2026-07-25 18:29 UTC"}
+{"id": "/documentation/foundationmodels/privatecloudcomputelanguagemodel", "sha": "9e457ac53b1158d37700bb488a255d8bd9f5b28ad791f69421b6e00aeba9e01e", "t": "PrivateCloudComputeLanguageModel", "n": 997, "laws": 2, "ts": "2026-07-25 18:32 UTC"}

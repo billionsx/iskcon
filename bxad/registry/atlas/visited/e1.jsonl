@@ -2,3 +2,9 @@
 {"id": "/documentation/HealthKit/accessing-workout-zone-data", "sha": "9d0919cba90fa328d2a3d45a08bb18e548b90f967cc91ed29c71f00943f2112d", "t": "Accessing workout zone data", "n": 4997, "laws": 8, "ts": "2026-07-24 18:45 UTC"}
 {"id": "/documentation/accelerate/vdsp_biquad_setcoefficientssingle", "sha": "3a51c6914dbe8bbb532d9ae3161360bf40e4e48bbb2bb8ed133100d1aab3027e", "t": "vDSP_biquad_SetCoefficientsSingle", "n": 365, "laws": 2, "ts": "2026-07-25 04:20 UTC"}
 {"id": "/documentation/accelerate/vdsp/sum(_:)-8hq9", "sha": "73d3056aa4fa3e3ec57875b0206c3218275e8f4d4bf2492e1c35f0cfc6877b1b", "t": "sum(_:)", "n": 176, "laws": 0, "ts": "2026-07-25 04:22 UTC"}
+{"id": "/documentation/appkit/nswindowcontroller", "sha": "f7362f1d50f166292cd9b071e746ddba58740641459f9948308381dbe6485438", "t": "NSWindowController", "n": 3684, "laws": 4, "ts": "2026-07-25 18:09 UTC"}
+{"id": "/documentation/audiotoolbox/auaudiounitbus", "sha": "8f3386640704988c2f44e2a41b29c1fe2dd5005dae183831e84d5ec848882b06", "t": "AUAudioUnitBus", "n": 420, "laws": 0, "ts": "2026-07-25 18:13 UTC"}
+{"id": "/documentation/audiotoolbox/auaudiounitfactory", "sha": "8f234651b2c0955a018326a4f687c9946828f97c1140a02f08281367aceb9c40", "t": "AUAudioUnitFactory", "n": 536, "laws": 2, "ts": "2026-07-25 18:13 UTC"}
+{"id": "/documentation/authenticationservices/asauthorizationappleidprovider", "sha": "7dea56fb697787cddf2a4d2d0664c491348f269cf8bcff085594eac2f281a91c", "t": "ASAuthorizationAppleIDProvider", "n": 828, "laws": 2, "ts": "2026-07-25 18:14 UTC"}
+{"id": "/documentation/coremidi/midiclientref", "sha": "2eef85e3db31dc025dc1d873f0c06a5cdc39adb8166cc32d9cdf12f88bf9bb35", "t": "MIDIClientRef", "n": 121, "laws": 0, "ts": "2026-07-25 18:21 UTC"}
+{"id": "/documentation/coreml/updating-a-model-file-to-a-model-package", "sha": "160cb82b96e11ad5d897e4615b19b10ab7ff6c0cebdc6b3f7dd6a0c7fe368e26", "t": "Updating a Model File to a Model Package", "n": 1233, "laws": 0, "ts": "2026-07-25 18:22 UTC"}

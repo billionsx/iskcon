@@ -91,3 +91,5 @@
 {"id": "/documentation/RealityKit/PhysicsBodyComponent/mode", "law": "For entities that don’t need to move at all, set its physics body’s mode to ."}
 {"id": "/documentation/RealityKit/Scene", "law": "You don’t create a instance directly."}
 {"id": "/documentation/RealityKit/Scene", "law": "You then add a hierarchy of other instances to each anchor to indicate the geometry and behaviors that RealityKit should render at a given anchor point."}
+{"id": "/documentation/RealityKit/HoverEffectComponent", "law": "You can customize the visual effect of the through the use of styles."}
+{"id": "/documentation/RealityKit/HoverEffectComponent", "law": "Customize how a presents on a partially or fully transparent material with the following opacity functions: Opacity functions can’t be applied to that use ."}

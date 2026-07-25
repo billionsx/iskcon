@@ -20,3 +20,21 @@
 {"id": "/documentation/SwiftData", "law": "For example, an app that fetches data from a remote web service might use SwiftData to implement a lightweight caching mechanism and provide limited offline functionality."}
 {"id": "/documentation/SwiftData", "law": "Use the class to insert, update, and delete instances of that model, and to write unsaved changes to disk."}
 {"id": "/documentation/SwiftData", "law": "To display models in a SwiftUI view, use the macro and specify a predicate or fetch descriptor."}
+{"id": "/documentation/SwiftData/FetchDescriptor", "law": "Use a fetch descriptor to capture the criteria necessary to select, and optionally sort, a specific collection of models from your app’s persistent storage."}
+{"id": "/documentation/SwiftData/FetchDescriptor", "law": "If you don’t specify a predicate, the fetch returns all models of the inferred type."}
+{"id": "/documentation/SwiftData/FetchDescriptor", "law": "If you’re displaying the fetched models in a SwiftUI view, use the descriptor with the macro instead."}
+{"id": "/documentation/SwiftData/FetchDescriptor", "law": "A type that describes the criteria, sort order, and any additional configuration to use when performing a fetch."}
+{"id": "/documentation/SwiftData/ModelContainer", "law": "If the aggregate changes between two versions of your schema exceed the capabilities of automatic migrations, provide the container with a to participate in those migrations and help ensure they complete successfully."}
+{"id": "/documentation/SwiftData/ModelContainer", "law": "For example, you may want use a particular app group container or specify that the storage is ephemeral and should exist only in memory."}
+{"id": "/documentation/SwiftData/ModelContainer", "law": "An app that uses SwiftData requires at least one model container."}
+{"id": "/documentation/SwiftData/ModelContext", "law": "You use a context to insert new models, track and persist changes to those models, and to delete those models when you no longer need them."}
+{"id": "/documentation/SwiftData/ModelContext", "law": "If your app’s schema describes relationships between models, you don’t need to manually insert each model into the context when you first create them."}
+{"id": "/documentation/SwiftData/ModelContext", "law": "The macros use the same context to perform their fetches."}
+{"id": "/documentation/SwiftData/ModelContext", "law": "If you don’t explicitly attach a model container, the environment provides a context bound to an in-memory, schema-less container."}
+{"id": "/documentation/SwiftData/ModelContext", "law": "After you establish access to a model context, use that context’s and methods to add and remove models."}
+{"id": "/documentation/SwiftData/ModelContext", "law": "Use the property to determine if the context has unsaved changes, and call to discard any pending inserts and deletes and any restore changed models to their most recent saved state."}
+{"id": "/documentation/SwiftData/ModelContext", "law": "Although you fetch models primarily with the macro (and its variants), you can use a model context to perform almost identical fetches."}
+{"id": "/documentation/SwiftData/ModelContext", "law": "For example, use the and methods to retrieve all models of a certain type that match a set of criteria."}
+{"id": "/documentation/SwiftData/ModelContext", "law": "And use to determine the number of models that match some criteria without the overhead of fetching the models themselves."}
+{"id": "/documentation/SwiftData/ModelContext", "law": "If you need to be able to identify models that match some criteria but don’t require all of the associated data, use and to retrieve only those models’ persistent identifiers."}
+{"id": "/documentation/SwiftData/ModelContext/autosaveEnabled", "law": "A Boolean value that indicates whether the context should automatically save any pending changes when certain events occur."}

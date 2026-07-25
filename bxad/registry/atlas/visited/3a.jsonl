@@ -5,3 +5,9 @@
 {"id": "/documentation/arkit/arbodyanchor", "sha": "fae2d860ade465aca5626dad5eaf32341e7758d606f37e926f42ce7561ea0928", "t": "ARBodyAnchor", "n": 820, "laws": 0, "ts": "2026-07-24 18:55 UTC"}
 {"id": "/documentation/avfoundation/avmediacharacteristic/containsstereomultiviewvideo", "sha": "3399395f8f9dba6f5887afe25ba10ce9a5a1bbcee343ac20caf40bd4721e21b7", "t": "containsStereoMultiviewVideo", "n": 940, "laws": 2, "ts": "2026-07-24 19:05 UTC"}
 {"id": "/documentation/accelerate/vimage_buffer/init(size:bitsperpixel:)", "sha": "9046b63553234bab6973e76d887ed36e46d83e23d77b2890c99686f0f7cac77f", "t": "init(size:bitsPerPixel:)", "n": 156, "laws": 0, "ts": "2026-07-25 04:23 UTC"}
+{"id": "/documentation/alarmkit/alarmmanager/cancel(id:)", "sha": "4666768556b52f3b72d4f70674a370b2d09795b78510b11193befc8a43840070", "t": "cancel(id:)", "n": 132, "laws": 0, "ts": "2026-07-25 18:06 UTC"}
+{"id": "/documentation/alarmkit/alarmmanager/pause(id:)", "sha": "c399fe690a89e56e2240a65a92289a3874f45a184e5747253f1c41bd2f410d02", "t": "pause(id:)", "n": 144, "laws": 0, "ts": "2026-07-25 18:06 UTC"}
+{"id": "/documentation/applearchive/encrypting-and-decrypting-directories", "sha": "822afbc6bccb17db609c02660bacd4738765f63714fa4c9fb4b36383d25e3585", "t": "Encrypting and Decrypting Directories", "n": 208, "laws": 0, "ts": "2026-07-25 18:12 UTC"}
+{"id": "/documentation/corebluetooth", "sha": "fb352b0cb0da1290838d22bc6e00d383d930b37e28d796f833911c8678d196c2", "t": "Core Bluetooth", "n": 2193, "laws": 2, "ts": "2026-07-25 18:18 UTC"}
+{"id": "/documentation/corelocation/cllocationupdate", "sha": "886393b5b6dca4699cb3a8fa2b78b8d8cad61e82a53128f1d92a20a8bf16cf86", "t": "CLLocationUpdate", "n": 594, "laws": 1, "ts": "2026-07-25 18:21 UTC"}
+{"id": "/documentation/Combine/Publisher/map(_:)-99evh", "sha": "ece516ed350fb7ec0b4fc7c354d0237e446ccd1104284e37558730ac3916f757", "t": "map(_:)", "n": 848, "laws": 2, "ts": "2026-07-25 18:24 UTC"}

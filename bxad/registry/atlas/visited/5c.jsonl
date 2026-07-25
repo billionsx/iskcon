@@ -8,3 +8,7 @@
 {"id": "/documentation/AudioToolbox/AUAudioUnit/userPresets", "sha": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855", "t": "userPresets", "n": 0, "laws": 0, "ts": "2026-07-24 19:01 UTC"}
 {"id": "/documentation/accelerate/bnns/reductionlayer", "sha": "e2fc0fba6fbe0cd9c897c8e26c65b0a6f8d209e8e4de9bff0a858f18ed81a19a", "t": "BNNS.ReductionLayer", "n": 446, "laws": 0, "ts": "2026-07-25 04:21 UTC"}
 {"id": "/documentation/AVFoundation/AVAssetReader", "sha": "d9776eb943ca166f5cb2d6e60512c2ddbec5c1c3444e304b367c36ff1dbabeac", "t": "AVAssetReader", "n": 800, "laws": 1, "ts": "2026-07-25 04:22 UTC"}
+{"id": "/documentation/Foundation/NSExtensionRequestHandling/beginRequest(with:)", "sha": "e75df5fc6bb93d0ae4ff2eb9a7bb4947dee4696ccd8499007bfde4308908de01", "t": "beginRequest(with:)", "n": 642, "laws": 0, "ts": "2026-07-25 18:09 UTC"}
+{"id": "/documentation/coremidi/midi2noteon(_:_:_:_:_:_:)", "sha": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855", "t": "MIDI2NoteOn(_:_:_:_:_:_:)", "n": 0, "laws": 0, "ts": "2026-07-25 18:21 UTC"}
+{"id": "/documentation/driverkit/iotimerdispatchsource/timeroccurred", "sha": "8505e32b4a5bd467b9c31b1ff7ae9f51e94fb2753df363fa012fcdd7d3d7ca8f", "t": "TimerOccurred", "n": 364, "laws": 3, "ts": "2026-07-25 18:26 UTC"}
+{"id": "/documentation/fskit/fsvolume/itemdeactivation", "sha": "ef6d0b45e4950aacd8f9657c5485c553f1806d4eb0852f5c1b10e13ce6ab943c", "t": "FSVolume.ItemDeactivation", "n": 224, "laws": 0, "ts": "2026-07-25 18:29 UTC"}

@@ -2,3 +2,8 @@
 {"id": "/documentation/Hypervisor", "sha": "bda869ed0385cadf59e9bc046bf5223f5244a66d7d21913738e6442b3db9150f", "t": "Hypervisor", "n": 3385, "laws": 1, "ts": "2026-07-24 18:51 UTC"}
 {"id": "/documentation/avfaudio/avaudiounitvarispeed", "sha": "4a17f0c63a192c623984e5246b0428d84975ea3bf1615deb795c806994177e41", "t": "AVAudioUnitVarispeed", "n": 98, "laws": 0, "ts": "2026-07-24 19:00 UTC"}
 {"id": "/documentation/avfaudio/avaudiosession/category-swift.struct/record", "sha": "d48300953d10d6b4c881652750c1e92ff4c53aa9c8fb5aa0b45534669167bb72", "t": "record", "n": 636, "laws": 2, "ts": "2026-07-24 19:00 UTC"}
+{"id": "/documentation/UIKit/UIAccessibilityElement/accessibilityLabel", "sha": "8ed5e8b0153d3b1e026aea5252aa3a24c58df8ffbe7e5f43206dd086a3914e87", "t": "accessibilityLabel", "n": 562, "laws": 0, "ts": "2026-07-25 18:05 UTC"}
+{"id": "/documentation/ClassKit/enabling-classkit-in-your-app", "sha": "bccf8bf632d472c74dae2beda0dc464031db12b3c425e22512b2705423eb3fc1", "t": "Enabling ClassKit in your app", "n": 2486, "laws": 3, "ts": "2026-07-25 18:16 UTC"}
+{"id": "/documentation/SwiftData/Model()", "sha": "35a31fd293c42a4546f8ec63d5fef983e0e8b5f88afad75289f3d63ef49e8739", "t": "Model()", "n": 280, "laws": 0, "ts": "2026-07-25 18:19 UTC"}
+{"id": "/documentation/fskit/fsvolume/renameoperations", "sha": "5cfd8ef55c7d28905f50fc855b41eeeeb8633d07cafde37c9221dabdbdf71168", "t": "FSVolume.RenameOperations", "n": 216, "laws": 0, "ts": "2026-07-25 18:29 UTC"}
+{"id": "/documentation/FileProvider/NSFileProviderError/Code/cannotSynchronize", "sha": "c86bc06cbf188ef9f8fc9fd4398e40d6edbf6b7a4d0a0bb06b7b42db30112423", "t": "NSFileProviderError.Code.cannotSynchronize", "n": 201, "laws": 0, "ts": "2026-07-25 18:29 UTC"}

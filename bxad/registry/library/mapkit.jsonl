@@ -36,3 +36,5 @@
 {"id": "/documentation/MapKit/MKMapView", "law": "When configuring your map interface, be sure to add all of your annotation objects right away."}
 {"id": "/documentation/MapKit/MKMapView", "law": "You can use overlays to layer content over a wide portion of the map."}
 {"id": "/documentation/MapKit/MKOverlay", "law": "You might use overlays to define the geographic boundaries of a national park or trace a bus route along city streets."}
+{"id": "/documentation/MapKit/MKMapItem", "law": "Use this class to do the following: Share map-related data with the Maps app."}
+{"id": "/documentation/MapKit/MKMapItem", "law": "Use the information in those two objects to plot the route and generate directions."}

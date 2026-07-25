@@ -11,3 +11,4 @@
 {"id": "/documentation/NearbyInteraction", "law": "While your app is in the foreground, it can freely use Nearby Interaction to perform ranging between UWB devices."}
 {"id": "/documentation/NearbyInteraction", "law": "Both these forms of background activity require that you enable the appropriate capability in Xcode."}
 {"id": "/documentation/NearbyInteraction", "law": "Avoid using deprecated configuration in your apps."}
+{"id": "/documentation/NearbyInteraction/NISessionDelegate", "law": "Assign a delegate that Nearby Interaction can use to notify your app of important events that occur during the session life cycle."}

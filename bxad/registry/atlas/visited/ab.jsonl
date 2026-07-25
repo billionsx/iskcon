@@ -9,3 +9,4 @@
 {"id": "/documentation/ContactsUI", "sha": "ccd1d98fe8c6dfe5832f09252e6bf178b970a25dfded0ca1cca527484edf0b16", "t": "Contacts UI", "n": 718, "laws": 0, "ts": "2026-07-24 18:49 UTC"}
 {"id": "/documentation/CoreAudio", "sha": "9207088c0ef3a73db8b70a03bbc75b70a0bb76a7316caaca08d137bdb8e46da1", "t": "Core Audio", "n": 945, "laws": 1, "ts": "2026-07-24 18:49 UTC"}
 {"id": "/documentation/SwiftUI/View", "sha": "bf88a124014302a506b0d234c5f6e93689cf1debfde423a99e22a17a14dd7278", "t": "View", "n": 1991, "laws": 4, "ts": "2026-07-24 18:57 UTC"}
+{"id": "/documentation/appintents/entityquery/suggestedentities()", "sha": "919749c56aafda6bc9fa9552cc7a2063daa62ddbae6dd24cfb6d16568374ebd1", "t": "suggestedEntities()", "n": 93, "laws": 0, "ts": "2026-07-25 18:08 UTC"}

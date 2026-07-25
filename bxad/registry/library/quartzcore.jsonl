@@ -1,0 +1,8 @@
+{"id": "/documentation/QuartzCore/CAMetalDrawable/texture", "law": "Use this object to configure a object to render to the drawable object."}
+{"id": "/documentation/QuartzCore/CAMetalLayer", "law": "Use a when you want to use Metal to render a layer’s contents; for example, to render into a view."}
+{"id": "/documentation/QuartzCore/CAMetalLayer", "law": "To avoid stalls in your app, request a new drawable only when you need it, and release any references to it as quickly as possible after you’re done with it."}
+{"id": "/documentation/QuartzCore/CAMetalLayer", "law": "For example, before retrieving a new drawable, you might perform other work on the CPU or submit commands to the GPU that don’t require the drawable."}
+{"id": "/documentation/QuartzCore/CAMetalLayer", "law": "If you don’t release drawables correctly, the layer runs out of drawables, and future calls to return ."}
+{"id": "/documentation/QuartzCore/CAMetalLayer", "law": "Don’t release the drawable explicitly; instead, embed your render loop within an autorelease pool block: This block releases drawables promptly and avoids possible deadlock situations with multiple drawables."}
+{"id": "/documentation/QuartzCore/CAMetalLayer", "law": "If you don’t need to query these properties, release the drawable when you no longer need it."}
+{"id": "/documentation/QuartzCore/CAMetalLayer/pixelFormat", "law": "You must use one of the following formats: The pixel format of the layer’s textures."}

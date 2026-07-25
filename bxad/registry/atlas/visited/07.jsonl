@@ -6,3 +6,7 @@
 {"id": "/documentation/arkit/arscnviewdelegate/renderer(_:didadd:for:)", "sha": "13d694b3721e425c1805d52c78d3d2b09bb8ceccea5b3e256c4dba695287ed64", "t": "renderer(_:didAdd:for:)", "n": 622, "laws": 0, "ts": "2026-07-24 18:56 UTC"}
 {"id": "/documentation/SceneKit/SCNScene/background", "sha": "bd2d366e2de2c504941083d0f26ef9f7b2cef2e369b88fe41c76c3fbff1e45a5", "t": "background", "n": 446, "laws": 0, "ts": "2026-07-24 18:59 UTC"}
 {"id": "/documentation/avfoundation/avplayer", "sha": "fff91dc4aa77a3eb3f4f9eadd83dbdf01bd9160beadf011838a00d47b96cbdd0", "t": "AVPlayer", "n": 5952, "laws": 9, "ts": "2026-07-24 19:04 UTC"}
+{"id": "/documentation/AuthenticationServices/ASAuthorizationControllerDelegate/authorizationController(controller:didCompleteWithError:)", "sha": "12d14ea0875b4f0f2e1e9c53fc9e4152196519a221e81e1c8375c670374f90ae", "t": "authorizationController(controller:didCompleteWithError:)", "n": 82, "laws": 0, "ts": "2026-07-25 18:14 UTC"}
+{"id": "/documentation/corenfc/nfcndeftag", "sha": "d2008097be2f0fe3ec9b93bef3218223fa2ee27f0d0227beaf488d09a910774a", "t": "NFCNDEFTag", "n": 272, "laws": 0, "ts": "2026-07-25 18:23 UTC"}
+{"id": "/documentation/createml/mlregressor", "sha": "8cd59733765ef3143055568910a08be50f9877a4433288064e0a2e38f53ca259", "t": "MLRegressor", "n": 1673, "laws": 1, "ts": "2026-07-25 18:24 UTC"}
+{"id": "/documentation/PhotosUI/PhotosPickerItem", "sha": "2abc72853835f7d54af4e503dbb860f283b57bc045baf08e268848e5f8740088", "t": "PhotosPickerItem", "n": 843, "laws": 2, "ts": "2026-07-25 18:34 UTC"}

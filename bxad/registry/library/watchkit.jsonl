@@ -2,3 +2,4 @@
 {"id": "/documentation/WatchKit/interacting-with-bluetooth-peripherals-during-background-app-refresh", "law": "On the watch, to demonstrate the alert when the peripheral moves out of range and comes back in functionality, turn on the “Scan to alert” switch."}
 {"id": "/documentation/WatchKit", "law": "You can also use WatchKit to design your app’s user interface in a storyboard, connecting UI elements to an interface controller."}
 {"id": "/documentation/WatchKit", "law": "Build watchOS apps that use features the app delegate monitors or controls, such as background tasks and extended runtime sessions."}
+{"id": "/documentation/WatchKit/WKApplicationDelegate/userDidAcceptCloudKitShare(with:)", "law": "Use this method to respond to a CloudKit Sharing invitation."}

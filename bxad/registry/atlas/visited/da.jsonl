@@ -7,3 +7,9 @@
 {"id": "/documentation/arkit/arsession/update(with:)", "sha": "0dfe37238d8cc798e7e2876eca9f8544c6c02f9be050b0d36c932869e9dc56b6", "t": "update(with:)", "n": 508, "laws": 0, "ts": "2026-07-24 18:56 UTC"}
 {"id": "/documentation/arkit/arskviewdelegate", "sha": "4637734ce5f38f15baa6598c1f7709d60e0d29c31e609b7666a460031bc4d046", "t": "ARSKViewDelegate", "n": 566, "laws": 0, "ts": "2026-07-24 18:57 UTC"}
 {"id": "/documentation/avfoundation/avvideocompositing/startrequest(_:)", "sha": "3f1164f3ee45fc4f74cae47cba9f8622857dc41e63b09a398cdfc32b025cfb9b", "t": "startRequest(_:)", "n": 905, "laws": 1, "ts": "2026-07-24 19:04 UTC"}
+{"id": "/documentation/accessibility/switch-control", "sha": "d831284f0e2abc0491140c2d05e86cf21ec662ec41cad9b28a276ded7466b6bc", "t": "Switch Control", "n": 846, "laws": 2, "ts": "2026-07-25 18:05 UTC"}
+{"id": "/documentation/appkit/nswindowcontroller/window", "sha": "01a2b32a1fd631dcea66b75c355d37520470abf1ca639e53338644317c70563e", "t": "window", "n": 789, "laws": 2, "ts": "2026-07-25 18:10 UTC"}
+{"id": "/documentation/appkit/toolbar", "sha": "abb9e34086aafdbaf9edfeedd30768bdc80aa508e57cd6a2d1b4b616734645ab", "t": "Toolbar", "n": 418, "laws": 0, "ts": "2026-07-25 18:10 UTC"}
+{"id": "/documentation/Foundation/NSCoder", "sha": "ef825f8a559f812e0e821fbf2df18795ef9b2a438e364f391789321dfddeac24", "t": "NSCoder", "n": 4564, "laws": 0, "ts": "2026-07-25 18:10 UTC"}
+{"id": "/documentation/corehaptics/chhapticparametercurve", "sha": "813da9bea92c1bbe30fe4f90ac69fb407dfb6109d451e5e18204acd6d6335c45", "t": "CHHapticParameterCurve", "n": 840, "laws": 1, "ts": "2026-07-25 18:20 UTC"}
+{"id": "/documentation/EventKit/EKCalendar", "sha": "e52b132d207080a0342a0034387c048180ed58084c4d22c41ca0547684f86c14", "t": "EKCalendar", "n": 621, "laws": 2, "ts": "2026-07-25 18:27 UTC"}

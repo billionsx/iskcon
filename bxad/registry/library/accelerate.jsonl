@@ -318,3 +318,37 @@
 {"id": "/documentation/accelerate/working-with-vectors", "law": "You can use the simd framework’s cross product function to calculate the normal of a triangle."}
 {"id": "/documentation/accelerate/working-with-vectors", "law": "Smooth interpolation is commonly used in animation, and you can, for example, use the functions described below to define the of a SpriteKit action."}
 {"id": "/documentation/accelerate/working-with-vectors", "law": "Intermediate elements smoothly interpolate between the first and last values: Use vectors to calculate geometric values, calculate dot products and cross products, and interpolate between values."}
+{"id": "/documentation/accelerate/calculating-the-dominant-colors-in-an-image", "law": "Because the distances are used for comparisons only, the code below calculates the distance squared and avoids the overhead of calculating square roots: The image below is an example 8 x 1 pixel image."}
+{"id": "/documentation/accelerate/vimage/pixelbuffer/alphacomposite(_:toplayer:destination:)-fybo", "law": "This function treats as the bottom layer and both pixel buffers must have alpha as their first channel."}
+{"id": "/documentation/accelerate/halftone-descreening-with-2d-fast-fourier-transform", "law": "The sample app creates its own backing storage, , rather than using to ensure that the vImage buffer doesn’t contain any additional padding bytes."}
+{"id": "/documentation/accelerate/halftone-descreening-with-2d-fast-fourier-transform", "law": "The sample app creates an FFT setup object that contains all the information required to perform the forward and inverse 2D FFT operations."}
+{"id": "/documentation/accelerate/halftone-descreening-with-2d-fast-fourier-transform", "law": "The following code creates a setup object suitable for performing forward and inverse 2D FFTs on a 1024 x 1024 pixel image:"}
+{"id": "/documentation/accelerate/compressing-an-image-using-linear-algebra", "law": "The figure below shows the SVD of a 5 x 3 matrix: When matrix A contains image information, the magnitude of the singular values correlate to the visual significance of features in the image."}
+{"id": "/documentation/accelerate/compressing-an-image-using-linear-algebra", "law": "See “Create floating point pixels to use with vDSP” in for more information on row byte padding."}
+{"id": "/documentation/accelerate/compressing-an-image-using-linear-algebra", "law": "The sample requires fully populated U and Vᵀ matrices, and defines the and parameters that it passes to as ."}
+{"id": "/documentation/accelerate/compressing-an-image-using-linear-algebra", "law": "Before computing the SVD, the sample performs a workspace query to calculate the optimal size of the workspace that requires."}
+{"id": "/documentation/accelerate/compressing-an-image-using-linear-algebra", "law": "To avoid multiple nested calls to , the sample declares variables that shadow some of the matrix properties to pass to the SVD routine as structures."}
+{"id": "/documentation/accelerate/compressing-an-image-using-linear-algebra", "law": "The samples creates the integer array with a count of 12 times the minimum dimension of matrix A ."}
+{"id": "/documentation/accelerate/sparse-solvers-library", "law": "Many problems in science and technology require the solution of large systems of simultaneous equations."}
+{"id": "/documentation/accelerate/sparse-solvers-library", "law": "However, the algorithms you use to manipulate matrices and solve equations normally require O(n_² )_ data and O(n_³ )_ operations."}
+{"id": "/documentation/accelerate/sparse-solvers-library", "law": "To avoid the expense of these algorithms, you can leverage the fact that in many real-world applications, matrices can contain many entries that are zero."}
+{"id": "/documentation/accelerate/sparse-solvers-library", "law": "For example, the sparse benchmark matrix ldoor , which arises from structural modeling, has 952,200 x 952,200 entries with an average of 25 nonzero entries per column."}
+{"id": "/documentation/accelerate/sparse-solvers-library", "law": "Although they require less memory than direct methods, and can be faster for very large problems, they typically require problem-specific preconditioners to be effective."}
+{"id": "/documentation/accelerate/sparse-solvers-library", "law": "You can also use iterative methods when forming the explicit matrix is prohibitively expensive, but performing matrix-vector multiplications is performant."}
+{"id": "/documentation/accelerate/sparse-solvers-library", "law": "It’s best to try a direct method before trying to use iterative methods."}
+{"id": "/documentation/accelerate/sparse-solvers-library", "law": "To ensure that results are deterministic, set to specify single-threaded mode."}
+{"id": "/documentation/accelerate/vimagehistogramspecification_argb8888(_:_:_:_:)", "law": "Use this function to apply a histogram — that you’ve generated using — to each channel of another image."}
+{"id": "/documentation/accelerate/bnnsgraph/builder", "law": "A structure thats provides a closure you can use to define the arguments and operations of a BNNS Graph."}
+{"id": "/documentation/accelerate/bnnsgraph/builder/tensor", "law": "A structure that represents an abstract handle to a tensor that you use within a closure."}
+{"id": "/documentation/accelerate/bnnsgraph/builder/tensor", "law": "maximum(axes:keepDimensions:)."}
+{"id": "/documentation/accelerate/bnnsgraph/builder/tensor", "law": "minimum(axes:keepDimensions:)."}
+{"id": "/documentation/accelerate/bnnsgraph/makecontext(options:_:)", "law": "Use this function to specify the operations that define a BNNS graph."}
+{"id": "/documentation/accelerate/bnnsflags/useclientpointer", "law": "In this case, the you must ensure these pointers remain valid through the entire lifetime of the filter."}
+{"id": "/documentation/accelerate/bnnsflags/useclientpointer", "law": "In that case, you don’t have to keep the pointers valid after the you’ve created the filter."}
+{"id": "/documentation/accelerate/bnnsflags/useclientpointer", "law": "A flag that instructs the filter to use pointers to data you provide at creation time."}
+{"id": "/documentation/accelerate/bnnsrandomfillnormalfloat(_:_:_:_:)", "law": "Use this function to fill an array descriptor with random values mapped to a normal distribution."}
+{"id": "/documentation/accelerate/bnnsrandomfillnormalfloat(_:_:_:_:)", "law": "If you use the same generator on multiple threads, note that this function serializes the generator through an internal lock."}
+{"id": "/documentation/accelerate/bnnsrandomfillnormalfloat(_:_:_:_:)", "law": "To eliminate this contention, use different generators for each thread."}
+{"id": "/documentation/accelerate/vimage/pixelbuffer/colorthreshold(_:destination:)", "law": "Use this function to binarize an image."}
+{"id": "/documentation/accelerate/vimage/pixelbuffer/withunsafemutablebufferpointer(_:)", "law": "You can use this function to simplify interoperation with other libraries and frameworks."}
+{"id": "/documentation/accelerate/vdsp_vgen", "law": "Use this function to generate and return a vector populated with ramped values."}

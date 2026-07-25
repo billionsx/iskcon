@@ -153,3 +153,4 @@
 {"id": "/documentation/AVFAudio/creating-an-audio-unit-extension", "law": "The identifier value you specify is what you use to reference the parameter from your host app."}
 {"id": "/documentation/AVFAudio/creating-an-audio-unit-extension", "law": "Add the custom member variable at the end of the source file, and use the and functions to access it."}
 {"id": "/documentation/AVFAudio/creating-an-audio-unit-extension", "law": "Use the function to implement your custom signal-processing algorithm."}
+{"id": "/documentation/AVFAudio/AVAudioUnit/instantiate(with:options:completionHandler:)", "law": "You must create components with flags that include asynchronously through this method if they’re for use with ."}

@@ -10,3 +10,7 @@
 {"id": "/documentation/SCSIControllerDriverKit", "sha": "1cd6178d81386cd3a95e7699b5ef03ff81e3f77c19bdee6cac017f4412b9b34d", "t": "SCSIControllerDriverKit", "n": 676, "laws": 0, "ts": "2026-07-24 18:53 UTC"}
 {"id": "/documentation/TVML", "sha": "0afef52d612bdbd1c883237393966e732b80534c341864ea86606a33a040e759", "t": "TVML", "n": 3267, "laws": 3, "ts": "2026-07-24 18:54 UTC"}
 {"id": "/documentation/avfoundation/avcapturephotocapturedelegate", "sha": "fed154481fec1acb54518b21bae55490611dd8320df14be787a90ce378afe566", "t": "AVCapturePhotoCaptureDelegate", "n": 2693, "laws": 4, "ts": "2026-07-24 19:03 UTC"}
+{"id": "/documentation/appkit/nscustomtouchbaritem", "sha": "d614e6c165ca63b397a42e49e4521e7d06e9f2d5aedcaddbdd67eea80c229d9d", "t": "NSCustomTouchBarItem", "n": 194, "laws": 0, "ts": "2026-07-25 18:09 UTC"}
+{"id": "/documentation/DriverKit/OSAction", "sha": "2c549c880b94c97200d48fd6bc15318b0d40b773b2a89bc2cf28fe70312ec880", "t": "OSAction", "n": 1132, "laws": 2, "ts": "2026-07-25 18:12 UTC"}
+{"id": "/documentation/UIKit/UICloudSharingControllerDelegate/cloudSharingControllerDidStopSharing(_:)", "sha": "66f68d2a939774fa0ec015b5b79c7683651a09e8d311ec32f6c7648a830a733d", "t": "cloudSharingControllerDidStopSharing(_:)", "n": 219, "laws": 0, "ts": "2026-07-25 18:17 UTC"}
+{"id": "/documentation/FileProvider/NSFileProviderDomain", "sha": "070c6c65e8656e10001dc95fdbf4de80ad97cd7dda2d87606a92cdd6600d9e33", "t": "NSFileProviderDomain", "n": 1248, "laws": 3, "ts": "2026-07-25 18:29 UTC"}

@@ -86,3 +86,285 @@
 {"id": "/documentation/AppKit/NSOpenPanel", "law": "Apps use the Open panel as a convenient way to query the user for the name of a file to open."}
 {"id": "/documentation/AppKit/NSOpenPanel", "law": "In macOS 10.15 and later, the system always draws Open panels in a separate process, regardless of whether the app is sandboxed."}
 {"id": "/documentation/AppKit/NSOpenPanel", "law": "Avoid using deprecated classes and protocols in your apps."}
+{"id": "/documentation/AppKit/NSAccessibility-c.protocol/accessibilityChildren", "law": "If you create an subclass, you don’t typically need to set this value."}
+{"id": "/documentation/AppKit/NSAccessibility-c.protocol/accessibilityChildren", "law": "If you use an subclass to represent an interface element that is not backed by a view, you can either set the property or you can call the convenience method."}
+{"id": "/documentation/AppKit/NSAccessibilityButton", "law": "Use this protocol when you want a user interface element to behave like a button—a control that triggers an action when the user clicks it—in the accessibility hierarchy."}
+{"id": "/documentation/AppKit/NSAccessibilityButton", "law": "Any class that adopts this protocol must implement all of its methods, and the required methods of any protocol it inherits from."}
+{"id": "/documentation/AppKit/NSAccessibilityButton", "law": "The compiler may require you to override some methods that your ancestors have already implemented."}
+{"id": "/documentation/AppKit/NSAccessibilityButton", "law": "A role-based protocol that declares the minimum interface necessary for an accessibility element to act as a button."}
+{"id": "/documentation/AppKit/NSAccessibilityElement-swift.class", "law": "Create subclasses of the class to represent any of your user interface elements that don’t inherit from or from one of the standard AppKit controls."}
+{"id": "/documentation/AppKit/NSAccessibilityElement-swift.class", "law": "In your subclass, implement any additional properties and methods you may need to use to further customize your user interface element’s accessibility behavior."}
+{"id": "/documentation/AppKit/NSAccessibilityElementProtocol/accessibilityFrame()", "law": "If you are working with an subclass, use the property instead."}
+{"id": "/documentation/AppKit/NSAccessibilityProtocol", "law": "To be accessible, an app must provide information to the assistive app about its user interface and capabilities."}
+{"id": "/documentation/AppKit/NSAccessibilityProtocol", "law": "The role-specific protocols don’t include these notifications; however, standard AppKit controls already send appropriate messages for their standard usage patterns."}
+{"id": "/documentation/AppKit/NSAccessibilityProtocol", "law": "If you’re using custom user interface elements that don’t inherit from or one of the other accessibility-enabled AppKit classes, subclass the class instead of adopting instead of ."}
+{"id": "/documentation/AppKit/NSAccessibilityProtocol", "law": "You can control which accessor methods the assistive app can use by overriding ."}
+{"id": "/documentation/AppKit/NSAccessibilitySlider", "law": "Use this protocol when you want a user interface element to behave like a slider—a control that represents a continuous range of numerical values with a knob that represents the currently selected value—in the accessibility hierarchy."}
+{"id": "/documentation/AppKit/NSAccessibilitySlider", "law": "Any class that adopts this protocol must implement all of its methods, and the required methods of any protocol it inherits from."}
+{"id": "/documentation/AppKit/NSAccessibilitySlider", "law": "The compiler may require you to override some methods that your ancestors have already implemented."}
+{"id": "/documentation/AppKit/NSAccessibilitySlider", "law": "A role-based protocol that declares the minimum interface necessary for an accessibility element to act as a slider."}
+{"id": "/documentation/AppKit/NSButton", "law": "You use the action method to perform your app-specific tasks."}
+{"id": "/documentation/AppKit/NSButton", "law": "However, while a matrix requires you to access the button cell objects directly, most button class methods act as “covers” for identically declared button cell methods."}
+{"id": "/documentation/AppKit/NSButton", "law": "The only button cell methods that don’t have covers relate to the font you use to display the key equivalent and to specific methods for highlighting or showing the state of the button."}
+{"id": "/documentation/appkit", "law": "The framework also contains built-in support for localization and accessibility to ensure that your app reaches as many people as possible."}
+{"id": "/documentation/appkit", "law": "To build an iOS app, you can use SwiftUI to create an app that works across all of Apple’s platforms, or use to create an app for iOS only."}
+{"id": "/documentation/appkit", "law": "Avoid using deprecated classes and protocols in your apps."}
+{"id": "/documentation/appkit/nsviewcontroller", "law": "When the user dismisses a printing dialog, the and classes each send NSEditor messages to each accessory view controller to ensure that the user’s changes have been committed or discarded properly."}
+{"id": "/documentation/appkit/integrating-a-toolbar-and-touch-bar-into-your-app", "law": "You use an object to manage the items that appear in a toolbar, which are objects created in Interface Builder or source code."}
+{"id": "/documentation/appkit/nsresponder", "law": "The core classes— , , and —inherit from , as must any class that handles events."}
+{"id": "/documentation/appkit/nsresponder", "law": "This method helps to avoid situations where an asynchronous block unexpectedly deallocates an object on a background queue."}
+{"id": "/documentation/appkit/nsresponder/maketouchbar()", "law": "Your custom subclass of the class should override this method to create and configure your subclass’s default object."}
+{"id": "/documentation/appkit/nsscrubber", "law": "On supported MacBook Pro models, you can use a scrubber (an instance of the class) to provide a horizontally-oriented, item-picker control in the Touch Bar."}
+{"id": "/documentation/appkit/nsscrubber", "law": "Use a scrubber to let the user pick an item from a related collection, such as a photo from a library or a date from a date range."}
+{"id": "/documentation/appkit/nsscrubber", "law": "Refer to the following sample code projects which demonstrate how to use and related classes, including the class: Each item that appears in a scrubber is a specialized view that supports selection and scrubber-appropriate decorations."}
+{"id": "/documentation/appkit/nsscrubber", "law": "You can also use the delegate to respond to the highlighting and selection of scrubber items, and to respond to changes in which items are visible in the scrubber."}
+{"id": "/documentation/appkit/nsscrubber", "law": "Before learning how to use a scrubber in the Touch Bar, be sure you read the overview for the class."}
+{"id": "/documentation/appkit/nsscrubber", "law": "In addition to the count of scrubber items, you use the datasource method to provide individual items with the method."}
+{"id": "/documentation/appkit/nsscrubber", "law": "In free (scrolling) mode, the user must then tap an item to highlight and select it."}
+{"id": "/documentation/appkit/nsscrubber", "law": "If you use one of these built-in layout types, there’s no additional layout code to write, apart from adding your choice of built-in layout to the scrubber’s property."}
+{"id": "/documentation/appkit/nsscrubber", "law": "To use the standard height, specify a value of ."}
+{"id": "/documentation/appkit/nsscrubber", "law": "Specify the geometry and appearance for items in your custom scrubber, using the two required callback methods that each return instances of the class."}
+{"id": "/documentation/appkit/nstouchbar", "law": "Refer to the following sample code projects, which demonstrate how to use and related classes, including the class, with its rich API that lets you build a highly customized picker control: To use the Touch Bar, define bars in objects in your app’s responder chain."}
+{"id": "/documentation/appkit/nstouchbar", "law": "Because of dynamic composition and placement of items shown on the Touch Bar, always ensure that your bars appear as you expect them to, testing on the versions of macOS that you support."}
+{"id": "/documentation/appkit/nstouchbar", "law": "Don’t use the Touch Bar to provide a display-only element."}
+{"id": "/documentation/appkit/nstouchbar", "law": "On the right side of the Touch Bar, the system supplies the always-available Control Strip ."}
+{"id": "/documentation/appkit/nstouchbar", "law": "To use Touch ID on supported MacBook Pro models, use methods from the framework."}
+{"id": "/documentation/appkit/nstouchbar", "law": "Don’t show alerts in the Touch Bar, and don’t use the Touch Bar for widgets."}
+{"id": "/documentation/appkit/nstouchbar", "law": "The object that defines the bar must: Be a responder (an instance of an subclass) that’s present within a responder chain at runtime."}
+{"id": "/documentation/appkit/nstouchbar", "law": "The built-in responder classes conform to the protocol and support key-value observing (KVO), both of which are used and required by the infrastructure."}
+{"id": "/documentation/appkit/nstouchbar", "law": "If you explicitly adopt the protocol in the app delegate or in a window delegate, you must also explicitly send the associated key-value observing notifications from within your implementations of methods; this lets the system respond appropriately to changes in the bar."}
+{"id": "/documentation/appkit/nstouchbar", "law": "To avoid the need to manually support KVO, use the app object as a bar provider, instead of the app delegate, or use a window controller or window as a bar provider, instead of the associated window delegate."}
+{"id": "/documentation/appkit/nstouchbardelegate", "law": "Use a bar delegate, according to the needs of your app, to dynamically create items ( instances)."}
+{"id": "/documentation/appkit/nstouchbaritem", "law": "You use an item by adding it or its identifier to one or another of a bar’s arrays, depending on your app’s architecture and on the user customization you want to support."}
+{"id": "/documentation/appkit/nstouchbaritem", "law": "Because of the close interaction between bars and items, be sure you have read the overview for the class before continuing here to learn about items."}
+{"id": "/documentation/appkit/nstouchbaritem", "law": "Refer to the following sample code projects which demonstrate how to use and related classes:"}
+{"id": "/documentation/appkit/nstouchbaritem", "law": "You typically use a custom item (an instance of the class) to hold a view."}
+{"id": "/documentation/appkit/nstouchbaritem", "law": "For example, to place a button in the Touch Bar, proceed as follows: Use an convenience initializer such as to create and configure the button."}
+{"id": "/documentation/appkit/nstouchbaritem", "law": "When you create custom items, it’s important to use convenience initializers, available starting in macOS 10.12, for the , , and classes."}
+{"id": "/documentation/appkit/nstouchbaritem", "law": "If you don’t use the convenience initializers, it’s your app’s responsibility to ensure correct sizing and appearance."}
+{"id": "/documentation/appkit/nstouchbaritem", "law": "If your popover bar requires significant user interaction and contains many items or many scroll views, don’t enable press-and-hold; doing so can result in an awkward user experience."}
+{"id": "/documentation/appkit/nstouchbaritem", "law": "The system automatically shows a chevron in the popover item under the following conditions: You specify the same object for both and properties, and you use the default view for the popover item’s property."}
+{"id": "/documentation/appkit/nstouchbaritem", "law": "If you place a segmented control in a bar for a popover item, take care not to use option of the enumeration because doing so interferes with the user’s operation of the control."}
+{"id": "/documentation/appkit/nsdocument", "law": "That is, the class is abstract, and your app must create at least one subclass in order to use the document architecture."}
+{"id": "/documentation/appkit/nsdocument", "law": "To create a useful subclass, you must override some methods, and you can optionally override others."}
+{"id": "/documentation/appkit/nsdocument", "law": "In their overrides of the data-based reading and writing methods, subclasses must add the knowledge of particular types and how data of the document’s native type is structured internally."}
+{"id": "/documentation/appkit/nsdocument", "law": "For more information about creating subclasses, including the primitive methods that subclasses must override and those that you can optionally override, see ."}
+{"id": "/documentation/appkit/nsdocument", "law": "As a result, some methods in any class of may be invoked with parameters that do not have the same meaning as they did in early releases of macOS."}
+{"id": "/documentation/appkit/nsdocument", "law": "The method that is meant always to be invoked during document saving, sets the property with the file’s new modification date after it has been written (for and only)."}
+{"id": "/documentation/appkit/nsdocument", "law": "The method that is meant always to be invoked during rereading of an open document, sets the property with the file’s modification date after it has been read."}
+{"id": "/documentation/appkit/nsdocument", "law": "The class implements the file coordination support that is required for an iCloud-enabled, document-based Mac app (see in )."}
+{"id": "/documentation/appkit/nsdocument", "law": "In addition, this class’s methods for moving and renaming documents, new in OS X v10.8, ensure that these operations are performed in a safe manner for iCloud-enabled apps."}
+{"id": "/documentation/appkit/nsdocument", "law": "However, this support requires the cooperation of the document object."}
+{"id": "/documentation/appkit/nsdocumentcontroller", "law": "You can use various methods to get a list of the current documents, get the current document (which is the document whose window is currently key), get documents based on a given filename or window, and find out about a document’s extension, type, display name, and document class."}
+{"id": "/documentation/appkit/nsdocumentcontroller", "law": "For example, the management of the Open Recent menu is useful in apps that don’t use subclasses of ."}
+{"id": "/documentation/appkit/nspersistentdocument", "law": "By default an instance creates its own ready-to-use persistence stack including managed object context, persistent object store coordinator and persistent store."}
+{"id": "/documentation/appkit/nspersistentdocument", "law": "does not support the asynchronous saving API of because that API requires accessing the document’s state on multiple threads and that violates the requirements of the class."}
+{"id": "/documentation/appkit/nspersistentdocument", "law": "Do not override the following properties, their getters, or their setters: The method returns if the persistent document’s managed object context, or editors registered with the context, have uncommitted changes, otherwise it returns ."}
+{"id": "/documentation/appkit/nswindow", "law": "Legacy support for archivers exists, but its use is deprecated and may not work."}
+{"id": "/documentation/appkit/nswindowcontroller", "law": "For documents with multiple windows or panels, your document must create separate instances of (or of custom subclasses of ), one for each window or panel."}
+{"id": "/documentation/appkit/nswindowcontroller", "law": "You should create a subclass of when you want to augment the default behavior, such as to give the window a custom title or to perform some setup tasks before the window is loaded."}
+{"id": "/documentation/appkit/nswindowcontroller", "law": "In your class’s initialization method, be sure to invoke on either one of the initializers or the initializer."}
+{"id": "/documentation/appkit/nswindowcontroller", "law": "You can also implement an subclass to avoid requiring client code to get the corresponding nib’s filename and pass it to or when instantiating the window controller."}
+{"id": "/documentation/AppKit/NSTextView", "law": "You’re more likely to use the class than ."}
+{"id": "/documentation/AppKit/NSTextView", "law": "Never invoke a text view’s method directly."}
+{"id": "/documentation/appkit/adding-writing-tools-support-to-a-custom-nsview", "law": "Even if you don’t use a or object in your app, you can still add Writing Tools support to other views that contain text."}
+{"id": "/documentation/appkit/adding-writing-tools-support-to-a-custom-nsview", "law": "You might use this support when you prefer not to use the standard text views."}
+{"id": "/documentation/appkit/adding-writing-tools-support-to-a-custom-nsview", "law": "For example, you might use it if you build your own text view using TextKit or your own proprietary text engine."}
+{"id": "/documentation/appkit/adding-writing-tools-support-to-a-custom-nsview", "law": "Your delegate provides Writing Tools with initial text to evaluate, incorporates changes, provides proofreading marks, and provides preview objects to use during animations."}
+{"id": "/documentation/appkit/adding-writing-tools-support-to-a-custom-nsview", "law": "For a complete list of delegate methods you must implement to support Writing Tools, see ."}
+{"id": "/documentation/appkit/adding-writing-tools-support-to-a-custom-nsview", "law": "On devices with appropriate hardware, some Writing Tools features operate locally after the system downloads the required models."}
+{"id": "/documentation/appkit/adding-writing-tools-support-to-a-custom-nsview", "law": "However, more complex requests require a network connection so the system can use to evaluate the provided text."}
+{"id": "/documentation/appkit/adding-writing-tools-support-to-a-custom-nsview", "law": "Context objects provide the common ground that you and Writing Tools use to communicate throughout a single operation."}
+{"id": "/documentation/appkit/adding-writing-tools-support-to-a-custom-nsview", "law": "Use the parameters of that method to determine if Writing Tools wants all of your view’s text or only some of it."}
+{"id": "/documentation/appkit/adding-writing-tools-support-to-a-custom-nsview", "law": "Use the context object’s range value to identify the portion of the overall text that Writing Tools requested."}
+{"id": "/documentation/appkit/nswritingtoolscoordinator", "law": "You don’t need to create an object if you display text using a , , , , or view."}
+{"id": "/documentation/appkit/nswritingtoolscoordinator", "law": "Those views already include the required support to handle Writing Tools interactions."}
+{"id": "/documentation/appkit/nswritingtoolscoordinator/animationparameters", "law": "When Writing Tools replaces text in one of your context objects, it provides an object for you to use to configure any additional animations."}
+{"id": "/documentation/appkit/nswritingtoolscoordinator/animationparameters", "law": "Use this object to configure those animations."}
+{"id": "/documentation/appkit/nswritingtoolscoordinator/animationparameters", "law": "You don’t create an object directly."}
+{"id": "/documentation/appkit/nswritingtoolscoordinator/animationparameters", "law": "Use that object to specify the blocks to run during and after the system animations."}
+{"id": "/documentation/appkit/nswritingtoolscoordinator/animationparameters", "law": "An object you use to configure additional tasks or animations to run alongside the Writing Tools animations."}
+{"id": "/documentation/appkit/nswritingtoolscoordinator/context", "law": "Use the parameters of that method to determine how much of your view’s text to provide."}
+{"id": "/documentation/appkit/nswritingtoolscoordinator/context", "law": "However, if you use multiple text storage objects to manage different parts of your view’s content, you might need to create multiple context objects."}
+{"id": "/documentation/appkit/nswritingtoolscoordinator/context", "law": "If your context object includes text that you don’t want Writing Tools to evaluate, add the attribute to the corresponding characters of your object."}
+{"id": "/documentation/appkit/nswritingtoolscoordinator/context", "law": "You might add this attribute if the text string includes a code listing or readonly content that you don’t want Writing Tools to change."}
+{"id": "/documentation/appkit/nswritingtoolscoordinator/context", "law": "A data object that you use to share your custom view’s text with Writing Tools."}
+{"id": "/documentation/appkit/nswritingtoolscoordinator/delegate-swift.protocol", "law": "Adopt the protocol in the type you use to manage your custom text view."}
+{"id": "/documentation/appkit/nswritingtoolscoordinator/delegate-swift.protocol", "law": "Make sure the type that adopts this protocol has access to your view’s text storage and can perform relevant tasks on behalf of the view."}
+{"id": "/documentation/appkit/nswritingtoolscoordinator/delegate-swift.protocol", "law": "An interface that you use to manage interactions between Writing Tools and your custom text view."}
+{"id": "/documentation/appkit/supporting-writing-tools-via-the-pasteboard", "law": "Writing Tools works automatically with in AppKit, but you can also use it with any custom subclass of that has text."}
+{"id": "/documentation/appkit/supporting-writing-tools-via-the-pasteboard", "law": "To use Writing Tools with a custom view, you have to write some additional code to transfer text between your view and the Writing Tools feature."}
+{"id": "/documentation/appkit/supporting-writing-tools-via-the-pasteboard", "law": "If you display text using , you don’t need to do additional work to support Writing Tools, but you can customize your app’s behavior when the feature is active."}
+{"id": "/documentation/appkit/supporting-writing-tools-via-the-pasteboard", "law": "The AppKit support for Writing Tools in custom views relies on the same infrastructure that apps use to offer services from the Services menu."}
+{"id": "/documentation/appkit/supporting-writing-tools-via-the-pasteboard", "law": "If you don’t provide an object for that type, AppKit asks for a requestor object for the pasteboard type."}
+{"id": "/documentation/appkit/supporting-writing-tools-via-the-pasteboard", "law": "If you don’t perform that check, AppKit assumes your view is editable and tries to integrate the rewritten text back into your view."}
+{"id": "/documentation/appkit/supporting-writing-tools-via-the-pasteboard", "law": "Adopt the protocol in the object you use to manage the text selection for your view."}
+{"id": "/documentation/appkit/supporting-writing-tools-via-the-pasteboard", "law": "You can adopt this protocol in your view, or in a separate object you use to manage the backing store for that view."}
+{"id": "/documentation/appkit/supporting-writing-tools-via-the-pasteboard", "law": "You don’t need to write multiple data formats to the pasteboard to ensure interoperability with other apps."}
+{"id": "/documentation/appkit/supporting-writing-tools-via-the-pasteboard", "law": "For rich text, make sure your view manages its content using an attributed string."}
+{"id": "/documentation/appkit/creating-and-customizing-the-touch-bar", "law": "You can use the Touch Bar to display interactive content and controls for supported models of MacBook Pro."}
+{"id": "/documentation/appkit/creating-and-customizing-the-touch-bar", "law": "The class shows the available use cases."}
+{"id": "/documentation/appkit/creating-and-customizing-the-touch-bar", "law": "When you select one of the use cases, the secondary view shows what you can do with the Touch Bar controls."}
+{"id": "/documentation/appkit/creating-and-customizing-the-touch-bar", "law": "For example, the class shows how to use an object."}
+{"id": "/documentation/appkit/creating-and-customizing-the-touch-bar", "law": "Refer to this sample if you’re looking for specific ways to use and customize the ."}
+{"id": "/documentation/appkit/creating-and-customizing-the-touch-bar", "law": "It shows how to create an for use with buttons, views, pickers, sliders, popovers, scrubbers, text fields, and text views."}
+{"id": "/documentation/appkit/creating-and-customizing-the-touch-bar", "law": "The sample also displays a secondary window that shows a typical use case with the Touch Bar that uses an to pick an image that changes the window background."}
+{"id": "/documentation/appkit/nsapplication/isautomaticcustomizetouchbarmenuitemenabled", "law": "If you prefer to provide a customize menu item, set to , and create the menu item with an action of ."}
+{"id": "/documentation/appkit/nstextview", "law": "You’re more likely to use the class than ."}
+{"id": "/documentation/appkit/nstextview", "law": "Never invoke a text view’s method directly."}
+{"id": "/documentation/appkit/nstoolbar", "law": "Toolbars provide convenient access to the commands and features people use most often."}
+{"id": "/documentation/appkit/nstoolbar", "law": "Each item has a corresponding object, which you use to make changes."}
+{"id": "/documentation/appkit/nstoolbar", "law": "For more information about how to use toolbars, see ."}
+{"id": "/documentation/appkit/nstoolbar/autosavesconfiguration", "law": "Alternatively, use the property and method to manage the autosave process yourself."}
+{"id": "/documentation/appkit/nstoolbar/delegate", "law": "The object you assign to this property must adopt the protocol."}
+{"id": "/documentation/appkit/nstoolbar/delegate", "law": "The object you use to customize the toolbar contents and configuration."}
+{"id": "/documentation/appkit/nstoolbardelegate", "law": "Use the methods of to customize the behavior of your toolbars."}
+{"id": "/documentation/appkit/nstoolbardelegate", "law": "You might use these methods to track the addition or removal of toolbar items, or use them to prevent someone from rearranging or removing specific items."}
+{"id": "/documentation/appkit/nstoolbardelegate", "law": "A set of optional methods you use to configure the toolbar and respond to changes."}
+{"id": "/documentation/appkit/nstoolbardelegate/toolbar(_:itemforitemidentifier:willbeinsertedintotoolbar:)", "law": "Use this method to create new objects when the toolbar asks for them."}
+{"id": "/documentation/appkit/nstoolbardelegate/toolbar(_:itemforitemidentifier:willbeinsertedintotoolbar:)", "law": "If your toolbar item uses a custom view, make sure that view is fully configured before you return the item."}
+{"id": "/documentation/appkit/nstoolbardelegate/toolbar(_:itemforitemidentifier:willbeinsertedintotoolbar:)", "law": "Don’t recycle toolbar items; always provide a new instance, even if the toolbar previously asked for an item with the same identifier."}
+{"id": "/documentation/appkit/nstoolbardelegate/toolbar(_:itemforitemidentifier:willbeinsertedintotoolbar:)", "law": "Even though this is an optional method, you must implement it if you create the toolbar programatically."}
+{"id": "/documentation/appkit/nstoolbardelegate/toolbaralloweditemidentifiers(_:)", "law": "The array must include all of the default menu items in your toolbar."}
+{"id": "/documentation/appkit/nstoolbardelegate/toolbaralloweditemidentifiers(_:)", "law": "Even though this is an optional method, you must implement it if you create the toolbar programatically."}
+{"id": "/documentation/appkit/nstoolbardelegate/toolbardefaultitemidentifiers(_:)", "law": "The toolbar calls this method when user settings don’t contain any custom configuration data for the toolbar."}
+{"id": "/documentation/appkit/nstoolbardelegate/toolbardefaultitemidentifiers(_:)", "law": "Even though this is an optional method, you must implement it if you create the toolbar programatically."}
+{"id": "/documentation/appkit/nstoolbardelegate/toolbarwilladditem(_:)", "law": "Use this method to cache references to new toolbar items or perform any tasks related to the addition of those items."}
+{"id": "/documentation/appkit/nstoolbaritem", "law": "You can display your toolbar item’s content using a custom view if you prefer, rather than an image and text label."}
+{"id": "/documentation/appkit/nstoolbaritem", "law": "If you specify an object for the view, the system automatically adjusts the minimum and maximum size of the search field to the system-standard values."}
+{"id": "/documentation/appkit/nswindowcontroller/window", "law": "To affect nib loading or do something before or after it happens, you should always override these methods."}
+{"id": "/documentation/appkit/nswindowcontroller/window", "law": "Typically, you should not use this property to set the window."}
+{"id": "/documentation/appkit/views-and-controls", "law": "You can also use views to do any of the following: Respond to touches and other events (either directly or in coordination with gesture recognizers)."}
+{"id": "/documentation/appkit/views-and-controls", "law": "For additional information about how to use views and controls, see ."}
+{"id": "/documentation/appkit/views-and-controls", "law": "Use container views to arrange the views of your interface and to facilitate navigation among those views."}
+{"id": "/documentation/appkit/views-and-controls", "law": "Use content views to organize and display your app’s data."}
+{"id": "/documentation/appkit/views-and-controls", "law": "Use controls to handle specific types of user interactions."}
+{"id": "/documentation/appkit/views-and-controls", "law": "Controls are specialized views that use the target-action design pattern to notify your app of interactions with their content."}
+{"id": "/documentation/appkit/drag-and-drop", "law": "To learn how to use drag and drop for an image view, see ."}
+{"id": "/documentation/appkit/drag-and-drop", "law": "To use drag and drop in a table view, see ."}
+{"id": "/documentation/appkit/nsfilepromiseprovider", "law": "When you’re working with drag and drop, use promises to indicate intent for future action."}
+{"id": "/documentation/appkit/nsfilepromiseprovider", "law": "Avoid loading or performing any actions on the file until the promise completes."}
+{"id": "/documentation/appkit/nsfilepromiseprovider", "law": "Use the class when creating file promises."}
+{"id": "/documentation/appkit/nsfilepromiseprovider", "law": "The file type must be a Uniform Type Identifier (UTI) that ultimately conforms to or ."}
+{"id": "/documentation/appkit/nsoutlineview", "law": "Each item in the outline view must be unique."}
+{"id": "/documentation/appkit/nsoutlineview", "law": "In order for the collapsed state to remain consistent between reloads the item’s pointer must remain the same and the item must maintain sameness."}
+{"id": "/documentation/appkit/nsoutlineview", "law": "You should defend against this by having the data source’s method return for the number of items when the data source has not yet been configured."}
+{"id": "/documentation/appkit/nsoutlineview", "law": "In , when the data source is initialized you should always call ."}
+{"id": "/documentation/appkit/nsoutlineview", "law": "Subclassing is not recommended."}
+{"id": "/documentation/appkit/nsoutlineviewdatasource/outlineview(_:persistentobjectforitem:)", "law": "You must implement this method if you are automatically saving expanded items (that is, if returns )."}
+{"id": "/documentation/appkit/nsresponder/encoderestorablestate(with:)", "law": "Therefore, if you override this method, you should always call at some point in your implementation."}
+{"id": "/documentation/appkit/nsresponder/encoderestorablestate(with:)", "law": "Subclasses can override this method and use it to restore any information that would be needed to restore the responder to its current state."}
+{"id": "/documentation/appkit/nsresponder/encoderestorablestate(with:)", "law": "You must store enough data to reconfigure the responder and return it to its current state during a subsequent launch of the application."}
+{"id": "/documentation/appkit/nsresponder/restorestate(with:)", "law": "Therefore, if you override this method, you should always call at some point in your implementation."}
+{"id": "/documentation/appkit/nsresponder/restorestate(with:)", "law": "Subclasses can override this method and use it to restore any information that was saved in the method."}
+{"id": "/documentation/appkit/nsresponder/restorestate(with:)", "law": "You can also use this method to reconfigure the responder to its previous appearance."}
+{"id": "/documentation/appkit/nssplitviewcontroller", "law": "If you override a split view delegate method, your override must call ."}
+{"id": "/documentation/appkit/nssplitviewcontroller", "law": "To use a split view controller, you must use Auto Layout for the child views and to support animations that collapse and reveal child views."}
+{"id": "/documentation/appkit/nssplitviewitem", "law": "To add one or more accessory views to the top or bottom of a split view item, such as a search field above a list, use the and properties to specify types."}
+{"id": "/documentation/appkit/nstableview/selectionhighlightstyle-swift.enum/sourcelist", "law": "When using this style, cell subclasses that implement must set the value to ."}
+{"id": "/documentation/appkit/nstreecontroller", "law": "An object requires that you describe how the tree of objects is traversed by specifying the key-path for child objects specified by ."}
+{"id": "/documentation/appkit/nstreecontroller", "law": "All child objects for the tree must be key-value coding compliant for the same child key path."}
+{"id": "/documentation/appkit/nstreecontroller", "law": "If necessary, you should add properties to your model classes that map the child key name to the appropriate class-specific property name."}
+{"id": "/documentation/appkit/nstreecontroller", "law": "Changes to the leaf node value of the child object should be made in a key-value observing compliant manner."}
+{"id": "/documentation/appkit/nsuserinterfacevalidations", "law": "The protocol works with the protocol to allow the target of a user interface element such as a menu item or a toolbar item to decide whether or not the user interface element should be enabled."}
+{"id": "/documentation/appkit/nsuserinterfacevalidations", "law": "Your custom classes should adopt this protocol if an instance may be the target of a user interface element and need to conditionally enable or disable the element based on the current state of the instance."}
+{"id": "/documentation/appkit/nsview/menu(for:)", "law": "The view can use information in the mouse event, such as its location over a particular element of the view, to determine what kind of menu to return."}
+{"id": "/documentation/AppKit/NSStackView", "law": "Do not add views or constraints to a stack view’s private views."}
+{"id": "/documentation/AppKit/NSStackView", "law": "To specify vertical layout, use the property and the constant from the enumeration."}
+{"id": "/documentation/AppKit/NSStackView", "law": "In a vertical stack view, the gravity areas always are top, center, and bottom."}
+{"id": "/documentation/AppKit/NSStackView", "law": "Use the property to change the default behavior."}
+{"id": "/documentation/AppKit/NSWindowRestoration", "law": "Classes that adopt this protocol can use the provided information to create (or obtain a reference to) the window in the new application."}
+{"id": "/documentation/AppKit/NSWindowRestoration", "law": "As part of creating the window, the class should also create any related objects, such as window controllers, normally used to manage the window."}
+{"id": "/documentation/AppKit/NSWindowRestoration", "law": "A set of methods that restoration classes must implement to handle the recreation of windows."}
+{"id": "/documentation/appkit/nsstackview", "law": "Do not add views or constraints to a stack view’s private views."}
+{"id": "/documentation/appkit/nsstackview", "law": "To specify vertical layout, use the property and the constant from the enumeration."}
+{"id": "/documentation/appkit/nsstackview", "law": "In a vertical stack view, the gravity areas always are top, center, and bottom."}
+{"id": "/documentation/appkit/nsstackview", "law": "Use the property to change the default behavior."}
+{"id": "/documentation/AppKit/NSResponder/encodeRestorableState(with:)", "law": "Therefore, if you override this method, you should always call at some point in your implementation."}
+{"id": "/documentation/AppKit/NSResponder/encodeRestorableState(with:)", "law": "Subclasses can override this method and use it to restore any information that would be needed to restore the responder to its current state."}
+{"id": "/documentation/AppKit/NSResponder/encodeRestorableState(with:)", "law": "You must store enough data to reconfigure the responder and return it to its current state during a subsequent launch of the application."}
+{"id": "/documentation/AppKit/NSResponder/restoreState(with:)", "law": "Therefore, if you override this method, you should always call at some point in your implementation."}
+{"id": "/documentation/AppKit/NSResponder/restoreState(with:)", "law": "Subclasses can override this method and use it to restore any information that was saved in the method."}
+{"id": "/documentation/AppKit/NSResponder/restoreState(with:)", "law": "You can also use this method to reconfigure the responder to its previous appearance."}
+{"id": "/documentation/appkit/nsresponder/invalidaterestorablestate()", "law": "Don’t override this method."}
+{"id": "/documentation/appkit/nswindowrestoration", "law": "Classes that adopt this protocol can use the provided information to create (or obtain a reference to) the window in the new application."}
+{"id": "/documentation/appkit/nswindowrestoration", "law": "As part of creating the window, the class should also create any related objects, such as window controllers, normally used to manage the window."}
+{"id": "/documentation/appkit/nswindowrestoration", "law": "A set of methods that restoration classes must implement to handle the recreation of windows."}
+{"id": "/documentation/appkit/nswindowrestoration/restorewindow(withidentifier:state:completionhandler:)", "law": "Your implementation of this method can use the string and the data in the coder object to determine the type of window and associated objects to create."}
+{"id": "/documentation/appkit/nswindowrestoration/restorewindow(withidentifier:state:completionhandler:)", "law": "You do not need to restore the configuration of the window using the provided state."}
+{"id": "/documentation/appkit/nswindowrestoration/restorewindow(withidentifier:state:completionhandler:)", "law": "If you plan to invoke after this method returns, you must copy the Block object yourself and release it when you are done with it."}
+{"id": "/documentation/appkit/nscollectionview", "law": "It is recommended that you configure your collection view with a data source object, which is an object that conforms to the protocol."}
+{"id": "/documentation/appkit/nscollectionview", "law": "Item objects are view controllers and you use their views to display your app’s data."}
+{"id": "/documentation/appkit/nscollectionview", "law": "AppKit defines layout objects that you can use as-is, but you can also define custom layouts by subclassing ."}
+{"id": "/documentation/appkit/nscollectionview", "law": "There are other helper classes and protocols that you can use to customize the layout behavior and other aspects of the collection view interface."}
+{"id": "/documentation/appkit/nscollectionview", "law": "Every data source object is required to implement the following methods: The class defines the visual appearance of items in the collection view."}
+{"id": "/documentation/appkit/nscollectionview", "law": "As a result, never store references to items in your app."}
+{"id": "/documentation/appkit/nscollectionview", "law": "Your data source must know enough about the layout to know which supplementary views are supported by the layout object and how those views are displayed."}
+{"id": "/documentation/appkit/nscollectionview", "law": "When your content changes in a way that requires you to update what the collection view displays, call the , , or method to perform that update."}
+{"id": "/documentation/appkit/nscollectionview", "law": "Never try to modify the views associated with your items directly."}
+{"id": "/documentation/appkit/nscollectionview", "law": "All of these methods affect only what the collection view displays onscreen; they do not change the data in the associated data source object."}
+{"id": "/documentation/appkit/nscollectionviewdelegate", "law": "You use the methods of this protocol to facilitate the user-initiated selection and highlighting of items, to track changes to the collection view’s visual elements, and to implement drag and drop support."}
+{"id": "/documentation/appkit/nscollectionviewdelegate", "law": "The methods of this protocol are optional, but for some features, you must implement specific methods to support the feature."}
+{"id": "/documentation/appkit/nscollectionviewdelegate", "law": "Implement the methods of this protocol in an object that you use to manage your collection view."}
+{"id": "/documentation/appkit/nscollectionviewdelegate", "law": "Typically, you implement delegate support in the view controller or window controller that manages the collection view itself, but you can implement these methods in another object if you prefer."}
+{"id": "/documentation/appkit/nscollectionviewdelegate", "law": "To support multi-image drag and drop, you must implement the and methods."}
+{"id": "/documentation/appkit/nscollectionviewdelegate", "law": "Although you can use those methods to implement your drag and drop support, it is recommended that you use the newer methods that take objects instead."}
+{"id": "/documentation/appkit/nscollectionviewdelegate", "law": "A set of methods that you use to manage the behavior of a collection view."}
+{"id": "/documentation/appkit/nscollectionviewdelegate/collectionview(_:acceptdrop:index:dropoperation:)", "law": "if the drop operation should be accepted, otherwise ."}
+{"id": "/documentation/appkit/nscollectionviewdelegate/collectionview(_:acceptdrop:index:dropoperation:)", "law": "At this time, the delegate should incorporate the data from the dragging pasteboard and update the collection view’s contents."}
+{"id": "/documentation/appkit/nscollectionviewdelegate/collectionview(_:acceptdrop:index:dropoperation:)", "law": "You must implement this method for your collection view to be a drag destination Invoked when the mouse is released over a collection view that previously allowed a drop."}
+{"id": "/documentation/appkit/nscollectionviewdelegate/collectionview(_:pasteboardwriterforitemat:)-7ldvs", "law": "The pasteboard writer object to use for managing the item data."}
+{"id": "/documentation/appkit/nscollectionviewdelegate/collectionview(_:pasteboardwriterforitemat:)-7ldvs", "law": "The collection view calls this method for each item involved in the drag operation after it has determined that a drag should begin but before the drag operation has started."}
+{"id": "/documentation/appkit/nscollectionviewdelegate/collectionview(_:pasteboardwriterforitemat:)-7ldvs", "law": "Your implementation of this method should create and return the pasteboard writer—an object conforming to the protocol—to use for providing the item’s data."}
+{"id": "/documentation/appkit/nscollectionviewdelegate/collectionview(_:validatedrop:proposedindex:dropoperation:)", "law": "To receive drag messages, you must first send to the collection view with the drag types you want to support."}
+{"id": "/documentation/appkit/nscollectionviewdelegate/collectionview(_:validatedrop:proposedindex:dropoperation:)", "law": "You must implement this method for your collection view to be a drag destination."}
+{"id": "/documentation/appkit/nsfilepromiseproviderdelegate/operationqueue(for:)", "law": "Although this method is optional, to avoid blocking your main thread, provide an operation queue other than the main operation queue."}
+{"id": "/documentation/appkit/nspasteboard", "law": "Your custom classes can also implement these protocols for use with the pasteboard."}
+{"id": "/documentation/appkit/nspasteboard", "law": "You can use code like this, for example: The general pasteboard, available by way of the class method, automatically participates with the Universal Clipboard feature in macOS 10.12 and later and in iOS 10.0 and later."}
+{"id": "/documentation/appkit/supporting-drag-and-drop-through-file-promises", "law": "When dragging content that isnʼt yet a file on disk at the time dragging began, an app may put a file promise onto the pasteboard instead of a file URL, to avoid blocking the main thread."}
+{"id": "/documentation/appkit/supporting-drag-and-drop-through-file-promises", "law": "Handle file promises before handling URLs, because the file promise generally represents the higher-quality image and should take precedence when both types are supported."}
+{"id": "/documentation/appkit/supporting-drag-and-drop-through-file-promises", "law": "It uses a hard-coded string for simplicity, but depending on use case, take the parameter into account."}
+{"id": "/documentation/appkit/supporting-table-view-drag-and-drop-through-file-promises", "law": "When working with drag and drop, use file promises to indicate intent for a future drag operation."}
+{"id": "/documentation/appkit/supporting-table-view-drag-and-drop-through-file-promises", "law": "Use the class when creating file promises."}
+{"id": "/documentation/appkit/supporting-table-view-drag-and-drop-through-file-promises", "law": "Use the to receive file promises."}
+{"id": "/documentation/appkit/supporting-table-view-drag-and-drop-through-file-promises", "law": "This sample app also supports drag and drop of images from within the table view that don’t involve a URL."}
+{"id": "/documentation/appkit/supporting-table-view-drag-and-drop-through-file-promises", "law": "The sample registers these pasteboard types in the view controller’s function: Handle file promises before handling file URLs, because the file promise generally represents the higher-quality image and should take precedence when both types are supported."}
+{"id": "/documentation/appkit/supporting-table-view-drag-and-drop-through-file-promises", "law": "Use the first function to provide the title of the file to be promised."}
+{"id": "/documentation/appkit/supporting-collection-view-drag-and-drop-through-file-promises", "law": "When working with drag and drop, use file promises to indicate intent for a future drag operation."}
+{"id": "/documentation/appkit/supporting-collection-view-drag-and-drop-through-file-promises", "law": "Use the class when creating file promises."}
+{"id": "/documentation/appkit/supporting-collection-view-drag-and-drop-through-file-promises", "law": "Use the to receive file promises."}
+{"id": "/documentation/appkit/supporting-collection-view-drag-and-drop-through-file-promises", "law": "This sample app also supports drag and drop of images from within the collection view that don’t involve a URL."}
+{"id": "/documentation/appkit/supporting-collection-view-drag-and-drop-through-file-promises", "law": "The sample registers these pasteboard types in the view controller’s function: Handle file promises before handling file URLs, because the file promise generally represents the higher-quality image and should take precedence when both types are supported."}
+{"id": "/documentation/appkit/supporting-collection-view-drag-and-drop-through-file-promises", "law": "Use the first function to provide the title of the file to be promised."}
+{"id": "/documentation/appkit/nspasteboarditem", "law": "Use pasteboard items during a single pasteboard interaction, rather than retaining and reusing them."}
+{"id": "/documentation/appkit/nstableview", "law": "Beginning with macOS v10.7, you can use objects (most commonly customized objects) instead of cells for specifying rows and columns."}
+{"id": "/documentation/appkit/nstableview", "law": "You can still use objects for each row and column item if you prefer."}
+{"id": "/documentation/appkit/nstableview", "law": "You should not, therefore, directly set data values programmatically in the table view; instead, modify the values in the data source and allow the changes to be reflected in the table view."}
+{"id": "/documentation/appkit/nstableview", "law": "To customize a table view’s behavior without subclassing , use the methods defined by the protocol."}
+{"id": "/documentation/appkit/nstableview", "law": "You should defend against this by having the data source’s method return for the number of rows when the data source has not yet been configured."}
+{"id": "/documentation/appkit/nstableview", "law": "In , when the data source is initialized you should always call on the table view."}
+{"id": "/documentation/appkit/nstableview", "law": "Use the property to enable or disable the table view, which the view inherits from ."}
+{"id": "/documentation/appkit/nstableview", "law": "This property affects the visual appearance of the table view differently depending on whether you use a view- or a cell-based table view."}
+{"id": "/documentation/appkit/nstableviewdatasource", "law": "Some of the methods in this protocol, such as and along with other methods that return data, are called frequently, so they must be efficient."}
+{"id": "/documentation/appkit/nstableviewdatasource", "law": "View-based table views must not use the method for setting values."}
+{"id": "/documentation/appkit/nstableviewdatasource", "law": "Instead the views must explicitly set the values for the fields, or use Cocoa bindings."}
+{"id": "/documentation/appkit/nstableviewdatasource", "law": "Likewise, use target/action for editing."}
+{"id": "/documentation/appkit/nstableviewdatasource", "law": "If you’re not using Cocoa bindings to provide data to the table view, the following methods are required: (cell-based tables only) For more information, see ."}
+{"id": "/documentation/appkit/nstableviewdatasource/tableview(_:acceptdrop:row:dropoperation:)", "law": "The data source should incorporate the data from the dragging pasteboard in the implementation of this method."}
+{"id": "/documentation/appkit/nstableviewdatasource/tableview(_:acceptdrop:row:dropoperation:)", "law": "You can use the method to get the data for the drop operation from ."}
+{"id": "/documentation/appkit/nstableviewdatasource/tableview(_:pasteboardwriterforrow:)", "law": "This method is required for multi-image dragging."}
+{"id": "/documentation/AppKit/NSCloudSharingServiceDelegate", "law": "In macOS, you use and to facilitate sharing."}
+{"id": "/documentation/AppKit/NSCloudSharingServiceDelegate", "law": "Register an instance of with an item provider, and then use a sharing service to present it to the user."}
+{"id": "/documentation/AppKit/NSCloudSharingServiceDelegate", "law": "You must initialize the service with the service name."}
+{"id": "/documentation/AppKit/NSCloudSharingServiceDelegate", "law": "Otherwise, they can use the service to manage the share’s participants and their permissions."}
+{"id": "/documentation/AppKit/NSCloudSharingServiceDelegate", "law": "Use your implementation to provide any appropriate behavior, such as deleting a share you cache locally when the service deletes it from the server."}
+{"id": "/documentation/AppKit/NSSharingService", "law": "You can use objects directly in your app."}
+{"id": "/documentation/AppKit/NSSharingServicePicker", "law": "In macOS 12 and earlier, this picker displays a menu with a list of services that someone can use to share the item."}
+{"id": "/documentation/AppKit/NSSharingServicePicker", "law": "Your delegate must conform to the protocol."}
+{"id": "/documentation/AppKit/NSScreen", "law": "An app may use an object to retrieve information about a screen and use this information to decide what to display on that screen."}
+{"id": "/documentation/AppKit/NSScreen", "law": "For example, an app may use the method to find out which of the available screens can best represent color and then might choose to display all of its windows on that screen."}
+{"id": "/documentation/AppKit/NSScreen", "law": "Create the application object before you use the methods in this class, so that the application object can make the necessary connection to the window system."}
+{"id": "/documentation/AppKit/NSScreen", "law": "You can make sure the application object exists by invoking the method of ."}
+{"id": "/documentation/AppKit/NSScreen", "law": "If you need additional information or want to change the attributes relating to a display, you must use Quartz Services."}
+{"id": "/documentation/AppKit/NSScreen/maximumPotentialExtendedDynamicRangeColorComponentValue", "law": "The actual maximum value might be lower than this property’s value, and can change dynamically, depending on the capabilities of the display hardware and other conditions."}
+{"id": "/documentation/AppKit/NSScreen/maximumPotentialExtendedDynamicRangeColorComponentValue", "law": "The maximum possible color component value for the screen when it’s in extended dynamic range (EDR) mode."}

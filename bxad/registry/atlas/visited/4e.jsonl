@@ -5,3 +5,10 @@
 {"id": "/documentation/arkit/arraycastresult/worldtransform", "sha": "d72c4058a9bd5cc1c5ce95de066f4662bd32d12d201b32c5d8f9ac06881d3eff", "t": "worldTransform", "n": 77, "laws": 0, "ts": "2026-07-24 18:57 UTC"}
 {"id": "/documentation/arkit/artrackingstate/artrackingstatenormal", "sha": "c979d299ee3c5bdb5782403a37d84e066b839c2c6ec241813e904e1a69d12f45", "t": "ARTrackingStateNormal", "n": 54, "laws": 0, "ts": "2026-07-24 18:58 UTC"}
 {"id": "/documentation/arkit/arframe/geotrackingstatus", "sha": "b9fff3c3cf1681c2324c82c182fca0f0c4a41f2b984525b13c7ffe5c4365783b", "t": "geoTrackingStatus", "n": 255, "laws": 0, "ts": "2026-07-24 18:59 UTC"}
+{"id": "/documentation/appintents/visual-intelligence", "sha": "1eb3082791dda0d4517a9d0b672be05cda299a876d68c1c4c060cf39896d886d", "t": "Visual intelligence", "n": 702, "laws": 1, "ts": "2026-07-25 18:08 UTC"}
+{"id": "/documentation/callkit/cxproviderdelegate", "sha": "d7e08203f011939c90e14f46525a78bd8ac29ac7cb6fd1f1964afa0701e6d601", "t": "CXProviderDelegate", "n": 775, "laws": 0, "ts": "2026-07-25 18:15 UTC"}
+{"id": "/documentation/AVFoundation/AVAudioMix", "sha": "dab36081be4b5271578b079da42c64f6ff358248677f84c89f8f41941e898558", "t": "AVAudioMix", "n": 116, "laws": 0, "ts": "2026-07-25 18:15 UTC"}
+{"id": "/documentation/Combine/Subject", "sha": "2071c79bb965a7e1b4020e80d051bb2a151c0ce3f14362c244b6d4bd55267d5c", "t": "Subject", "n": 407, "laws": 1, "ts": "2026-07-25 18:24 UTC"}
+{"id": "/documentation/driverkit/iouserclientmethodarguments", "sha": "fd7671511b81f9a4ffeb35dc15a06a34a43c581ddf8d05ece0f18cf3a865e9ae", "t": "IOUserClientMethodArguments", "n": 477, "laws": 0, "ts": "2026-07-25 18:26 UTC"}
+{"id": "/documentation/FileProvider/NSFileProviderItem-swift.typealias", "sha": "065a44bab76206b68387a9842afd6b6a25d7ef4e7b1dce42510a1ad7d2c16bf1", "t": "NSFileProviderItem", "n": 110, "laws": 0, "ts": "2026-07-25 18:29 UTC"}
+{"id": "/documentation/foundation/nsuseractivity/suggestedinvocationphrase", "sha": "ae2c423e4a082f2e68e937b7613d398dee5c1c75f6a8d8aac2c3870b8280abfd", "t": "suggestedInvocationPhrase", "n": 274, "laws": 1, "ts": "2026-07-25 18:31 UTC"}

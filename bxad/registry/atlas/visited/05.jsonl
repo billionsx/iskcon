@@ -13,3 +13,7 @@
 {"id": "/documentation/arkit/arworldtrackingconfiguration", "sha": "1def035a5e4af0bda197c915ec84b70f8cb5fd0e3bd2f318ca10f16a167332cb", "t": "ARWorldTrackingConfiguration", "n": 1953, "laws": 0, "ts": "2026-07-24 18:56 UTC"}
 {"id": "/documentation/arkit/arscnfacegeometry/update(from:)", "sha": "852bcdabfc09ed17c62fbebba1429b6ab5d911e1ec101dd1b218b24e9ec1c965", "t": "update(from:)", "n": 440, "laws": 0, "ts": "2026-07-24 18:59 UTC"}
 {"id": "/documentation/AppKit/NSOpenPanel", "sha": "5604e5b78d39f377e9ba3178f997db721bf9137d69343868ae27c263978d539c", "t": "NSOpenPanel", "n": 823, "laws": 3, "ts": "2026-07-24 19:05 UTC"}
+{"id": "/documentation/CoreTransferable/FileRepresentation", "sha": "58c491a4aa3ded247124d0d34d06b4fcd912773e6a99ebafb26645c0c460cfb5", "t": "FileRepresentation", "n": 922, "laws": 3, "ts": "2026-07-25 18:07 UTC"}
+{"id": "/documentation/Foundation/NSExtensionItem", "sha": "98da7f4a49e19416ee09aebeae874b363f1ce2e25b1bd85269411d7e9aad6427", "t": "NSExtensionItem", "n": 305, "laws": 0, "ts": "2026-07-25 18:08 UTC"}
+{"id": "/documentation/FileProvider/NSFileProviderEnumerator/enumerateChanges(for:from:)", "sha": "d77d0deb6dee43bf14f592de50f88e57bb1689e4fd444e955caddd265007a8a7", "t": "enumerateChanges(for:from:)", "n": 1611, "laws": 0, "ts": "2026-07-25 18:29 UTC"}
+{"id": "/documentation/groupactivities/groupsessionjournal/attachment/load(_:)", "sha": "e07e1b0aebec6b646f81d33bf7afab551e0fff6a2f39ba9dd323166c974ae106", "t": "load(_:)", "n": 412, "laws": 1, "ts": "2026-07-25 18:35 UTC"}

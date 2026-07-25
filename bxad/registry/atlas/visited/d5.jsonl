@@ -8,3 +8,7 @@
 {"id": "/documentation/accelerate/vimagemultidimensionaltable_release(_:)", "sha": "648290128c77c402252d79d2e23e6cb79b7f782734e93a2596815b74b3776b12", "t": "vImageMultidimensionalTable_Release(_:)", "n": 243, "laws": 0, "ts": "2026-07-25 04:21 UTC"}
 {"id": "/documentation/accelerate/vimage/edgemode/truncatekernel", "sha": "8b9bfc83f1a2e2f84d9e090a728705087c42e358d9aa54cd7439ed291856c579", "t": "vImage.EdgeMode.truncateKernel", "n": 75, "laws": 0, "ts": "2026-07-25 04:21 UTC"}
 {"id": "/documentation/accelerate/kvimageconvert_orderedgaussianblue", "sha": "1228fbf375d01ffc66a9dea4cd63c496dab5f93e129353a8788907d91cee7095", "t": "kvImageConvert_OrderedGaussianBlue", "n": 326, "laws": 0, "ts": "2026-07-25 04:23 UTC"}
+{"id": "/documentation/CoreAudioTypes/AudioStreamBasicDescription", "sha": "bed8e523e97c36dcf0d88cdedb119613b2bcbe97b4e57c1eb28acc9a8a6afab0", "t": "AudioStreamBasicDescription", "n": 2034, "laws": 1, "ts": "2026-07-25 18:13 UTC"}
+{"id": "/documentation/coremidi", "sha": "1118652978726d8ee0e482b7506263ef2ae740f31328384d1f198ac0bb33717f", "t": "Core MIDI", "n": 1057, "laws": 0, "ts": "2026-07-25 18:21 UTC"}
+{"id": "/documentation/Security/SecKeychainItem", "sha": "dcb5b9b0d5d5848901e12829247cf855538221434339d1010a93b411c7a6d3a8", "t": "SecKeychainItem", "n": 154, "laws": 1, "ts": "2026-07-25 18:25 UTC"}
+{"id": "/documentation/evaluations/designing-evaluation-datasets", "sha": "724f67176c8ce592512eb001422a877a90ee571bf8c014288d849340e6c4eb8c", "t": "Designing datasets to test your feature", "n": 8913, "laws": 10, "ts": "2026-07-25 18:26 UTC"}

@@ -13,3 +13,9 @@
 {"id": "/documentation/arkit/arplaneanchor/center", "sha": "7e11bee9c64347fb786b14a69edfe2e57f3bc383114e88977ab748ea72b51d79", "t": "center", "n": 798, "laws": 2, "ts": "2026-07-24 18:59 UTC"}
 {"id": "/documentation/avfoundation/additional-data-capture", "sha": "e3823ed2940d7e0e01702cd272cf7e424a7079aeb0dc5a6078a62646e98ae9fa", "t": "Additional data capture", "n": 788, "laws": 0, "ts": "2026-07-24 19:02 UTC"}
 {"id": "/documentation/avfoundation/avsynchronizedlayer", "sha": "43edfd9814f57c4115bad733cc2fd98ec2efa838d2009acec095dbf59fdd0d72", "t": "AVSynchronizedLayer", "n": 966, "laws": 3, "ts": "2026-07-24 19:06 UTC"}
+{"id": "/documentation/accelerate/vdsp_vintb", "sha": "c257bc67c6d79407b05da66691d788d0505ea886919e9d3832dc634e33bdd3b7", "t": "vDSP_vintb", "n": 372, "laws": 0, "ts": "2026-07-25 18:04 UTC"}
+{"id": "/documentation/appkit/nstoolbardelegate/toolbardefaultitemidentifiers(_:)", "sha": "c5cc6ff99c30d7fa52b7844335ef437a33083aa9f2ef10216293b2ea91e55bf4", "t": "toolbarDefaultItemIdentifiers(_:)", "n": 746, "laws": 2, "ts": "2026-07-25 18:10 UTC"}
+{"id": "/documentation/UIKit/UIActivityViewController", "sha": "be6930a4c8fce9d3a96cb18712df6a295f57785bfc1e351663061ed321846cd0", "t": "UIActivityViewController", "n": 1375, "laws": 5, "ts": "2026-07-25 18:20 UTC"}
+{"id": "/documentation/Vision/detecting-human-body-poses-in-images", "sha": "83551ab261cc3be26c970996a2fada16c06d1eae343712fc69fee9a94d790644", "t": "Detecting Human Body Poses in Images", "n": 3499, "laws": 7, "ts": "2026-07-25 18:22 UTC"}
+{"id": "/documentation/driverkit/kioreturnbadargument", "sha": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855", "t": "kIOReturnBadArgument", "n": 0, "laws": 0, "ts": "2026-07-25 18:26 UTC"}
+{"id": "/documentation/iokit/1514240-ioconnectcallmethod", "sha": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855", "t": "IOConnectCallMethod(_:_:_:_:_:_:_:_:_:_:)", "n": 0, "laws": 0, "ts": "2026-07-25 18:26 UTC"}

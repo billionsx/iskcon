@@ -5,3 +5,9 @@
 {"id": "/documentation/AVFoundation", "sha": "85d8cfd7154d40b3326070c95478f4368a112cbceb661edf4518f8cef871f299", "t": "AVFoundation", "n": 859, "laws": 0, "ts": "2026-07-24 18:48 UTC"}
 {"id": "/documentation/CoreImage/CIColorMatrix", "sha": "50fa01d595d06ce59425cad9981437acaa3b70d4fd3282fad8cae617c9eb0daa", "t": "CIColorMatrix", "n": 141, "laws": 1, "ts": "2026-07-24 19:02 UTC"}
 {"id": "/documentation/avfoundation/avplayeritemtrack", "sha": "c69723c0ce8be425d7b42d2a67465ef8f1a39e954b522b8824e39cd54f4bdc72", "t": "AVPlayerItemTrack", "n": 285, "laws": 0, "ts": "2026-07-24 19:04 UTC"}
+{"id": "/documentation/AppIntents/SiriTipView", "sha": "a38d97acc83ac21370978c11d9b699b96add77be076cc1ab4bb4dce9e1260114", "t": "SiriTipView", "n": 508, "laws": 2, "ts": "2026-07-25 18:07 UTC"}
+{"id": "/documentation/authenticationservices/public-private-key-authentication", "sha": "dd7c3071a88e5674cb69989a5dbe6f890d1aa8c663ad6f9e62886a5fd46c6137", "t": "Public-Private Key Authentication", "n": 2812, "laws": 1, "ts": "2026-07-25 18:14 UTC"}
+{"id": "/documentation/charts/chart", "sha": "b28a0d63ee382d4ef271d5afe1bb1e769513d54b30bfee6521a6d9aace588883", "t": "Chart", "n": 1297, "laws": 0, "ts": "2026-07-25 18:15 UTC"}
+{"id": "/documentation/CoreNFC/NFCReaderError-swift.struct/Code/readerSessionInvalidationErrorUserCanceled", "sha": "5071ff0bc38a68ac3e08a036d9abf7e7d149156f8ac92f4819021c76e908c081", "t": "NFCReaderError.Code.readerSessionInvalidationErrorUserCanceled", "n": 37, "laws": 0, "ts": "2026-07-25 18:23 UTC"}
+{"id": "/documentation/CoreNFC/NFCReaderSessionProtocol/invalidate()", "sha": "3a7c286fca63da87b6b94ce89fe3d70fb0d8bb0841891ac897b78942eefe3ad1", "t": "invalidate()", "n": 63, "laws": 0, "ts": "2026-07-25 18:23 UTC"}
+{"id": "/documentation/fskit/fspathurlresource", "sha": "a187fc063cd0a0d7b9c6ee9bdd36752e06dbe9ec9095db6fbdae606c44632b64", "t": "FSPathURLResource", "n": 368, "laws": 0, "ts": "2026-07-25 18:29 UTC"}

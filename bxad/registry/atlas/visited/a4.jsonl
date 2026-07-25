@@ -6,3 +6,6 @@
 {"id": "/documentation/Foundation/ProcessInfo/ThermalState-swift.enum", "sha": "b5722c175cbad4a7457781eac50490fd6efa5a07f714ff736779b85b538aa5de", "t": "ProcessInfo.ThermalState", "n": 378, "laws": 0, "ts": "2026-07-24 18:57 UTC"}
 {"id": "/documentation/avfoundation/avspatialvideoconfiguration-swift.struct", "sha": "e6647b502c18abd840d3f272c1ab426b4a839650b8cbc6924a41264aef156ecd", "t": "AVSpatialVideoConfiguration", "n": 207, "laws": 0, "ts": "2026-07-24 19:04 UTC"}
 {"id": "/documentation/accelerate/morphology", "sha": "a1441108d53ffd50c5e9531a0308dc67f85c37719c6cd5359c16c28cea9bb1fb", "t": "Morphology", "n": 735, "laws": 0, "ts": "2026-07-24 19:08 UTC"}
+{"id": "/documentation/appkit/nsresponder/maketouchbar()", "sha": "78edc996d48b6c21d368a6e26d52b5db32fd9dc54ee54e7b59fc232d77ccabb9", "t": "makeTouchBar()", "n": 117, "laws": 1, "ts": "2026-07-25 18:09 UTC"}
+{"id": "/documentation/appkit/nsfilepromisereceiver", "sha": "f8ce96af948ead01cdb63857eda74df854fd5fb6dbaf55a06a8f89095db43649", "t": "NSFilePromiseReceiver", "n": 699, "laws": 0, "ts": "2026-07-25 18:11 UTC"}
+{"id": "/documentation/eventkit/ekvirtualconferenceroomtypedescriptor", "sha": "0e6ee36123b954daac8280e1cf4aeb07942121c1f3c113287de3f29c475ab930", "t": "EKVirtualConferenceRoomTypeDescriptor", "n": 559, "laws": 0, "ts": "2026-07-25 18:27 UTC"}

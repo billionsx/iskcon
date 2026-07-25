@@ -3,3 +3,8 @@
 {"id": "/documentation/arkit/imagetrackingprovider", "sha": "84f072fa4cb2e99a3d51e021c7ecf228fec566169fe583c81e7518674a0d5021", "t": "ImageTrackingProvider", "n": 284, "laws": 0, "ts": "2026-07-24 18:59 UTC"}
 {"id": "/documentation/AVFoundation/creating-images-from-a-video-asset", "sha": "c4911a3934d18a7a8d812e129d81e33142061602dde50bd83ea7e2d7eb935787", "t": "Creating images from a video asset", "n": 3814, "laws": 9, "ts": "2026-07-24 19:06 UTC"}
 {"id": "/documentation/AVFoundation/AVContinuityDevice/videoDevices", "sha": "fe0c083dd63c725ef282a5991f403c0599da74ad3cf8d50e2183978d14215749", "t": "videoDevices", "n": 80, "laws": 0, "ts": "2026-07-24 19:07 UTC"}
+{"id": "/documentation/SwiftUI/ImmersiveSpace", "sha": "d26a04fc6e9971e064f23f50523f79d012e262acaa8580f35f0b03349fb092ec", "t": "ImmersiveSpace", "n": 3787, "laws": 10, "ts": "2026-07-25 18:18 UTC"}
+{"id": "/documentation/AppKit/NSSharingService", "sha": "a25415059075e2d4b3806f1ed6f4714bd8d0818ae8f0698e165750b718e3ae52", "t": "NSSharingService", "n": 1289, "laws": 1, "ts": "2026-07-25 18:19 UTC"}
+{"id": "/documentation/NaturalLanguage/NLTagScheme/tokenType", "sha": "1eaebbd5ad6f881ffd2b92e78d2eab49556c704607b0774f5f904cacca5b8733", "t": "tokenType", "n": 271, "laws": 1, "ts": "2026-07-25 18:22 UTC"}
+{"id": "/documentation/CoreNFC/adding-support-for-background-tag-reading", "sha": "c3543de5fd4c944df8154f16fcf32bb834beb604f6f93fc61ff9c2304249c793", "t": "Adding Support for Background Tag Reading", "n": 3046, "laws": 6, "ts": "2026-07-25 18:23 UTC"}
+{"id": "/documentation/foundation/nsubiquitouskeyvaluestore", "sha": "6a5e71a88731e2d963b5ab45108902584c6f354215c83fb02eafcbc1a32d3839", "t": "NSUbiquitousKeyValueStore", "n": 4150, "laws": 10, "ts": "2026-07-25 18:31 UTC"}

@@ -5,3 +5,6 @@
 {"id": "/documentation/Xcode/Xcode-Cloud", "sha": "ea35f4cf2c55b22041adbd2814c5e19347a9a1ac5a7d8eb31faf1990f034a3ad", "t": "Xcode Cloud", "n": 2563, "laws": 3, "ts": "2026-07-24 18:54 UTC"}
 {"id": "/documentation/AudioToolbox/AUParameterNode/implementorValueProvider", "sha": "c403f0e7fa5550e2eb1335c7c1b3b269f3ad0d3016e82f18be4583ac0cff20f9", "t": "implementorValueProvider", "n": 198, "laws": 1, "ts": "2026-07-24 19:01 UTC"}
 {"id": "/documentation/accelerate/multichannel-biquadratic-filters", "sha": "5953493c5ffa2533debdbf78dafddf7aa4f621e1152c5bea52b904e796f82c2b", "t": "Multichannel biquadratic filters", "n": 1169, "laws": 2, "ts": "2026-07-25 04:22 UTC"}
+{"id": "/documentation/accelerate/calculating-the-dominant-colors-in-an-image", "sha": "d73c0a71841113bbd1e2fd899df54cdf9105a48f5683a47afb90185976d11083", "t": "Calculating the dominant colors in an image", "n": 4952, "laws": 1, "ts": "2026-07-25 18:04 UTC"}
+{"id": "/documentation/CoreSpotlight/CSSearchableItemAttributeSet", "sha": "af29cb95cc324079ec48f761d2f1dc7aab2242b42ae5afbb5ffdd41f82ccfce4", "t": "CSSearchableItemAttributeSet", "n": 4707, "laws": 2, "ts": "2026-07-25 18:07 UTC"}
+{"id": "/documentation/appstoreconnectapi/app-metadata", "sha": "acc2e922cbd2de3778196adcf6f2113aae803c4bb00473fb413b6d8b3d9fb91d", "t": "App Metadata", "n": 636, "laws": 0, "ts": "2026-07-25 18:11 UTC"}

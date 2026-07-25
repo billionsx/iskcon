@@ -8,3 +8,8 @@
 {"id": "/documentation/avfoundation/avurlasset", "sha": "0953d35f2e2c428a437504ab8cc3a564b4f7844c23e87d94874282aaeebd45a4", "t": "AVURLAsset", "n": 1529, "laws": 1, "ts": "2026-07-24 19:05 UTC"}
 {"id": "/documentation/avkit/adopting-the-system-player-interface-in-visionos", "sha": "29bc5c5a1e5397229c13d2bbc461534d5ddbea6b0db7c85edef7530d2f97c13f", "t": "Adopting the system player interface in visionOS", "n": 5252, "laws": 6, "ts": "2026-07-24 19:06 UTC"}
 {"id": "/documentation/accelerate/vdsp/squaremagnitudes(_:result:)-22k5h", "sha": "8cdb018158fcc99a9beb6132da24b8b3c9abced03b5ebe69b5b8112671341fcd", "t": "squareMagnitudes(_:result:)", "n": 96, "laws": 0, "ts": "2026-07-25 04:23 UTC"}
+{"id": "/documentation/alarmkit/alarm", "sha": "5cd4a841de70de7efcd99e73916448e15cf55324516de4d3969eb652e82c961b", "t": "Alarm", "n": 407, "laws": 0, "ts": "2026-07-25 18:06 UTC"}
+{"id": "/documentation/CoreData/reading-cloudkit-records-for-core-data", "sha": "f80d6fa555f7c0e92052698dee1f66681ba3c4ffa1e1b887a83000d33b2dc639", "t": "Reading CloudKit Records for Core Data", "n": 5086, "laws": 7, "ts": "2026-07-25 18:20 UTC"}
+{"id": "/documentation/coremidi/midieventlistadd(_:_:_:_:_:_:)", "sha": "2b41da88998831e81ff87fefc8d7c0e354a9b832953de1d813dd22115b9a8169", "t": "MIDIEventListAdd(_:_:_:_:_:_:)", "n": 295, "laws": 1, "ts": "2026-07-25 18:22 UTC"}
+{"id": "/documentation/corenfc/nfctag-swift.enum", "sha": "5030a3e13822015d02be7294c6e066019b91dfd55abb756dd410d9a63fc44e89", "t": "NFCTag", "n": 471, "laws": 1, "ts": "2026-07-25 18:23 UTC"}
+{"id": "/documentation/foundation/nsuseractivity/becomecurrent()", "sha": "60ea284e2adb80575de428828f64dd00f89782f24ea11c4055e156ce5dd2a972", "t": "becomeCurrent()", "n": 658, "laws": 2, "ts": "2026-07-25 18:30 UTC"}

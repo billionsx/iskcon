@@ -4,3 +4,8 @@
 {"id": "/documentation/CoreSpotlight/adding-your-app-s-content-to-spotlight-indexes", "sha": "67c7e04b96b702cf792b4fab92607eca02bc320eda0b3e1906f3ad1cfae233c8", "t": "Adding your app’s content to Spotlight indexes", "n": 6188, "laws": 4, "ts": "2026-07-24 18:44 UTC"}
 {"id": "/documentation/updates/gamecontroller", "sha": "0c459f197b468dd1df63e85971da8cfdf8756682ab88eeeca6d024eee9639a2b", "t": "Game Controller updates", "n": 1268, "laws": 3, "ts": "2026-07-24 18:47 UTC"}
 {"id": "/documentation/accelerate/biquadratic-iir-filters", "sha": "91bfefe20b518a7b45694138ab1ccccbf34aa0d2fdc63ef1ef1568fb09a2ff11", "t": "Biquadratic IIR filters", "n": 163, "laws": 0, "ts": "2026-07-25 04:20 UTC"}
+{"id": "/documentation/accelerate/bnnsfilterparameters", "sha": "23fd361a09639a930b3d7abd4f3e4a8f4f255c788287dda3a7a19ffb7bc37217", "t": "BNNSFilterParameters", "n": 315, "laws": 0, "ts": "2026-07-25 18:04 UTC"}
+{"id": "/documentation/clockkit/clkcomplicationfamily/graphiccircular", "sha": "ccc496bc0636b9c9da579c2a4647aa709f040921ba8832af00d8a558fd45ff70", "t": "CLKComplicationFamily.graphicCircular", "n": 191, "laws": 0, "ts": "2026-07-25 18:17 UTC"}
+{"id": "/documentation/SwiftData/ModelContext/fetch(_:)", "sha": "6cee5fc7bb4972f50418d525a10341a58f844c5b617ca2c802c9f3235d90b712", "t": "fetch(_:)", "n": 237, "laws": 0, "ts": "2026-07-25 18:19 UTC"}
+{"id": "/documentation/CryptoKit/MLDSA65", "sha": "5e58f01dff7c080ad8ce736eea215765b08a30af4089f391161e0b5227f4c4c3", "t": "MLDSA65", "n": 86, "laws": 0, "ts": "2026-07-25 18:25 UTC"}
+{"id": "/documentation/EventKit/EKEventStore/predicateForReminders(in:)", "sha": "7285ec9362404403315459e3f7a702acd2790072ef383754e67240d21c8c9f69", "t": "predicateForReminders(in:)", "n": 125, "laws": 1, "ts": "2026-07-25 18:28 UTC"}

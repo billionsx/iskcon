@@ -79,3 +79,17 @@
 {"id": "/documentation/Vision/VNCoreMLRequest", "law": "The results array of a Core ML-based image analysis request contains a different observation type, depending on the kind of object you use: If the model predicts a single feature, the model’s object has a non- value for and Vision treats the model as a classifier."}
 {"id": "/documentation/Vision/VNCoreMLRequest", "law": "If the model’s outputs include at least one output with a feature type of , Vision treats that model as an image-to-image model."}
 {"id": "/documentation/Vision/VNRequest/usesCPUOnly", "law": "A Boolean signifying that the Vision request should execute exclusively on the CPU."}
+{"id": "/documentation/Vision/VNCoreMLModel", "law": "Once you train the model, use this class to initialize a for identification."}
+{"id": "/documentation/Vision/VNCoreMLModel", "law": "A container for the model to use with Vision requests."}
+{"id": "/documentation/Vision/VNCoreMLRequest/imageCropAndScaleOption", "law": "Scaling an image ensures that the entire image fits into the algorithm’s input image dimensions, which may require a change in aspect ratio."}
+{"id": "/documentation/Vision/VNRequest", "law": "A discards the alpha channel of input images, so don’t rely on it."}
+{"id": "/documentation/Vision/VNRequest/results", "law": "Don’t access this property until the request has finished processing."}
+{"id": "/documentation/Vision/detecting-human-body-poses-in-images", "law": "You can use Vision’s capability for detecting human body poses on its own or with Core ML."}
+{"id": "/documentation/Vision/detecting-human-body-poses-in-images", "law": "For example, a safety-training app could help employees use correct ergonomics, a fitness app could automatically track the exercise a user performs, and a media-editing app could find photos or videos based on pose similarity."}
+{"id": "/documentation/Vision/detecting-human-body-poses-in-images", "law": "The following example shows how to use to perform a for detecting body points in the specified ."}
+{"id": "/documentation/Vision/detecting-human-body-poses-in-images", "law": "Use the function to translate the normalized points to the input image coordinates."}
+{"id": "/documentation/Vision/detecting-human-body-poses-in-images", "law": "For an example of how you can use and visualize recognized body points, see the sample app."}
+{"id": "/documentation/Vision/detecting-human-body-poses-in-images", "law": "To achieve the most accurate results from Vision’s human body pose-detection capabilities, consider the following points: The subject’s height should ideally be at least a third of the overall image height."}
+{"id": "/documentation/Vision/detecting-human-body-poses-in-images", "law": "A large portion of the subject’s key body regions and points should be present in the image."}
+{"id": "/documentation/Vision/VNCoreMLModel/featureProvider", "law": "A feature provider is necessary for models that have more than one required input."}
+{"id": "/documentation/Vision/VNCoreMLModel/featureProvider", "law": "Models with only one image input won’t use the feature provider."}

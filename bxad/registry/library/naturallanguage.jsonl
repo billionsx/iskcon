@@ -1,3 +1,10 @@
 {"id": "/documentation/NaturalLanguage", "law": "Use this framework to segment natural language text into paragraphs, sentences, or words, and tag information about those segments, such as part of speech, lexical class, lemma, script, and language."}
 {"id": "/documentation/NaturalLanguage", "law": "Use this framework to perform tasks like: Language identification , automatically detecting the language of a piece of text."}
 {"id": "/documentation/NaturalLanguage", "law": "You can also use this framework with Create ML to train and deploy custom natural language models."}
+{"id": "/documentation/NaturalLanguage/NLTagScheme/tokenType", "law": "To classify tokens by a more specific type, for example, distinguishing words between nouns and verbs, use the scheme."}
+{"id": "/documentation/NaturalLanguage/NLTagger", "law": "Use it to segment natural language text into paragraph, sentence, or word units and to tag each unit with information like part of speech, lexical class, lemma, script, and language."}
+{"id": "/documentation/NaturalLanguage/NLTagger", "law": "Don’t use an instance of simultaneously from multiple threads."}
+{"id": "/documentation/NaturalLanguage/NLTagger/enumerateTags(in:unit:scheme:options:using:)", "law": "Use this method to iterate your block over the given range of a string."}
+{"id": "/documentation/NaturalLanguage/NLTagger/enumerateTags(in:unit:scheme:options:using:)", "law": "For example, use the tag scheme to identify which tokens are parts of speech, types of whitespace, or types of punctuation."}
+{"id": "/documentation/NaturalLanguage/NLTagger/enumerateTags(in:unit:scheme:options:using:)", "law": "Use the tag scheme to identify the stem form of each word token, if known."}
+{"id": "/documentation/NaturalLanguage/NLTokenUnit/word", "law": "Use this linguistic unit to tokenize text into individual words, like in the following example: For more information, see ."}

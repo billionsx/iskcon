@@ -7,3 +7,7 @@
 {"id": "/documentation/EnterpriseProgramAPI", "sha": "31e9487cdab7f07b75b0556c8f6159a4126007be8fa6f00e0b72449760f9a9f8", "t": "Enterprise Program API", "n": 1425, "laws": 2, "ts": "2026-07-24 18:50 UTC"}
 {"id": "/documentation/arkit/arimageanchor", "sha": "e20dc2cf45326a13798468ba26a124b223951134466ee465a841d419238fc3f7", "t": "ARImageAnchor", "n": 571, "laws": 1, "ts": "2026-07-24 18:57 UTC"}
 {"id": "/documentation/AudioToolbox/AUAudioUnit/saveUserPreset(_:)", "sha": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855", "t": "saveUserPreset(_:)", "n": 0, "laws": 0, "ts": "2026-07-24 19:01 UTC"}
+{"id": "/documentation/appintents/appschema/photosentity/asset", "sha": "9d43623daddd201cb0974d757560518d9254ed385ccb3b26228997fab27a98b3", "t": "asset", "n": 664, "laws": 1, "ts": "2026-07-25 18:08 UTC"}
+{"id": "/documentation/audiotoolbox/auaudiounit/saveuserpreset(_:)", "sha": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855", "t": "saveUserPreset(_:)", "n": 0, "laws": 0, "ts": "2026-07-25 18:13 UTC"}
+{"id": "/documentation/BrowserEngineKit/using-xpc-to-communicate-with-browser-extensions", "sha": "042f49f26d5214f390749a74aac3023306ea43007681bffbd4b40fcdf737fe45", "t": "Using XPC to communicate with browser extensions", "n": 3973, "laws": 5, "ts": "2026-07-25 18:15 UTC"}
+{"id": "/documentation/foundation/nsubiquitouskeyvaluestoreserverchange", "sha": "1d0014939babdd756be3e3bf2ce3ee8e92974df2228e1578e7bff3f72ec9e93f", "t": "NSUbiquitousKeyValueStoreServerChange", "n": 168, "laws": 0, "ts": "2026-07-25 18:31 UTC"}

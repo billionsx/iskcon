@@ -2,3 +2,6 @@
 {"id": "/documentation/updates/callkit", "sha": "b1cd253d2f32606574ef4b536bf21050eff37874776e9307f69d8737e158d9b6", "t": "CallKit updates", "n": 186, "laws": 1, "ts": "2026-07-24 18:46 UTC"}
 {"id": "/documentation/avfoundation/avcamfilter-applying-filters-to-a-capture-stream", "sha": "06dcc50ee0db723a3c2bf60b8fe8a99c3ff0a0b49ce32cd2e9f233f03d822880", "t": "AVCamFilter: Applying filters to a capture stream", "n": 4901, "laws": 2, "ts": "2026-07-24 19:03 UTC"}
 {"id": "/documentation/CoreGraphics/CGImage", "sha": "47c783e16a640f616360f3f31847e7155ff8bee8d469d9aa85b4d1f522c1ad22", "t": "CGImage", "n": 1556, "laws": 0, "ts": "2026-07-25 04:21 UTC"}
+{"id": "/documentation/UIKit/UIDynamicAnimator", "sha": "77808418425f3ffcf5322af64beccdc69078eb1df7f046d3b7977e8c144a21e5", "t": "UIDynamicAnimator", "n": 4620, "laws": 6, "ts": "2026-07-25 18:20 UTC"}
+{"id": "/documentation/Foundation/URL/startAccessingSecurityScopedResource()", "sha": "9bd7ab97182b026af6d48ec87a69462d98aa06a08de69099db1fa6313f2980fd", "t": "startAccessingSecurityScopedResource()", "n": 1284, "laws": 4, "ts": "2026-07-25 18:29 UTC"}
+{"id": "/documentation/foundation/nsuseractivity", "sha": "e287d824e939f3b9f00eac8977cd8b90fa6ed6d0cd430d4d6a67464fa066f07d", "t": "NSUserActivity", "n": 4974, "laws": 4, "ts": "2026-07-25 18:30 UTC"}

@@ -7,3 +7,7 @@
 {"id": "/documentation/AssetsLibrary", "sha": "78b2476e07f0c7e5a3b9e889abaf9280649c165e249e320a5b9fb6d9e9a28548", "t": "Assets Library", "n": 450, "laws": 2, "ts": "2026-07-24 18:49 UTC"}
 {"id": "/documentation/carkey", "sha": "59d7813e694ea541d6b19b1beb460585df85a29a075fdcf6ff99cb8e4795e6c1", "t": "CarKey", "n": 1544, "laws": 5, "ts": "2026-07-24 18:54 UTC"}
 {"id": "/documentation/Swift/using-key-value-observing-in-swift", "sha": "b12fb7bbc652ff7faea4d3f1c98b31715a9fb472522c5a3698c23b1c5d280ac8", "t": "Using Key-Value Observing in Swift", "n": 1789, "laws": 5, "ts": "2026-07-24 19:07 UTC"}
+{"id": "/documentation/accelerate/vimage/pixelbuffer/linearinterpolate(bufferb:interpolationconstant:destination:)", "sha": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855", "t": "linearInterpolate(bufferB:interpolationConstant:destination:)", "n": 0, "laws": 0, "ts": "2026-07-25 18:04 UTC"}
+{"id": "/documentation/AppKit/NSAccessibilityProtocol", "sha": "bb6b5188117e0b5d31c224dfb1d6347a196dad1c5e0a713ff2738f97977a2705", "t": "NSAccessibilityProtocol", "n": 13565, "laws": 4, "ts": "2026-07-25 18:05 UTC"}
+{"id": "/documentation/carplay/cpsearchtemplate", "sha": "f411f2ffbf6f9750ce8cd241b8af59430d7566937a57b73b1aeb88c06a558986", "t": "CPSearchTemplate", "n": 1322, "laws": 3, "ts": "2026-07-25 18:15 UTC"}
+{"id": "/documentation/foveatedstreaming/foveatedstreamingsession/messagechannel/sendmessage(_:)", "sha": "4ef5dd58a29b04285f7ae2027f70038d1847017ad17824701baf77633cc449ac", "t": "sendMessage(_:)", "n": 53, "laws": 0, "ts": "2026-07-25 18:33 UTC"}

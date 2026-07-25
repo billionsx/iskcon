@@ -7,3 +7,6 @@
 {"id": "/documentation/avfaudio/avaudioplayernode", "sha": "9989d2f090d88a042bb02475b6d46eb7a12583c870c941b7287217e3f552ade8", "t": "AVAudioPlayerNode", "n": 3861, "laws": 5, "ts": "2026-07-24 19:00 UTC"}
 {"id": "/documentation/avfoundation/avplayerinterstitialevent", "sha": "4bf133cdd93ba85fed721fcced193a6815b679024a7d3e91ab142144e7beec40", "t": "AVPlayerInterstitialEvent", "n": 1887, "laws": 2, "ts": "2026-07-24 19:05 UTC"}
 {"id": "/documentation/avfoundation/avcapturedevice/centerstagecontrolmode-swift.enum/cooperative", "sha": "01f2fc96a6cdce5a07640306c67d5a69a2489165668ee411cebfac978b1750e1", "t": "AVCaptureDevice.CenterStageControlMode.cooperative", "n": 336, "laws": 0, "ts": "2026-07-24 19:05 UTC"}
+{"id": "/documentation/audiotoolbox/auaudiounitv2bridge", "sha": "30da27e03628f518a802d1b98c7f0437d6b74f765e05ad14da32a32e4abb966c", "t": "AUAudioUnitV2Bridge", "n": 539, "laws": 2, "ts": "2026-07-25 18:13 UTC"}
+{"id": "/documentation/coreml/mlmodel/prediction(from:)", "sha": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855", "t": "prediction(from:)", "n": 0, "laws": 0, "ts": "2026-07-25 18:22 UTC"}
+{"id": "/documentation/foundation/decimal/formatstyle", "sha": "77b5333eb14d3e762f52196c72f9382d9c03200277a7440281592c73c8f52e31", "t": "Decimal.FormatStyle", "n": 3363, "laws": 5, "ts": "2026-07-25 18:31 UTC"}

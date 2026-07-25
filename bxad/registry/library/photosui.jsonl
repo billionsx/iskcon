@@ -1,0 +1,5 @@
+{"id": "/documentation/PhotosUI/PhotosPicker", "law": "Use the Photos picker view to browse and select images and videos from the photo library."}
+{"id": "/documentation/PhotosUI/PhotosPicker", "law": "When displaying the picker, you can use options to customize what it displays."}
+{"id": "/documentation/PhotosUI/PhotosPicker", "law": "To load a SwiftUI and track progress, use ."}
+{"id": "/documentation/PhotosUI/PhotosPickerItem", "law": "To load a SwiftUI and track progress, use ."}
+{"id": "/documentation/PhotosUI/PhotosPickerItem", "law": "A type that represents an item you use with a Photos picker."}

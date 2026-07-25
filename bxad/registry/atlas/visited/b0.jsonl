@@ -3,3 +3,10 @@
 {"id": "/documentation/PushKit", "sha": "71b1d6fc4a014c0ce7742d4608c9a66959d3d04ffb957fc10953f78cafc4312b", "t": "PushKit", "n": 1728, "laws": 2, "ts": "2026-07-24 18:52 UTC"}
 {"id": "/documentation/arkit/arimageanchor/referenceimage", "sha": "aeaf568b92449c4bc00f390ce6360eb6fcdc5c27975a57db2690f257a7ef63b2", "t": "referenceImage", "n": 161, "laws": 1, "ts": "2026-07-24 18:57 UTC"}
 {"id": "/documentation/MetalKit/MTKViewDelegate", "sha": "ed46a5e67c4495971b4a62aac6404c5a2166c7e3a1254421915a7695e33fbc3d", "t": "MTKViewDelegate", "n": 385, "laws": 1, "ts": "2026-07-24 18:57 UTC"}
+{"id": "/documentation/BundleResources/Information-Property-List/NSAlarmKitUsageDescription", "sha": "34b2246bbed07b805fb2cc249dcc29cbd2b4f005d4cac6f48c6cb1f3c23ca5a7", "t": "NSAlarmKitUsageDescription", "n": 338, "laws": 0, "ts": "2026-07-25 18:05 UTC"}
+{"id": "/documentation/audiodriverkit/iouseraudiolevelcontrol", "sha": "30a7c784155857e5994f2af035561906624a351774cb9664b8d78e2f58ddea4d", "t": "IOUserAudioLevelControl", "n": 537, "laws": 0, "ts": "2026-07-25 18:13 UTC"}
+{"id": "/documentation/audiotoolbox/audiounitextensionsetcomponentlist(_:_:)", "sha": "83ce29cca7958e903e85fdb4212203799d3b67eb8e31c58d2364a759a1a9a3a7", "t": "AudioUnitExtensionSetComponentList(_:_:)", "n": 341, "laws": 1, "ts": "2026-07-25 18:13 UTC"}
+{"id": "/documentation/coreml/mltask", "sha": "1fa543050eb928d5ece73c52d7ea5745ab75c65910b46413433910bf1baf8abe", "t": "MLTask", "n": 313, "laws": 2, "ts": "2026-07-25 18:23 UTC"}
+{"id": "/documentation/coreml/mlupdatetask", "sha": "bec3629516743aa2f0269bc1cac879578ef3593b127e546b88a371f92b1f109b", "t": "MLUpdateTask", "n": 781, "laws": 1, "ts": "2026-07-25 18:23 UTC"}
+{"id": "/documentation/createml/mlregressor/trainingmetrics", "sha": "b46af248416de36dfdfece742217364aa602c1539a572e6790c7dd021808e522", "t": "trainingMetrics", "n": 69, "laws": 0, "ts": "2026-07-25 18:24 UTC"}
+{"id": "/documentation/EventKit/setting-an-alarm", "sha": "c72253c33da4f4b494ce3b39e7197bd236b441c2a200d201ac6cc0c27c802bbe", "t": "Setting an alarm", "n": 2415, "laws": 4, "ts": "2026-07-25 18:28 UTC"}

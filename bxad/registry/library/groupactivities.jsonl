@@ -31,3 +31,94 @@
 {"id": "/documentation/GroupActivities/GroupSession", "law": "You don’t create objects directly."}
 {"id": "/documentation/GroupActivities/GroupSession", "law": "Use the type returned by the method of your activity to retrieve new sessions when they become available."}
 {"id": "/documentation/GroupActivities/GroupSession", "law": "Before the system can create a session object, your app must create a object and activate it."}
+{"id": "/documentation/GroupActivities/GroupSessionMessenger", "law": "Use a object to coordinate your app’s behavior across the devices attached to a group session."}
+{"id": "/documentation/GroupActivities/GroupSessionMessenger", "law": "You create a object directly and use it to send and receive app data."}
+{"id": "/documentation/GroupActivities/GroupSessionMessenger", "law": "Use the or method to retrieve the sequence you want and iterate over its results."}
+{"id": "/documentation/GroupActivities/GroupSessionMessenger", "law": "Use a - loop with the keyword to iterate asynchronously over the results."}
+{"id": "/documentation/GroupActivities/SystemCoordinator/Configuration-swift.struct", "law": "Use this type to tell the system that you support activities that take place in one of your app’s immersive spaces, and how you want the system to arrange spatial Personas around your app’s content."}
+{"id": "/documentation/groupactivities", "law": "When your app’s UI contains shareable activities, adopt the protocol in the objects you use to represent those activities."}
+{"id": "/documentation/groupactivities", "law": "When a group activity begins, use the object to synchronize your app’s behavior with other participating devices."}
+{"id": "/documentation/groupactivities", "law": "Your use of the Group Activities framework doesn’t provide Apple with visibility into the content your app shares, or information related to playback of media content in your app, such as where in the content a user starts, pauses, or skips a session."}
+{"id": "/documentation/groupactivities", "law": "Apple servers facilitating Group Activities sessions don’t know the identity of your app."}
+{"id": "/documentation/groupactivities/adding-spatial-persona-support-to-an-activity", "law": "Because participants can see where others are looking, your app’s content must look the same for everyone."}
+{"id": "/documentation/groupactivities/adding-spatial-persona-support-to-an-activity", "law": "For example, synchronize your window’s scroll position to ensure everyone sees the same portion of that window."}
+{"id": "/documentation/groupactivities/adding-spatial-persona-support-to-an-activity", "law": "You don’t need to define new types specifically to support spatial Personas."}
+{"id": "/documentation/groupactivities/adding-spatial-persona-support-to-an-activity", "law": "You use scenes to manage the content for your app’s windows, volumes, and immersive spaces."}
+{"id": "/documentation/groupactivities/adding-spatial-persona-support-to-an-activity", "law": "You also use scenes to display any activity-related content."}
+{"id": "/documentation/groupactivities/adding-spatial-persona-support-to-an-activity", "law": "You also use activation conditions to specify how to handle objects, and other incoming events."}
+{"id": "/documentation/groupactivities/adding-spatial-persona-support-to-an-activity", "law": "When there isn’t a one-to-one correspondence between scene and activity, you must create a string that uniquely identifies the scene."}
+{"id": "/documentation/groupactivities/adding-spatial-persona-support-to-an-activity", "law": "Assign the value to this property if you use the activity identifier as the string."}
+{"id": "/documentation/groupactivities/adding-spatial-persona-support-to-an-activity", "law": "Use the to: Specify a different arrangement for spatial Personas."}
+{"id": "/documentation/groupactivities/adding-spatial-persona-support-to-an-activity", "law": "That modifier tells the system to use the distance you specify, instead of the content size."}
+{"id": "/documentation/groupactivities/defining-your-apps-shareplay-activities", "law": "Make activities available on all the platforms your app supports to ensure people can join from any device."}
+{"id": "/documentation/groupactivities/defining-your-apps-shareplay-activities", "law": "Ensure the data being shared during your activity conforms to ."}
+{"id": "/documentation/groupactivities/defining-your-apps-shareplay-activities", "law": "If you want to use the share sheet in SwiftUI to share an activity, it requires items to support the protocol."}
+{"id": "/documentation/groupactivities/defining-your-apps-shareplay-activities", "law": "Most of the content in a type is the data you use to support the activity itself."}
+{"id": "/documentation/groupactivities/defining-your-apps-shareplay-activities", "law": "The following example defines a type that stores information about the type of game, and a group activity to share the experience: Ensure your type conforms to ."}
+{"id": "/documentation/groupactivities/defining-your-apps-shareplay-activities", "law": "If you have multiple activities in your app, each type must have a unique string in its property."}
+{"id": "/documentation/groupactivities/defining-your-apps-shareplay-activities", "law": "You can also provide additional details, such as a fallback URL that someone can use to join the activity from a web browser."}
+{"id": "/documentation/groupactivities/defining-your-apps-shareplay-activities", "law": "People need to quickly identify the purpose of the activity and whether it’s one they want to join, so make sure your descriptions are clear enough for someone to make a decision."}
+{"id": "/documentation/groupactivities/groupactivity", "law": "In addition to the protocol’s methods and properties, make sure your type includes the information you need to start the activity."}
+{"id": "/documentation/groupactivities/groupactivity", "law": "You must use that type to begin the activity."}
+{"id": "/documentation/groupactivities/groupactivity", "law": "For example, use it to present the appropriate UI for the activity and to load any required content."}
+{"id": "/documentation/groupactivities/groupactivity", "law": "Use the method to get the session and configure your app’s UI."}
+{"id": "/documentation/groupactivities/groupactivity", "law": "types must be so that the system can serialize them and send them to other participant’s devices."}
+{"id": "/documentation/groupactivities/groupsession", "law": "You use the session object to synchronize your app’s activity-related content, including your app’s UI."}
+{"id": "/documentation/groupactivities/groupsession", "law": "You don’t create objects directly."}
+{"id": "/documentation/groupactivities/groupsession", "law": "Use the type returned by the method of your activity to retrieve new sessions when they become available."}
+{"id": "/documentation/groupactivities/groupsession", "law": "Before the system can create a session object, your app must create a object and activate it."}
+{"id": "/documentation/groupactivities/joining-and-managing-a-shared-activity", "law": "Your app uses that session object to: Prepare any required UI."}
+{"id": "/documentation/groupactivities/joining-and-managing-a-shared-activity", "law": "Configure separate asynchronous handlers for each of your app’s activity types, and use each one to receive new sessions for their activity."}
+{"id": "/documentation/groupactivities/joining-and-managing-a-shared-activity", "law": "Use your code to begin the activity in your app."}
+{"id": "/documentation/groupactivities/joining-and-managing-a-shared-activity", "law": "This block offers the same behavior as the SwiftUI task modifier, and you use it in similar ways."}
+{"id": "/documentation/groupactivities/joining-and-managing-a-shared-activity", "law": "However, don’t call that method until you’re ready to display the UI for the activity itself."}
+{"id": "/documentation/groupactivities/joining-and-managing-a-shared-activity", "law": "Some people might not join an activity right away, because they don’t have the app or are doing something else."}
+{"id": "/documentation/groupactivities/joining-and-managing-a-shared-activity", "law": "Make sure app-specific controls are easy to access."}
+{"id": "/documentation/groupactivities/joining-and-managing-a-shared-activity", "law": "If participants need to download your app, or don’t see the invitation to join the activity, they might arrive several minutes after others."}
+{"id": "/documentation/groupactivities/joining-and-managing-a-shared-activity", "law": "If your activity manages state information that all participants require, devise a way to deliver that information to someone who arrives late."}
+{"id": "/documentation/groupactivities/joining-and-managing-a-shared-activity", "law": "Make sure any buttons or UI that calls this method makes it clear that the activity ends for everyone."}
+{"id": "/documentation/groupactivities/promoting-shareplay-activities-from-your-apps-ui", "law": "Starting an activity requires an active FaceTime call or Messages conversation."}
+{"id": "/documentation/groupactivities/promoting-shareplay-activities-from-your-apps-ui", "law": "When creating buttons in your app, use a style that makes sense for the current platform and your app’s design."}
+{"id": "/documentation/groupactivities/promoting-shareplay-activities-from-your-apps-ui", "law": "A person can then use the sheet to copy the items to the pasteboard or send them to a different process."}
+{"id": "/documentation/groupactivities/promoting-shareplay-activities-from-your-apps-ui", "law": "To surface your SharePlay activities from a view, ensure your type conforms to ."}
+{"id": "/documentation/groupactivities/promoting-shareplay-activities-from-your-apps-ui", "law": "The share sheet in SwiftUI requires items to support the protocol."}
+{"id": "/documentation/groupactivities/promoting-shareplay-activities-from-your-apps-ui", "law": "The activity you include in the link must conform to ."}
+{"id": "/documentation/groupactivities/promoting-shareplay-activities-from-your-apps-ui", "law": "Immersive spaces don’t have a system UI by default to start an activity."}
+{"id": "/documentation/groupactivities/spatialtemplate", "law": "Use the protocol to specify an arrangement of participants for one of your app’s group activities in visionOS."}
+{"id": "/documentation/groupactivities/spatialtemplate", "law": "You can also assign roles to seats and use those roles to give participants a particular responsibility."}
+{"id": "/documentation/groupactivities/spatialtemplate", "law": "If you add a role to a seat, the participant must specifically acquire that role to occupy the seat."}
+{"id": "/documentation/groupactivities/spatialtemplate", "law": "An interface you use to create custom arrangements of spatial Personas in a scene."}
+{"id": "/documentation/groupactivities/spatialtemplateelement", "law": "You don’t adopt this protocol directly in your custom types."}
+{"id": "/documentation/groupactivities/spatialtemplateelement", "law": "Instead, you use types that adopt this protocol to retrieve the corresponding details."}
+{"id": "/documentation/groupactivities/spatialtemplateelementdirection", "law": "If you don’t specify an initial direction for a seat, the participant faces your app’s content."}
+{"id": "/documentation/groupactivities/spatialtemplateelementposition", "law": "Use the type to specify the position of an element along the x- and z-axes in the shared coordinate space."}
+{"id": "/documentation/groupactivities/spatialtemplatepreference", "law": "Use the static members of this structure to specify your preferred arrangement of participants around your app’s content."}
+{"id": "/documentation/groupactivities/spatialtemplaterole", "law": "Adopt the interface in a custom and use it with your custom spatial template."}
+{"id": "/documentation/groupactivities/spatialtemplateseatelement", "law": "If you associate roles with one or more seats, participants must acquire the associated role before they can occupy the corresponding seat."}
+{"id": "/documentation/groupactivities/spatialtemplateseatelement", "law": "Alternatively, use the inherited function to create seats, as shown in the following example, which creates two seats on either side of the app’s content along the z-axis: A spatial template element that represents a seat for a participant in the activity."}
+{"id": "/documentation/groupactivities/synchronizing-data-during-a-shareplay-activity", "law": "The object requires this protocol when sending types."}
+{"id": "/documentation/groupactivities/synchronizing-data-during-a-shareplay-activity", "law": "Choose messaging for crucial data that all participants must have."}
+{"id": "/documentation/groupactivities/synchronizing-data-during-a-shareplay-activity", "law": "Use the of each participant to differentiate them within your app."}
+{"id": "/documentation/groupactivities/synchronizing-data-during-a-shareplay-activity", "law": "Messages targeting the current participant can arrive at any time, so it’s best to use a separate task to listen for them."}
+{"id": "/documentation/groupactivities/synchronizing-data-during-a-shareplay-activity", "law": "Inside the task, use a loop to wait on the messages property of your object."}
+{"id": "/documentation/groupactivities/synchronizing-data-during-a-shareplay-activity", "law": "To share files and other large data objects with participants of an activity, use a object instead of a ."}
+{"id": "/documentation/groupactivities/synchronizing-data-during-a-shareplay-activity", "law": "Use them to send images or large data objects that the group creates or adds to the activity."}
+{"id": "/documentation/groupactivities/synchronizing-data-during-a-shareplay-activity", "law": "Don’t use a object to store files larger than 100 megabytes, or when you need to protect or validate content before someone downloads it."}
+{"id": "/documentation/groupactivities/synchronizing-data-during-a-shareplay-activity", "law": "To receive attachments, configure a task and use a loop and wait on the attachments property of your journal object, as shown in the following example."}
+{"id": "/documentation/groupactivities/synchronizing-data-during-a-shareplay-activity", "law": "Use the structures your app receives to download the attachment data and fetch any related metadata."}
+{"id": "/documentation/groupactivities/systemcoordinator", "law": "You don’t create a object directly."}
+{"id": "/documentation/groupactivities/systemcoordinator", "law": "After that, use the information in the system coordinator’s properties to keep your app’s interface up to date."}
+{"id": "/documentation/groupactivities/systemcoordinator", "law": "A type you use to coordinate your interface’s behavior when an active SharePlay session supports spatial placement of content."}
+{"id": "/documentation/groupactivities/building-a-guessing-game-for-visionos", "law": "The team member that sees the word or phrase can use any gestures or phrases to elicit a correct guess, but can’t say the word or phrase itself."}
+{"id": "/documentation/groupactivities/building-a-guessing-game-for-visionos", "law": "SharePlay requires the entitlement."}
+{"id": "/documentation/groupactivities/building-a-guessing-game-for-visionos", "law": "Participants don’t have an assigned role initially, so the system places them in the audience seats."}
+{"id": "/documentation/groupactivities/building-a-guessing-game-for-visionos", "law": "Seat roles reflect the role that a participant must have to occupy that seat."}
+{"id": "/documentation/groupactivities/building-a-guessing-game-for-visionos", "law": "Members of the opposing team don’t receive a role until it’s their turn to play, so they initially sit in the audience positions."}
+{"id": "/documentation/groupactivities/groupsessionjournal", "law": "A journal object isn’t a replacement for a object, which you use to transfer time-sensitive messages and commands between participants."}
+{"id": "/documentation/groupactivities/groupsessionjournal", "law": "Instead, use it to associate files and other data objects with the activity."}
+{"id": "/documentation/groupactivities/groupsessionjournal", "law": "The types you specify must adopt the protocol from the Core Transferable framework."}
+{"id": "/documentation/groupactivities/groupsessionjournal/attachment/load(_:)", "law": "Use this function to retrieve the file or data another participant provides."}
+{"id": "/documentation/groupactivities/groupsessionmessenger", "law": "Use a object to coordinate your app’s behavior across the devices attached to a group session."}
+{"id": "/documentation/groupactivities/groupsessionmessenger", "law": "You create a object directly and use it to send and receive app data."}
+{"id": "/documentation/groupactivities/groupsessionmessenger", "law": "Use the or method to retrieve the sequence you want and iterate over its results."}
+{"id": "/documentation/groupactivities/groupsessionmessenger", "law": "Use a - loop with the keyword to iterate asynchronously over the results."}

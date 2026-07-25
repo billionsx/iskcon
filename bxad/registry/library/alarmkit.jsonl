@@ -1,2 +1,12 @@
 {"id": "/documentation/AlarmKit/scheduling-an-alarm-with-alarmkit", "law": "Because and are optional presentations, this sample doesn’t use them if the alarm only has an state."}
 {"id": "/documentation/AlarmKit", "law": "Use to create custom alarms and timers in your app."}
+{"id": "/documentation/alarmkit", "law": "Use to create custom alarms and timers in your app."}
+{"id": "/documentation/alarmkit/alarm/countdownduration-swift.struct/postalert", "law": "If the value is we will use the duration for post-alarm countdowns."}
+{"id": "/documentation/alarmkit/alarm/countdownduration-swift.struct/postalert", "law": "The duration applied after the alarm has alerted at least once and moves back to the countdown state."}
+{"id": "/documentation/alarmkit/alarm/schedule-swift.enum/relative/recurrence/never", "law": "An alarm that never repeats."}
+{"id": "/documentation/alarmkit/alarmmanager/alarmupdates-swift.property", "law": "Use this to receive a notification when an alarm alerts, snoozes, or dismisses."}
+{"id": "/documentation/alarmkit/alarmmanager/requestauthorization()", "law": "Requests permission to use the alarm system if it hasn’t been requested before."}
+{"id": "/documentation/alarmkit/alarmpresentation/alert-swift.struct", "law": "Use this object to optionally define a secondary button and its behavior."}
+{"id": "/documentation/alarmkit/alarmpresentation/alert-swift.struct/secondarybutton", "law": "If you use , the secondary button is omitted."}
+{"id": "/documentation/alarmkit/alarmpresentation/countdown-swift.struct", "law": "An object that describes the content required for the countdown UI."}
+{"id": "/documentation/alarmkit/alarmpresentation/paused-swift.struct", "law": "To get back to a countdown state, you must provide a definition for a resume button."}

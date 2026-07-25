@@ -6,3 +6,8 @@
 {"id": "/documentation/VideoToolbox/VTPixelTransferSession", "sha": "4323410d7ddc3b6d9c0a165b839815005e50aa21107a79fb6d18fdaface1f3b1", "t": "VTPixelTransferSession", "n": 232, "laws": 0, "ts": "2026-07-24 19:03 UTC"}
 {"id": "/documentation/avfoundation/avassetwriter/startsession(atsourcetime:)", "sha": "bc47c6b230fc30bfffda53d10987543e7bd7c62a51607bbedf1661d6705b8591", "t": "startSession(atSourceTime:)", "n": 933, "laws": 2, "ts": "2026-07-24 19:04 UTC"}
 {"id": "/documentation/CoreVideo/CVPixelBuffer", "sha": "92b33a4b8ce831238252cdf89329282b268ad553ff52684358814d852f162794", "t": "CVPixelBuffer", "n": 111, "laws": 0, "ts": "2026-07-25 04:21 UTC"}
+{"id": "/documentation/AppIntents/EntityProperty", "sha": "df59b01f4f9210c9679f3b4a5a01e4a92103efe226ff17a05348daca84a353b5", "t": "EntityProperty", "n": 47131, "laws": 0, "ts": "2026-07-25 18:07 UTC"}
+{"id": "/documentation/audiotoolbox/auaudiounitpreset", "sha": "b82438aa6107b846c13dc0497d1dbcc39671db853625f0e741f7a7b000316073", "t": "AUAudioUnitPreset", "n": 432, "laws": 0, "ts": "2026-07-25 18:13 UTC"}
+{"id": "/documentation/driverkit/iouserclient/externalmethod", "sha": "85d9b9d7c910a4396d95c5d0d3105ab7d741369ffa5afaab046d41047534db1c", "t": "ExternalMethod", "n": 282, "laws": 0, "ts": "2026-07-25 18:26 UTC"}
+{"id": "/documentation/foundationmodels/languagemodelsession/responsestream", "sha": "0c813b1229f34f22a999dd43c931dc841bb0b614ceb839bc3b59568d6e439b10", "t": "LanguageModelSession.ResponseStream", "n": 197, "laws": 0, "ts": "2026-07-25 18:32 UTC"}
+{"id": "/documentation/SwiftUI/View/hoverEffect(in:isEnabled:body:)", "sha": "6382d78c535deebd874ec386747d0174a5f0fd9cf452058fb5007adac2c6b2af", "t": "hoverEffect(in:isEnabled:body:)", "n": 621, "laws": 3, "ts": "2026-07-25 18:32 UTC"}

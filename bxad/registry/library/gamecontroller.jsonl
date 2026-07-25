@@ -7,3 +7,28 @@
 {"id": "/documentation/GameController/GCController", "law": "For single-player games, use the property to get the controller that the player is actively using."}
 {"id": "/documentation/GameController/GCController", "law": "For example, use the property of the profile to get the thumbstick state."}
 {"id": "/documentation/GameController/GCController", "law": "Use the property to set a handler that you implement to process any input values that change in the profile."}
+{"id": "/documentation/gamecontroller", "law": "Use Game Controller to support users interacting with your app using a physical or virtual game controller."}
+{"id": "/documentation/gamecontroller", "law": "Users may remap game controller elements in Settings and Preferences, so be sure to display the correct input element in your interface."}
+{"id": "/documentation/gamecontroller", "law": "Letting players use their second-generation Siri Remote as a game controller."}
+{"id": "/documentation/gamecontroller/discovering-and-tracking-spatial-game-controllers-and-styli", "law": "After you connect to a device, you use or to combine tracking data with input from the device."}
+{"id": "/documentation/gamecontroller/discovering-and-tracking-spatial-game-controllers-and-styli", "law": "You don’t need to enable the Spatial Gamepad profile if your app only supports stylus input."}
+{"id": "/documentation/gamecontroller/discovering-and-tracking-spatial-game-controllers-and-styli", "law": "You can use the connection notification to track each connection as they happen, or check to iterate through an up-to-date list of the currently connected controllers."}
+{"id": "/documentation/gamecontroller/discovering-and-tracking-spatial-game-controllers-and-styli", "law": "To get notifications for styli, use and ."}
+{"id": "/documentation/gamecontroller/discovering-and-tracking-spatial-game-controllers-and-styli", "law": "Use and when your app launches to get the initial connection state."}
+{"id": "/documentation/gamecontroller/discovering-and-tracking-spatial-game-controllers-and-styli", "law": "You use to access the button and thumbstick inputs of a spatial controller."}
+{"id": "/documentation/gamecontroller/discovering-and-tracking-spatial-game-controllers-and-styli", "law": "When you work with spatial game controllers, the input button mapping expose the following inputs: Use to access inputs from a spatial stylus accessory."}
+{"id": "/documentation/gamecontroller/discovering-and-tracking-spatial-game-controllers-and-styli", "law": "Use with a or to anchor virtual content onto the accessory."}
+{"id": "/documentation/gamecontroller/discovering-and-tracking-spatial-game-controllers-and-styli", "law": "Each controller and stylus accessory has a list of possible locations you can anchor to, and depends on the accessory you use."}
+{"id": "/documentation/gamecontroller/discovering-and-tracking-spatial-game-controllers-and-styli", "law": "For apps that don’t depend on high location accuracy, use the tracking mode."}
+{"id": "/documentation/gamecontroller/gccontroller", "law": "A real controller can be formfitting or can attach closely to a device so players can use controls on both simultaneously."}
+{"id": "/documentation/gamecontroller/gccontroller", "law": "Use the method to get the currently connected controllers."}
+{"id": "/documentation/gamecontroller/gccontroller", "law": "If necessary, use the method to connect with wireless controllers."}
+{"id": "/documentation/gamecontroller/gccontroller", "law": "For single-player games, use the property to get the controller that the player is actively using."}
+{"id": "/documentation/gamecontroller/gccontroller", "law": "For example, use the property of the profile to get the thumbstick state."}
+{"id": "/documentation/gamecontroller/gccontroller", "law": "Use the property to set a handler that you implement to process any input values that change in the profile."}
+{"id": "/documentation/gamecontroller/gckeyboard", "law": "To get the keyboard object and its input values, register for the (Swift) or (Objective-C) notification for when a keyboard connects to the device, or use the class property."}
+{"id": "/documentation/gamecontroller/gcmouse", "law": "Alternatively, use the class property or the class method to get a mouse object."}
+{"id": "/documentation/gamecontroller/gcstylus", "law": "Use the property to get the currently connect stylus accessories when your application starts."}
+{"id": "/documentation/gamecontroller/gcstylus", "law": "Use the property to get the input profile of the stylus."}
+{"id": "/documentation/gamecontroller/gcstylus", "law": "Use the property to get the haptics profile of the stylus."}
+{"id": "/documentation/gamecontroller/letting-players-use-their-second-generation-siri-remote-as-a-game-controller", "law": "When a game controller connects, check if the controller is a directional gamepad using the method: Check if the device category is second-generation Siri Remote using the property: If these conditions are true, you can use the connected second-generation Siri Remote as a game controller."}

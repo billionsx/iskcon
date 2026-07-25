@@ -5,3 +5,7 @@
 {"id": "/documentation/accelerate/vdsp_biquad_createsetup", "sha": "73e262b371e94e3cde7b7a99a8cc28f42f400b231bf571d72c56b0e77b02ae37", "t": "vDSP_biquad_CreateSetup", "n": 736, "laws": 3, "ts": "2026-07-25 04:20 UTC"}
 {"id": "/documentation/accelerate/vimage/interleaved8x4", "sha": "d99b76fd2529a92c3440a055c955987075bdf4935fb0f6ca6186565526135c07", "t": "vImage.Interleaved8x4", "n": 53, "laws": 0, "ts": "2026-07-25 04:21 UTC"}
 {"id": "/documentation/accelerate/simd-library", "sha": "a1c430dc6101a4e54e75ec3625a162d5def22ebc639c3b615504bc7a0b9c5fc4", "t": "simd", "n": 1461, "laws": 1, "ts": "2026-07-25 04:24 UTC"}
+{"id": "/documentation/CoreAudioKit/AUAudioUnitViewConfiguration/hostHasController", "sha": "f9b85eeae4eb5283057b0ce9baf31ddf217cdf50a9ee92aecce8e6e377782e41", "t": "hostHasController", "n": 105, "laws": 0, "ts": "2026-07-25 18:13 UTC"}
+{"id": "/documentation/CloudKit/CKShare", "sha": "a29a8d47ef7175cbc603939bf3a9566ea7e7ef8c635c88b179ba61df7b7959b9", "t": "CKShare", "n": 4650, "laws": 9, "ts": "2026-07-25 18:17 UTC"}
+{"id": "/documentation/Xcode/configuring-a-multiplatform-app-target", "sha": "6aebdfceaa8f517ea33270110bbf4c921bbf993303fc33c635d561678587f932", "t": "Configuring a multiplatform app", "n": 5906, "laws": 9, "ts": "2026-07-25 18:27 UTC"}
+{"id": "/documentation/GameKit/initializing-and-configuring-game-center", "sha": "f8b53e4b003f95d40c77d3955d6e95993d0d89b279ba255fb8b26beb2249afef", "t": "Initializing and configuring Game Center", "n": 5780, "laws": 10, "ts": "2026-07-25 18:33 UTC"}

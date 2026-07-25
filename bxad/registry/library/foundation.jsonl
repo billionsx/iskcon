@@ -37,3 +37,219 @@
 {"id": "/documentation/Foundation/FileHandle/closeFile()", "law": "After calling this method, you may still use the file handle object but must not attempt to read or write data or use the object to operate on the file descriptor."}
 {"id": "/documentation/Foundation/FileHandle/readData(ofLength:)", "law": "The data available through the receiver up to a maximum of bytes, or the maximum size that can be represented by an object, whichever is the smaller."}
 {"id": "/documentation/Foundation/Data/withUnsafeBytes(_:)", "law": "The byte pointer argument should not be stored and used outside of the lifetime of the call to the closure."}
+{"id": "/documentation/Foundation/NSUserActivity", "law": "Handoff and other features operate on the current activity and use it as context for their behavior."}
+{"id": "/documentation/Foundation/NSUserActivity", "law": "For each string, specify one of the activity types you use to create your objects."}
+{"id": "/documentation/Foundation/NSUserActivity", "law": "System features like Siri and Apple Intelligence use contextual information from your app’s interface to improve their responses."}
+{"id": "/documentation/Foundation/NSUserActivity", "law": "Use the property of your user activity object to provide the entity for your view."}
+{"id": "/documentation/Foundation/FileManager/url(for:in:appropriateFor:create:)", "law": "You typically use this method to locate one of the standard system directories, such as the , or directories."}
+{"id": "/documentation/Foundation/FileManager/url(for:in:appropriateFor:create:)", "law": "You can use this method to create a new temporary directory."}
+{"id": "/documentation/Foundation/FileManager/url(for:in:appropriateFor:create:)", "law": "For example, the following code results in a new temporary directory with a path in the form of : If you use this method to create a temporary directory, you should not rely on the existence of that temporary directory after the app is exited."}
+{"id": "/documentation/Foundation/FileManager/url(for:in:appropriateFor:create:)", "law": "It is recommended that you remove any temporary directories that are created after they’re no longer needed."}
+{"id": "/documentation/Foundation/NSExtensionItem/attachments", "law": "These items are always typed ."}
+{"id": "/documentation/Foundation/NSExtensionRequestHandling", "law": "An extension’s principal object can implement this protocol and use to keep track of the request from a host app."}
+{"id": "/documentation/Foundation/NSItemProvider", "law": "When using an item provider with drag and drop, ensure that UI updates take place on the main queue as follows:"}
+{"id": "/documentation/Foundation/NSItemProvider", "law": "During that examination, the extension can use the method to look for data that it recognizes."}
+{"id": "/documentation/Foundation/NSItemProvider", "law": "Item providers use values to identify the data they contain."}
+{"id": "/documentation/Foundation/NSItemProvider", "law": "After finding a type of data that your extension can use, it calls the method to load the actual data, which is delivered to the provided completion handler."}
+{"id": "/documentation/Foundation/NSItemProvider", "law": "You can optionally use the property to generate a preview image for your data."}
+{"id": "/documentation/Foundation/NSItemProvider", "law": "A single item provider may use custom blocks to provide its data in many different formats."}
+{"id": "/documentation/Foundation/NSItemProvider", "law": "When configuring an item provider, use the method to register your blocks and the formats each one supports."}
+{"id": "/documentation/Foundation/NSItemProvider/registerFileRepresentation(forTypeIdentifier:fileOptions:visibility:loadHandler:)", "law": "If a destination app must access the represented file using a file coordinator, set the parameter in the load handler block to ."}
+{"id": "/documentation/Foundation/NSItemProvider/registerFileRepresentation(forTypeIdentifier:fileOptions:visibility:loadHandler:)", "law": "Open-in-place support requires that the file provider is visible in the Files app."}
+{"id": "/documentation/Foundation/NSPredicate", "law": "Predicates represent logical conditions, which you can use to filter collections of objects."}
+{"id": "/documentation/Foundation/NSUserCancelledError-swift.var", "law": "This code is for errors that do not require a dialog displayed and might be candidates for special-casing."}
+{"id": "/documentation/Foundation/OperationQueue", "law": "Otherwise, the operation queue always invokes the operation with the highest priority relative to the other ready operations."}
+{"id": "/documentation/Foundation/OperationQueue", "law": "However, don’t rely on queue semantics to ensure a specific execution order of operations because changes in the readiness of an operation can change the resulting execution order."}
+{"id": "/documentation/Foundation/OperationQueue", "law": "Canceling an operation object leaves the object in the queue but notifies the object that it should stop its task as quickly as possible."}
+{"id": "/documentation/Foundation/OperationQueue", "law": "For currently executing operations, this means that the operation object’s work code must check the cancellation state, stop what it is doing, and mark itself as finished."}
+{"id": "/documentation/Foundation/OperationQueue", "law": "For operations that are queued but not yet executing, the queue must still call the operation object’s method so that it can processes the cancellation event and mark itself as finished."}
+{"id": "/documentation/Foundation/OperationQueue", "law": "Code associated with your user interface typically must run only in your app’s main thread."}
+{"id": "/documentation/Foundation/OperationQueue", "law": "You can safely use a single object from multiple threads without creating additional locks to synchronize access to that object."}
+{"id": "/documentation/Foundation/OperationQueue", "law": "Operation queues use the framework to initiate the execution of their operations."}
+{"id": "/documentation/Foundation/OperationQueue", "law": "As a result, queues always invoke operations on a separate thread, regardless of whether the operation is synchronous or asynchronous."}
+{"id": "/documentation/Foundation/Predicate", "law": "You use predicates for operations like filtering a collection or searching for matching elements."}
+{"id": "/documentation/Foundation/Predicate", "law": "To create a predicate, use the macro."}
+{"id": "/documentation/Foundation/Predicate", "law": "To define a list of types and key paths that are allowed when reading an archived predicate, use ."}
+{"id": "/documentation/Foundation/UserDefaults/init(suiteName:)", "law": "Use this method to create a defaults object that reads settings from the custom domain you specify."}
+{"id": "/documentation/Foundation/UserDefaults/init(suiteName:)", "law": "For example, you might use this method to access settings you share among multiple apps or between your app and an app extension."}
+{"id": "/documentation/Foundation/UserDefaults/init(suiteName:)", "law": "You can’t search another app’s settings if either app runs in an and you don’t have the proper entitlements."}
+{"id": "/documentation/Foundation/URL", "law": "For example, you can use and its related classes to access the contents of remote resources."}
+{"id": "/documentation/Foundation/URL", "law": "As a convenience, you can use Swift’s - syntax to asynchronously access the contents of a through the and properties."}
+{"id": "/documentation/Foundation/URL", "law": "These properties use the shared instance to load the resource."}
+{"id": "/documentation/Foundation/URL", "law": "To make the best use of these directories, see ."}
+{"id": "/documentation/Foundation/NSUbiquitousKeyValueStore", "law": "Use the shared object to store settings, configuration information, and app-specific data in a person’s iCloud account and share it among instances of your app running on all of the person’s devices."}
+{"id": "/documentation/Foundation/NSUbiquitousKeyValueStore", "law": "Don’t store personal or sensitive information in the key-value store."}
+{"id": "/documentation/Foundation/NSUbiquitousKeyValueStore", "law": "Use this same object throughout your app to read and write values."}
+{"id": "/documentation/Foundation/NSUbiquitousKeyValueStore", "law": "To use this object, you must distribute your app through the App Store or Mac App Store, and you must request the in your Xcode project."}
+{"id": "/documentation/Foundation/NSUbiquitousKeyValueStore", "law": "The keys in the iCloud key-value store identify the item and its purpose in your app, and the value is a data object you use to implement the corresponding behavior in your app."}
+{"id": "/documentation/Foundation/NSUbiquitousKeyValueStore", "law": "Values must be property list types such as , , , , , , , , or ."}
+{"id": "/documentation/Foundation/NSUbiquitousKeyValueStore", "law": "Prefer simple types over custom objects whenever possible."}
+{"id": "/documentation/Foundation/NSUbiquitousKeyValueStore", "law": "The maximum size for a single value is 1 megabyte."}
+{"id": "/documentation/Foundation/NSUbiquitousKeyValueStore", "law": "The maximum length for each key string is 128 characters using the UTF-16 encoding."}
+{"id": "/documentation/Foundation/NSUbiquitousKeyValueStore", "law": "Key strings don’t count against the 1 megabyte quota for values."}
+{"id": "/documentation/Foundation/NSUbiquitousKeyValueStore/didChangeExternallyNotification", "law": "Use it to update your app’s content in response to the new data."}
+{"id": "/documentation/Foundation/URL/startAccessingSecurityScopedResource()", "law": "When you obtain a security-scoped URL, such as by resolving a security-scoped bookmark, you can’t immediately use the resource it points to."}
+{"id": "/documentation/Foundation/URL/startAccessingSecurityScopedResource()", "law": "You can also use Core Foundation equivalent, the function."}
+{"id": "/documentation/Foundation/URL/startAccessingSecurityScopedResource()", "law": "If this method returns , then you must relinquish access as soon as you finish using the resource."}
+{"id": "/documentation/Foundation/URL/startAccessingSecurityScopedResource()", "law": "You must balance each call to for a given security-scoped URL with a call to ."}
+{"id": "/documentation/Foundation/DistributedNotificationCenter", "law": "For communication between tasks on different computers, use ."}
+{"id": "/documentation/Foundation/DistributedNotificationCenter", "law": "A task must be running a run loop in one of the “common” modes, such as , to receive a distributed notification."}
+{"id": "/documentation/Foundation/DistributedNotificationCenter", "law": "For multithreaded applications running in macOS 10.3 and later, distributed notifications are always delivered to the main thread."}
+{"id": "/documentation/Foundation/DistributedNotificationCenter", "law": "When using distributed notifications, your app should treat any data passed in the notification as untrusted."}
+{"id": "/documentation/Foundation/DistributedNotificationCenter", "law": "objects should not be used to send notifications between threads within the same task."}
+{"id": "/documentation/Foundation/DistributedNotificationCenter", "law": "Use or the method , instead."}
+{"id": "/documentation/Foundation/Progress", "law": "Specifically, you can use a progress object to show the user a progress bar and explanatory text that update as you do work."}
+{"id": "/documentation/Foundation/Progress", "law": "Progress objects have many properties that you can use to observe and report current progress."}
+{"id": "/documentation/Foundation/Progress", "law": "It also means that there is a nonzero cost to updating the values of those properties, so avoid using a unit count that is too granular."}
+{"id": "/documentation/Foundation/Progress", "law": "Suboperations don’t need to know anything about the containing progress item — you can create new progress objects as suboperations of another progress instance."}
+{"id": "/documentation/Foundation/Progress", "law": "You can use a single progress object to track the entire task, but it’s easier to manage each subtask using a separate progress object."}
+{"id": "/documentation/Foundation/Progress", "law": "If you don’t create any suboperation progress objects between the calls to and , the containing progress object automatically updates its by adding the pending units."}
+{"id": "/documentation/foundation/data-formatting", "law": "Foundation supports two approaches for data formatting: When working in Swift, use methods directly on the types you want to format, optionally using and its subtypes to customize formatter output."}
+{"id": "/documentation/foundation/data-formatting", "law": "In Objective-C, create instances of and its subtypes, and use the method to convert objects to formatted strings."}
+{"id": "/documentation/foundation/pausing-and-resuming-uploads", "law": "To take advantage of resumable uploads, the server you’re connecting to must also support this protocol."}
+{"id": "/documentation/foundation/pausing-and-resuming-uploads", "law": "You can use this technique to manually pause and resume an upload, or even resume an upload that failed due to a temporary loss of connectivity."}
+{"id": "/documentation/foundation/pausing-and-resuming-uploads", "law": "If is not , you can use this token later to resume the upload."}
+{"id": "/documentation/foundation/pausing-and-resuming-uploads", "law": "The server must support the from the HTTP Working Group at the IETF."}
+{"id": "/documentation/foundation/pausing-and-resuming-uploads", "law": "Also, uploads that use a background configuration handle resumption automatically, so manual resuming is only needed for non-background uploads."}
+{"id": "/documentation/foundation/pausing-and-resuming-uploads", "law": "If the key exists, save the value associated with it to use later when you try to resume the upload."}
+{"id": "/documentation/foundation/uploading-data-to-a-website", "law": "Many apps work with servers that accept uploads of files like images or documents, or use web service API endpoints that accept structured data like JSON."}
+{"id": "/documentation/foundation/uploading-data-to-a-website", "law": "To upload data from your app, you use a instance to create a instance."}
+{"id": "/documentation/foundation/uploading-data-to-a-website", "law": "As shown in the following example, you can declare a structure that conforms to , create an instance of this type, and use to encode the instance to JSON data for upload."}
+{"id": "/documentation/foundation/uploading-data-to-a-website", "law": "An upload task requires a instance."}
+{"id": "/documentation/foundation/uploading-data-to-a-website", "law": "Use the method to set the values of any HTTP headers that you want to provide, except the header."}
+{"id": "/documentation/foundation/uploading-streams-of-data", "law": "Streaming media apps and long-running apps that send continual updates use an ongoing stream to upload data, rather than sending a single block of data or a flat file."}
+{"id": "/documentation/foundation/uploading-streams-of-data", "law": "A good way to provide data to the input stream is to use a bound pair of streams."}
+{"id": "/documentation/foundation/uploading-streams-of-data", "law": "Creating a bound pair of input and output streams When you create the bound pair, make sure you specify a buffer size large enough to hold any data you write to the output stream, prior to the data being read from the input stream."}
+{"id": "/documentation/foundation/uploading-streams-of-data", "law": "If you’re not ready to write while handling the event, and would prefer to write on your own schedule, you can set a flag variable and check it later to determine whether it’s is safe to write to the stream."}
+{"id": "/documentation/foundation/uploading-streams-of-data", "law": "You write to the stream by calling its method, providing a reference to the raw bytes to be written, and the maximum number of bytes to write."}
+{"id": "/documentation/foundation/uploading-streams-of-data", "law": "In these situations, you can use a circular buffer to hold your data until the stream is ready to accept it."}
+{"id": "/documentation/foundation/url-loading-system", "law": "You use a instance to create one or more instances, which can fetch and return data to your app, download files, or upload data and files to remote locations."}
+{"id": "/documentation/foundation/url-loading-system", "law": "To configure a session, you use a object, which controls behavior like how to use caches and cookies, or whether to allow connections on a cellular network."}
+{"id": "/documentation/foundation/url-loading-system", "law": "You can use one session repeatedly to create tasks."}
+{"id": "/documentation/foundation/url-loading-system", "law": "For example, a web browser might have separate sessions for regular and private browsing use, where the private session doesn’t cache its data."}
+{"id": "/documentation/foundation/url-loading-system", "law": "Configure and create sessions, then use them to create tasks that interact with URLs."}
+{"id": "/documentation/foundation/urlsession", "law": "Your app can also use this API to perform background downloads when your app isn’t running or, in iOS, while your app is suspended."}
+{"id": "/documentation/foundation/urlsession", "law": "You can use the related and to support authentication and receive events like redirection and task completion."}
+{"id": "/documentation/foundation/urlsession", "law": "For example, if you’re creating a web browser, your app might create one session per tab or window, or one session for interactive use and another for background downloads."}
+{"id": "/documentation/foundation/urlsession", "law": "The tasks within a given URL session share a common session configuration object, which defines connection behavior, like the maximum number of simultaneous connections to make to a single host, whether connections can use the cellular network, and so on."}
+{"id": "/documentation/foundation/urlsession", "law": "Ephemeral sessions are similar to shared sessions, but don’t write caches, cookies, or credentials to disk."}
+{"id": "/documentation/foundation/urlsession", "law": "If you don’t need the features provided by a delegate, you can use this API without providing one by passing when you create a session."}
+{"id": "/documentation/foundation/urlsession", "law": "If you don’t invalidate the session, your app leaks memory until the app terminates."}
+{"id": "/documentation/foundation/urlsession", "law": "It returns data to your app in one of three ways, depending on the methods you call: If you’re using Swift, you can use the methods marked with the keyword to perform common tasks."}
+{"id": "/documentation/foundation/urlsession", "law": "You can also use the method to receive data as an ."}
+{"id": "/documentation/foundation/urlsession", "law": "With this approach, you use the - - syntax to iterate over the data as your app receives it."}
+{"id": "/documentation/foundation/creating-a-user-activity-object", "law": "You can also use them to provide better Spotlight search results."}
+{"id": "/documentation/foundation/implementing-handoff-in-your-app", "law": "Use Handoff to transfer activities the user starts on one iOS, watchOS, or macOS device to a different device."}
+{"id": "/documentation/foundation/implementing-handoff-in-your-app", "law": "To handoff between apps on different platforms, your apps must share the same developer Team ID."}
+{"id": "/documentation/foundation/implementing-handoff-in-your-app", "law": "This means you must either distribute your apps through the App Store, or sign them with the same credentials."}
+{"id": "/documentation/foundation/implementing-handoff-in-your-app", "law": "Start by identifying which activities make sense to use with Handoff."}
+{"id": "/documentation/foundation/implementing-handoff-in-your-app", "law": "You use your app’s file to declare that your app can receive an activity from Handoff."}
+{"id": "/documentation/foundation/implementing-handoff-in-your-app", "law": "Each member of the array should be a whose value is one of your activity identifiers."}
+{"id": "/documentation/foundation/implementing-handoff-in-your-app", "law": "Also, while watchOS can send user activities, it cannot receive them, so watchOS apps don’t declare an property."}
+{"id": "/documentation/foundation/implementing-handoff-in-your-app", "law": "For example, if a user is working on a document, the activity should indicate the document—and possibly what part of the document—the user is editing."}
+{"id": "/documentation/foundation/implementing-handoff-in-your-app", "law": "Don’t include the document itself as part of the activity, since the user could launch your app without Handoff, such as by tapping or clicking its app icon."}
+{"id": "/documentation/foundation/implementing-handoff-in-your-app", "law": "Instead, use techniques like iCloud Drive to share documents between the user’s devices."}
+{"id": "/documentation/foundation/increasing-app-usage-with-suggestions-based-on-user-activities", "law": "When the user activity object is not contained within the responder chain, you must call the method to mark the object as current, which also registers the object with the system."}
+{"id": "/documentation/foundation/increasing-app-usage-with-suggestions-based-on-user-activities", "law": "The app must also maintain a strong reference to any activity objects that the system uses for search results."}
+{"id": "/documentation/foundation/nsuseractivity", "law": "Handoff and other features operate on the current activity and use it as context for their behavior."}
+{"id": "/documentation/foundation/nsuseractivity", "law": "For each string, specify one of the activity types you use to create your objects."}
+{"id": "/documentation/foundation/nsuseractivity", "law": "System features like Siri and Apple Intelligence use contextual information from your app’s interface to improve their responses."}
+{"id": "/documentation/foundation/nsuseractivity", "law": "Use the property of your user activity object to provide the entity for your view."}
+{"id": "/documentation/foundation/supporting-the-creation-of-quick-notes", "law": "People use Quick Notes on macOS and iOS to quickly add app-specific content to the Notes app."}
+{"id": "/documentation/foundation/supporting-the-creation-of-quick-notes", "law": "Someone viewing the note later can use that link to open your app and perform the activity."}
+{"id": "/documentation/foundation/supporting-the-creation-of-quick-notes", "law": "For example, someone activating Quick Note while viewing a photo an use the link to view that photo again."}
+{"id": "/documentation/foundation/supporting-the-creation-of-quick-notes", "law": "The URL or identifier you provide needs to remain stable and consistent so you can use it to perform the activity again on different devices."}
+{"id": "/documentation/foundation/supporting-the-creation-of-quick-notes", "law": "If you use a URL, consider using universal links to provide a consistent location for items in your app."}
+{"id": "/documentation/foundation/supporting-the-creation-of-quick-notes", "law": "If you use an activity or content identifier, make sure the identifier is unique within your app but the same on all of the person’s devices."}
+{"id": "/documentation/foundation/building-a-localized-food-ordering-app", "law": "A parameter indicates that the formatting should format the price as a currency, using U.S."}
+{"id": "/documentation/foundation/building-a-localized-food-ordering-app", "law": "The SwiftUI view can then use this attribute when styling the watch display."}
+{"id": "/documentation/foundation/building-a-localized-food-ordering-app", "law": "is strongly-typed, meaning that all attributes must have defined names and value types."}
+{"id": "/documentation/foundation/building-a-localized-food-ordering-app", "law": "This allows code to use dot syntax when looking up the members of ."}
+{"id": "/documentation/foundation/building-a-localized-food-ordering-app", "law": "Some languages’ grammar require that nouns, adjectives, articles, and other parts of speech agree in number or gender with other parts of a sentence."}
+{"id": "/documentation/foundation/building-a-localized-food-ordering-app", "law": "The following entry from the English strings file shows an example of this disambiguation: Format, style, and localize your app’s text for use in multiple languages with string formatting, attributed strings, and automatic grammar agreement."}
+{"id": "/documentation/foundation/formatter", "law": "In Swift, you can use implementations of rather than ."}
+{"id": "/documentation/foundation/formatter", "law": "Also, Foundation caches identical instances, so you don’t need to pass them around your app, or risk wasting memory with duplicate formatters."}
+{"id": "/documentation/foundation/formatter", "law": "Before you decide to create a custom formatter, make sure that you cannot configure the public subclasses to satisfy your requirements."}
+{"id": "/documentation/foundation/continuing-user-activities-with-handoff", "law": "If the user changes devices, they can use Handoff to launch the app and return to what they were doing on the original device."}
+{"id": "/documentation/foundation/continuing-user-activities-with-handoff", "law": "must be run on actual devices; the iOS version cannot run in Simulator."}
+{"id": "/documentation/foundation/continuing-user-activities-with-handoff", "law": "To configure your iOS devices to run the sample code project, open the Settings app and do the following: In Bluetooth settings, tap to turn on Bluetooth."}
+{"id": "/documentation/foundation/continuing-user-activities-with-handoff", "law": "Then tap to turn on iCloud."}
+{"id": "/documentation/foundation/continuing-user-activities-with-handoff", "law": "In General settings, tap to turn on Handoff."}
+{"id": "/documentation/foundation/continuing-user-activities-with-handoff", "law": "You use the app’s to tell Handoff which activities your app can continue, by providing an entry with the key name ."}
+{"id": "/documentation/foundation/continuing-user-activities-with-handoff", "law": "The originating device can use this to clean up its own UI state."}
+{"id": "/documentation/foundation/nsuseractivity/becomecurrent()", "law": "Don’t call this method when providing a user activity object for a Siri request."}
+{"id": "/documentation/foundation/nsuseractivity/becomecurrent()", "law": "Marks the activity as currently in use by the user."}
+{"id": "/documentation/foundation/nsuseractivity/iseligibleforpublicindexing", "law": "If you set this property to , the system indexes the values in the and properties, and you must provide a value for one of those properties."}
+{"id": "/documentation/foundation/nsuseractivity/iseligibleforpublicindexing", "law": "If you provide a URL, make sure it reflects the same content in both your app and your company’s website."}
+{"id": "/documentation/foundation/nsuseractivity/iseligibleforpublicindexing", "law": "Your app must maintain a strong reference to any activity objects you make eligible for search."}
+{"id": "/documentation/foundation/nsuseractivity/iseligibleforsearch", "law": "Set this property to if you are already indexing types or don’t want Spotlight to include someone’s activity-related information in search results."}
+{"id": "/documentation/foundation/nsuseractivity/iseligibleforsearch", "law": "Your app must maintain a strong reference to any activity objects you make eligible for search."}
+{"id": "/documentation/foundation/nsuseractivity/suggestedinvocationphrase", "law": "Use a short, memorable phrase, such as “Soup time”."}
+{"id": "/documentation/foundation/nsuseractivity/userinfo", "law": "Each key and value must be of the following types: , , , , , , , , or ."}
+{"id": "/documentation/foundation/nsuseractivity/webpageurl", "law": "If your activity’s content can be restored on the web or you support Safari universal links, be sure to set this property so that the system can resume the activity in Safari or your app."}
+{"id": "/documentation/foundation/nsuseractivity/webpageurl", "law": "After setting the property on an activity for which is , also set the property, using the keys of the dictionary that must be stored."}
+{"id": "/documentation/foundation/nsuseractivity/webpageurl", "law": "If you don’t also set the property, the dictionary will be empty when the activity is restored."}
+{"id": "/documentation/foundation/nsuseractivity/webpageurl", "law": "If is for this activity and you’re using both and web markup to index the same item, set to the relevant URL on your website to avoid showing duplicate results in Spotlight."}
+{"id": "/documentation/foundation/nsuseractivity/webpageurl", "law": "The scheme of the must be or ."}
+{"id": "/documentation/foundation/decimal/formatstyle", "law": "Use the method to create a string representation of a decimal value using the default configuration: You can specify a format style by providing an argument to the method."}
+{"id": "/documentation/foundation/decimal/formatstyle", "law": "The previous examples use static instances like to create format styles within the call to the method."}
+{"id": "/documentation/foundation/decimal/formatstyle", "law": "You can also create a instance and use it to repeatedly format different values by using the method, as shown here:"}
+{"id": "/documentation/foundation/decimal/formatstyle", "law": "You can use to parse strings into decimal values."}
+{"id": "/documentation/foundation/decimal/formatstyle", "law": "Along with parsing numeric values in strings, you can use the Swift regular expression domain-specific language to match and capture numeric substrings."}
+{"id": "/documentation/foundation/floatingpointformatstyle", "law": "For Foundation’s type, use ."}
+{"id": "/documentation/foundation/floatingpointformatstyle", "law": "Use the method to create a string representation of a floating-point value using the default configuration."}
+{"id": "/documentation/foundation/floatingpointformatstyle", "law": "The previous examples use static factory methods like to create format styles within the call to the method."}
+{"id": "/documentation/foundation/floatingpointformatstyle", "law": "You can also create a instance and use it to repeatedly format different values, with the method:"}
+{"id": "/documentation/foundation/floatingpointformatstyle", "law": "You can use to parse strings into floating-point values."}
+{"id": "/documentation/foundation/floatingpointformatstyle", "law": "Along with parsing numeric values in strings, you can use theSwift regular expression domain-specific language to match and capture numeric substrings."}
+{"id": "/documentation/foundation/formatstyle", "law": "Use this when you want to customize a style once and apply it repeatedly to many instances."}
+{"id": "/documentation/foundation/formatstyle", "law": "Use this for one-off formatting scenarios, or when you want to apply different format styles to the same data value."}
+{"id": "/documentation/foundation/formatstyle", "law": "These are available for use in a data type’s method when the format style’s input type matches the data type."}
+{"id": "/documentation/foundation/formatstyle", "law": "Since one of these statically-defined properties ( ) takes as its input, you can use this type property instead of instantiating a new format style instance."}
+{"id": "/documentation/foundation/formatstyle", "law": "You can use a one of two ways: Initialize the data type by calling an initializer of that type that takes a formatted instance and a parse strategy as parameters."}
+{"id": "/documentation/foundation/integerformatstyle", "law": "For Foundation’s type, use ."}
+{"id": "/documentation/foundation/integerformatstyle", "law": "Use the method to create a string representation of an integer using the default configuration."}
+{"id": "/documentation/foundation/integerformatstyle", "law": "The previous examples use static factory methods like to create format styles within the call to the method."}
+{"id": "/documentation/foundation/integerformatstyle", "law": "You can also create an instance and use it to repeatedly format different values with the method:"}
+{"id": "/documentation/foundation/integerformatstyle", "law": "You can use to parse strings into integer values."}
+{"id": "/documentation/foundation/integerformatstyle", "law": "Along with parsing numeric values in strings, you can use the Swift regular expression domain-specific language to match and capture numeric substrings."}
+{"id": "/documentation/foundation/listformatstyle", "law": "Use either or , both instance methods of , to create a string representation of the items."}
+{"id": "/documentation/foundation/listformatstyle", "law": "You can use the static factory method to create a custom list format style as a parameter to the method."}
+{"id": "/documentation/foundation/url/formatstyle", "law": "Use the method to create a string representation of a URL using the default configuration."}
+{"id": "/documentation/foundation/url/formatstyle", "law": "For one-time access to a default style, you can use the static accessor at call points that expect the type, such as the method."}
+{"id": "/documentation/foundation/url/formatstyle", "law": "You can use to parse strings into URL values."}
+{"id": "/documentation/foundation/url/formatstyle", "law": "Along with parsing URL values in strings, you can use the regular expression domain-specific language provided by Swift to match and capture URL substrings."}
+{"id": "/documentation/foundation/notificationcenter", "law": "When a caller adds itself as an observer, it specifies which notifications it should receive."}
+{"id": "/documentation/foundation/notificationcenter", "law": "and instances for use with Swift code, providing strong typing, appropriate actor isolation, and a more idiomatic Swift experience."}
+{"id": "/documentation/foundation/notificationcenter", "law": "On macOS, if you want to post a notification to other processes or receive notifications from other processes, use instead."}
+{"id": "/documentation/foundation/nsubiquitouskeyvaluestore", "law": "Use the shared object to store settings, configuration information, and app-specific data in a person’s iCloud account and share it among instances of your app running on all of the person’s devices."}
+{"id": "/documentation/foundation/nsubiquitouskeyvaluestore", "law": "Don’t store personal or sensitive information in the key-value store."}
+{"id": "/documentation/foundation/nsubiquitouskeyvaluestore", "law": "Use this same object throughout your app to read and write values."}
+{"id": "/documentation/foundation/nsubiquitouskeyvaluestore", "law": "To use this object, you must distribute your app through the App Store or Mac App Store, and you must request the in your Xcode project."}
+{"id": "/documentation/foundation/nsubiquitouskeyvaluestore", "law": "The keys in the iCloud key-value store identify the item and its purpose in your app, and the value is a data object you use to implement the corresponding behavior in your app."}
+{"id": "/documentation/foundation/nsubiquitouskeyvaluestore", "law": "Values must be property list types such as , , , , , , , , or ."}
+{"id": "/documentation/foundation/nsubiquitouskeyvaluestore", "law": "Prefer simple types over custom objects whenever possible."}
+{"id": "/documentation/foundation/nsubiquitouskeyvaluestore", "law": "The maximum size for a single value is 1 megabyte."}
+{"id": "/documentation/foundation/nsubiquitouskeyvaluestore", "law": "The maximum length for each key string is 128 characters using the UTF-16 encoding."}
+{"id": "/documentation/foundation/nsubiquitouskeyvaluestore", "law": "Key strings don’t count against the 1 megabyte quota for values."}
+{"id": "/documentation/foundation/nsubiquitouskeyvaluestore/didchangeexternallynotification", "law": "Use it to update your app’s content in response to the new data."}
+{"id": "/documentation/foundation/nsubiquitouskeyvaluestoreaccountchange", "law": "Use the new data to configure your app."}
+{"id": "/documentation/foundation/nsubiquitouskeyvaluestoreinitialsyncchange", "law": "Schedule the write operations after a delay to give the system time to download the data and ensure the local copies match the truth in iCloud."}
+{"id": "/documentation/foundation/nsubiquitouskeyvaluestorequotaviolationchange", "law": "The maximum size for a single value is 1 megabyte."}
+{"id": "/documentation/foundation/userdefaults", "law": "You use this system to store nonsensitive information, such as app-specific configuration details."}
+{"id": "/documentation/foundation/userdefaults", "law": "In your code, you check values from this system and use them to dynamically alter your app’s appearance or behavior."}
+{"id": "/documentation/foundation/userdefaults", "law": "Don’t store personal or sensitive information as settings."}
+{"id": "/documentation/foundation/userdefaults", "law": "The object is a shared object you use to read and write your app’s standard settings."}
+{"id": "/documentation/foundation/userdefaults", "law": "Each item you store in a defaults object consists of a key-value pair, where each key is a string that you use to locate the item and each value is a data object."}
+{"id": "/documentation/foundation/userdefaults", "law": "Prefer simple types over custom objects whenever possible."}
+{"id": "/documentation/foundation/userdefaults", "law": "Because the data is device-specific, you don’t use the defaults system to share data between devices."}
+{"id": "/documentation/foundation/userdefaults", "law": "To share data between someone’s devices, use the instead."}
+{"id": "/documentation/foundation/userdefaults", "law": "Don’t access the files of the defaults database directly from the file system."}
+{"id": "/documentation/foundation/userdefaults", "law": "In macOS, use the command-line utility to safely view or modify the defaults database outside of your app."}
+{"id": "/documentation/foundation/archives-and-serialization", "law": "Use these APIs to convert your app’s in-memory types to representations suitable for serialization over I/O and network interfaces or to long-term storage."}
+{"id": "/documentation/foundation/archives-and-serialization", "law": "Foundation extends this with the and protocols, used for types that require additional static information to encode and decode, such as ."}
+{"id": "/documentation/foundation/archives-and-serialization", "law": "When adding serialization to your own types, you should also adopt ."}
+{"id": "/documentation/foundation/archives-and-serialization", "law": "Many system frameworks use these types."}
+{"id": "/documentation/foundation/archives-and-serialization", "law": "When working with external systems, such as URL endpoints, use the JSON and XML APIs to serialize your app’s types to standard formats."}
+{"id": "/documentation/foundation/jsonserialization", "law": "You use the class to convert JSON to Foundation objects and convert Foundation objects to JSON."}
+{"id": "/documentation/foundation/jsonserialization", "law": "To convert a Foundation object to JSON, the object must have the following properties: The top level object is an or , unless you set the option."}

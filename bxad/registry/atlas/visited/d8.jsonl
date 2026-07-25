@@ -2,3 +2,7 @@
 {"id": "/documentation/watchOS-Apps/updating-your-app-and-widgets-for-watchos-10", "sha": "bf3bc43a5f8fc3d44670247bd4f3e2413de8240461c998846251929cab56dbe5", "t": "Updating your app and widgets for watchOS 10", "n": 471, "laws": 0, "ts": "2026-07-24 17:57 UTC"}
 {"id": "/documentation/updates/corespotlight", "sha": "0f0f604fe9111b565d63466cf6b50a368c47ee8ddcced8b7a32051da4fa41ea1", "t": "Core Spotlight updates", "n": 443, "laws": 0, "ts": "2026-07-24 18:46 UTC"}
 {"id": "/documentation/InputMethodKit", "sha": "c689873a6aaf76c9aeff34ab624494559853a2e03b49b8d9742746f54e3164a0", "t": "InputMethodKit", "n": 1162, "laws": 0, "ts": "2026-07-24 18:51 UTC"}
+{"id": "/documentation/Foundation/NSExtensionContext/completeRequest(returningItems:completionHandler:)", "sha": "f349543bedb1ff4dadb1ac13eafb21c4e0373643916d77a07029e87e22233635", "t": "completeRequest(returningItems:completionHandler:)", "n": 179, "laws": 0, "ts": "2026-07-25 18:08 UTC"}
+{"id": "/documentation/appkit/nswritingtoolscoordinator", "sha": "d98db4bdf1641defdf0e6ef780f4e6dd61bdbb7fd70b571fcf39acee38fd7b6e", "t": "NSWritingToolsCoordinator", "n": 2499, "laws": 2, "ts": "2026-07-25 18:09 UTC"}
+{"id": "/documentation/eventkit", "sha": "11672d35b2caa730a4a90a3ff2530432bccd4c5e248336334568fa29830ea5a2", "t": "EventKit", "n": 1288, "laws": 1, "ts": "2026-07-25 18:27 UTC"}
+{"id": "/documentation/GroupActivities/GroupSessionMessenger", "sha": "6faba6581527019af4ba2d149ea796f00774b7e6ddd6b29787602a04bf0d3aa1", "t": "GroupSessionMessenger", "n": 1874, "laws": 4, "ts": "2026-07-25 18:34 UTC"}

@@ -5,3 +5,9 @@
 {"id": "/documentation/avfoundation/avmutableaudiomix", "sha": "1765f1a06730442bdb50f3ecaad944596717a3a8638c08c566d46c7f8349159a", "t": "AVMutableAudioMix", "n": 105, "laws": 0, "ts": "2026-07-24 19:04 UTC"}
 {"id": "/documentation/avfoundation/debugging-avfoundation-audio-mixes-compositions-and-video-compositions", "sha": "def3be876e52e4e669c74ccb79a30441f7134264a2b51cd2c2adefcdd133562a", "t": "Debugging AVFoundation audio mixes, compositions, and video compositions", "n": 3711, "laws": 1, "ts": "2026-07-24 19:04 UTC"}
 {"id": "/documentation/avkit/avinterstitialtimerange", "sha": "1d66cc7bc41500fc7475f848a3375f3cd8b84eb8e982451c34bbd376f81bbf93", "t": "AVInterstitialTimeRange", "n": 526, "laws": 0, "ts": "2026-07-24 19:08 UTC"}
+{"id": "/documentation/appintents/intentexecutiontargets", "sha": "ca6406293157307f440e1b1368152eb19904e59e2590099f35096373386939b9", "t": "IntentExecutionTargets", "n": 1075, "laws": 1, "ts": "2026-07-25 18:08 UTC"}
+{"id": "/documentation/foundation/nsextensionitem", "sha": "98da7f4a49e19416ee09aebeae874b363f1ce2e25b1bd85269411d7e9aad6427", "t": "NSExtensionItem", "n": 305, "laws": 0, "ts": "2026-07-25 18:09 UTC"}
+{"id": "/documentation/appkit/nsfilepromiseprovider", "sha": "0378d8d442d87b02a43cbf378c993b38f23112fdbc15bea6e67001a9429e524a", "t": "NSFilePromiseProvider", "n": 858, "laws": 4, "ts": "2026-07-25 18:10 UTC"}
+{"id": "/documentation/CryptoKit/SymmetricKey", "sha": "3eacb7c95076413af8a64f4f4c1538335df83b47426e9d678bf9af7f1ee176c0", "t": "SymmetricKey", "n": 495, "laws": 1, "ts": "2026-07-25 18:11 UTC"}
+{"id": "/documentation/Vision/VNClassifyImageRequest", "sha": "0dcf9e41a8ab9cb1da678742f89a56e28fa941fc7b48bfbb980a64b052c07602", "t": "VNClassifyImageRequest", "n": 343, "laws": 0, "ts": "2026-07-25 18:22 UTC"}
+{"id": "/documentation/foundation/stringstyle", "sha": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855", "t": "StringStyle", "n": 0, "laws": 0, "ts": "2026-07-25 18:31 UTC"}

@@ -46,3 +46,19 @@
 {"id": "/documentation/SiriKit", "law": "With a person’s permission, an installed health research app that uses entitlements may collect Face Metrics data while your SiriKit app is in use."}
 {"id": "/documentation/SiriKit", "law": "To prevent SensorKit from collecting Face Metrics data while your app is in use, you can set the information property list key to ."}
 {"id": "/documentation/SiriKit", "law": "Requesting Authorization to Use Siri."}
+{"id": "/documentation/SiriKit/improving-siri-media-interactions-and-app-selection", "law": "Use to receive media intents from Siri and Shortcuts."}
+{"id": "/documentation/SiriKit/improving-siri-media-interactions-and-app-selection", "law": "To opt in to Siri media control, you must choose at least one category for your app."}
+{"id": "/documentation/SiriKit/improving-siri-media-interactions-and-app-selection", "law": "The system can also use your app’s donations to offer personalized audio suggestions on Lock Screen, in Control Center, and in the Home app."}
+{"id": "/documentation/SiriKit/improving-siri-media-interactions-and-app-selection", "law": "If you haven’t already customized the PlayMedia system intent, follow these steps to set that up: If your project doesn’t already have an file, use File > New File and then choose SiriKit Intent Definition File to add one to your project."}
+{"id": "/documentation/SiriKit/improving-siri-media-interactions-and-app-selection", "law": "Once you have the PlayMedia system intent in a SiriKit Intent Definition file, make sure that its list of Supported Combinations includes the entry with “mediaContainer” as the only parameter."}
+{"id": "/documentation/SiriKit/improving-siri-media-interactions-and-app-selection", "law": "If some media becomes irrelevant or unavailable, use to remove interactions associated with those specific media items."}
+{"id": "/documentation/SiriKit/improving-siri-media-interactions-and-app-selection", "law": "Don’t call unless you really mean to reset what the system has learned about the way the user interacts with your app."}
+{"id": "/documentation/SiriKit/improving-siri-media-interactions-and-app-selection", "law": "If you need to delete items from the index, use ."}
+{"id": "/documentation/SiriKit/improving-siri-media-interactions-and-app-selection", "law": "You should update the vocabulary as needed, such as when the user renames or deletes a playlist, or begins listening to a particular artist more frequently."}
+{"id": "/documentation/SiriKit/donating-shortcuts", "law": "Users can also use donated shortcuts to add personalized voice phrases to Siri."}
+{"id": "/documentation/SiriKit/donating-shortcuts", "law": "However, don’t make more than one shortcut donation for an action at the time the user performs the action."}
+{"id": "/documentation/SiriKit/donating-shortcuts", "law": "Additionally, don’t make donations for actions the user hasn’t completed in your app; if the user never places an order for soup, don’t donate a shortcut for the order soup action."}
+{"id": "/documentation/SiriKit/donating-shortcuts", "law": "The activity type should be a reverse domain name that’s unique within the list."}
+{"id": "/documentation/SiriKit/donating-shortcuts", "law": "You can also suggest the voice phrase that a user may want to use when adding a phrase to Siri by setting the property on the user activity."}
+{"id": "/documentation/SiriKit/donating-shortcuts", "law": "Use an intent that best describes the action; otherwise, create a custom intent."}
+{"id": "/documentation/SiriKit/donating-shortcuts", "law": "Even if you provide an Intents App Extension, you should always implement the method in your app delegate."}
