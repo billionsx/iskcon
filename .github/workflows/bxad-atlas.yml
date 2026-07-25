@@ -35,10 +35,14 @@ jobs:
         run: |
           pip install --quiet playwright && python3 -m playwright install --with-deps chromium > /dev/null 2>&1
           python3 bxad/bin/liveview.py --live || echo "живой взгляд: см. registry/live"
+      - name: "Эфир — пересборка дашборда (ст. 54)"
+        if: always()
+        run: python3 bxad/bin/dashboard.py
+
       - name: "Хроника урожая — коммит"
         if: always()
         run: |
           git config user.name "bxad"; git config user.email "ceo@billionsx.com"
-          git add bxad/registry
+          git add bxad/registry bxad/dashboard
           git commit -m "bxad: урожай (атлас · веб-атлас · кит · живой взгляд)" || exit 0
           for i in 1 2 3 4 5 6; do git pull --rebase -q && git push -q && break || sleep 4; done

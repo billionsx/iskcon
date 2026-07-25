@@ -1,0 +1,34 @@
+{
+ "_суть": "Реестр поручений основателя (ст. 53). Каждое поручение: статус · орган-исполнитель · статья устава. Статусы: done | active | queued | blocked | partial.",
+ "bxad": [
+  {"id": "T01", "task": "Полная профессиональная конституция департамента", "status": "done", "organ": "CONSTITUTION.md р.5 · суд ст.45", "article": "весь устав"},
+  {"id": "T02", "task": "Проверка работоспособности и реального соответствия стандартам", "status": "done", "organ": "bin/verify.py (сверка 3 плоскостей)", "article": "ст. 45"},
+  {"id": "T03", "task": "Изученность всех пунктов: динамика · кинетика · эффекты · анимация", "status": "done", "organ": "bin/study.py + AE13 + дозор спрингов", "article": "ст. 21.1 · 22.1"},
+  {"id": "T04", "task": "Ежедневное исследование developer.apple.com + 18 внутренних ресурсов", "status": "active", "organ": "bin/crawler.py · 73 источника · ежедневно", "article": "ст. 35–37 · 49"},
+  {"id": "T05", "task": "Автономный цикл всей /documentation/ → собственная библиотека законов", "status": "active", "organ": "bin/atlas.py · 2 урожая/сутки", "article": "ст. 37.1 · 37.2"},
+  {"id": "T06", "task": "Кит iOS 27 из Figma без аккаунта основателя", "status": "partial", "organ": "figkit: Figma-рука спит (KIT-UNLOCK.md); факт: Sketch-кита 27 не существует; компенсация: кадротека + шрифты SF + символы", "article": "ст. 36.1"},
+  {"id": "T07", "task": "Переименование департамента в Billions X Apple Developer (BXAD)", "status": "done", "organ": "каталог bxad/ · bxad.yml · брендинг", "article": "титул"},
+  {"id": "T08", "task": "Директива №8: Программа-95 — узкие звенья и инструменты", "status": "active", "organ": "ст. 52: кадротека·Figma-рука·символы·живой взгляд·атлас·веб-атлас", "article": "ст. 52"},
+  {"id": "T09", "task": "Архив кадров приложений Apple → изучить и внести", "status": "done", "organ": "bin/screens.py · 195 кадров/10 приложений · паспорта · находки сдвига базы · релиз bxad-screens-v1", "article": "ст. 36.2"},
+  {"id": "T10", "task": "Мультиплатформенность: iOS·iPadOS·macOS·tvOS·visionOS·watchOS·AppStore·Web — раздельно, по назначению", "status": "done", "organ": "standards/platforms/*.json (8 тел)", "article": "ст. 26.2"},
+  {"id": "T11", "task": "Веб-версии продуктов Apple наравне с documentation", "status": "active", "organ": "bin/weblab.py (паспорта + CSS-законы)", "article": "ст. 36.3"},
+  {"id": "T12", "task": "Стандарты лендинг-презентаций Apple: кит по 87 страницам", "status": "active", "organ": "WEBLAB.md — частоты секций/модулей; library/web-landings.jsonl", "article": "ст. 36.3"},
+  {"id": "T13", "task": "Урожай неубиваем пушами/отменами", "status": "done", "organ": "bxad-atlas.yml — своя concurrency-группа", "article": "ст. 37.3 (примеч.)"},
+  {"id": "T14", "task": "Все поручения зафиксированы и интегрированы в автономный процесс", "status": "done", "organ": "registry/tasks.json + суд целостности", "article": "ст. 53"},
+  {"id": "T15", "task": "Отчётность — дашборд в прямом эфире", "status": "done", "organ": "bin/dashboard.py → dashboard/DASHBOARD.md + index.html, обновление каждым прогоном", "article": "ст. 54"},
+  {"id": "T16", "task": "Перенос BXAD: отдельный GitHub + домен + Cloudflare, подключаем к любому проекту", "status": "queued", "organ": "MIGRATION-STANDALONE.md — пошаговая инструкция готова; исполнение — кнопками владельца аккаунтов", "article": "ст. 46–47"},
+  {"id": "T17", "task": "Живой взгляд: видеть приложения в реальном режиме, не кадрами", "status": "active", "organ": "bin/liveview.py --live (Chromium · DOM+computed · AE-сверка); SPA-ожидание в урожае №2", "article": "ст. 37.3"},
+  {"id": "T18", "task": "Установка приложений Apple для разработчиков", "status": "done", "organ": "bxad-macos.yml: Xcode 15.4 (+8 версий) · SF Symbols установлен · опись 9184 символа", "article": "ст. 49.1"}
+ ],
+ "iskcon_product": [
+  {"id": "P-3G", "task": "«Тройка 2-й генерации» ПКЛ: Шринивас · Нароттама · Шьямананда", "status": "done", "organ": "ПКЛ-конвейер (gold, аудит до нуля)"},
+  {"id": "P-4F", "task": "«Финальная четвёрка» P1 современных гуру (закрытие 36/36)", "status": "done", "organ": "D1 entity_profiles (silver)"},
+  {"id": "C7", "task": "Ц7 · Лекции Прабхупады (media в D1, «лекция дня», слушание в садхану)", "status": "queued", "organ": "продуктовые сессии ISKCON"},
+  {"id": "C8", "task": "Ц8 · Путь ученика + рекомендованный порядок чтения", "status": "queued", "organ": "продуктовые сессии ISKCON"},
+  {"id": "C9", "task": "Ц9 · Пуджа/Божества (deities почти пуст)", "status": "queued", "organ": "продуктовые сессии ISKCON"},
+  {"id": "C10", "task": "Ц10 · Geo-density (координаты центров/тиртх)", "status": "queued", "organ": "продуктовые сессии ISKCON"},
+  {"id": "C11", "task": "Ц11 · Контентная/структурная гигиена", "status": "queued", "organ": "продуктовые сессии ISKCON"},
+  {"id": "C12", "task": "Ц12 · Payload ceiling Катхи (план в UX_AUDIT.md)", "status": "queued", "organ": "продуктовые сессии ISKCON"},
+  {"id": "PKL8", "task": "ПКЛ Фаза 2: Джива (текущий) → Гопала Бхатта → … → Бхугарбха (8)", "status": "active", "organ": "ПКЛ-конвейер"}
+ ]
+}

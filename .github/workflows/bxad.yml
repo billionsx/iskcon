@@ -106,12 +106,16 @@ jobs:
             rm -f bxad/registry/screens/raw_part_*
           fi
 
+      - name: "Эфир — пересборка дашборда (ст. 54)"
+        if: always()
+        run: python3 bxad/bin/dashboard.py
+
       - name: "Хроника — коммит состояния в репозиторий"
         if: always()
         run: |
           git config user.name "bxad"
           git config user.email "ceo@billionsx.com"
-          git add bxad/registry
+          git add bxad/registry bxad/dashboard
           if git diff --cached --quiet; then
             echo "изменений нет — хроника чиста"
             exit 0

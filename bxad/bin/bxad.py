@@ -68,6 +68,8 @@ FOUNDER_MANDATE = {
     "живой взгляд (не скриншоты)": "Статья 37.3 · Живой взгляд",
     "macOS-плечо и установка приложений": "Статья 49.1 · macOS-плечо",
     "Программа-95": "Статья 52 · Программа-95",
+    "реестр поручений основателя": "Статья 53 · Реестр поручений",
+    "дашборд в прямом эфире": "Статья 54 · Эфир",
     "динамика": "Статья 21.1 · Динамика", "эффекты": "Статья 22.1 · Эффекты",
 }
 
@@ -562,6 +564,23 @@ def cmd_selftest(root: Path) -> int:
     check("метрики сняты точно: em 1000 · крышка 714 → доля 0.714 (наш канон)",
           m["unitsPerEm"] == 1000 and m["capHeight"] == 714 and m["capHeight_fraction"] == 0.714
           and m["at"].startswith("font:"))
+
+    print("SELFTEST · поручения и эфир (ст. 53–54: обе стороны)")
+    import dashboard as dash_mod
+    tj = json.loads((root / "registry" / "tasks.json").read_text(encoding="utf-8"))
+    ALL = [t for g, its in tj.items() if not g.startswith("_") for t in its]
+    ids = [t["id"] for t in ALL]
+    ST = {"done", "active", "queued", "blocked", "partial"}
+    check("реестр поручений целостен: id уникальны · статусы из множества · у каждого орган",
+          len(ids) == len(set(ids)) and all(t["status"] in ST and t.get("organ") for t in ALL) and len(ALL) >= 20)
+    dd = dash_mod.collect()
+    st_atlas = json.loads((root / "registry" / "atlas" / "state.json").read_text(encoding="utf-8"))
+    check("эфир живыми числами: атлас в дашборде == реестру, задачи посчитаны",
+          dd["atlas"]["visited"] == st_atlas["visited"] and dd["tasks"]["bxad"]["done"] >= 8
+          and (root / "dashboard" / "DASHBOARD.md").exists() and (root / "dashboard" / "index.html").exists())
+    baddup = json.loads(json.dumps(tj)); baddup["bxad"].append(dict(baddup["bxad"][0]))
+    ids2 = [t["id"] for g, its in baddup.items() if not g.startswith("_") for t in its]
+    check("подделка (дубль id поручения) ловится", len(ids2) != len(set(ids2)))
 
     print("SELFTEST · конституция (ст. 45: полнота мандата машиной)")
     const_t = (root / "CONSTITUTION.md").read_text(encoding="utf-8")
