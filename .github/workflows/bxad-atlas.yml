@@ -18,7 +18,7 @@ jobs:
         with: { fetch-depth: 0 }
       - name: "Инструменты"
         run: |
-          pip install --quiet pillow numpy
+          pip install --quiet pillow numpy fonttools
           command -v 7z >/dev/null || sudo apt-get -yq install p7zip-full >/dev/null
       - name: "Суд — короткий (гейт урожая)"
         run: python3 bxad/bin/bxad.py selftest > /dev/null

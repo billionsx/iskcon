@@ -112,6 +112,10 @@ def run_live(root: Path) -> dict:
             slug = re.sub(r"[^a-z0-9]+", "-", re.sub(r"https?://", "", url).strip("/").lower()) or "root"
             try:
                 pg.goto(url, wait_until="networkidle", timeout=45000)
+                try:  # SPA: ждём реального монтирования дерева
+                    pg.wait_for_function("document.querySelectorAll('body *').length > 50", timeout=20000)
+                except Exception:
+                    pg.wait_for_timeout(4000)
                 els = pg.evaluate(js)
             except Exception as e:
                 results[slug] = {"url": url, "elements": 0, "findings": [], "note": f"{type(e).__name__}"}

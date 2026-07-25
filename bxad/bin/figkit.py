@@ -41,7 +41,8 @@ from crawler import UA, _robots_ok  # noqa: E402
 
 RES_URL = "https://developer.apple.com/design/resources/"
 LINK = re.compile(r'href="([^"]+\.(?:dmg|zip|sketch))"', re.I)
-KITWORD = re.compile(r"ios|ipados", re.I)
+KITWORD = re.compile(r"ios|ipados|tvos|visionos", re.I)
+FONTWORD = re.compile(r"^SF-[A-Za-z-]+\.dmg$", re.I)
 
 
 def _now():
@@ -158,9 +159,17 @@ def run_sketch_arm(root: Path, force=False, fixtures: Path = None) -> dict:
             return {"status": "robots-disallow", "kits": []}
         html = _get(RES_URL)
         all_names = sorted({h.rsplit("/", 1)[-1] for h in LINK.findall(html)})
-        links = []
+        links, font_links = [], []
         for href in LINK.findall(html):
-            if KITWORD.search(href.rsplit("/", 1)[-1]):
+            fn = href.rsplit("/", 1)[-1]
+            if FONTWORD.match(fn):
+                url = href if href.startswith("http") else "https://developer.apple.com" + href
+                try:
+                    font_links.append((fn, _get(url, binary=True, timeout=900)))
+                except Exception as e:
+                    font_links.append((fn + "!download", str(e).encode()))
+                continue
+            if KITWORD.search(fn):
                 url = href if href.startswith("http") else "https://developer.apple.com" + href
                 name = url.rsplit("/", 1)[-1]
                 try:
@@ -169,8 +178,10 @@ def run_sketch_arm(root: Path, force=False, fixtures: Path = None) -> dict:
                     links.append((name + "!download", str(e).encode()))
         if not links:
             return {"status": "ссылок на iOS-кит не найдено (страница изменилась?)", "kits": []}
-    kits, arm_errors = [], []
+    kits, arm_errors, fonts = [], [], []
     with tempfile.TemporaryDirectory() as td:
+        if fixtures is None and font_links:
+            fonts = run_fonts_arm(root, font_links[:3], Path(td))
         for name, blob in links[:2]:
             try:
                 if name.endswith("!download"):
@@ -186,7 +197,8 @@ def run_sketch_arm(root: Path, force=False, fixtures: Path = None) -> dict:
                 arm_errors.append(f"{name}: {type(e).__name__}: {e}")
     st = {"page_sha": (page_sha if not arm_errors else st.get("page_sha", "")),
           "kits": kits, "errors": arm_errors,
-          "links_seen": (all_names if fixtures is None else ["fixture"]), "ts": _now()}
+          "links_seen": (all_names if fixtures is None else ["fixture"]),
+          "fonts": fonts, "ts": _now()}
     stf.write_text(json.dumps(st, ensure_ascii=False, indent=1), encoding="utf-8")
     idx = ["# КИТ · величины официальных китов Apple (рука Sketch, без аккаунтов)",
            "Каждая величина несёт адрес kit:<файл>:<страница>/<имя> — 🍎 канон Apple.", ""]
@@ -202,9 +214,56 @@ def run_sketch_arm(root: Path, force=False, fixtures: Path = None) -> dict:
             f.write(f"### {_now()} · кит\n" + "".join(
                 f"- {k['kit']}: цветов {k['colors']} · текст-стилей {k['text_styles']} · радиусов {k['radii']} · символов {k['symbols']}\n" for k in kits)
                 + "".join(f"- ОШИБКА руки: {e}\n" for e in arm_errors)
+                + "".join(f"- шрифты: {x.get('dmg')}: лиц {x.get('faces','—')} · крышка {x.get('cap_sample','—')} {x.get('error','')}\n" for x in fonts)
                 + ("- все ссылки страницы: " + " · ".join(all_names) + "\n" if fixtures is None else "") + "\n")
     status = "извлечено" if kits else ("ошибка руки: " + "; ".join(arm_errors) if arm_errors else "пусто")
     return {"status": status, "kits": kits, "errors": arm_errors}
+
+
+def parse_font_bytes(otf: bytes, at: str) -> dict:
+    """Метрики шрифта первоисточника (fonttools): em · крышка · подъёмы."""
+    import io as _io
+    from fontTools.ttLib import TTFont
+    ft = TTFont(_io.BytesIO(otf), fontNumber=0, lazy=True)
+    os2, head, hhea = ft["OS/2"], ft["head"], ft["hhea"]
+    name = ft["name"].getDebugName(4) or ft["name"].getDebugName(1) or "?"
+    upm = head.unitsPerEm
+    cap = getattr(os2, "sCapHeight", 0) or 0
+    return {"name": name, "unitsPerEm": upm,
+            "capHeight": cap, "capHeight_fraction": round(cap / upm, 4) if cap else None,
+            "xHeight": getattr(os2, "sxHeight", None),
+            "ascender": hhea.ascent, "descender": hhea.descent, "at": at}
+
+
+def run_fonts_arm(root: Path, links: list, tmp: Path) -> list:
+    """SF-семья прямыми dmg с design-resources → метрики каждого лица.
+    Величины 🍎-грейд с адресом font:<dmg>:<файл> — фундамент типографики."""
+    fdir = root / "registry" / "standards" / "fonts"
+    fdir.mkdir(parents=True, exist_ok=True)
+    faces_all = []
+    for name, blob in links:
+        try:
+            if name.endswith("!download"):
+                raise RuntimeError(blob.decode(errors="replace")[:120])
+            src = tmp / name
+            src.write_bytes(blob)
+            out = tmp / ("f_" + name)
+            out.mkdir(exist_ok=True)
+            subprocess.run(["7z", "x", "-y", f"-o{out}", str(src)], capture_output=True, timeout=600)
+            faces = []
+            for p in sorted(out.rglob("*.otf")) + sorted(out.rglob("*.ttf")):
+                try:
+                    faces.append(parse_font_bytes(p.read_bytes(), f"font:{name}:{p.name}"))
+                except Exception:
+                    pass
+            slug = re.sub(r"[^a-z0-9]+", "-", name.lower()).strip("-")
+            (fdir / f"{slug}.json").write_text(json.dumps(
+                {"dmg": name, "faces": faces}, ensure_ascii=False, indent=1), encoding="utf-8")
+            faces_all.append({"dmg": name, "faces": len(faces),
+                              "cap_sample": next((x["capHeight_fraction"] for x in faces if x["capHeight_fraction"]), None)})
+        except Exception as e:
+            faces_all.append({"dmg": name, "error": f"{type(e).__name__}: {e}"[:140]})
+    return faces_all
 
 
 def run_figma_arm(root: Path) -> dict:

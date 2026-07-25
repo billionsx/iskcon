@@ -35,7 +35,7 @@ IMG = re.compile(r"<img\b", re.I)
 VID = re.compile(r"<video\b", re.I)
 CTA = re.compile(r'class="[^"]*\bbutton\b[^"]*"', re.I)
 H = re.compile(r"<h([1-6])\b", re.I)
-TYPO = re.compile(r"\.(typography-[a-z0-9-]+)[^{}]*\{([^}]*)\}", re.I)
+TYPO = re.compile(r"\.([a-z0-9-]*(?:typography|headline|eyebrow|subhead|copy)[a-z0-9-]*)\s*\{([^}]*)\}", re.I)
 PROP = re.compile(r"(font-size|line-height|letter-spacing|font-weight)\s*:\s*([^;]+)", re.I)
 
 
@@ -48,7 +48,7 @@ def _get(url, timeout=40):
 def parse_page(html: str):
     secs = []
     for m in SEC.finditer(html):
-        cls = [c for c in m.group(1).split() if c.startswith("section")]
+        cls = [c for c in m.group(1).split() if c.startswith("section-")]
         if cls:
             secs.append(cls[0])
     mods = DATA_MOD.findall(html)
@@ -56,7 +56,7 @@ def parse_page(html: str):
             "imgs": len(IMG.findall(html)), "videos": len(VID.findall(html)),
             "cta": len(CTA.findall(html)),
             "h_levels": dict(Counter(H.findall(html))),
-            "css": [u for u in CSSL.findall(html) if u.endswith(".css")][:6]}
+            "css": [u for u in CSSL.findall(html) if ".css" in u][:6]}
 
 
 def mine_typography(css: str, css_name: str):

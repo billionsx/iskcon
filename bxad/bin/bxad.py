@@ -543,6 +543,26 @@ def cmd_selftest(root: Path) -> int:
                  "backdropFilter": "blur(20px) saturate(180%)", "fontFamily": "-apple-system, system-ui"}]
     check("чистый живой DOM → находок нет", lv.check_dump(good_els, tok) == [])
 
+    print("SELFTEST · рука шрифтов (метрики первоисточника)")
+    import figkit as fk2
+    from fontTools.fontBuilder import FontBuilder
+    import io as _io
+    fb = FontBuilder(1000, isTTF=True)
+    fb.setupGlyphOrder([".notdef", "H"]); fb.setupCharacterMap({72: "H"})
+    from fontTools.pens.ttGlyphPen import TTGlyphPen
+    pen = TTGlyphPen(None); pen.moveTo((0,0)); pen.lineTo((0,714)); pen.lineTo((50,714)); pen.lineTo((50,0)); pen.closePath()
+    fb.setupGlyf({".notdef": TTGlyphPen(None).glyph(), "H": pen.glyph()})
+    fb.setupHorizontalMetrics({".notdef": (500,0), "H": (100,0)})
+    fb.setupHorizontalHeader(ascent=950, descent=-250)
+    fb.setupNameTable({"familyName": "BXADTest", "styleName": "Regular"})
+    fb.setupOS2(sCapHeight=714, sxHeight=500)
+    fb.setupPost()
+    buf = _io.BytesIO(); fb.save(buf)
+    m = fk2.parse_font_bytes(buf.getvalue(), "font:test.dmg:BXADTest.ttf")
+    check("метрики сняты точно: em 1000 · крышка 714 → доля 0.714 (наш канон)",
+          m["unitsPerEm"] == 1000 and m["capHeight"] == 714 and m["capHeight_fraction"] == 0.714
+          and m["at"].startswith("font:"))
+
     print("SELFTEST · конституция (ст. 45: полнота мандата машиной)")
     const_t = (root / "CONSTITUTION.md").read_text(encoding="utf-8")
     missing = [d for d, anchor in FOUNDER_MANDATE.items() if anchor not in const_t]
