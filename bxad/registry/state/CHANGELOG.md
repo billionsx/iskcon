@@ -483,3 +483,6 @@
 ### 2026-07-24 17:58 UTC · кит
 - ОШИБКА руки: iOS-27-Icon-Templates-Photoshop-Illustrator.dmg: RuntimeError: в контейнере нет .sketch
 
+### 2026-07-25 03:51 UTC · macOS-плечо
+- Xcode зафиксирован · SF Symbols установлен · символов выгружено: 9184
+
