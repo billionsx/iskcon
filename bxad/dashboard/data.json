@@ -1,5 +1,5 @@
 {
- "ts": "2026-07-26 20:10 UTC",
+ "ts": "2026-07-26 20:12 UTC",
  "atlas": {
   "visited": 11200,
   "frontier": 54861,
@@ -25,7 +25,13 @@
   "frames": 195,
   "apps": 10
  },
- "monitor": {},
+ "monitor": {
+  "ts": "2026-07-26 20:12 UTC",
+  "sha": "",
+  "now": 9,
+  "new": 9,
+  "gone": 0
+ },
  "live": {
   "pages": 3
  },
