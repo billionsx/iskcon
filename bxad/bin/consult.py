@@ -120,6 +120,7 @@ def run(root: Path, budget: int = None, fixtures: Path = None) -> dict:
     per_render = min(per, 8)  # браузерные фирмы: жёсткий кап времени шага
     new_laws = pages = 0
     pw = br = pg = None
+    st.setdefault("errors", {})
     for firm in firms:
         fs = st["firms"][firm]
         vis = set(fs["visited"])
@@ -140,14 +141,20 @@ def run(root: Path, budget: int = None, fixtures: Path = None) -> dict:
                     continue
                 if firm in RENDER_FIRMS:
                     if pg is None:
-                        pw, br, pg = _renderer()
+                        try:
+                            pw, br, pg = _renderer()
+                        except Exception as e:
+                            st["errors"][firm] = f"renderer: {type(e).__name__}: {str(e)[:120]}"
+                            break
                     if pg is None:
-                        continue
+                        st["errors"][firm] = "renderer: playwright недоступен"
+                        break
                     try:
                         pg.goto(url, wait_until="domcontentloaded", timeout=15000)
                         pg.wait_for_timeout(2200)
                         html = pg.content()
-                    except Exception:
+                    except Exception as e:
+                        st["errors"][firm] = f"{type(e).__name__}: {str(e)[:120]}"
                         continue
                 else:
                     try:
@@ -178,6 +185,8 @@ def run(root: Path, budget: int = None, fixtures: Path = None) -> dict:
                     fs["frontier"].append(u)
         fs.pop("_seeds", None)
         fs["visited"] = sorted(vis)
+        st["frames"] = dict(frames_c)
+        stf.write_text(json.dumps(st, ensure_ascii=False), encoding="utf-8")  # инкрементально: работа фирмы не теряется
     if br is not None:
         br.close(); pw.stop()
     st["frames"] = dict(frames_c)

@@ -537,15 +537,22 @@ def cmd_selftest(root: Path) -> int:
     bad_els = [
         {"sel": "div.card", "backgroundColor": "rgb(20, 20, 24)", "boxShadow": "none", "textShadow": "none",
          "backdropFilter": "blur(20px)", "fontFamily": "Papyrus, fantasy", "transition": "0.3s|ease"},
-        {"sel": "span.dup", "backgroundColor": "rgb(142, 142, 142)", "boxShadow": "0 0 4px #000",
+        {"sel": "span.dup", "backgroundColor": "rgb(142, 142, 142)",
+         "boxShadow": "rgba(0, 0, 0, 0.14) 0px 10px 30px 0px",
          "textShadow": "none", "backdropFilter": "none", "fontFamily": "-apple-system"},
     ]
     got_lv = {r for r, *_ in lv.check_dump(bad_els, tok)}
     check("живые нарушения пойманы: AE1·AE2·AE6·AE7·AE10",
           {"AE1", "AE2", "AE6", "AE7", "AE10"} <= got_lv)
     good_els = [{"sel": "div.ok", "backgroundColor": "rgb(28, 28, 30)", "boxShadow": "none", "textShadow": "none",
-                 "backdropFilter": "blur(20px) saturate(180%)", "fontFamily": "-apple-system, system-ui"}]
-    check("чистый живой DOM → находок нет", lv.check_dump(good_els, tok) == [])
+                 "backdropFilter": "blur(20px) saturate(180%)", "fontFamily": "-apple-system, system-ui"},
+                {"sel": "div.lens", "backgroundColor": "rgba(0, 0, 0, 0)",
+                 "boxShadow": "rgba(255, 255, 255, 0.95) 0px 1.5px 1px 0px inset",
+                 "backdropFilter": "blur(1px) saturate(1.9)", "fontFamily": "-apple-system"},
+                {"sel": "svg.icon", "backgroundColor": "rgba(0, 0, 0, 0)", "boxShadow": "none",
+                 "textShadow": "none", "backdropFilter": "none", "fontFamily": "Arial"}]
+    check("чистый живой DOM → находок нет (белый inset-блик и svg-шрифт законны)",
+          lv.check_dump(good_els, tok) == [])
 
     print("SELFTEST · рука шрифтов (метрики первоисточника)")
     import figkit as fk2

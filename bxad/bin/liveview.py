@@ -59,6 +59,22 @@ def _rgb_to_hex(v: str):
     return "#%02X%02X%02X" % (int(m.group(1)), int(m.group(2)), int(m.group(3))), a
 
 
+NONTEXT = {"svg", "path", "circle", "rect", "line", "polyline", "polygon", "ellipse", "g", "use", "defs", "img", "video", "canvas"}
+
+
+def _dark_drop_shadow(v: str) -> bool:
+    """Чёрная выпадающая тень (запрещена на чёрном холсте); белые inset-блики стекла законны."""
+    if not v or v == "none":
+        return False
+    for part in re.split(r",(?![^()]*\))", v):
+        if "inset" in part:
+            continue
+        m = re.search(r"rgba?\((\d+),\s*(\d+),\s*(\d+)", part)
+        if m and max(int(m.group(1)), int(m.group(2)), int(m.group(3))) < 0x60:
+            return True
+    return False
+
+
 def check_dump(elements: list, tokens: dict) -> list:
     finds = []
     ladder = {c.upper() for c in tokens["surfaces"]["allow"]} | {"#1C1C1C", "#2C2C2C", "#181818", "#111111"}
@@ -71,13 +87,16 @@ def check_dump(elements: list, tokens: dict) -> list:
                 finds.append(("AE6", sel, f"живой тёплый двойник {hx}"))
             elif max(int(hx[i:i+2], 16) for i in (1, 3, 5)) < 0x60:
                 finds.append(("AE1", sel, f"живой тёмный фон {hx} вне лестницы"))
-        if (el.get("boxShadow") or "none") != "none" or (el.get("textShadow") or "none") != "none":
-            finds.append(("AE2", sel, "живая тень/свечение на чёрном холсте"))
+        for prop in ("boxShadow", "textShadow"):
+            v = el.get(prop) or "none"
+            if _dark_drop_shadow(v):
+                finds.append(("AE2", sel, f"чёрная выпадающая тень на чёрном холсте: {v[:80]}"))
         bf = (el.get("backdropFilter") or "").lower()
         if "blur(" in bf and "saturate(" not in bf:
             finds.append(("AE7", sel, "живое стекло: blur без saturate"))
+        tag = sel.split(".")[0].split(":")[0]
         ff = (el.get("fontFamily") or "").lower().strip().strip('"\'')
-        if ff and not ff.startswith(stack):
+        if tag not in NONTEXT and ff and not ff.startswith(stack):
             finds.append(("AE10", sel, f"живой шрифт первой позицией: {ff.split(',')[0][:40]}"))
     return finds
 
@@ -95,7 +114,7 @@ def _report(root: Path, results: dict):
         for rule, sel, why in r["findings"]:
             by.setdefault(rule, []).append((sel, why))
         for rule in sorted(by):
-            md.append(f"- **{rule}** · {len(by[rule])}: " + "; ".join(f"`{s}`" for s, _ in by[rule][:5]))
+            md.append(f"- **{rule}** · {len(by[rule])}: " + "; ".join(f"`{s2}` ({w[:60]})" for s2, w in by[rule][:4]))
         md.append("")
     (root / "registry" / "live" / "REPORT.md").write_text("\n".join(md) + "\n", encoding="utf-8")
 
