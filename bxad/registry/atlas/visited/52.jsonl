@@ -18,3 +18,8 @@
 {"id": "/documentation/Intents/INRequestRideIntentHandling", "sha": "5ca3ccfe8270315dc13128af302032342565e40f50101cff8a40c691c86f00b7", "t": "INRequestRideIntentHandling", "n": 2799, "laws": 6, "ts": "2026-07-25 23:19 UTC"}
 {"id": "/documentation/swiftdata/modelcontext/save()", "sha": "a422148e8dfc916cb6e4d2f6bc9501e9d717d0d07badad1aa509ea68d1f46760", "t": "save()", "n": 243, "laws": 1, "ts": "2026-07-25 23:22 UTC"}
 {"id": "/documentation/SwiftUI/View/productViewStyle(_:)", "sha": "c9e59572c63669763a028d0608dc8dc266c9fdfda056a3917681437cb21897e8", "t": "productViewStyle(_:)", "n": 130, "laws": 0, "ts": "2026-07-25 23:23 UTC"}
+{"id": "/documentation/WebKit/WKUIDelegate", "sha": "c13a913a53de0247fcee3aecc66e597f34ec6cb563e5249192fd597101f53f6f", "t": "WKUIDelegate", "n": 1988, "laws": 0, "ts": "2026-07-26 00:06 UTC"}
+{"id": "/documentation/uikit/uievent/predictedtouches(for:)", "sha": "39987f1fff4e4ae711a588ee6740598a6ba0a15404708ececea155be6e2fe555", "t": "predictedTouches(for:)", "n": 1726, "laws": 3, "ts": "2026-07-26 00:12 UTC"}
+{"id": "/documentation/vision/vnimagerequesthandler/perform(_:)", "sha": "55228efd1e88bced3707fb0ce163edc7ee39d65691d7940663c77724ef30f4b4", "t": "perform(_:)", "n": 206, "laws": 0, "ts": "2026-07-26 00:20 UTC"}
+{"id": "/documentation/vision/vnpixelbufferobservation", "sha": "a849a9b6c2811673b4b2851a0d1183560b480898ce70b5c260fcd2eb1a90a1e5", "t": "VNPixelBufferObservation", "n": 653, "laws": 0, "ts": "2026-07-26 00:20 UTC"}
+{"id": "/documentation/GroupActivities/defining-your-apps-shareplay-activities", "sha": "bac2ac61f5b5cbd6f4b7cf53e6a211edce7a1cde6cded3a9783752de3a0066f3", "t": "Defining your app’s SharePlay activities", "n": 5090, "laws": 8, "ts": "2026-07-26 00:29 UTC"}

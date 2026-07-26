@@ -15,3 +15,5 @@
 {"id": "/documentation/foundationmodels/imagereference", "sha": "f580d937f9dde367ff98ab0d056bf3206f81fb92e68af0174c369611c164c64c", "t": "ImageReference", "n": 376, "laws": 1, "ts": "2026-07-25 18:32 UTC"}
 {"id": "/documentation/storekit/implementing-promotional-offers-in-your-app", "sha": "3b34c201a72c54d21c8dc893fc3029a24c1e6c63cbc0a2aa0daf69e4bc7575e8", "t": "Implementing promotional offers in your app", "n": 7779, "laws": 10, "ts": "2026-07-25 23:21 UTC"}
 {"id": "/documentation/swiftdata/fetchdescriptor", "sha": "982b6ee59de302c445b986c29ea51c226f396a644dd5f0f0f17e12c52d9a142f", "t": "FetchDescriptor", "n": 1477, "laws": 4, "ts": "2026-07-25 23:23 UTC"}
+{"id": "/documentation/virtualization/running-linux-in-a-virtual-machine", "sha": "a47ad002f651cbe5c3bb3bd0a1d5ff62ae786a0008a76722d95a97f428ea78e1", "t": "Running Linux in a Virtual Machine", "n": 3661, "laws": 5, "ts": "2026-07-26 00:17 UTC"}
+{"id": "/documentation/vision/vnrecognizedpoint", "sha": "35fa3ab387b3b4223984b654657f9b5a9fe8ba7e2c56d43680ccd8e240d51b47", "t": "VNRecognizedPoint", "n": 146, "laws": 0, "ts": "2026-07-26 00:19 UTC"}

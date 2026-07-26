@@ -15,3 +15,8 @@
 {"id": "/documentation/pdfkit/custom-graphics", "sha": "f66e74dfed67e34224d5381eee88aa0f62c4b45d36beb00e079860a5231fb245", "t": "Custom Graphics", "n": 1528, "laws": 3, "ts": "2026-07-25 23:11 UTC"}
 {"id": "/documentation/pencilkit/pkerasertool-swift.struct", "sha": "ffe10168883029cbc7b50c7a886b8552ede369d354d843adad3eb6f5b709fd4e", "t": "PKEraserTool", "n": 682, "laws": 0, "ts": "2026-07-25 23:11 UTC"}
 {"id": "/documentation/UIKit/UIBarButtonItem", "sha": "8c8f9eeb303515db45f4a3e47de264e82e06f6b9af17cd1d1c2e6e0b22c2f2d6", "t": "UIBarButtonItem", "n": 3065, "laws": 3, "ts": "2026-07-25 23:12 UTC"}
+{"id": "/documentation/uikit", "sha": "4f9fa6245f968d9850d6f5e86201858ddcc67549b4c74c588af9c5a3aa372540", "t": "UIKit", "n": 3433, "laws": 4, "ts": "2026-07-26 00:06 UTC"}
+{"id": "/documentation/uikit/uitableview", "sha": "edd03f34e8d20f1ed1235e26e9c055f1128c8d3b57888e991b2ba2a98bcfb39f", "t": "UITableView", "n": 6278, "laws": 3, "ts": "2026-07-26 00:07 UTC"}
+{"id": "/documentation/Foundation/FileWrapper", "sha": "02c2391dda77e4a0a506b4ae7665aeca3059a57ceefbf30a93e3f78aa8a0481a", "t": "FileWrapper", "n": 2360, "laws": 0, "ts": "2026-07-26 00:16 UTC"}
+{"id": "/documentation/visionos/building-local-experiences-with-room-tracking", "sha": "8affbb698656cbe2be0d69c1e93b1a59c8aabbc78b38e54ea1b3cb2576293de7", "t": "Building local experiences with room tracking", "n": 5873, "laws": 10, "ts": "2026-07-26 00:29 UTC"}
+{"id": "/documentation/ARKit/ObjectAnchor", "sha": "69dc0ef3dca4aa20defcfc2b6d1e095f3a00b8300138cb194091eecb8555846c", "t": "ObjectAnchor", "n": 481, "laws": 1, "ts": "2026-07-26 00:29 UTC"}

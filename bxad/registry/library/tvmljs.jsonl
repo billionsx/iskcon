@@ -12,3 +12,10 @@
 {"id": "/documentation/tvmljs/responding_to_user_interaction", "law": "Use the function to verify that the event fired for the correct TVML element."}
 {"id": "/documentation/tvmljs/responding_to_user_interaction", "law": "Use the function to load the new document from the server."}
 {"id": "/documentation/tvmljs", "law": "You use other classes in the framework to stream media and respond to events."}
+{"id": "/documentation/tvmljs/datasource", "law": "Use the interface to manage data represented as an array."}
+{"id": "/documentation/tvmljs/browser", "law": "When appropriately configured, use the method to display a new ."}
+{"id": "/documentation/tvmljs/mediaitem", "law": "In order to play audio or video, at a minimum, there must be a object that contains a single object which contains a single object."}
+{"id": "/documentation/tvmljs/player", "law": "In order to play audio or video, at a minimum, there must be a object that contains a single object, which contains a single object."}
+{"id": "/documentation/tvmljs/playlist", "law": "In order to play audio or video, at a minimum, there must be a object that contains a single object, which contains a single object."}
+{"id": "/documentation/tvmljs/slideshow", "law": "Use the method to create and begin a new slideshow."}
+{"id": "/documentation/tvmljs/menubardocument", "law": "Use the function with the feature name to retrieve an instance of this class from the element; for example, ."}

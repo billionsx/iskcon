@@ -58,19 +58,19 @@
  "fonts": [
   {
    "dmg": "SF-Pro.dmg",
-   "faces": 0,
-   "cap_sample": null
+   "faces": 47,
+   "cap_sample": 0.7046
   },
   {
    "dmg": "SF-Compact.dmg",
-   "faces": 0,
-   "cap_sample": null
+   "faces": 38,
+   "cap_sample": 0.6665
   },
   {
    "dmg": "SF-Mono.dmg",
-   "faces": 0,
-   "cap_sample": null
+   "faces": 12,
+   "cap_sample": 0.7046
   }
  ],
- "ts": "2026-07-25 23:32 UTC"
+ "ts": "2026-07-26 00:59 UTC"
 }

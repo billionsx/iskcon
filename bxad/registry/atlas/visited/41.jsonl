@@ -19,3 +19,7 @@
 {"id": "/documentation/metal/mtlresourceoptions/storagemodeshared", "sha": "446daa09416056fb48478ee241d6e7ed4162d9294ce5e1f8bfe7d0d380821056", "t": "storageModeShared", "n": 653, "laws": 1, "ts": "2026-07-25 23:07 UTC"}
 {"id": "/documentation/proximityreader/adopting-the-verifier-api-in-your-iphone-app", "sha": "173340933a6ce046374dce8ffe41bbf2dbc75f9f576060defdadf3778040d845", "t": "Adopting the Verifier API in your iPhone app", "n": 3475, "laws": 6, "ts": "2026-07-25 23:13 UTC"}
 {"id": "/documentation/UniformTypeIdentifiers/UTType-swift.struct/vCard", "sha": "eb21c2681c75e429a503d82bbc3c6174adf32fd9e560f2fb79884c632ebdbd25", "t": "vCard", "n": 112, "laws": 0, "ts": "2026-07-25 23:23 UTC"}
+{"id": "/documentation/tvuikit", "sha": "203d6a2b4e152529447af3a2b16972c7398668faa97343f0ac33fd73936b6e19", "t": "TVUIKit", "n": 858, "laws": 2, "ts": "2026-07-26 00:04 UTC"}
+{"id": "/documentation/uikit/uicollectionviewdelegate/collectionview(_:didunhighlightitemat:)", "sha": "49eb38f3863ccfe83f993b1727e6b5c21bc7683ab18583dfe6a1008ba07866e6", "t": "collectionView(_:didUnhighlightItemAt:)", "n": 262, "laws": 0, "ts": "2026-07-26 00:10 UTC"}
+{"id": "/documentation/uikit/uipinchgesturerecognizer/scale", "sha": "9fce9ebd92c44cb51e83d44e981e1ed5fd757b2a1c8a8e836e950db550c7ccfd", "t": "scale", "n": 439, "laws": 1, "ts": "2026-07-26 00:15 UTC"}
+{"id": "/documentation/uikit/uiswitch", "sha": "bbdc5407ec97db0014ecd2238fab88f5f8c8b1009225c3419a101d9b62c74b95", "t": "UISwitch", "n": 731, "laws": 0, "ts": "2026-07-26 00:16 UTC"}

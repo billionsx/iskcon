@@ -19,3 +19,7 @@
 {"id": "/documentation/realitykit/physicsrevolutejoint", "sha": "84ea8b60b2f5c39a4121015d3925de42b64c218ba722be2ef26cd64ec68f7160", "t": "PhysicsRevoluteJoint", "n": 400, "laws": 0, "ts": "2026-07-25 23:17 UTC"}
 {"id": "/documentation/roomplan/roombuilder", "sha": "f46bc05d0c1f4d9d6c12748def04b9727f5eeafa4f7a72980e98724d76a3acd5", "t": "RoomBuilder", "n": 772, "laws": 0, "ts": "2026-07-25 23:18 UTC"}
 {"id": "/documentation/swiftui/accessibility-fundamentals", "sha": "a94133843f1c43c7b5c6e387654cde3ffa27a92faa6d748dd8fc5730a5fe7e6f", "t": "Accessibility fundamentals", "n": 1922, "laws": 4, "ts": "2026-07-25 23:27 UTC"}
+{"id": "/documentation/tabletopkit/tablevisualstate", "sha": "f26c1b39a01c4dbc6bb1245022f02c80480c5f4f13312ef5b115d8ef9e1f8115", "t": "TableVisualState", "n": 590, "laws": 0, "ts": "2026-07-26 00:05 UTC"}
+{"id": "/documentation/virtualization/vzmacosconfigurationrequirements/hardwaremodel", "sha": "8c9de93f1eccd16952b13106a289d50f5a9ccf389a8985158b975636fa7f52fd", "t": "hardwareModel", "n": 249, "laws": 2, "ts": "2026-07-26 00:18 UTC"}
+{"id": "/documentation/SwiftUI/Animation/interpolatingSpring", "sha": "6b2b0eed489b88d2f0712e64f2c9c365177c11951418560fa19332ef24165426", "t": "interpolatingSpring", "n": 335, "laws": 0, "ts": "2026-07-26 00:25 UTC"}
+{"id": "/documentation/swiftui/watchkit-integration", "sha": "ae6cd94e239a4612dcaa19e4098afc4b4851a7375fd31af97ab3ca163a55ae72", "t": "WatchKit integration", "n": 843, "laws": 1, "ts": "2026-07-26 00:34 UTC"}

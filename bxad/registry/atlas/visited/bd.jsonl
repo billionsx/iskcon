@@ -12,3 +12,12 @@
 {"id": "/documentation/realitykit/capturing-photographs-for-realitykit-object-capture", "sha": "0eb111188c52f65aa2cc89f8f71c7ba8903ad252fb1e2df0f9cdf8253be74b84", "t": "Capturing photographs for RealityKit Object Capture", "n": 6104, "laws": 10, "ts": "2026-07-25 23:13 UTC"}
 {"id": "/documentation/roomplan/scanning-the-rooms-of-a-single-structure", "sha": "dd26e9243b41dc3f5b882667ef37c455d4582a69cb98008d933ef3cd8b3ec379", "t": "Scanning the rooms of a single structure", "n": 6779, "laws": 2, "ts": "2026-07-25 23:18 UTC"}
 {"id": "/documentation/swiftui/dynamicviewcontent/reorderable()", "sha": "2ad67e2d14a178cdb17d43dbbfa3be311ac021051afacdccd8fb281849b68228", "t": "reorderable()", "n": 577, "laws": 2, "ts": "2026-07-25 23:26 UTC"}
+{"id": "/documentation/tvservices", "sha": "4ca4dff99a24bedcecfb75a8035bb3436f1346816691682a7d2bfb261793a60d", "t": "TV Services", "n": 2075, "laws": 2, "ts": "2026-07-26 00:04 UTC"}
+{"id": "/documentation/tabletopkit/tabletopgame", "sha": "9c6c56dc69624698d29ee9ec033901fd6ebaa82f13bfec9b4f1e28321c36f5d8", "t": "TabletopGame", "n": 2356, "laws": 0, "ts": "2026-07-26 00:04 UTC"}
+{"id": "/documentation/uikit/uiviewcontroller/viewdidload()", "sha": "9d2497dc0e6212729984cdcd6affda9d59427ba45d1e8821fa37c3e5d6eb9c27", "t": "viewDidLoad()", "n": 407, "laws": 0, "ts": "2026-07-26 00:07 UTC"}
+{"id": "/documentation/Foundation/NSString", "sha": "a62fa649656175ecc835b88edb75bd90865bb2f41016a341c987bc4cb6552865", "t": "NSString", "n": 12454, "laws": 10, "ts": "2026-07-26 00:07 UTC"}
+{"id": "/documentation/uikit/nstextviewportrenderingsurface", "sha": "aca9f9ad2fece232b494ecf9f27894f63df06a37bb6bb9f845b52b9aa85050d7", "t": "NSTextViewportRenderingSurface", "n": 555, "laws": 1, "ts": "2026-07-26 00:12 UTC"}
+{"id": "/documentation/ARKit/HandAnchor/originFromAnchorTransform", "sha": "d8e84e9abaab918aa07df8d6ff7163c153fdb11ffd410f62fd18b51e51520881", "t": "originFromAnchorTransform", "n": 226, "laws": 0, "ts": "2026-07-26 00:26 UTC"}
+{"id": "/documentation/RealityKit/WorldComponent", "sha": "8b5355eafe0c98e7f1dfa70822c3e145e36f1ed0781717e4941ec1ed4b2f1683", "t": "WorldComponent", "n": 336, "laws": 1, "ts": "2026-07-26 00:28 UTC"}
+{"id": "/documentation/appkit/drawing", "sha": "f3841d8b1bfe97f8f5f43cda2a4d8e488a69510eea80abb1b92e1e21575e736e", "t": "Drawing", "n": 254, "laws": 0, "ts": "2026-07-26 00:33 UTC"}
+{"id": "/documentation/Updates/UIKit", "sha": "046e8e8d7fcdf47a7528995d6fc31e425fec0e76954d22a98c779644a063254b", "t": "UIKit updates", "n": 8798, "laws": 10, "ts": "2026-07-26 00:34 UTC"}

@@ -9,3 +9,6 @@
 {"id": "/documentation/CoreSpotlight/adding-your-app-s-content-to-spotlight-indexes", "law": "You can specify any information you want for the client data, but must limit the total size of it to 250 bytes."}
 {"id": "/documentation/CoreSpotlight/CSSearchableItemAttributeSet", "law": "During the indexing process, you create objects and use a to fill in the attributes for that item."}
 {"id": "/documentation/CoreSpotlight/CSSearchableItemAttributeSet", "law": "You don’t have to provide values for every attribute."}
+{"id": "/documentation/CoreSpotlight/Spotlight-search-tool", "law": "The provides an efficient way for the Foundation Models framework to access the content in that index and use it to answer prompts."}
+{"id": "/documentation/CoreSpotlight/Spotlight-search-tool", "law": "Include this tool in the Foundation Models session you use to run prompts that require your app’s custom content."}
+{"id": "/documentation/CoreSpotlight/Spotlight-search-tool", "law": "Make your app’s indexed content available to the system’s Foundation models as additional context to use when answering prompts."}

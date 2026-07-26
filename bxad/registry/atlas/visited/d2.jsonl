@@ -18,3 +18,5 @@
 {"id": "/documentation/metal/specifying-drawing-and-dispatch-arguments-indirectly", "sha": "2ed43a4797089d9b7a1305ed17d13387d0b675d211839a5d3877b635415cc5cd", "t": "Specifying drawing and dispatch arguments indirectly", "n": 2039, "laws": 2, "ts": "2026-07-25 23:06 UTC"}
 {"id": "/documentation/metal/mtlcommandbuffer/present(_:)", "sha": "2446597a6c8402befe50e99aa4903c7ceedefd91457fa54b6ecacc6c28076ff8", "t": "present(_:)", "n": 344, "laws": 0, "ts": "2026-07-25 23:08 UTC"}
 {"id": "/documentation/swiftdata/reverting-data-changes-using-the-undo-manager", "sha": "9415016a8c560203f27b1ed61235ac4968a2ea142c119a733546a784310cfa64", "t": "Reverting data changes using the undo manager", "n": 2221, "laws": 4, "ts": "2026-07-25 23:23 UTC"}
+{"id": "/documentation/tvml/ratingtemplate", "sha": "0471e74795cba9e15af2386f0f1f2bf73e5553a328d44085d9528cbba2034eec", "t": "ratingTemplate", "n": 787, "laws": 1, "ts": "2026-07-26 00:04 UTC"}
+{"id": "/documentation/SwiftUI/Spacer", "sha": "d0208dee6d817dc87fae7c7aabc2b6a853571e0d95c291cda63a76d9d0bb5271", "t": "Spacer", "n": 1393, "laws": 1, "ts": "2026-07-26 00:26 UTC"}

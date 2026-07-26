@@ -15,3 +15,5 @@
 {"id": "/documentation/metal/mtllibrary", "sha": "6b0abc32a285af9fb9f6e37c08f48352619a43283097d33327bfea7beaefbf0e", "t": "MTLLibrary", "n": 996, "laws": 1, "ts": "2026-07-25 23:05 UTC"}
 {"id": "/documentation/metal/mtlcomputepipelinestate", "sha": "5f88fefbc12069e117fba49075bcee29cae2e57d70b786126021f340f3557dc4", "t": "MTLComputePipelineState", "n": 1478, "laws": 2, "ts": "2026-07-25 23:07 UTC"}
 {"id": "/documentation/Dispatch/dispatch_queue_t", "sha": "082a1b242e346c927c6e02f75bd79f22f616c2cebcd67364f0b0e9d9448c9d19", "t": "dispatch_queue_t", "n": 940, "laws": 1, "ts": "2026-07-25 23:09 UTC"}
+{"id": "/documentation/uikit/uicollectionviewlayout", "sha": "93c667c1eb11d0075538503975c1c877a42195d3ba5007cea904f4e5a57c8073", "t": "UICollectionViewLayout", "n": 7365, "laws": 10, "ts": "2026-07-26 00:10 UTC"}
+{"id": "/documentation/appkit/resource-management", "sha": "0dd676cea99052fba1f5540b7a1aa18dd0574cd087821a0f54493767e60e9a33", "t": "Resource Management", "n": 244, "laws": 0, "ts": "2026-07-26 00:33 UTC"}

@@ -21,3 +21,4 @@
 {"id": "/documentation/realitykit/realitykit-object-capture", "sha": "5c14746f6a479a068507878457dc602b5fd4be50fc6e539319a16964fc80e7c0", "t": "Object capture", "n": 823, "laws": 0, "ts": "2026-07-25 23:14 UTC"}
 {"id": "/documentation/SceneKit/SCNTechnique", "sha": "e87d17bef816586a3c0c3c694272cf297333d99e9dffbd6bbb9c3905691d9c17", "t": "SCNTechnique", "n": 6091, "laws": 10, "ts": "2026-07-25 23:18 UTC"}
 {"id": "/documentation/screencapturekit", "sha": "8e25ca55ca60b0082f14fcef3528e5ef50c70dae188fa992241deea12bdbabc8", "t": "ScreenCaptureKit", "n": 2001, "laws": 3, "ts": "2026-07-25 23:18 UTC"}
+{"id": "/documentation/avfoundation/supporting-coordinated-media-playback", "sha": "aeaf9531657d5b45431997deda8924bbe3e881391ed043fcd840bf252377576d", "t": "Supporting coordinated media playback", "n": 5597, "laws": 5, "ts": "2026-07-26 00:23 UTC"}

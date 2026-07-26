@@ -19,3 +19,6 @@
 {"id": "/documentation/realitykit/particleemittercomponent/particleemitter/particlecolor/colorvalue", "sha": "3e27da407baf6f7c9d4a82a747cbb96ee36fc716b58da37df22000f27965019d", "t": "ParticleEmitterComponent.ParticleEmitter.ParticleColor.ColorValue", "n": 471, "laws": 1, "ts": "2026-07-25 23:16 UTC"}
 {"id": "/documentation/scenekit", "sha": "613ecaa1d903e36e5d19ae164309ac7240ecb1a0ea08f2325b341a38f93c982a", "t": "SceneKit", "n": 1737, "laws": 1, "ts": "2026-07-25 23:18 UTC"}
 {"id": "/documentation/Intents/INSendPaymentIntentHandling/confirm(intent:completion:)", "sha": "f302e94461dd95554b3d5b8c0a4312bb1c3742d236523343c9a5bc1f996060f7", "t": "confirm(intent:completion:)", "n": 635, "laws": 1, "ts": "2026-07-25 23:19 UTC"}
+{"id": "/documentation/tvml/maintemplate", "sha": "726f03402eddc4edfb44c893d8c305c7c0b0a648d49491e4466b52299de8f7e2", "t": "mainTemplate", "n": 881, "laws": 1, "ts": "2026-07-26 00:04 UTC"}
+{"id": "/documentation/uikit/uifont/withsize(_:)", "sha": "eaa582e4aa5757ba8c868b2737c4cf5be8ca77a9f9e34c07cf783e64fdfbab62", "t": "withSize(_:)", "n": 132, "laws": 0, "ts": "2026-07-26 00:10 UTC"}
+{"id": "/documentation/uikit/uinavigationitem/itemstyle/editor", "sha": "71776976786ed95bae2f92b86de0b899e404a2aa5426198fa861a5fda403d609", "t": "UINavigationItem.ItemStyle.editor", "n": 363, "laws": 1, "ts": "2026-07-26 00:15 UTC"}

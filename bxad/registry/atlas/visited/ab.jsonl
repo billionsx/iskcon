@@ -17,3 +17,6 @@
 {"id": "/documentation/realitykit/videomaterial", "sha": "903cdbc79bccd9dfa697fd1501e3ab5bc8ff54c0112ad50311982667236682c1", "t": "VideoMaterial", "n": 1129, "laws": 3, "ts": "2026-07-25 23:16 UTC"}
 {"id": "/documentation/realitykit/entitygeometricpins/set(named:position:orientation:)", "sha": "bd5b624ab6c6eff81a0709c6c153c03a8cffa5cbe5a85f61a858909dc7192cb6", "t": "set(named:position:orientation:)", "n": 207, "laws": 0, "ts": "2026-07-25 23:17 UTC"}
 {"id": "/documentation/Foundation/IndexSet", "sha": "bb9e9af627bbbfb0aa5c0f7efef4e0ac50ae2907b67352904752ecd4520ea66d", "t": "IndexSet", "n": 1670, "laws": 0, "ts": "2026-07-25 23:22 UTC"}
+{"id": "/documentation/uikit/uitableviewcell", "sha": "4f83169b994562bcea2aa71c0612c95ebd1825f7382efc52dc52d25a812d6896", "t": "UITableViewCell", "n": 3461, "laws": 3, "ts": "2026-07-26 00:07 UTC"}
+{"id": "/documentation/vision/recognizing-text-in-images", "sha": "a1796d3ef7d7ecc68ace1d7367601fec1b9ac70379ffacf364ecde12ebb78d31", "t": "Recognizing Text in Images", "n": 3677, "laws": 3, "ts": "2026-07-26 00:19 UTC"}
+{"id": "/documentation/ARKit/AccessoryAnchor", "sha": "65ad04aa933d227c98467afa7e1095d390b9a6c2fee974df5168fbdd94cb3ca3", "t": "AccessoryAnchor", "n": 331, "laws": 0, "ts": "2026-07-26 00:28 UTC"}

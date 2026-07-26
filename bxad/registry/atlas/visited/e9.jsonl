@@ -16,3 +16,6 @@
 {"id": "/documentation/swiftui/appstorage", "sha": "4ec1e08661d24559bae05c4fc93383bf470f1e7de965ff92952882b8a06cbf67", "t": "AppStorage", "n": 231, "laws": 0, "ts": "2026-07-25 23:25 UTC"}
 {"id": "/documentation/swiftui/tabsection/init(content:header:)", "sha": "9e1bf4a90f4af1f9cc0ceb72bd9bf46d32fc6f2cf44ba08518317825e9b2c22f", "t": "init(content:header:)", "n": 65, "laws": 0, "ts": "2026-07-25 23:25 UTC"}
 {"id": "/documentation/swiftui/gridrow", "sha": "86e0a7234ae26e3ae8de765931e853de08a321154d3862a3932e60c3d58b2274", "t": "GridRow", "n": 1511, "laws": 7, "ts": "2026-07-25 23:27 UTC"}
+{"id": "/documentation/DeviceDiscoveryUI/DevicePairingView", "sha": "5a3ef778e039e0347666061ad85ee6c2d3059e182382976af2af39b461266225", "t": "DevicePairingView", "n": 242, "laws": 1, "ts": "2026-07-26 00:21 UTC"}
+{"id": "/documentation/NaturalLanguage/tokenizing-natural-language-text", "sha": "f32a25946219697d14ae9a3b767d20a78a2a2e890e6d9ed60359296ab6aa7130", "t": "Tokenizing natural language text", "n": 868, "laws": 1, "ts": "2026-07-26 00:32 UTC"}
+{"id": "/documentation/swiftui/performance-analysis", "sha": "a56e0e8c9c02e1a6245b2d0227425a85a3335e03a859f8afd60df8f125c66981", "t": "Performance analysis", "n": 445, "laws": 1, "ts": "2026-07-26 00:34 UTC"}

@@ -4,3 +4,6 @@
 {"id": "/documentation/DeviceDiscoveryUI", "law": "In the client, use DeviceDiscoveryUI to present a view that lists available devices, and then use the or frameworks to create the listeners and the connections, and to send and receive messages."}
 {"id": "/documentation/DeviceDiscoveryUI", "law": "Also, because the system securely manages the connection, people don’t need to authorize full access to their local network."}
 {"id": "/documentation/DeviceDiscoveryUI", "law": "You must distribute your app as a universal purchase, so that all copies of your app share the same bundle ID."}
+{"id": "/documentation/DeviceDiscoveryUI/DevicePairingView", "law": "A should be used to become discoverable to local devices from the user through a button interface."}
+{"id": "/documentation/DeviceDiscoveryUI/DevicePicker", "law": "Always display the picker as a full-screen, modal view."}
+{"id": "/documentation/DeviceDiscoveryUI/DevicePicker", "law": "Use the DevicePickerSupportedAction environment value to check whether the current device supports device discovery."}

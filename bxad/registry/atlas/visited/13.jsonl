@@ -22,3 +22,5 @@
 {"id": "/documentation/Security/using-the-keychain-to-manage-user-secrets", "sha": "c33e43f5650bd532c2487f59629007a8a36bbc35961982191ba1d8a695c66978", "t": "Using the keychain to manage user secrets", "n": 3051, "laws": 5, "ts": "2026-07-25 23:00 UTC"}
 {"id": "/documentation/pencilkit/pkfloatrange", "sha": "df68cd11b95b78edf798ef8a526a6223970d1b9aee84f40f982fe68b38cc5f03", "t": "PKFloatRange", "n": 180, "laws": 0, "ts": "2026-07-25 23:12 UTC"}
 {"id": "/documentation/AVFoundation/AVQueuedSampleBufferRendering/requestMediaDataWhenReady(on:using:)", "sha": "6f51777dc43395d2f8c70f38c5052741566be08226caf3ea873320c052f82bd2", "t": "requestMediaDataWhenReady(on:using:)", "n": 309, "laws": 0, "ts": "2026-07-25 23:16 UTC"}
+{"id": "/documentation/uikit/uimenuelement/state", "sha": "0ef3130cb46400623e1ec40de61e92015b2175ca44d8820157060bf7eee086ac", "t": "UIMenuElement.State", "n": 197, "laws": 0, "ts": "2026-07-26 00:08 UTC"}
+{"id": "/documentation/SwiftUI/Shape", "sha": "bb97744b0c57b110eeca6f59c0f5d258e082cbf957e091cf3c65535f1ea52643", "t": "Shape", "n": 1925, "laws": 1, "ts": "2026-07-26 00:27 UTC"}

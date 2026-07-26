@@ -129,3 +129,4 @@
 {"id": "/documentation/healthkit/accessing-workout-zone-data", "law": "If you don’t set a custom configuration, the system uses the person’s preferred zones for zone calculations."}
 {"id": "/documentation/healthkit/hkworkoutzone", "law": "This structure defines the minimum and maximum values that determine when a quantity type measurement falls within the zone."}
 {"id": "/documentation/healthkit/hkworkoutzone", "law": "For example, a heart rate zone might have a minimum of 136.8 beats per minute and a maximum of 147.6 beats per minute."}
+{"id": "/documentation/healthkit/hkanchoredobjectquery/init(type:predicate:anchor:limit:resultshandler:)", "law": "Be sure to dispatch these results to the main queue before updating the user interface."}

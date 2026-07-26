@@ -20,3 +20,8 @@
 {"id": "/documentation/Intents/INSendPaymentIntentResponse/paymentRecord", "sha": "346888f18562cacf276cd2340ed46990fac0465b37bb9fe08af96df0d1e849b2", "t": "paymentRecord", "n": 246, "laws": 0, "ts": "2026-07-25 23:20 UTC"}
 {"id": "/documentation/storekit/skpaymenttransactionstate", "sha": "38e76e721bff5acfb1ef62b0840a75b046975fda900fce040abb53e82213cd0a", "t": "SKPaymentTransactionState", "n": 274, "laws": 0, "ts": "2026-07-25 23:21 UTC"}
 {"id": "/documentation/swiftui/tabcontent/defaultvisibility(_:for:)", "sha": "bf8c21fd3470a2f0d9b6c5f92f17c0f08792b4bb3ae915b0e7203e4dd51038d2", "t": "defaultVisibility(_:for:)", "n": 512, "laws": 0, "ts": "2026-07-25 23:25 UTC"}
+{"id": "/documentation/uikit/table-views", "sha": "33b63a1592690e83af5731064b6531421d71265b559461f1f6ad06237ae8e9d5", "t": "Table views", "n": 2223, "laws": 3, "ts": "2026-07-26 00:06 UTC"}
+{"id": "/documentation/uikit/uiitemproviderreadingaugmentationdesignating", "sha": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855", "t": "UIItemProviderReadingAugmentationDesignating", "n": 0, "laws": 0, "ts": "2026-07-26 00:11 UTC"}
+{"id": "/documentation/uikit/nstextlayoutfragment", "sha": "55b04ec8aac7f5344693c74014ea3ff2209cb5404e54caf6479cfb55326a2cc8", "t": "NSTextLayoutFragment", "n": 848, "laws": 0, "ts": "2026-07-26 00:12 UTC"}
+{"id": "/documentation/vision/vnrecognizedobjectobservation", "sha": "3f6dfb21504c07e6c436dbe97e76a20785b177ced0ee9aa0b116b9f4527d8719", "t": "VNRecognizedObjectObservation", "n": 317, "laws": 0, "ts": "2026-07-26 00:20 UTC"}
+{"id": "/documentation/wifiaware/waperformancemode/realtime", "sha": "d6297833a62bca00c23b19085d6d4dff66a1a2da34d089411a9890d03a7693fa", "t": "WAPerformanceMode.realtime", "n": 118, "laws": 1, "ts": "2026-07-26 00:22 UTC"}

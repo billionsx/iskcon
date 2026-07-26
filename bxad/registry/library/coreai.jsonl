@@ -28,3 +28,6 @@
 {"id": "/documentation/CoreAI/managing-model-specialization-and-caching", "law": "The system can remove specialized assets from the cache under three conditions: For most apps, use the default policy."}
 {"id": "/documentation/CoreAI/managing-model-specialization-and-caching", "law": "If your app deletes the source model file to save storage, use the policy to keep the cached assets available across launches:"}
 {"id": "/documentation/CoreAI/managing-model-specialization-and-caching", "law": "If you have multiple apps or extensions that use the same model, create an app group using the ."}
+{"id": "/documentation/CoreAI/inspecting-debugging-and-profiling-core-ai-models", "law": "Use them as needed while authoring a model, after integrating it, or when your app is running."}
+{"id": "/documentation/CoreAI/inspecting-debugging-and-profiling-core-ai-models", "law": "Use it to confirm that your model loads when you expect it to, to spot unusually slow inference, or to find a specific event you want to investigate further."}
+{"id": "/documentation/CoreAI/inspecting-debugging-and-profiling-core-ai-models", "law": "Use it when you need detailed performance information, such as which compute units run your model, whether specialization happens when you expect, and how often your app reloads a model."}

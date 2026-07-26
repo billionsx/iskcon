@@ -19,3 +19,4 @@
 {"id": "/documentation/screencapturekit/scshareablecontent", "sha": "7aa3b444de6b10053799216c61e064af4dd545bbf99f0fc192f49efb547db41f", "t": "SCShareableContent", "n": 728, "laws": 1, "ts": "2026-07-25 23:19 UTC"}
 {"id": "/documentation/Intents/INVocabulary", "sha": "c34c8e9c93a3638ee5035b8c3776e5d5d47dd110639e58763df4a371e7279ef8", "t": "INVocabulary", "n": 1855, "laws": 6, "ts": "2026-07-25 23:20 UTC"}
 {"id": "/documentation/swiftui/keyframetrack", "sha": "e2a761b5a987d023010cebe0841f9526d939f4cfc84925d40df6eca545109bc3", "t": "KeyframeTrack", "n": 130, "laws": 0, "ts": "2026-07-25 23:24 UTC"}
+{"id": "/documentation/swiftui/namespace", "sha": "69860f48a8c59e00d0ec193b858fb84a54c1901e2c9597a302048a448f398025", "t": "Namespace", "n": 230, "laws": 0, "ts": "2026-07-26 00:03 UTC"}

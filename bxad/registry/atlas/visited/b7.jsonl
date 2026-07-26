@@ -16,3 +16,10 @@
 {"id": "/documentation/SwiftUI/ProgressiveImmersionAspectRatio/portrait", "sha": "c844a92ebcfa13fc4c940aa517828f08da67cdde7a7eb2a278ffe7ac1e674014", "t": "portrait", "n": 24, "laws": 0, "ts": "2026-07-25 23:13 UTC"}
 {"id": "/documentation/Intents/INPauseWorkoutIntentHandling", "sha": "f46f48d00330feb199123b44f643cb6ff61cbe9755aede0578257c790cffb954", "t": "INPauseWorkoutIntentHandling", "n": 715, "laws": 2, "ts": "2026-07-25 23:20 UTC"}
 {"id": "/documentation/swiftui/primitivebuttonstyle/borderless", "sha": "f2f3eddcbabf6cfbf1f9b48d414dbff2191bc7ae0fc84747c3b6fa06281f74e6", "t": "borderless", "n": 525, "laws": 1, "ts": "2026-07-25 23:24 UTC"}
+{"id": "/documentation/uikit/uidocumentbrowserviewcontroller", "sha": "fd6cf03cdd535e38009d1f1666e005d23f7f1d23ae50cf5627d397040c39906e", "t": "UIDocumentBrowserViewController", "n": 2826, "laws": 3, "ts": "2026-07-26 00:08 UTC"}
+{"id": "/documentation/uikit/uiimage/init(systemname:withconfiguration:)", "sha": "70070b2a7b3e88ab75f0623364ac4eb44ba5134031e731368263515f97a84b7a", "t": "init(systemName:withConfiguration:)", "n": 877, "laws": 2, "ts": "2026-07-26 00:09 UTC"}
+{"id": "/documentation/uikit/uicolor", "sha": "c5b68c04a88d31daf93aed2ee58853a30dcd8e2aa205b2559f2f4ff201a9eb5c", "t": "UIColor", "n": 1728, "laws": 3, "ts": "2026-07-26 00:11 UTC"}
+{"id": "/documentation/watchkit/wkextendedruntimesession", "sha": "568079be1c822797b6350d4aec3125af4c54d3398fb9a30fd6f40739466c7be1", "t": "WKExtendedRuntimeSession", "n": 1002, "laws": 0, "ts": "2026-07-26 00:21 UTC"}
+{"id": "/documentation/SwiftUI/TabContent/customizationID(_:)", "sha": "3ad8216879bcdc47c9619c54fc2595cc66d197c6e5e6827f832845775beb167f", "t": "customizationID(_:)", "n": 709, "laws": 2, "ts": "2026-07-26 00:28 UTC"}
+{"id": "/documentation/RealityKit/EnvironmentResource", "sha": "105a3c66911e007d7c6fa13d67114f01b335e43b137723152c5f7b1ecd62d0bd", "t": "EnvironmentResource", "n": 2109, "laws": 3, "ts": "2026-07-26 00:28 UTC"}
+{"id": "/documentation/appkit/app-and-environment", "sha": "6e820a933bed17e75d84fd1d9225a72a6456c9cd064c07e851a37dc95fe606a4", "t": "App and Environment", "n": 654, "laws": 1, "ts": "2026-07-26 00:33 UTC"}

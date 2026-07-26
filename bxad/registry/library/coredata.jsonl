@@ -127,3 +127,17 @@
 {"id": "/documentation/CoreData/NSManagedObjectContext", "law": "When you create a context you specify the concurrency type with which you’ll use it."}
 {"id": "/documentation/CoreData/NSManagedObjectContext", "law": "Use this type for contexts that update view controllers and other user interface elements."}
 {"id": "/documentation/CoreData/NSManagedObjectContext", "law": "You use contexts using the queue-based concurrency types in conjunction with and ."}
+{"id": "/documentation/CoreData/NSManagedObjectContext/mergeChanges(fromContextDidSave:)", "law": "You can pass a notification posted by a managed object context on another thread, however you must not use the managed objects in the user info dictionary directly."}
+{"id": "/documentation/CoreData/NSManagedObjectContext/reset()", "law": "All the receiver’s managed objects are “forgotten.” If you use this method, you should ensure that you also discard references to any managed objects fetched using the receiver, since they will be invalid afterwards."}
+{"id": "/documentation/CoreData/NSManagedObjectContextDidSaveNotification", "law": "Use instead of this notification."}
+{"id": "/documentation/CoreData/NSManagedObjectContextDidSaveNotification", "law": "Don’t peform any asynchronous work or block the calling thread."}
+{"id": "/documentation/CoreData/NSManagedObjectContextDidSaveNotification", "law": "Don’t capture the dictionary’s contents."}
+{"id": "/documentation/CoreData/NSManagedObjectContextDidSaveNotification", "law": "To safely use the provided managed objects on the current thread, create a new context and use its method to merge in the notification’s changes."}
+{"id": "/documentation/CoreData/NSPersistentHistoryTransaction/objectIDNotification()", "law": "Obtains a notification for use in merging the transaction’s changes into a managed object context."}
+{"id": "/documentation/CoreData/accessing-data-when-the-store-changes", "law": "Use query generations when you want to isolate your view context from any changes made in the store by background threads in your app, app extensions, CloudKit, or other sources."}
+{"id": "/documentation/CoreData/accessing-data-when-the-store-changes", "law": "To use query generations, the persistent store must be an in write-ahead logging (WAL) journal mode."}
+{"id": "/documentation/CoreData/accessing-data-when-the-store-changes", "law": "To confirm whether a custom store has WAL mode enabled, turn on SQL logging."}
+{"id": "/documentation/CoreData/accessing-data-when-the-store-changes", "law": "Use the generation token to pin the context to the generation corresponding to the most recent store transaction."}
+{"id": "/documentation/CoreData/accessing-data-when-the-store-changes", "law": "Alternatively, use the from another pinned context to align both contexts to the same generation."}
+{"id": "/documentation/CoreData/accessing-data-when-the-store-changes", "law": "Additionally, if you remove a store from the coordinator, don’t try to load data from the deleted store into a context."}
+{"id": "/documentation/CoreData/accessing-data-when-the-store-changes", "law": "Managed objects don’t automatically refresh, as this behavior may not be desirable and is difficult to revert."}

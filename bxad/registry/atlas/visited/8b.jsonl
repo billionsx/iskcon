@@ -18,3 +18,10 @@
 {"id": "/documentation/musickit", "sha": "04838f2260c313f2296d004551d8d9e23d40bca62af87eab2b182af34ffcffc8", "t": "MusicKit", "n": 5358, "laws": 7, "ts": "2026-07-25 23:08 UTC"}
 {"id": "/documentation/pdfkit", "sha": "fd7a8fe1802c4554adc553b8c1d827f01e4c8fb8ef5716f720e7fc10271e61c7", "t": "PDFKit", "n": 390, "laws": 0, "ts": "2026-07-25 23:10 UTC"}
 {"id": "/documentation/AVFoundation/AVSampleBufferRenderSynchronizer/addBoundaryTimeObserver(forTimes:queue:using:)", "sha": "057a992e6e74370a8b4919cc06510e0cddf249d8031eb5d6ba08f18c3bc0c9fd", "t": "addBoundaryTimeObserver(forTimes:queue:using:)", "n": 418, "laws": 2, "ts": "2026-07-25 23:16 UTC"}
+{"id": "/documentation/uikit/uiapplication/shortcutitems", "sha": "fe367fea552156a04b776c7a8e3b3dca2743ea41aa6e47f1da4392ebe1ee7fb4", "t": "shortcutItems", "n": 1408, "laws": 0, "ts": "2026-07-26 00:06 UTC"}
+{"id": "/documentation/uikit/uimenusystem", "sha": "09a14d0c2b73daf9bdffbfbe8ba23054ee6d3f34190574b7bc222fa4051bc092", "t": "UIMenuSystem", "n": 736, "laws": 2, "ts": "2026-07-26 00:07 UTC"}
+{"id": "/documentation/uikit/uicollectionview/performbatchupdates(_:completion:)", "sha": "1367f4328c69e678b0bc04eaac45ba02c7a4e2b5421eee79f443d059445675bf", "t": "performBatchUpdates(_:completion:)", "n": 1047, "laws": 4, "ts": "2026-07-26 00:10 UTC"}
+{"id": "/documentation/uikit/uicollectionviewdiffabledatasourcereference", "sha": "34756332a1448abc1eca0d0bee351b971022bfcb666483c14bb046671433915f", "t": "UICollectionViewDiffableDataSourceReference", "n": 2290, "laws": 3, "ts": "2026-07-26 00:13 UTC"}
+{"id": "/documentation/Network/NWError", "sha": "37725a6f5abfffba47e54e47dddc5b8a3916ac9a56f757e2f3b8b123910ec21b", "t": "NWError", "n": 211, "laws": 0, "ts": "2026-07-26 00:22 UTC"}
+{"id": "/documentation/workoutkit", "sha": "fd9045cba662df0e7b06e8524877946d9ee77e241ebf4b31a7b392478dcbc2b9", "t": "WorkoutKit", "n": 1393, "laws": 3, "ts": "2026-07-26 00:22 UTC"}
+{"id": "/documentation/tvmljs/menubardocument", "sha": "b17ca4d00441fcc65a2c8edc1327854a54a07d873423a53adc9aa220a70e43b2", "t": "MenuBarDocument", "n": 308, "laws": 1, "ts": "2026-07-26 00:24 UTC"}

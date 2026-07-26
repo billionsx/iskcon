@@ -430,3 +430,18 @@
 {"id": "/documentation/ARKit/ARSession", "law": "Running a session requires a configuration."}
 {"id": "/documentation/ARKit/ARWorldTrackingConfiguration/sceneReconstruction", "law": "Before setting this property, call to ensure device support."}
 {"id": "/documentation/ARKit/ARWorldTrackingConfiguration/supportsSceneReconstruction(_:)", "law": "Scene reconstruction requires a device with a LiDAR Scanner, such as the fourth-generation iPad Pro."}
+{"id": "/documentation/ARKit/previewing-a-model-with-ar-quick-look", "law": "To browse a library of assets, use Reality Composer."}
+{"id": "/documentation/ARKit/previewing-a-model-with-ar-quick-look", "law": "To prevent the user from scaling your virtual content or to customize the default share sheet behavior, use instead of ."}
+{"id": "/documentation/ARKit/ARKitSession", "law": "Sessions in ARKit require either implicit or explicit authorization."}
+{"id": "/documentation/ARKit/ARKitSession", "law": "The following shows a session that starts by requesting implicit authorization to use world sensing: Because a instance’s required authorizations include , the system asks someone using your app to permit world sensing before ARKit supplies any of that kind of data."}
+{"id": "/documentation/ARKit/CameraFrame/Sample", "law": "Use this structure to access information about a sample from a , such as the frame’s settings and parameters, a pixel buffer that contains the sample’s data, and so on."}
+{"id": "/documentation/ARKit/CameraFrameProvider", "law": "You use to receive camera images for selected video formats."}
+{"id": "/documentation/ARKit/ObjectAnchor", "law": "You use object anchors to learn about the position and orientation of a real-world object."}
+{"id": "/documentation/ARKit/ObjectTrackingProvider", "law": "Use this class to configure ARKIt to track reference objects in a person’s environment and receive a stream of updates that contains structures that describe them."}
+{"id": "/documentation/ARKit/BarcodeDetectionProvider", "law": "Use this provider to receive updates about barcodes that ARKit detect in a person’s surroundings, This provider returns the results in the form of an asynchronous sequence of structures."}
+{"id": "/documentation/ARKit/BarcodeDetectionProvider", "law": "Your app needs to include the entitlement to use this capability; otherwise, it has no effect."}
+{"id": "/documentation/ARKit/VisualFidelityProvider/FieldOfView", "law": "The preset FoVs are the recommended specification method for most applications."}
+{"id": "/documentation/ARKit/PlaneDetectionProvider", "law": "Use this provider to indicate to ARKit the types of plane anchors for your app to detect."}
+{"id": "/documentation/ARKit/WorldTrackingProvider/queryDeviceAnchor(atTimestamp:)", "law": "You typically only use this method when implementing your own rendering with the framework."}
+{"id": "/documentation/ARKit/AccessoryTrackingProvider/predictAnchor(for:at:)", "law": "For accuracy sensitive use cases like drawing, use a small offset or ."}
+{"id": "/documentation/ARKit/AccessoryTrackingProvider/predictAnchor(for:at:)", "law": "Use a prediction timestamp smaller than the latest anchor timestamp for interpolation."}

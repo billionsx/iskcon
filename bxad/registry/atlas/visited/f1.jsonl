@@ -10,3 +10,5 @@
 {"id": "/documentation/photosui/photospickeritem", "sha": "2abc72853835f7d54af4e503dbb860f283b57bc045baf08e268848e5f8740088", "t": "PhotosPickerItem", "n": 843, "laws": 2, "ts": "2026-07-25 23:12 UTC"}
 {"id": "/documentation/realitykit", "sha": "5b0638c381873674bb289f0e582439521077b05120d31902f22f9c1b8a4edbd9", "t": "RealityKit", "n": 3066, "laws": 4, "ts": "2026-07-25 23:13 UTC"}
 {"id": "/documentation/swiftui/view/reordercontainer(for:itemid:isenabled:move:)", "sha": "fba4d4b8b1fa227e10c0ff6fa5392a01736824a39d0fa0f04798c9bb6b664c5f", "t": "reorderContainer(for:itemID:isEnabled:move:)", "n": 1295, "laws": 2, "ts": "2026-07-25 23:26 UTC"}
+{"id": "/documentation/RealityKit/VideoPlayerComponent/immersiveViewingMode-swift.property", "sha": "53a1efa952f003ec83fc70ec0695ce3a05d03f5e7ca5dd11cc7e1f3efe8fad6e", "t": "immersiveViewingMode", "n": 35, "laws": 0, "ts": "2026-07-26 00:30 UTC"}
+{"id": "/documentation/CoreSpotlight/Spotlight-search-tool", "sha": "cc4d21fb424c59ab02ad3ee9e010d3121d1a57fda82c937c4a63096be25884c6", "t": "Spotlight search tool", "n": 1115, "laws": 3, "ts": "2026-07-26 00:32 UTC"}

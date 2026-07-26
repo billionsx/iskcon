@@ -28,3 +28,6 @@
 {"id": "/documentation/photosui/photospicker", "sha": "4a6c9ec890061e3556863f834a01f8db362b03b773657eefab69278042bc0205", "t": "PhotosPicker", "n": 1950, "laws": 3, "ts": "2026-07-25 23:12 UTC"}
 {"id": "/documentation/realitykit/dockingregioncomponent", "sha": "ce1576f0e5d7c7bc827bfe28f4927583119d97c05fbfbd6da61d96027f00459d", "t": "DockingRegionComponent", "n": 761, "laws": 0, "ts": "2026-07-25 23:15 UTC"}
 {"id": "/documentation/swiftdata/schema/relationship/deleterule-swift.enum", "sha": "ec9a8002f63a1f9ddef10ad9c91e5df002963ccb1a86d1baea6767e63fa63668", "t": "Schema.Relationship.DeleteRule", "n": 272, "laws": 0, "ts": "2026-07-25 23:22 UTC"}
+{"id": "/documentation/uikit/uitrackinglayoutguide", "sha": "ae19288b3298878ae14e4916388763a14a9a842b15b672f493797a2a9d51c065", "t": "UITrackingLayoutGuide", "n": 363, "laws": 0, "ts": "2026-07-26 00:07 UTC"}
+{"id": "/documentation/uikit/uicollectionlayoutsectionorthogonalscrollingbehavior", "sha": "5c9abe11a66527ea82dd1d2a2aee0ce433fbf076efa6fe7552c6d01f3b808f71", "t": "UICollectionLayoutSectionOrthogonalScrollingBehavior", "n": 917, "laws": 0, "ts": "2026-07-26 00:13 UTC"}
+{"id": "/documentation/Foundation/NSFileCoordinator", "sha": "fdd4009a68489b9d0336d0a62c4eee00aedf5f3b2312a370e4d3d0ad2ac1a2e9", "t": "NSFileCoordinator", "n": 4177, "laws": 5, "ts": "2026-07-26 00:16 UTC"}

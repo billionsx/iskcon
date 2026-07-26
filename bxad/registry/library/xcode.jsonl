@@ -197,3 +197,122 @@
 {"id": "/documentation/Xcode/creating-your-app-icon-using-icon-composer", "law": "To give you the most scalability, use vector graphics to draw shapes and export SVG files."}
 {"id": "/documentation/Xcode/creating-your-app-icon-using-icon-composer", "law": "Otherwise, change the canvas size to match the size that you use in Icon Composer, such as 1024 x 1024 pixels for iPhone, iPad, and Mac, and 1088 x 1088 pixels for Apple Watch."}
 {"id": "/documentation/Xcode/creating-your-app-icon-using-icon-composer", "law": "Don’t export the canvas mask because the system applies that automatically to ensure a perfect crop."}
+{"id": "/documentation/xcode", "law": "Xcode is the suite of tools you use to build apps for Apple platforms."}
+{"id": "/documentation/xcode", "law": "Use Xcode to manage your entire development workflow — from creating your app to testing, optimizing, and submitting it to the App Store."}
+{"id": "/documentation/xcode", "law": "Use coding intelligence from anywhere in your project to explain and write code, analyze bugs, and generate fixes."}
+{"id": "/documentation/xcode", "law": "Use agents that iterate and refine your code with Xcode guidance, skills, and other expertise."}
+{"id": "/documentation/xcode", "law": "You can also use coding intelligence to localize your app or make it more accessible for people who use VoiceOver."}
+{"id": "/documentation/xcode", "law": "Use Instruments to profile and analyze your app, improve performance, and investigate system resource usage."}
+{"id": "/documentation/xcode", "law": "Use Xcode Cloud to build and test your app."}
+{"id": "/documentation/xcode/localization", "law": "First, use localizable APIs that format and translate strings correctly for the language and region setting on the device."}
+{"id": "/documentation/xcode/localization", "law": "Then, you have several options for localizing your app that you can use separately or in combination: Let agents in the coding assistant add languages, string catalog files, and translations for you."}
+{"id": "/documentation/xcode/adding-a-build-configuration-file-to-your-project", "law": "A build configuration file is a plain-text file you use to specify the build settings for a specific target or your entire project."}
+{"id": "/documentation/xcode/adding-a-build-configuration-file-to-your-project", "law": "For example, you might use one build configuration file for debug settings and another for release settings."}
+{"id": "/documentation/xcode/adding-a-build-configuration-file-to-your-project", "law": "When you specify the build configuration file for your target, you must select only one file, but that file can include settings from other configuration files."}
+{"id": "/documentation/xcode/asset-management", "law": "Use asset catalogs to organize and manage resources such as images, colors, app icons, textures, stickers, and data."}
+{"id": "/documentation/xcode/asset-management", "law": "Configuring your app to use alternate app icons."}
+{"id": "/documentation/xcode/build-settings-reference", "law": "Setting name: The locations of any sparse SDKs that should be layered on top of the one specified by ."}
+{"id": "/documentation/xcode/build-settings-reference", "law": "Every SDK specified in this setting should be a “sparse” SDK, for example, not an SDK for an entire macOS release."}
+{"id": "/documentation/xcode/build-settings-reference", "law": "Setting name: Always embed the Swift standard libraries in the target’s products, even if the target does not contain any Swift code."}
+{"id": "/documentation/xcode/build-settings-reference", "law": "For example, this should be enabled if the target is embedding other products which contain Swift, or if it is a test target which does not contain Swift but which is testing a product which does."}
+{"id": "/documentation/xcode/build-settings-reference", "law": "It is recommended that you disable the setting."}
+{"id": "/documentation/xcode/build-settings-reference", "law": "Disabling it is strongly recommended."}
+{"id": "/documentation/xcode/build-settings-reference", "law": "Setting name: When enabled, this causes the compiler and linker to disallow use of APIs that are not available to app extensions and to disallow linking to frameworks that have not been built with this setting enabled."}
+{"id": "/documentation/xcode/build-settings-reference", "law": "Files that should not be processed by build rules may need to be moved to a Copy Files build phase when this setting is enabled."}
+{"id": "/documentation/xcode/build-settings-reference", "law": "The icons will be available at runtime for use as alternate app icons."}
+{"id": "/documentation/xcode/build-settings-reference", "law": "Setting name: The name of a watch complication to use from the asset catalog."}
+{"id": "/documentation/xcode/configuring-your-app-icon", "law": "Apps require multiple variations of the app icon to look great in different contexts."}
+{"id": "/documentation/xcode/configuring-your-app-icon", "law": "If you don’t have a default asset catalog or existing or you want to provide an alternate, you can add an app icon to an asset catalog manually: In the Project navigator, select an asset catalog."}
+{"id": "/documentation/xcode/configuring-your-app-icon", "law": "Variations of your app icon appear throughout the system in places like the Home View, Settings, and search results: iOS, iPadOS, tvOS, and watchOS apps can auto-generate all icon variations from a single 1024×1024 pixel image."}
+{"id": "/documentation/xcode/configuring-your-app-icon", "law": "If you have an existing project that provides multiple variants, consider providing a single size when that is all your icon requires."}
+{"id": "/documentation/xcode/configuring-your-app-icon", "law": "For each platform your app supports, add a single image that Xcode can use to generate your icon variations, or add an image for each icon variation of an icon set in the Asset Catalog: In the Project navigator, select an asset catalog."}
+{"id": "/documentation/xcode/configuring-your-app-icon", "law": "From the Finder, drag image variations of the app icon to the image wells in the detail area of the Asset Catalog in Xcode that match their resolutions and use cases."}
+{"id": "/documentation/xcode/configuring-your-app-icon", "law": "You can create your own variations to ensure that each one looks exactly the way you way you want."}
+{"id": "/documentation/xcode/configuring-your-app-icon", "law": "If you prefer, you can take advantage of the system’s automatically generated treatment that is applied to all app icons."}
+{"id": "/documentation/xcode/configuring-your-app-icon", "law": "This is the maximum number of layers visionOS icons support but you can use up to five layers when constructing tvOS icons."}
+{"id": "/documentation/xcode/configuring-your-app-icon", "law": "For information on the use of layers, see App icons and ."}
+{"id": "/documentation/xcode/creating-your-app-icon-using-icon-composer", "law": "Use Icon Composer to create a single multilayer file that you can add to your Xcode project to represent your Liquid Glass app icon everywhere your app icon appears across iOS, iPadOS, macOS, watchOS, and the App Store."}
+{"id": "/documentation/xcode/creating-your-app-icon-using-icon-composer", "law": "Use your favorite design tool to create the artwork for your app icon, but save some design decisions for Icon Composer, where you can refine the dynamic properties of and customize variants of your app icon for different platforms and appearances."}
+{"id": "/documentation/xcode/creating-your-app-icon-using-icon-composer", "law": "If your app supports previous releases (in the Minimum Deployments settings in the target’s General pane) that don’t have the same icon and widget style appearances and Liquid Glass material, Xcode automatically generates app icon images at build time for those releases from the Icon Composer file."}
+{"id": "/documentation/xcode/creating-your-app-icon-using-icon-composer", "law": "If you want your existing icon to appear in previous releases, continue to use asset catalogs to represent your app icon."}
+{"id": "/documentation/xcode/creating-your-app-icon-using-icon-composer", "law": "For converting older app icons to use the Liquid Glass material, see ."}
+{"id": "/documentation/xcode/creating-your-app-icon-using-icon-composer", "law": "For tvOS and visionOS targets that still use an asset catalog, see ."}
+{"id": "/documentation/xcode/creating-your-app-icon-using-icon-composer", "law": "To design your Liquid Glass app icon, use a third-party vector graphics editor of your choice that exports your layers as graphic files in SVG or PNG format."}
+{"id": "/documentation/xcode/creating-your-app-icon-using-icon-composer", "law": "To give you the most scalability, use vector graphics to draw shapes and export SVG files."}
+{"id": "/documentation/xcode/creating-your-app-icon-using-icon-composer", "law": "Otherwise, change the canvas size to match the size that you use in Icon Composer, such as 1024 x 1024 pixels for iPhone, iPad, and Mac, and 1088 x 1088 pixels for Apple Watch."}
+{"id": "/documentation/xcode/creating-your-app-icon-using-icon-composer", "law": "Don’t export the canvas mask because the system applies that automatically to ensure a perfect crop."}
+{"id": "/documentation/xcode/specifying-your-apps-launch-screen", "law": "Every iOS app must provide a launch screen , a screen that displays while your app launches."}
+{"id": "/documentation/xcode/specifying-your-apps-launch-screen", "law": "Follow these guidelines when creating a launch screen storyboard: Use only UIKit classes."}
+{"id": "/documentation/xcode/specifying-your-apps-launch-screen", "law": "Use a single root view that’s a or object."}
+{"id": "/documentation/xcode/specifying-your-apps-launch-screen", "law": "Don’t make any connections to your code, for example, don’t add actions or outlets."}
+{"id": "/documentation/xcode/specifying-your-apps-launch-screen", "law": "Don’t use deprecated views such as ."}
+{"id": "/documentation/xcode/specifying-your-apps-launch-screen", "law": "Don’t use any custom classes."}
+{"id": "/documentation/xcode/specifying-your-apps-launch-screen", "law": "Don’t use runtime attributes."}
+{"id": "/documentation/xcode/performance-and-metrics", "law": "Measure, investigate, and address the use of system resources and issues impacting performance using Instruments and Xcode Organizer."}
+{"id": "/documentation/xcode/performance-and-metrics", "law": "Reducing your app’s memory use."}
+{"id": "/documentation/xcode/performance-and-metrics", "law": "Analyzing your app’s battery use."}
+{"id": "/documentation/xcode/performance-and-metrics", "law": "Measuring your app’s power use with Power Profiler."}
+{"id": "/documentation/xcode/performance-and-metrics", "law": "Reducing your app’s battery use."}
+{"id": "/documentation/xcode/localizing-and-varying-text-with-a-string-catalog", "law": "Use string catalogs to manage your localizable strings in one place using a visual editor in Xcode."}
+{"id": "/documentation/xcode/localizing-and-varying-text-with-a-string-catalog", "law": "If you add multiple string catalogs, choose which string catalog to use for each localizable string by passing its name to the localizable APIs in your code."}
+{"id": "/documentation/xcode/localizing-and-varying-text-with-a-string-catalog", "law": "If you use string interpolation in your localizable strings, Xcode can add plural variants for you to string catalogs."}
+{"id": "/documentation/xcode/localizing-and-varying-text-with-a-string-catalog", "law": "Click the language in the sidebar, click the text field in the Language column for each variation of that string key, and then enter the translation for the system to use when that plural displays."}
+{"id": "/documentation/xcode/localizing-and-varying-text-with-a-string-catalog", "law": "Determines which specifier to use for the interpolated string ( representing a 64-bit integer in this case)."}
+{"id": "/documentation/xcode/localizing-and-varying-text-with-a-string-catalog", "law": "When you need to alter the text that displays on a device due to the available space, or because it has a different interaction, use the Vary by Device option in the string catalog editor."}
+{"id": "/documentation/xcode/localizing-and-varying-text-with-a-string-catalog", "law": "In Xcode > Settings > Editing, turn on “Automatically generate string catalog comments.” under Localized Strings."}
+{"id": "/documentation/xcode/localizing-and-varying-text-with-a-string-catalog", "law": "Newly added strings that require translation appear with a New icon in the State column."}
+{"id": "/documentation/xcode/localizing-and-varying-text-with-a-string-catalog", "law": "Use string catalogs to manage localizable strings, add languages, translate text, handle plurals, and vary text by device."}
+{"id": "/documentation/xcode/localizing-your-app-using-agents", "law": "If Xcode omits some user-facing strings when updating string catalogs, make sure you’re using localizable APIs in your code."}
+{"id": "/documentation/xcode/localizing-your-app-using-agents", "law": "However, other Swift code that creates human-readable strings, must explicitly use the initializer to be localizable."}
+{"id": "/documentation/xcode/localizing-your-app-using-agents", "law": "Update your Swift code to use the initializer and build your app again to update the string catalogs."}
+{"id": "/documentation/xcode/localizing-your-app-using-agents", "law": "For UIKit and AppKit, make sure you use similar localizable APIs."}
+{"id": "/documentation/xcode/localizing-your-app-using-agents", "law": "Use the Generate Translations button in the editor toolbar to add translations to languages and strings: To generate missing translations for all languages, select the source localization in the sidebar and click Generate Translations."}
+{"id": "/documentation/xcode/localizing-your-app-using-agents", "law": "Then make sure that all the text fits when you change the language."}
+{"id": "/documentation/xcode/localizing-your-app-using-agents", "law": "For example, use Dynamic Type so words and letters don’t clip in languages that require more height."}
+{"id": "/documentation/xcode/localizing-your-app-using-agents", "law": "Use agentic coding tools to translate the strings in your app into multiple languages and regions."}
+{"id": "/documentation/xcode/supporting-multiple-languages-in-your-app", "law": "Use specific localizable APIs and these Xcode tools that support internationalization: User-facing text ."}
+{"id": "/documentation/xcode/supporting-multiple-languages-in-your-app", "law": "Use localized versions of the string formatters to prepare your app’s text for localization."}
+{"id": "/documentation/xcode/supporting-multiple-languages-in-your-app", "law": "Use the automatic grammar agreement APIs in Foundation, such as , to represent grammatical gender correctly in localized text."}
+{"id": "/documentation/xcode/supporting-multiple-languages-in-your-app", "law": "Use the layout tools in SwiftUI and Xcode to control text and UI element orientation, and to flip image direction when necessary for right-to-left languages."}
+{"id": "/documentation/xcode/supporting-multiple-languages-in-your-app", "law": "Use Dynamic Type to prevent clipping of words and letters, and to ensure proper spacing of text for some languages that require significantly more vertical space and other that have specific conventions for wrapping and hyphenation."}
+{"id": "/documentation/xcode/supporting-multiple-languages-in-your-app", "law": "Use an asset catalog to localize colors, images, and sounds in your app."}
+{"id": "/documentation/xcode/using-generated-localizable-symbols-in-your-code", "law": "If you add keys to your string catalogs, Xcode can automatically generate symbols that you can use to reference the localizable strings in your code."}
+{"id": "/documentation/xcode/using-generated-localizable-symbols-in-your-code", "law": "First, you internationalize your app and use localizable strings in your code and interface files."}
+{"id": "/documentation/xcode/using-generated-localizable-symbols-in-your-code", "law": "You can use both of these approaches separately or in combination throughout your project."}
+{"id": "/documentation/xcode/using-generated-localizable-symbols-in-your-code", "law": "You can add localizable strings directly to your string catalog and then use symbols that Xcode generates for them in your code."}
+{"id": "/documentation/xcode/using-generated-localizable-symbols-in-your-code", "law": "You can add multiple variables of different types to the localizable string, but you can only use a variable name once."}
+{"id": "/documentation/xcode/using-generated-localizable-symbols-in-your-code", "law": "In SwiftUI, you can use the type wherever you use localizable strings."}
+{"id": "/documentation/xcode/using-generated-localizable-symbols-in-your-code", "law": "Otherwise, you can use the generated static property or function in the or initializer."}
+{"id": "/documentation/xcode/using-generated-localizable-symbols-in-your-code", "law": "First, become familiar with the style of generated localizable symbols and how to use them in your code."}
+{"id": "/documentation/xcode/using-generated-localizable-symbols-in-your-code", "law": "Then, use code completion to quickly enter these symbols while writing code in the source editor."}
+{"id": "/documentation/xcode/adding-supplemental-content-to-a-documentation-catalog", "law": "For example, the Getting Started with Sloths article contains the following title, single-sentence abstract or summary, and Overview section: After the Overview section, additional sections and subsections use a double hash (##) for a level 2 header, and a triple hash (###) for a level 3 header."}
+{"id": "/documentation/xcode/writing-documentation", "law": "You add documentation markup to your source code, use Xcode’s Build Documentation feature to compile it with DocC, and produce reference documentation for your APIs."}
+{"id": "/documentation/xcode/writing-documentation", "law": "You can also use documentation markup, along with a set of directives that instruct how DocC generates your content, to offer step-by-step tutorials that teach developers to use your APIs through interactive coding exercises."}
+{"id": "/documentation/xcode/writing-symbol-documentation-in-your-source-files", "law": "To help the people who use your API have a better understanding of it, follow the steps in the sections below to add documentation comments to the symbols in your project."}
+{"id": "/documentation/xcode/writing-symbol-documentation-in-your-source-files", "law": "Use the Code Actions menu in Xcode to generate a template that you fill out."}
+{"id": "/documentation/xcode/writing-symbol-documentation-in-your-source-files", "law": "Add reference documentation to your symbols that explains how to use them."}
+{"id": "/documentation/Xcode/diagnosing-issues-in-the-appearance-of-your-running-app", "law": "Use these environmental overrides to change the interface style, dynamic text size, and to induce the effects of other accessibility options, so you can understand the effect of these changes on the layout and visual appearance of your views."}
+{"id": "/documentation/Xcode/diagnosing-issues-in-the-appearance-of-your-running-app", "law": "Use the View debugger, available when targeting iOS, iPadOS, macOS, tvOS, and watchOS apps, to diagnose the reasons an item in your user interface is in the wrong position or is the wrong size."}
+{"id": "/documentation/Xcode/diagnosing-issues-in-the-appearance-of-your-running-app", "law": "Drag the view in any direction to see a 3D representation of the current view stack, and use the controls at the bottom of the canvas to adjust the views and the spacing between them."}
+{"id": "/documentation/Xcode/diagnosing-issues-in-the-appearance-of-your-running-app", "law": "Use them to ensure that your entities are located where you expect, and interacting with each other and the surroundings the way you anticipate."}
+{"id": "/documentation/Xcode/diagnosing-issues-in-the-appearance-of-your-running-app", "law": "For example, if an entity isn’t responding to events, enable Collision Shapes to confirm the presence of one, required for event handling, and indicate its boundary."}
+{"id": "/documentation/xcode/preparing-your-app-for-distribution", "law": "Provide all the required information about your app—such as a unique bundle ID, build string, app icon, and launch screen."}
+{"id": "/documentation/xcode/preparing-your-app-for-distribution", "law": "If your organization ID is unique across all developers and your app name is unique within your organization, your default bundle ID should also be unique."}
+{"id": "/documentation/xcode/preparing-your-app-for-distribution", "law": "For example, use your organization’s domain name as the organization ID to ensure that the bundle ID is unique."}
+{"id": "/documentation/xcode/preparing-your-app-for-distribution", "law": "Multiplatform apps are built to use the same bundle ID for all platforms by default so you can offer the apps together on the App Store as a universal purchase (see )."}
+{"id": "/documentation/xcode/preparing-your-app-for-distribution", "law": "Both keys are required by the App Store."}
+{"id": "/documentation/xcode/preparing-your-app-for-distribution", "law": "For macOS apps, you must increment the build string before you distribute a new build."}
+{"id": "/documentation/xcode/preparing-your-app-for-distribution", "law": "To take advantage of this, use one of the preconfigured distribution methods from Xcode Organizer or enable the “Manage version and build number” setting from the App Store Connect distribution options for your Custom distribution method."}
+{"id": "/documentation/xcode/preparing-your-app-for-distribution", "law": "If you use a Custom distribution method and disable the “Manage version and build number” option, you need to manage the build string yourself and ensure that you increment this build string before archiving a build that you want to distribute."}
+{"id": "/documentation/xcode/preparing-your-app-for-distribution", "law": "Build strings for Mac apps must increment across all versions of your app."}
+{"id": "/documentation/xcode/preparing-your-app-for-distribution", "law": "You can use either a single multilayer Icon Composer file that supports or an icon asset catalog to represent your icon."}
+{"id": "/documentation/Xcode/creating-a-standalone-swift-package-with-xcode", "law": "Use Swift packages to bundle executable code, for example a script, as an executable product , or create a package to vend shareable code as a library product ."}
+{"id": "/documentation/Xcode/creating-a-standalone-swift-package-with-xcode", "law": "Swift packages don’t use or but rely on their folder structure and use the package manifest for additional configuration."}
+{"id": "/documentation/Xcode/creating-a-standalone-swift-package-with-xcode", "law": "The package manifest must begin with the string , followed by a version number such as ."}
+{"id": "/documentation/Xcode/creating-a-standalone-swift-package-with-xcode", "law": "You can use additional subfolders to structure them."}
+{"id": "/documentation/Xcode/creating-a-standalone-swift-package-with-xcode", "law": "If you prefer to declare included source files explicitly, pass them using the parameter when you initialize the ."}
+{"id": "/documentation/Xcode/creating-a-standalone-swift-package-with-xcode", "law": "To add source files to a Swift package, use workflows that you already know."}
+{"id": "/documentation/Xcode/creating-a-standalone-swift-package-with-xcode", "law": "To declare a dependency on a remote package, use one of the functions that take the URL of the remote package as a parameter."}
+{"id": "/documentation/Xcode/creating-a-standalone-swift-package-with-xcode", "law": "To add a local package as a dependency, use one of the functions that take a path to the local package as a parameter."}
+{"id": "/documentation/Xcode/creating-a-standalone-swift-package-with-xcode", "law": "When you add the dependency, you can use its vended product as a or make it a part of your package’s ."}
+{"id": "/documentation/Xcode/creating-a-standalone-swift-package-with-xcode", "law": "For example, Swift packages can contain user interface components that use asset catalogs, storyboards, files, and so on."}

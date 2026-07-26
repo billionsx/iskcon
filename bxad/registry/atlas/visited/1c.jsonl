@@ -19,3 +19,7 @@
 {"id": "/documentation/shazamkit/building-a-custom-catalog-and-matching-audio", "sha": "b0433a288065cf680d01a605f759ca2b9e1547ccafd895ed1229014dbd90d866", "t": "Building a Custom Catalog and Matching Audio", "n": 371, "laws": 0, "ts": "2026-07-25 23:19 UTC"}
 {"id": "/documentation/swiftui/toggle", "sha": "292b7744cec74dc3a32066ef23e0de81c356cd605a584dbc141637b1f7f09588", "t": "Toggle", "n": 1695, "laws": 1, "ts": "2026-07-25 23:26 UTC"}
 {"id": "/documentation/swiftui/layout/makecache(subviews:)", "sha": "e657e1d519d84331e55631061b8a5e10d9ca6db9dd4225c66d57dfc149d3c4ac", "t": "makeCache(subviews:)", "n": 2435, "laws": 5, "ts": "2026-07-25 23:27 UTC"}
+{"id": "/documentation/swiftui/view/oncontinueuseractivity(_:perform:)", "sha": "b0607514b7ed3afa560d64ea39e7d190a14d62486a44d454b41a4cf9c666e6fe", "t": "onContinueUserActivity(_:perform:)", "n": 629, "laws": 2, "ts": "2026-07-26 00:03 UTC"}
+{"id": "/documentation/vision/visionrequest", "sha": "95de028dcd797d17803d59cbf891b72388d3c91cea52cbf2c863661f4bb37f3b", "t": "VisionRequest", "n": 340, "laws": 0, "ts": "2026-07-26 00:20 UTC"}
+{"id": "/documentation/swiftui/immersivespace", "sha": "d26a04fc6e9971e064f23f50523f79d012e262acaa8580f35f0b03349fb092ec", "t": "ImmersiveSpace", "n": 3787, "laws": 10, "ts": "2026-07-26 00:26 UTC"}
+{"id": "/documentation/ARKit/Accessory", "sha": "83e32a52579ab6bb712db1cab8cb8da5768f68927dfa6ed13ff393aacfe85a7f", "t": "Accessory", "n": 279, "laws": 0, "ts": "2026-07-26 00:31 UTC"}

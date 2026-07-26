@@ -15,3 +15,7 @@
 {"id": "/documentation/spatialpreview", "sha": "5badd4565b3273f032afca57bf25a78cf316abee4407c7abeed501940010c924", "t": "Spatial Preview", "n": 1198, "laws": 3, "ts": "2026-07-25 23:20 UTC"}
 {"id": "/documentation/Foundation/Date", "sha": "f3cd2951202258ed4bd14eb259ad49ba5cac4c415c1d3af0145b0dc37eb56b26", "t": "Date", "n": 2191, "laws": 2, "ts": "2026-07-25 23:23 UTC"}
 {"id": "/documentation/swiftui/landmarks-applying-a-background-extension-effect", "sha": "c9e1157b8f574e4e0d49bdc0c21884a888bbb7102c5e8fb723b9dbdd572896f5", "t": "Landmarks: Applying a background extension effect", "n": 2976, "laws": 3, "ts": "2026-07-25 23:26 UTC"}
+{"id": "/documentation/uikit/uitextformattingcoordinator", "sha": "11ad7d32f63134596ef080cfa00c8cfbc8d99a4b978b763e3eda41feb25cb957", "t": "UITextFormattingCoordinator", "n": 408, "laws": 0, "ts": "2026-07-26 00:16 UTC"}
+{"id": "/documentation/virtualization/vzvirtualmachine/resume(completionhandler:)", "sha": "4d9f5c94bbbe66bd1a811707820cf764b5f4a10c3e1b6c03eb9595e90be37239", "t": "resume(completionHandler:)", "n": 148, "laws": 0, "ts": "2026-07-26 00:18 UTC"}
+{"id": "/documentation/ARKit/RoomTrackingProvider", "sha": "c3e382a0268b04036ed675e35522abf792543e3cd66493448c949439d366e327", "t": "RoomTrackingProvider", "n": 285, "laws": 0, "ts": "2026-07-26 00:26 UTC"}
+{"id": "/documentation/AppIntents/Adding-parameters-to-an-app-intent", "sha": "ba6e7865b71044afd169d1cb38ed0ad58c95dc71dfc417cdb74442350ef9e6cc", "t": "Adding parameters to an app intent", "n": 6006, "laws": 10, "ts": "2026-07-26 00:32 UTC"}

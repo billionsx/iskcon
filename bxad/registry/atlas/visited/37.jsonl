@@ -25,3 +25,6 @@
 {"id": "/documentation/realitykit/docking-a-video-player-in-an-immersive-scene", "sha": "3ee620157d5e7705a9da67a6c7c56111680d5c26d8fb82e98fc8b1edb22126f0", "t": "Docking a video player in an immersive scene", "n": 3190, "laws": 3, "ts": "2026-07-25 23:16 UTC"}
 {"id": "/documentation/swiftui/view/navigationsplitviewcolumnwidth(min:ideal:max:)", "sha": "b507ee638429d548ea7fb3292a2b63cbd50c187146de8cc811b607d5cae48b9c", "t": "navigationSplitViewColumnWidth(min:ideal:max:)", "n": 616, "laws": 2, "ts": "2026-07-25 23:24 UTC"}
 {"id": "/documentation/swiftui/tabview", "sha": "438b3e37df0fffdb5d3b1651738000baf11be3fa29c4253cd130fbecadd6ed8e", "t": "TabView", "n": 3143, "laws": 6, "ts": "2026-07-25 23:25 UTC"}
+{"id": "/documentation/uikit/nstextviewportlayoutcontroller", "sha": "27fc638a4f31f4de9ccce63c469284b8f48f39ec26e22ee6803817fd372834ec", "t": "NSTextViewportLayoutController", "n": 815, "laws": 0, "ts": "2026-07-26 00:12 UTC"}
+{"id": "/documentation/Foundation/NSComparisonPredicate", "sha": "cf8b8429a32cb209583683033753034e420779cb63f9dc3952e38bc3fa66633d", "t": "NSComparisonPredicate", "n": 908, "laws": 2, "ts": "2026-07-26 00:12 UTC"}
+{"id": "/documentation/weatherkit/weather", "sha": "27d98347defb2bd2b1d371ffb2b40a6720f6bf1a52a56d0a4fe4eb90680e87c3", "t": "Weather", "n": 210, "laws": 0, "ts": "2026-07-26 00:31 UTC"}

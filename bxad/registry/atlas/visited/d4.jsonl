@@ -15,3 +15,9 @@
 {"id": "/documentation/swiftui/navigationsplitviewvisibility", "sha": "9900c3659734a063317faf102f18e6fdce46400d5e5a82116fb85d0e30db1074", "t": "NavigationSplitViewVisibility", "n": 707, "laws": 3, "ts": "2026-07-25 23:24 UTC"}
 {"id": "/documentation/swiftui/layout", "sha": "c9fe798bc3acb0c041b0dafb29a9783842c1bf8703aadbd972b922ab7021a655", "t": "Layout", "n": 4355, "laws": 3, "ts": "2026-07-25 23:27 UTC"}
 {"id": "/documentation/swiftui/layoutsubviews", "sha": "c0374f809282aab4a906af0cb2e5b5c4cba0c36abcb5551be67d6f7757e03990", "t": "LayoutSubviews", "n": 833, "laws": 1, "ts": "2026-07-25 23:27 UTC"}
+{"id": "/documentation/uikit/uisheetpresentationcontroller", "sha": "602c63e19155894cfaebbc30fea7c8dc539adb31a4de6058bf28c62a62c5a72f", "t": "UISheetPresentationController", "n": 1268, "laws": 0, "ts": "2026-07-26 00:11 UTC"}
+{"id": "/documentation/mapkit/mkpointofinterestcategory", "sha": "cc260d37be638ecf40b08b9d6c586fc69dac7214d9fc5003b4a6f1a1bbb77295", "t": "MKPointOfInterestCategory", "n": 1218, "laws": 0, "ts": "2026-07-26 00:23 UTC"}
+{"id": "/documentation/visionos/introductory-visionos-samples", "sha": "2fd3607f078bef73014f92fab739f37de79f599120280fa2a06fca10b9470d57", "t": "Introductory visionOS samples", "n": 1377, "laws": 0, "ts": "2026-07-26 00:25 UTC"}
+{"id": "/documentation/AppIntents/app-intents", "sha": "51462cc3bff2606ce61eabb76f377de6528d981db30b156d87b86028307471d5", "t": "App intents", "n": 2347, "laws": 2, "ts": "2026-07-26 00:32 UTC"}
+{"id": "/documentation/FoundationModels/Transcript/CustomSegment", "sha": "c9339e8dbdda8b7ac15689cb0b5caa732ad9a3882f1d837f381172a9292b3f3b", "t": "Transcript.CustomSegment", "n": 120, "laws": 0, "ts": "2026-07-26 00:32 UTC"}
+{"id": "/documentation/appkit/nstextalignmentfromcttextalignment", "sha": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855", "t": "NSTextAlignmentFromCTTextAlignment", "n": 0, "laws": 0, "ts": "2026-07-26 00:33 UTC"}

@@ -4,3 +4,4 @@
 {"id": "/documentation/CoreGraphics/CGColorSpace", "law": "Device color spaces are not recommended when high-fidelity color preservation is important."}
 {"id": "/documentation/CoreGraphics/CGBlendMode/colorBurn", "law": "Source image sample values that specify white do not produce a change."}
 {"id": "/documentation/CoreGraphics/CGBlendMode/screen", "law": "Multiplies the inverse of the source image samples with the inverse of the background image samples, resulting in colors that are at least as light as either of the two contributing sample colors."}
+{"id": "/documentation/CoreGraphics/CGDataProvider", "law": "For information on how to use CGDataProvider functions, see Programming Guide."}

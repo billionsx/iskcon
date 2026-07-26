@@ -21,3 +21,7 @@
 {"id": "/documentation/swiftui/view/draggable(_:preview:)", "sha": "cb8753ee14602f0ca3cd0a91d7502d7bd307f6d9a5965fc8eb9e70855533a018", "t": "draggable(_:preview:)", "n": 579, "laws": 1, "ts": "2026-07-25 23:23 UTC"}
 {"id": "/documentation/swiftui/view/navigationsplitviewcolumnwidth(_:)", "sha": "07dff5c5279170650f30faf5f805891d2d174ccba33fe1f42fd1714eead63ee5", "t": "navigationSplitViewColumnWidth(_:)", "n": 613, "laws": 2, "ts": "2026-07-25 23:24 UTC"}
 {"id": "/documentation/swiftui/zstack", "sha": "63253f0c4434d3eb76dabec9e2825cf6a3d54408700afe5dc57b1a2c9e3c9b72", "t": "ZStack", "n": 1031, "laws": 3, "ts": "2026-07-25 23:26 UTC"}
+{"id": "/documentation/Swift/String/filter(_:)-66nw7", "sha": "5903bbf59b7e5cb6dc725ad003f2c5ba63fea2a26af9aec83890d8dc0e7cecdc", "t": "filter(_:)", "n": 336, "laws": 0, "ts": "2026-07-26 00:19 UTC"}
+{"id": "/documentation/vision/vndetecthumanbodyposerequest", "sha": "a864cec67e143f177f2341e2dbc4e0284d8b4f86229ab8c989d865484b300139", "t": "VNDetectHumanBodyPoseRequest", "n": 370, "laws": 0, "ts": "2026-07-26 00:19 UTC"}
+{"id": "/documentation/ARKit/CameraFrameProvider", "sha": "7bb842819cda21198e6308bfceb0f9d510bf5f8893121c53329db6026ab8df9a", "t": "CameraFrameProvider", "n": 510, "laws": 1, "ts": "2026-07-26 00:25 UTC"}
+{"id": "/documentation/swiftui/controls-and-indicators", "sha": "9e33b31bc500e91019ed24106d09703df8623686f64d084ddb5f6d0604be7685", "t": "Controls and indicators", "n": 1721, "laws": 1, "ts": "2026-07-26 00:33 UTC"}

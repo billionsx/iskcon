@@ -27,3 +27,24 @@
 {"id": "/documentation/UserNotifications/setting-up-a-remote-notification-server", "law": "Communication between your provider server and APNs must take place over a secure connection."}
 {"id": "/documentation/UserNotifications/setting-up-a-remote-notification-server", "law": "Creating a secure connection requires installing the and on each of your provider servers."}
 {"id": "/documentation/UserNotifications/setting-up-a-remote-notification-server", "law": "To send notifications, your provider server must establish either token-based or certificate-based trust with APNs using HTTP/2 and TLS."}
+{"id": "/documentation/UserNotifications/modifying-content-in-newly-delivered-notifications", "law": "Download images or other media attachments whose size would exceed the maximum payload size."}
+{"id": "/documentation/UserNotifications/modifying-content-in-newly-delivered-notifications", "law": "Modifying a remote notification requires a notification service app extension, which you include inside your iOS app bundle."}
+{"id": "/documentation/UserNotifications/modifying-content-in-newly-delivered-notifications", "law": "Use the method to create a new object with the updated content."}
+{"id": "/documentation/UserNotifications/modifying-content-in-newly-delivered-notifications", "law": "Use the method to terminate any payload-modification tasks that are still running."}
+{"id": "/documentation/UserNotifications/modifying-content-in-newly-delivered-notifications", "law": "If your code takes longer than that, the system calls the method, at which point you must return whatever you can to the system immediately."}
+{"id": "/documentation/UserNotifications/modifying-content-in-newly-delivered-notifications", "law": "The system executes your notification service app extension only when a remote notification’s payload contains the following information: The payload must include the key with a value of ."}
+{"id": "/documentation/UserNotifications/modifying-content-in-newly-delivered-notifications", "law": "The payload must include an dictionary with title, subtitle, or body information."}
+{"id": "/documentation/usernotifications", "law": "Use this framework to do the following: Define the types of notifications that your app supports."}
+{"id": "/documentation/usernotifications", "law": "The PushKit framework offers a more timely delivery mechanism for specific types of notifications, such as those VoIP and watchOS complications use."}
+{"id": "/documentation/usernotifications", "law": "Asking permission to use notifications."}
+{"id": "/documentation/usernotifications", "law": "Use a notification service app extension to modify the content of a notification before it’s delivered to your app."}
+{"id": "/documentation/usernotifications/handling-communication-notifications-and-focus-status-updates", "law": "The bundle identifier must support the following capabilities: Push notifications Communication notifications Time Sensitive notifications SiriKit To support communication notifications, the app’s file must contain a top-level entry with the key and type ."}
+{"id": "/documentation/usernotifications/handling-communication-notifications-and-focus-status-updates", "law": "This array should contain if the app supports calling functionality, and if it supports messaging."}
+{"id": "/documentation/usernotifications/handling-communication-notifications-and-focus-status-updates", "law": "Accessing a user’s Focus status requires their authorization."}
+{"id": "/documentation/usernotifications/handling-communication-notifications-and-focus-status-updates", "law": "The app should donate both outgoing and incoming communication interactions."}
+{"id": "/documentation/usernotifications/handling-communication-notifications-and-focus-status-updates", "law": "To display a communication notification, your app should update the notification’s content."}
+{"id": "/documentation/usernotifications/handling-communication-notifications-and-focus-status-updates", "law": "Use the same intent object that initialized the interaction."}
+{"id": "/documentation/usernotifications/handling-communication-notifications-and-focus-status-updates", "law": "Accessing the user’s Focus status requires explicit user authorization."}
+{"id": "/documentation/usernotifications/handling-communication-notifications-and-focus-status-updates", "law": "To request authorization, use and parse the result."}
+{"id": "/documentation/usernotifications/handling-communication-notifications-and-focus-status-updates", "law": "Unauthorized apps don’t receive a Focus status value."}
+{"id": "/documentation/usernotifications/handling-communication-notifications-and-focus-status-updates", "law": "Ensure the app handles the Focus status case."}

@@ -17,3 +17,8 @@
 {"id": "/documentation/pcidriverkit", "sha": "2de780c487318b717113478833e63833f118f09426e2a05e46341494da4362ce", "t": "PCIDriverKit", "n": 3136, "laws": 3, "ts": "2026-07-25 23:10 UTC"}
 {"id": "/documentation/realitykit/collisionfilter", "sha": "866ccd6059073783ef81b980219a2fa7ebc46e90600f8d0fa25ed18de0a9394b", "t": "CollisionFilter", "n": 375, "laws": 1, "ts": "2026-07-25 23:14 UTC"}
 {"id": "/documentation/soundanalysis/snclassifysoundrequest", "sha": "682f4f1efb0c6bd28aa18df42b93deb50e14f9a3200c719e0826e695cc10e6b9", "t": "SNClassifySoundRequest", "n": 731, "laws": 0, "ts": "2026-07-25 23:20 UTC"}
+{"id": "/documentation/Foundation/NSSecureCoding", "sha": "7d0d77ba8b8069ad6931bb758eb3a99855b3027e9a5be5e5ca01107ba5ce39bd", "t": "NSSecureCoding", "n": 857, "laws": 2, "ts": "2026-07-26 00:06 UTC"}
+{"id": "/documentation/uikit/uiview/addinteraction(_:)", "sha": "6afda73a105ead535dc42b0bf311506bd2f60afea362cd5fe4e0820e6404cccd", "t": "addInteraction(_:)", "n": 32, "laws": 0, "ts": "2026-07-26 00:07 UTC"}
+{"id": "/documentation/vision/classifying-images-for-categorization-and-search", "sha": "324b1ba704f12a37559a65778104e1314fb287ff2ff4e47c7a71b9c5790481ce", "t": "Classifying images for categorization and search", "n": 3259, "laws": 1, "ts": "2026-07-26 00:18 UTC"}
+{"id": "/documentation/weatherkit/weatherservice", "sha": "f01ce2fd30336f92f0fd443f6a7d3bcece230b7f7750af4e07eca68b7102b36a", "t": "WeatherService", "n": 852, "laws": 0, "ts": "2026-07-26 00:31 UTC"}
+{"id": "/documentation/appkit/nssegmentedcontrol/role-swift.enum", "sha": "c697053c9eb736e8bd55112e97b2d60ca2a8e75931ea993372d3a5ef11b08c7b", "t": "NSSegmentedControl.Role", "n": 158, "laws": 0, "ts": "2026-07-26 00:33 UTC"}

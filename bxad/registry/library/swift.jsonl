@@ -97,3 +97,106 @@
 {"id": "/documentation/Swift/Array", "law": "To add single elements to the end of an array, use the method."}
 {"id": "/documentation/Swift/Array", "law": "To remove elements from an array, use the , , and methods."}
 {"id": "/documentation/Swift/Array", "law": "If you know approximately how many elements you will need to store, use the method before appending to the array to avoid intermediate reallocations."}
+{"id": "/documentation/Swift/Dictionary", "law": "You use that key to retrieve the corresponding value, which can be any object."}
+{"id": "/documentation/Swift/Dictionary", "law": "To create a dictionary with no key-value pairs, use an empty dictionary literal ( )."}
+{"id": "/documentation/Swift/Dictionary", "law": "You can use your own custom types as dictionary keys by making them conform to the protocol."}
+{"id": "/documentation/Swift/Dictionary", "law": "The most common way to access values in a dictionary is to use a key as a subscript."}
+{"id": "/documentation/Swift/Dictionary", "law": "Subscripting with a key takes the following form: Subscripting a dictionary with a key returns an optional value, because a dictionary might not hold a value for the key that you use in the subscript."}
+{"id": "/documentation/Swift/Dictionary", "law": "If you need an ordered collection of key-value pairs and don’t need the fast key lookup that provides, see the type for an alternative."}
+{"id": "/documentation/Swift/Dictionary", "law": "When you know how many new values you’re adding to a dictionary, use the initializer to allocate the correct amount of buffer."}
+{"id": "/documentation/Swift/Dictionary", "law": "For bridging to be possible, the and types of a dictionary must be classes, protocols, or types that bridge to Foundation types."}
+{"id": "/documentation/Swift/Dictionary", "law": "Bridging from to always takes O(1) time and space."}
+{"id": "/documentation/Swift/Dictionary", "law": "When the dictionary’s and types are neither classes nor protocols, any required bridging of elements occurs at the first access of each element."}
+{"id": "/documentation/Swift/Task", "law": "Tasks can start running immediately after creation; you don’t explicitly start or schedule them."}
+{"id": "/documentation/Swift/Task", "law": "After creating a task, you use the instance to interact with it — for example, to wait for it to complete or to cancel it."}
+{"id": "/documentation/Swift/Task", "law": "Because these methods are asynchronous, they’re always invoked as part of an existing task."}
+{"id": "/documentation/Swift/Task", "law": "Unless you’re implementing a custom executor, you don’t directly interact with partial tasks."}
+{"id": "/documentation/Swift/Task", "law": "And using it like this: Note that the actor is only retained by the start() method’s use of , and that the start method immediately returns, without waiting for the unstructured to finish."}
+{"id": "/documentation/Swift/Equatable", "law": "Adding conformance to your custom types means that you can use more convenient APIs when searching for particular instances in a collection."}
+{"id": "/documentation/Swift/Equatable", "law": "You can rely on automatic synthesis of the protocol’s requirements for a custom type when you declare conformance in the type’s original declaration and your type meets these criteria: For a , all its stored properties must conform to ."}
+{"id": "/documentation/Swift/Equatable", "law": "For an , all its associated values must conform to ."}
+{"id": "/documentation/Swift/Equatable", "law": "To use the method without including a closure in each call, extend the type to conform to ."}
+{"id": "/documentation/Swift/Equatable", "law": "You can use to check for equality between any two instances or call the -constrained method."}
+{"id": "/documentation/Swift/Equatable", "law": "To maintain substitutability, the operator should take into account all visible aspects of an type."}
+{"id": "/documentation/Swift/Equatable", "law": "Exposing nonvalue aspects of types other than class identity is discouraged, and any that are exposed should be explicitly pointed out in documentation."}
+{"id": "/documentation/Swift/Hashable", "law": "You can use any type that conforms to the protocol in a set or as a dictionary key."}
+{"id": "/documentation/Swift/Hashable", "law": "Two instances that are equal must feed the same values to in , in the same order."}
+{"id": "/documentation/Swift/Hashable", "law": "To use your own custom type in a set or as the key type of a dictionary, add conformance to your type."}
+{"id": "/documentation/Swift/Hashable", "law": "The protocol inherits from the protocol, so you must also satisfy that protocol’s requirements."}
+{"id": "/documentation/Swift/Hashable", "law": "The compiler automatically synthesizes your custom type’s and requirements when you declare conformance in the type’s original declaration and your type meets these criteria: For a , all its stored properties must conform to ."}
+{"id": "/documentation/Swift/Hashable", "law": "For an , all its associated values must conform to ."}
+{"id": "/documentation/Swift/Hashable", "law": "To ensure that your type meets the semantic requirements of the and protocols, it’s a good idea to also customize your type’s conformance to match."}
+{"id": "/documentation/Swift/Set", "law": "You use a set instead of an array when you need to test efficiently for membership and you aren’t concerned with the order of the elements in the collection, or when you need to ensure that each element appears only once in a collection."}
+{"id": "/documentation/Swift/Set", "law": "For example, you can efficiently test a set for membership of an element or check its intersection with another set: Use the method to test whether a set contains a specific element."}
+{"id": "/documentation/Swift/Set", "law": "Use the “equal to” operator ( ) to test whether two sets contain the same elements."}
+{"id": "/documentation/Swift/Set", "law": "Use the method to test whether a set contains all the elements of another set or sequence."}
+{"id": "/documentation/Swift/Set", "law": "Use the method to test whether all elements of a set are contained in another set or sequence."}
+{"id": "/documentation/Swift/Set", "law": "Use the and methods to test whether a set is a subset or superset of, but not equal to, another set."}
+{"id": "/documentation/Swift/Set", "law": "Use the method to test whether a set has any elements in common with another set."}
+{"id": "/documentation/Swift/Set", "law": "You can also combine, exclude, or subtract the elements of two sets: Use the method to create a new set with the elements of a set and another set or sequence."}
+{"id": "/documentation/Swift/Set", "law": "Use the method to create a new set with only the elements common to a set and another set or sequence."}
+{"id": "/documentation/Swift/Set", "law": "Use the method to create a new set with the elements that are in either a set or another set or sequence, but not in both."}
+{"id": "/documentation/Swift/TaskGroup", "law": "Don’t use a task group from outside the task where you created it."}
+{"id": "/documentation/Swift/TaskGroup", "law": "Structured concurrency is a way to organize your program, and tasks, in such a way that tasks don’t outlive the scope in which they are created."}
+{"id": "/documentation/Swift/TaskGroup", "law": "This guarantee simplifies reasoning about resource usage, and is a powerful mechanism that you can use to write well-behaved concurrent programs."}
+{"id": "/documentation/Swift/TaskGroup", "law": "A child task inherits the parent’s priority, task-local values, and is structured in the sense that its lifetime never exceeds the lifetime of the parent task."}
+{"id": "/documentation/Swift/TaskGroup", "law": "A task group always waits for all child tasks to complete before it’s destroyed."}
+{"id": "/documentation/Swift/TaskGroup", "law": "Specifically, APIs don’t return until all the child tasks created in the group’s scope have completed running."}
+{"id": "/documentation/Swift/TaskGroup", "law": "Structured concurrency APIs (including task groups and ), always waits for the completion of tasks contained within their scope before returning."}
+{"id": "/documentation/Swift/TaskGroup", "law": "You can use to signal cancellation to the remaining in-progress tasks, however this doesn’t interrupt their execution automatically."}
+{"id": "/documentation/Swift/TaskGroup", "law": "To create unstructured concurrency tasks, you can use , or ."}
+{"id": "/documentation/Swift/TaskGroup", "law": "The tasks must handle cancellation in some other way, such as returning the work completed so far, returning an empty result, or returning ."}
+{"id": "/documentation/Swift/Array/sorted(by:)", "law": "When you want to sort a sequence of elements that don’t conform to the protocol, pass a predicate to this method that returns when the first element should be ordered before the second."}
+{"id": "/documentation/Swift/Array/sorted(by:)", "law": "You also use this method to sort elements that conform to the protocol in descending order."}
+{"id": "/documentation/Swift/Array/sorted(by:)", "law": "The predicate must be a strict weak ordering over the elements."}
+{"id": "/documentation/Swift/Array/sorted(by:)", "law": "That is, for any elements , , and , the following conditions must hold: is always ."}
+{"id": "/documentation/Swift/Sendable", "law": "Conformance to must be declared in the same file as the type’s declaration."}
+{"id": "/documentation/Swift/Sendable", "law": "Unchecked conformance to also disables enforcement of the rule that conformance must be in the same file."}
+{"id": "/documentation/Swift/Sendable", "law": "To satisfy the requirements of the protocol, an enumeration or structure must have only sendable members and associated values."}
+{"id": "/documentation/Swift/Sendable", "law": "All actor types implicitly conform to because actors ensure that all access to their mutable state is performed sequentially."}
+{"id": "/documentation/Swift/Sendable", "law": "To satisfy the requirements of the protocol, a class must: Be marked Contain only stored properties that are immutable and sendable Have no superclass or have as the superclass Classes marked with are implicitly sendable, because the main actor coordinates all access to its state."}
+{"id": "/documentation/Swift/Sendable", "law": "Classes that don’t meet the requirements above can be marked as , disabling compile-time correctness checks, after you manually verify that they satisfy the protocol’s semantic requirements."}
+{"id": "/documentation/Swift/Sendable", "law": "Any values that the function or closure captures must be sendable."}
+{"id": "/documentation/Swift/Sendable", "law": "In addition, sendable closures must use only by-value captures, and the captured values must be of a sendable type."}
+{"id": "/documentation/Swift/Sendable", "law": "To satisfy the requirements of the protocol, all of the elements of the tuple must be sendable."}
+{"id": "/documentation/swift/codable", "law": "When you use as a type or a generic constraint, it matches any type that conforms to both protocols."}
+{"id": "/documentation/swift/optionset", "law": "You use the protocol to represent bitset types, where individual bits represent members of a set."}
+{"id": "/documentation/swift/optionset", "law": "What’s more, when implemented using specific criteria, adoption of this protocol requires no extra work on your part."}
+{"id": "/documentation/swift/optionset", "law": "For your type to automatically receive default implementations for set-related operations, the property must be of a type that conforms to the protocol, such as or ."}
+{"id": "/documentation/swift/optionset", "law": "Use set-related operations to check for membership and to add or remove members from an instance of your custom option set type."}
+{"id": "/documentation/swift/array", "law": "You use arrays to organize your app’s data."}
+{"id": "/documentation/swift/array", "law": "Specifically, you use the type to hold elements of a single type, the array’s type."}
+{"id": "/documentation/swift/array", "law": "For example: If you need an array that is preinitialized with a fixed number of default values, use the initializer."}
+{"id": "/documentation/swift/array", "law": "When you need to perform an operation on all of an array’s elements, use a - loop to iterate through the array’s contents."}
+{"id": "/documentation/swift/array", "law": "Use the property to check quickly whether an array has any elements, or use the property to find the number of elements in the array."}
+{"id": "/documentation/swift/array", "law": "Use the and properties for safe access to the value of the array’s first and last elements."}
+{"id": "/documentation/swift/array", "law": "The first element of a nonempty array is always at index zero."}
+{"id": "/documentation/swift/array", "law": "To add single elements to the end of an array, use the method."}
+{"id": "/documentation/swift/array", "law": "To remove elements from an array, use the , , and methods."}
+{"id": "/documentation/swift/array", "law": "If you know approximately how many elements you will need to store, use the method before appending to the array to avoid intermediate reallocations."}
+{"id": "/documentation/swift/dictionary", "law": "You use that key to retrieve the corresponding value, which can be any object."}
+{"id": "/documentation/swift/dictionary", "law": "To create a dictionary with no key-value pairs, use an empty dictionary literal ( )."}
+{"id": "/documentation/swift/dictionary", "law": "You can use your own custom types as dictionary keys by making them conform to the protocol."}
+{"id": "/documentation/swift/dictionary", "law": "The most common way to access values in a dictionary is to use a key as a subscript."}
+{"id": "/documentation/swift/dictionary", "law": "Subscripting with a key takes the following form: Subscripting a dictionary with a key returns an optional value, because a dictionary might not hold a value for the key that you use in the subscript."}
+{"id": "/documentation/swift/dictionary", "law": "If you need an ordered collection of key-value pairs and don’t need the fast key lookup that provides, see the type for an alternative."}
+{"id": "/documentation/swift/dictionary", "law": "When you know how many new values you’re adding to a dictionary, use the initializer to allocate the correct amount of buffer."}
+{"id": "/documentation/swift/dictionary", "law": "For bridging to be possible, the and types of a dictionary must be classes, protocols, or types that bridge to Foundation types."}
+{"id": "/documentation/swift/dictionary", "law": "Bridging from to always takes O(1) time and space."}
+{"id": "/documentation/swift/dictionary", "law": "When the dictionary’s and types are neither classes nor protocols, any required bridging of elements occurs at the first access of each element."}
+{"id": "/documentation/swift/string", "law": "Strings always have value semantics."}
+{"id": "/documentation/swift/string", "law": "Comparing strings for equality using the equal-to operator ( ) or a relational operator (like or ) is always performed using Unicode canonical representation."}
+{"id": "/documentation/swift/string", "law": "Basic string operations are not sensitive to locale settings, ensuring that string comparisons and other operations always have a single, stable result, allowing strings to be used as keys in instances and for other purposes."}
+{"id": "/documentation/swift/string", "law": "If you need to access the contents of a string as encoded in different Unicode encodings, use one of the string’s , , or properties."}
+{"id": "/documentation/swift/string", "law": "To demonstrate the different views available for every string, the following examples use this instance: The string is a collection of the nine characters that are visible when the string is displayed."}
+{"id": "/documentation/swift/string", "law": "When you need to know the length of a string, you must first consider what you’ll use the length for."}
+{"id": "/documentation/swift/string", "law": "To check whether a string is empty, use its property instead of comparing the length of one of the views to ."}
+{"id": "/documentation/swift/string", "law": "Unlike with , calculating a view’s property requires iterating through the elements of the string."}
+{"id": "/documentation/swift/string", "law": "To find individual elements of a string, use the appropriate view for your task."}
+{"id": "/documentation/swift/string", "law": "If you need to validate that an index from one string’s view corresponds with an exact position in another view, use the index’s method or the initializer."}
+{"id": "/documentation/Swift/Array/reduce(_:_:)", "law": "Use the method to produce a single value from the elements of an entire sequence."}
+{"id": "/documentation/Swift/Array/reduce(_:_:)", "law": "For example, you can use this method on an array of numbers to find their sum or product."}
+{"id": "/documentation/Swift/Array/reduce(_:_:)", "law": "If the sequence has no elements, is never executed and is the result of the call to ."}
+{"id": "/documentation/Swift/AsyncStream/Continuation", "law": "Use this continuation to provide elements to the stream by calling one of the methods, then terminate the stream normally by calling the method."}
+{"id": "/documentation/Swift/swift-standard-library", "law": "Protocols, such as and , that you use to customize operations that are available to all types."}
+{"id": "/documentation/Swift/swift-standard-library", "law": "Protocols, such as , that you use to provide implementations that would otherwise require boilerplate code."}

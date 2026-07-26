@@ -20,3 +20,7 @@
 {"id": "/documentation/SwiftUI/WindowStyle/plain", "sha": "73a4049a22c8b1220118b35e3c2ad3ad9436a4189c3f7250463ab74ff455a6f4", "t": "plain", "n": 225, "laws": 1, "ts": "2026-07-25 23:17 UTC"}
 {"id": "/documentation/sirikit/adding-shortcuts-for-wind-down", "sha": "30fc925ae236dcc68fa2799c60f236ef55c5ebd7cf3716def5173d22dc67a4b3", "t": "Adding Shortcuts for Wind Down", "n": 418, "laws": 0, "ts": "2026-07-25 23:19 UTC"}
 {"id": "/documentation/swiftui/layout/sizethatfits(proposal:subviews:cache:)", "sha": "52dbf13de0fd6412a482dc3de15222e7b8f191a8006776f74c4307e76e5f736f", "t": "sizeThatFits(proposal:subviews:cache:)", "n": 1595, "laws": 5, "ts": "2026-07-25 23:27 UTC"}
+{"id": "/documentation/tvmlkit/tvapplicationcontrollercontext", "sha": "f7b7e7719e9083c2e27023d4425fd7bea3785ad5684f4c0a4deccdabbb62cd03", "t": "TVApplicationControllerContext", "n": 187, "laws": 0, "ts": "2026-07-26 00:04 UTC"}
+{"id": "/documentation/uikit/uiview/layer", "sha": "42e2d2496488a3a78df9b68c09b98c1eae0791a5a8ee2cc72420862146ef3c1c", "t": "layer", "n": 357, "laws": 3, "ts": "2026-07-26 00:15 UTC"}
+{"id": "/documentation/groupactivities/groupactivity/sessions", "sha": "72d0e140ab13c2820c210f5d9b972ced612c1a0e8fee234cc5cedf702c19acc5", "t": "GroupActivity.Sessions", "n": 469, "laws": 1, "ts": "2026-07-26 00:23 UTC"}
+{"id": "/documentation/FoundationModels/expanding-generation-with-tool-calling", "sha": "39885a7477f466b295e613a15677e4894b470940e9c3f2904d649bdc084ca163", "t": "Expanding generation with tool calling", "n": 5286, "laws": 10, "ts": "2026-07-26 00:32 UTC"}

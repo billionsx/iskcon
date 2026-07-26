@@ -16,3 +16,8 @@
 {"id": "/documentation/Swift/Bool", "sha": "fde8f54da53567f89da7391ac8d240955c06774384dea9119b5547b659743174", "t": "Bool", "n": 2052, "laws": 3, "ts": "2026-07-25 23:18 UTC"}
 {"id": "/documentation/AppIntents/WidgetConfigurationIntent", "sha": "f4498792346fc0e40c37d4a298f2057213220a2c0310cf0eaa34b3b46db7d9a8", "t": "WidgetConfigurationIntent", "n": 822, "laws": 3, "ts": "2026-07-25 23:23 UTC"}
 {"id": "/documentation/swiftui/view/keyframeanimator(initialvalue:repeating:content:keyframes:)", "sha": "986a9f552766ab67652865c49d9256081373d0878211497f93f9c048005fc208", "t": "keyframeAnimator(initialValue:repeating:content:keyframes:)", "n": 239, "laws": 1, "ts": "2026-07-25 23:24 UTC"}
+{"id": "/documentation/uikit/text-display-and-fonts", "sha": "99cda9aef4e73853a5c7ad47773f6977c9bd2f8e5aa44b6a9d1504f54937857d", "t": "Text display and fonts", "n": 660, "laws": 0, "ts": "2026-07-26 00:10 UTC"}
+{"id": "/documentation/uikit/uibezierpath", "sha": "c184de59aca77f288addfa4a5ad52ca100b15e9cb62b076ba7c2c91f0d7d8009", "t": "UIBezierPath", "n": 3935, "laws": 9, "ts": "2026-07-26 00:12 UTC"}
+{"id": "/documentation/Foundation/NSURL/startAccessingSecurityScopedResource()", "sha": "f85f30c32d3ea6bdae2da61dd9f81d8fd76b8a1bdb29271ebc7198b2234c5203", "t": "startAccessingSecurityScopedResource()", "n": 1256, "laws": 4, "ts": "2026-07-26 00:16 UTC"}
+{"id": "/documentation/groupactivities/groupsessionmessenger/send(_:to:)-2a4ku", "sha": "34d6a1db4a5f74d1e31d2de8f1b454b98dd24dd4145c0b913567149c885a08f4", "t": "send(_:to:)", "n": 299, "laws": 1, "ts": "2026-07-26 00:23 UTC"}
+{"id": "/documentation/appkit/animation", "sha": "b75dd4aa2a9ec5414d73d03497ec3626b37544b81a2a097f5ccd9a50cc3769c2", "t": "Animation", "n": 328, "laws": 0, "ts": "2026-07-26 00:32 UTC"}

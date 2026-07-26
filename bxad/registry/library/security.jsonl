@@ -74,3 +74,4 @@
 {"id": "/documentation/security", "law": "Always use the highest level API that meets your needs."}
 {"id": "/documentation/security", "law": "The Security framework is not always your best option."}
 {"id": "/documentation/security", "law": "Only if your app requires lower level access to security protocol functions would you use the secure transport API directly."}
+{"id": "/documentation/security/disabling-and-enabling-system-integrity-protection", "law": "You don’t need to disable SIP to run and debug apps from Xcode, but you might need to disable it to install system extensions, such as DriverKit drivers."}

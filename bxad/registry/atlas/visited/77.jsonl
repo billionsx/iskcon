@@ -26,3 +26,5 @@
 {"id": "/documentation/storekit/supporting-monthly-subscriptions-with-a-12-month-commitment", "sha": "4fb50eef9439f82c2d1b696079770a4b0dc61effbc6bda96cf5d3fd25bb7169e", "t": "Supporting monthly subscriptions with a 12-month commitment", "n": 9179, "laws": 8, "ts": "2026-07-25 23:21 UTC"}
 {"id": "/documentation/swiftdata/defaultstore", "sha": "87d2334a0b887ccc3ef8759228c71a695eb29ef3aef430ac2f90ed0b0a20d7f3", "t": "DefaultStore", "n": 208, "laws": 0, "ts": "2026-07-25 23:23 UTC"}
 {"id": "/documentation/swiftui/textproxy", "sha": "8cfdf334b7e6a2c7d21de93edd0bd4b49ab569abb65c92e4ae775ec839971dff", "t": "TextProxy", "n": 93, "laws": 1, "ts": "2026-07-25 23:25 UTC"}
+{"id": "/documentation/uikit/nslayoutmanager", "sha": "45e1030b7536da3b45778bc19490030cf2e6824feafe45c3275081281fb827e5", "t": "NSLayoutManager", "n": 8362, "laws": 5, "ts": "2026-07-26 00:11 UTC"}
+{"id": "/documentation/wifiaware/waperformancereport", "sha": "d194ae05092a4cd30e097262f3e0bdd64b96a902f8d74af5e8874e9bac508dbc", "t": "WAPerformanceReport", "n": 347, "laws": 0, "ts": "2026-07-26 00:22 UTC"}

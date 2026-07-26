@@ -134,3 +134,18 @@
 {"id": "/documentation/mapkit/mkmapitem/identifier-swift.property", "law": "You can persist an identifier and use it later to recall information about place."}
 {"id": "/documentation/mapkit/mkmapitemrequest", "law": "A utility class you use to request additional information about a map feature."}
 {"id": "/documentation/mapkit/mapkit-for-swiftui", "law": "People who use your app can also explore at street level using and Look Around viewer."}
+{"id": "/documentation/mapkit/mklookaroundscene", "law": "A utility class that encapsulates information the framework requires to retrieve and display a specific Look Around location’s imagery."}
+{"id": "/documentation/mapkit/mklookaroundscenerequest", "law": "A class you use to request a LookAround scene at the location you specify."}
+{"id": "/documentation/mapkit/mklookaroundsnapshotter", "law": "A utility class that you use to create a static image from a LookAround scene."}
+{"id": "/documentation/mapkit/identifying-unique-locations-with-place-ids", "law": "Use Place IDs to maintain unique collections of places that are important to your app."}
+{"id": "/documentation/mapkit/identifying-unique-locations-with-place-ids", "law": "You can also use a Place ID as a primary key or as part of a composite key in a database, or share Place IDs with other apps."}
+{"id": "/documentation/mapkit/identifying-unique-locations-with-place-ids", "law": "These always return the most recent information for the place that the Place ID refers to, even if that information changed since you originally obtained it."}
+{"id": "/documentation/mapkit/identifying-unique-locations-with-place-ids", "law": "You don’t have to track these changes or even update the stored Place ID."}
+{"id": "/documentation/mapkit/identifying-unique-locations-with-place-ids", "law": "Use Place IDs to display annotations with from MapKit for AppKit and UIKit or from MapKit JS."}
+{"id": "/documentation/mapkit/identifying-unique-locations-with-place-ids", "law": "You can also use Place IDs to show more detailed selection accessories, such as popups that automatically display a place’s name, address, hours, and more, with from MapKit for AppKit and UIKit and from MapKit JS."}
+{"id": "/documentation/mapkit/identifying-unique-locations-with-place-ids", "law": "To aid with this task, place objects don’t just contain a Place ID in ."}
+{"id": "/documentation/mapkit/identifying-unique-locations-with-place-ids", "law": "If your set already contains any of the alternate Place IDs, don’t add the new Place ID to the set because it would be a duplicate."}
+{"id": "/documentation/mapkit/identifying-unique-locations-with-place-ids", "law": "Ensure that your set of Place IDs doesn’t contain two Place IDs that refer to the same place by performing the following steps: Create an empty set of Place IDs."}
+{"id": "/documentation/mapkit/identifying-unique-locations-with-place-ids", "law": "After you’ve completed the above steps, delete the temporary set you used to ensure that there were no duplicates amongst Place IDs and their alternates."}
+{"id": "/documentation/mapkit/mkiconstyle", "law": "A class you use to customize the annotation view icon of a point of interest (POI) on the map."}
+{"id": "/documentation/mapkit/mkmapfeatureoptions", "law": "A structure you use to tell the map which kinds of features users can interact with."}

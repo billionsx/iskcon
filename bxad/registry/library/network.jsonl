@@ -44,3 +44,20 @@
 {"id": "/documentation/network/nw_parameters_create_secure_udp(_:_:)", "law": "This function allows you to either use the default configurations for DTLS and UDP, or use customized protocol options."}
 {"id": "/documentation/network/nw_parameters_create_secure_udp(_:_:)", "law": "If you want to use the default configuration, pass NW_PARAMETERS_DEFAULT_CONFIGURATION."}
 {"id": "/documentation/network/nw_parameters_set_local_endpoint(_:_:)", "law": "Sets a specific local IP address and port to use for connections and listeners."}
+{"id": "/documentation/Network/ListenerProvider", "law": "Listeners use advertise descriptors to advertise services that can subsequently be discovered by browsers."}
+{"id": "/documentation/Network/ListenerProvider", "law": "Extensible support for configuring advertise descriptors to define the service a listener should advertise."}
+{"id": "/documentation/Network/NetworkConnection", "law": "A connection handles establishment of any transport, security, and application-level protocols required to transmit and receive user data."}
+{"id": "/documentation/Network/NetworkBrowser/run(_:)-31x4b", "law": "To browse forever, do not return any value from the closure."}
+{"id": "/documentation/Network/NetworkBrowser/run(_:)-31x4b", "law": "should only be called once on a browser, and multiple calls to will throw exceptions."}
+{"id": "/documentation/Network/NetworkListener/State/waiting(_:)", "law": "Waiting listeners do not have a viable network"}
+{"id": "/documentation/Network/NetworkListener/run(_:)-4iov3", "law": "should only be called once on a listener, and multiple calls to will throw an exception."}
+{"id": "/documentation/Network/creating-an-identity-for-local-network-tls", "law": "While this article focuses on local network TLS, you can apply many of the concepts for other use cases."}
+{"id": "/documentation/Network/creating-an-identity-for-local-network-tls", "law": "A CA is a trusted entity that issues certificates for use in cryptographic operations."}
+{"id": "/documentation/Network/creating-an-identity-for-local-network-tls", "law": "On macOS, either create and use an identity on the same machine the server is running on, or securely distribute the PKCS#12 file to the device Keychain."}
+{"id": "/documentation/Network/creating-an-identity-for-local-network-tls", "law": "To retrieve the identity from the Keychain on macOS, use the following: After loading the identity on macOS, you can use the exact same code on iOS."}
+{"id": "/documentation/Network/creating-an-identity-for-local-network-tls", "law": "For clients that connect to the server, install the root certificate on the client device to avoid overriding trust evaluation."}
+{"id": "/documentation/Network/creating-an-identity-for-local-network-tls", "law": "When connecting from the client side of the connection, use the following: If the root certificate from the CA is installed on the device, you can use the code above without implementing to override trust evaluation."}
+{"id": "/documentation/Network/creating-an-identity-for-local-network-tls", "law": "If your client needs to connect over IP, instead of using a local network name, the server needs to use a leaf certificate that lists the IP in the “IP Address” field of the Subject Alternative Name."}
+{"id": "/documentation/Network/creating-an-identity-for-local-network-tls", "law": "To work around this on the client, use to perform your own verification checks on the peer’s leaf certificate."}
+{"id": "/documentation/Network/creating-an-identity-for-local-network-tls", "law": "This isn’t the recommended path, but could be done in extreme cases."}
+{"id": "/documentation/Network/creating-an-identity-for-local-network-tls", "law": "Learn how to create and use a digital identity in your application for local network TLS."}

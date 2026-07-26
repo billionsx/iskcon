@@ -19,3 +19,11 @@
 {"id": "/documentation/metal/mtlgpufamily/mac2", "sha": "214d66c787eaa2b0d6f8f01d0d8ae36f71647da89d876010324e82070c52bb94", "t": "MTLGPUFamily.mac2", "n": 41, "laws": 0, "ts": "2026-07-25 23:03 UTC"}
 {"id": "/documentation/metal/mtlcommandbuffer/status", "sha": "530a48cf4b1b0c3115bdd4fce4bf1e5f4f123319d3414422ab70fd4dbba100b5", "t": "status", "n": 529, "laws": 0, "ts": "2026-07-25 23:07 UTC"}
 {"id": "/documentation/swiftui/tabview/init(selection:content:)", "sha": "0f04b3dd5946b44192441805a65456d346cfa3eae57aa50d2cd9828c4ad85564", "t": "init(selection:content:)", "n": 91, "laws": 0, "ts": "2026-07-25 23:25 UTC"}
+{"id": "/documentation/tvservices/legacy-extension", "sha": "c2707318bb008144a28d1fbfe5b502e45463f33a8fb34dd418dd54f5d60be2a8", "t": "Legacy Extension", "n": 2032, "laws": 2, "ts": "2026-07-26 00:04 UTC"}
+{"id": "/documentation/uikit/uidocumentinteractioncontroller", "sha": "27db40c9fb05ff2121753aa7a7651ddc2b015e6cc559cf9ab06a62d487597909", "t": "UIDocumentInteractionController", "n": 1438, "laws": 3, "ts": "2026-07-26 00:08 UTC"}
+{"id": "/documentation/uikit/uiviewcontrollerpreviewingdelegate/previewingcontext(_:commit:)", "sha": "0c3aaa094e5209ebfdd79089d5336a3f9668c5de7ae50b179a38712750dd43a6", "t": "previewingContext(_:commit:)", "n": 420, "laws": 0, "ts": "2026-07-26 00:13 UTC"}
+{"id": "/documentation/uikit/uipencilinteraction", "sha": "9ea8fdb83fa0e756e02f4c7a930c41780dc02ad50f0aa8ebc44e9a8cca5f9e1b", "t": "UIPencilInteraction", "n": 913, "laws": 0, "ts": "2026-07-26 00:14 UTC"}
+{"id": "/documentation/Swift/Identifiable/ID-swift.associatedtype", "sha": "41a4ad2bbd82e6a9c73ce58af53d038a6992bdd534a8e1dddb3d9ca5175f575e", "t": "ID", "n": 82, "laws": 0, "ts": "2026-07-26 00:16 UTC"}
+{"id": "/documentation/videotoolbox/vtframeprocessorparameters", "sha": "b2efe9bb5ecfdb28e780f1d055f734f72d2a454c96bf03842c212052a1415987", "t": "VTFrameProcessorParameters", "n": 357, "laws": 0, "ts": "2026-07-26 00:17 UTC"}
+{"id": "/documentation/kernel/hardware_families/usb", "sha": "0af8f6bc41f9f920be1a9a89d2d51390a6c80f39d2f6daf0ec34feb08684c739", "t": "USB", "n": 1171, "laws": 2, "ts": "2026-07-26 00:23 UTC"}
+{"id": "/documentation/tvmljs/datasource", "sha": "f8e798c63dda10355bfda4c30d1ecc1b1237c62a8ff1130f70efc8403c403758", "t": "DataSource", "n": 849, "laws": 1, "ts": "2026-07-26 00:24 UTC"}

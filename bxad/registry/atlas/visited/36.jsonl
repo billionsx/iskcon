@@ -10,3 +10,7 @@
 {"id": "/documentation/metal/memory-heaps", "sha": "cb25f5425c69a12860fe73399fcc4b0f3138beb33aeccee645644024e64a6341", "t": "Memory heaps", "n": 715, "laws": 1, "ts": "2026-07-25 23:06 UTC"}
 {"id": "/documentation/networkextension/neurlfiltermanager/shouldfailclosed", "sha": "c7bbf1e3193e6a7a2e5dc307a00cc6a6b61625eb1908271b1f65808c6141b835", "t": "shouldFailClosed", "n": 429, "laws": 0, "ts": "2026-07-25 23:10 UTC"}
 {"id": "/documentation/speech/captureinputsequenceprovider", "sha": "e386f69e8acac66995c6947ab681e49f445606fd9742c5b6c9897cd44d363004", "t": "CaptureInputSequenceProvider", "n": 418, "laws": 0, "ts": "2026-07-25 23:20 UTC"}
+{"id": "/documentation/TVMLKit/TVDocumentViewController/Event", "sha": "da387bdd7cddc4e6b837b1dd95adfa007038f6f28c73d1be77290aad77c28db6", "t": "TVDocumentViewController.Event", "n": 225, "laws": 0, "ts": "2026-07-26 00:04 UTC"}
+{"id": "/documentation/uikit/scaling-fonts-automatically", "sha": "bc1db02a15add6d19f9a2c631cd3828aeeb164628a4f676a3968062095e53f30", "t": "Scaling fonts automatically", "n": 2629, "laws": 5, "ts": "2026-07-26 00:10 UTC"}
+{"id": "/documentation/uikit/uicollectionviewdiffabledatasource-9tqpa/applysnapshotusingreloaddata(_:)", "sha": "80ee7d7a463b150bcde088c3cf56eb9a414e2637e23aedb9f2a46d6f77f18123", "t": "applySnapshotUsingReloadData(_:)", "n": 418, "laws": 2, "ts": "2026-07-26 00:16 UTC"}
+{"id": "/documentation/technologyoverviews/animations", "sha": "56ddd171e7925a74c9f16dd688bdea50bdcf6838c3004c8a893a68ff9f103332", "t": "Animations", "n": 3965, "laws": 10, "ts": "2026-07-26 00:32 UTC"}

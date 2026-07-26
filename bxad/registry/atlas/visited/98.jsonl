@@ -22,3 +22,9 @@
 {"id": "/documentation/metal/culling-occluded-geometry-using-the-visibility-result-buffer", "sha": "a7affe6631fc6171db2365e9179431e12f5a5b605cb4404f389a87dff7124323", "t": "Culling occluded geometry using the visibility result buffer", "n": 9547, "laws": 9, "ts": "2026-07-25 23:03 UTC"}
 {"id": "/documentation/metal/mtlmutability/immutable", "sha": "cd6b7ad385b1983134aef186bbeced2359573683649310dac3a078517acdbb71", "t": "MTLMutability.immutable", "n": 66, "laws": 0, "ts": "2026-07-25 23:08 UTC"}
 {"id": "/documentation/storekittest", "sha": "ae5514ef824cc76237ce0d2448cc2f0a57da747e93b28be530f77ced8ad3b117", "t": "StoreKit Test", "n": 2027, "laws": 9, "ts": "2026-07-25 23:22 UTC"}
+{"id": "/documentation/swiftui/sectionedfetchrequest", "sha": "2829e58e9632d1f5537e1747feedd7ba829f5f53864ad00d6d47585cf8fcf0b3", "t": "SectionedFetchRequest", "n": 2472, "laws": 9, "ts": "2026-07-26 00:03 UTC"}
+{"id": "/documentation/uikit/uikeycommand", "sha": "12c5116f443d474a98a9852bff67eb0b3c8896d13162b0a150865af9d66bf840", "t": "UIKeyCommand", "n": 2401, "laws": 5, "ts": "2026-07-26 00:07 UTC"}
+{"id": "/documentation/virtualization/vzvirtualmachine/start(completionhandler:)", "sha": "758e2415898c60284eac880be7919f17158d4aaa9858e54f046162fb9fb453f8", "t": "start(completionHandler:)", "n": 243, "laws": 0, "ts": "2026-07-26 00:17 UTC"}
+{"id": "/documentation/vision/vnobservation", "sha": "2ac4f3a5161dc71ac07b9c85205ce2cfd96aae0b74a0ac8c8b74612cb9b8dcb1", "t": "VNObservation", "n": 336, "laws": 1, "ts": "2026-07-26 00:18 UTC"}
+{"id": "/documentation/WidgetKit/WidgetCenter/reloadTimelines(ofKind:)", "sha": "e275dac8d5ce49018df99593ef755571bcbb178a21d1bcb626ab50099df22c2e", "t": "reloadTimelines(ofKind:)", "n": 59, "laws": 0, "ts": "2026-07-26 00:21 UTC"}
+{"id": "/documentation/RealityKit/TextureResource", "sha": "10da181d9c5ba1cc302d2c29eb0a4d314742fb423ef04a716fdbd600affa026d", "t": "TextureResource", "n": 2158, "laws": 0, "ts": "2026-07-26 00:29 UTC"}

@@ -21,3 +21,7 @@
 {"id": "/documentation/swiftui/view/scaleeffect(_:anchor:)", "sha": "c75bf15f74976ce33e27279008c59325317f546caf09551d3b7683332a7fbc83", "t": "scaleEffect(_:anchor:)", "n": 320, "laws": 1, "ts": "2026-07-25 23:24 UTC"}
 {"id": "/documentation/swiftui/scenerestorationbehavior", "sha": "e00a10eb66f896d387a2dfa9c6c08d314ef186f998a1cec08dca95f579fd4700", "t": "SceneRestorationBehavior", "n": 370, "laws": 2, "ts": "2026-07-25 23:25 UTC"}
 {"id": "/documentation/swiftui/dynamicviewcontent/reorderable(collectionid:)", "sha": "11cfe7dca17926d4b742611cc62bf81da391021c834e7f83bede099f03fe24e1", "t": "reorderable(collectionID:)", "n": 647, "laws": 2, "ts": "2026-07-25 23:26 UTC"}
+{"id": "/documentation/uikit/uicontrol", "sha": "0f79006fff69ea3286fdba6bf61271f82d15f3bfa8c05d5607edfd097dd437ca", "t": "UIControl", "n": 7696, "laws": 10, "ts": "2026-07-26 00:06 UTC"}
+{"id": "/documentation/uikit/uifont/textstyle/body", "sha": "1246ee8d25d18693f5e0c2e4db5dc32c8c50760bf58aa67f90c8751e85175245", "t": "body", "n": 23, "laws": 0, "ts": "2026-07-26 00:10 UTC"}
+{"id": "/documentation/realitykit/custommaterial/custom-swift.struct/texture", "sha": "bba2cbbb25427ceb0a92d3b0d2cc3c69f2bf0ff8a6a7a235a4a6fd22fb402c1b", "t": "texture", "n": 93, "laws": 0, "ts": "2026-07-26 00:23 UTC"}
+{"id": "/documentation/appkit/nsspellchecker/optionkey/waitforallgrammarcheckingresultskey", "sha": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855", "t": "waitForAllGrammarCheckingResultsKey", "n": 0, "laws": 0, "ts": "2026-07-26 00:33 UTC"}

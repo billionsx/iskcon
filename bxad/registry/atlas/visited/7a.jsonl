@@ -21,3 +21,5 @@
 {"id": "/documentation/realitykit/attachedtransformcomponent", "sha": "f3d7001071aec0217cdc38869f52a3ddd56e32f71c93fbd0fe2f9ceb14661714", "t": "AttachedTransformComponent", "n": 291, "laws": 0, "ts": "2026-07-25 23:17 UTC"}
 {"id": "/documentation/realitykit/hastransform/transformmatrix(relativeto:)", "sha": "879626c60bc5fb233210bc6c099b49fdf18a11909ccb7001642b53ff2b59d34c", "t": "transformMatrix(relativeTo:)", "n": 132, "laws": 1, "ts": "2026-07-25 23:17 UTC"}
 {"id": "/documentation/scenekit/scnshadable", "sha": "b9f5cff0e22caa38ba1ec337e8beaccdbb1fdaa92196fa3004cd4ed45498cbb3", "t": "SCNShadable", "n": 6620, "laws": 10, "ts": "2026-07-25 23:18 UTC"}
+{"id": "/documentation/visionos/applying-mesh-to-real-world-surroundings", "sha": "25dd578fae1f38a550a9ee1c4ba212d4db03ec0967e11df30b5aba1a19dd44b2", "t": "Applying mesh to real-world surroundings", "n": 1680, "laws": 3, "ts": "2026-07-26 00:26 UTC"}
+{"id": "/documentation/technologyoverviews/images-camera-and-photos", "sha": "1724014208f55a6fc870820cb938a93bac82db1b6a384c9979b986ef5d2b9467", "t": "Images, camera, and photos", "n": 7287, "laws": 10, "ts": "2026-07-26 00:32 UTC"}

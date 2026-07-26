@@ -20,3 +20,7 @@
 {"id": "/documentation/messages/msmessagesappviewcontroller", "sha": "a242c96e06c9b9682fd128a6fbe50e9dba6b28c8e15d21ad80d66eff7d82b6a8", "t": "MSMessagesAppViewController", "n": 712, "laws": 1, "ts": "2026-07-25 23:03 UTC"}
 {"id": "/documentation/metal/running-inline-ml-operations-in-a-shader-with-metal-4", "sha": "d5ed38ba389dfcb205ecf69d028edb9f399380b67dd770b95061df073722ba51", "t": "Running inline ML operations in a shader with Metal 4", "n": 5277, "laws": 6, "ts": "2026-07-25 23:07 UTC"}
 {"id": "/documentation/swiftui/documents", "sha": "3cc83d9c547a6bdda942cfac41f39ff88c9a57d7beaff21735ec261d08358718", "t": "Documents", "n": 2078, "laws": 2, "ts": "2026-07-25 23:24 UTC"}
+{"id": "/documentation/uikit/uistaterestoring", "sha": "03d2aaf8d8cb42368f74f09a3e226bdeb3a9c8477e7da431acd061069a3a8e69", "t": "UIStateRestoring", "n": 968, "laws": 2, "ts": "2026-07-26 00:12 UTC"}
+{"id": "/documentation/vision/vndetectedpoint", "sha": "7b8973b8e9de06bf0e73128c40bb5e1e3fe280178d2521755523e528c142965a", "t": "VNDetectedPoint", "n": 122, "laws": 0, "ts": "2026-07-26 00:19 UTC"}
+{"id": "/documentation/Network/NWListener/State-swift.enum/failed(_:)", "sha": "e265f6b7e6c117b100b43c5c9312d66b1a02a398264baa545df0ec0031246f91", "t": "NWListener.State.failed(_:)", "n": 43, "laws": 0, "ts": "2026-07-26 00:22 UTC"}
+{"id": "/documentation/visionos/world", "sha": "f1d633b1e0ae061acae2950e8ec049e6fe33c3aba058c4ca5046fb58ee9d4798", "t": "Hello World", "n": 5980, "laws": 10, "ts": "2026-07-26 00:25 UTC"}

@@ -122,3 +122,70 @@
 {"id": "/documentation/groupactivities/groupsessionmessenger", "law": "You create a object directly and use it to send and receive app data."}
 {"id": "/documentation/groupactivities/groupsessionmessenger", "law": "Use the or method to retrieve the sequence you want and iterate over its results."}
 {"id": "/documentation/groupactivities/groupsessionmessenger", "law": "Use a - loop with the keyword to iterate asynchronously over the results."}
+{"id": "/documentation/groupactivities/groupactivity/activityidentifier", "law": "An app may support multiple activities, and each activity requires a unique identifier string."}
+{"id": "/documentation/groupactivities/groupactivity/activityidentifier", "law": "The following code adds a custom identifier for the activity: If you don’t implement this property yourself, the default implementation composes an activity identifier using your app’s bundle identifier and the current class or struct name."}
+{"id": "/documentation/groupactivities/groupactivity/activityidentifier", "law": "Don’t create one activity type that serves multiple purposes."}
+{"id": "/documentation/groupactivities/groupactivity/metadata", "law": "Don’t access this property directly."}
+{"id": "/documentation/groupactivities/groupactivity/sessions", "law": "The method returns this type, and you use it to retrieve the current session, if any, for that activity."}
+{"id": "/documentation/groupactivities/groupsession/activeparticipants", "law": "Members who join the conversation over FaceTime but don’t join the shared activity aren’t active participants."}
+{"id": "/documentation/groupactivities/groupsession/leave()", "law": "Don’t call this method on a session already in the state."}
+{"id": "/documentation/groupactivities/groupsessionmessenger/send(_:to:)-2a4ku", "law": "Use this method to send data that you package into a custom class or structure."}
+{"id": "/documentation/groupactivities/groupstateobserver", "law": "Starting a SharePlay experience with the Group Activities framework requires an active FaceTime call."}
+{"id": "/documentation/groupactivities/groupstateobserver", "law": "Use a object to determine whether it’s possible to start such an experience."}
+{"id": "/documentation/GroupActivities/SystemCoordinator", "law": "You don’t create a object directly."}
+{"id": "/documentation/GroupActivities/SystemCoordinator", "law": "After that, use the information in the system coordinator’s properties to keep your app’s interface up to date."}
+{"id": "/documentation/GroupActivities/SystemCoordinator", "law": "A type you use to coordinate your interface’s behavior when an active SharePlay session supports spatial placement of content."}
+{"id": "/documentation/GroupActivities/adding-spatial-persona-support-to-an-activity", "law": "Because participants can see where others are looking, your app’s content must look the same for everyone."}
+{"id": "/documentation/GroupActivities/adding-spatial-persona-support-to-an-activity", "law": "For example, synchronize your window’s scroll position to ensure everyone sees the same portion of that window."}
+{"id": "/documentation/GroupActivities/adding-spatial-persona-support-to-an-activity", "law": "You don’t need to define new types specifically to support spatial Personas."}
+{"id": "/documentation/GroupActivities/adding-spatial-persona-support-to-an-activity", "law": "You use scenes to manage the content for your app’s windows, volumes, and immersive spaces."}
+{"id": "/documentation/GroupActivities/adding-spatial-persona-support-to-an-activity", "law": "You also use scenes to display any activity-related content."}
+{"id": "/documentation/GroupActivities/adding-spatial-persona-support-to-an-activity", "law": "You also use activation conditions to specify how to handle objects, and other incoming events."}
+{"id": "/documentation/GroupActivities/adding-spatial-persona-support-to-an-activity", "law": "When there isn’t a one-to-one correspondence between scene and activity, you must create a string that uniquely identifies the scene."}
+{"id": "/documentation/GroupActivities/adding-spatial-persona-support-to-an-activity", "law": "Assign the value to this property if you use the activity identifier as the string."}
+{"id": "/documentation/GroupActivities/adding-spatial-persona-support-to-an-activity", "law": "Use the to: Specify a different arrangement for spatial Personas."}
+{"id": "/documentation/GroupActivities/adding-spatial-persona-support-to-an-activity", "law": "That modifier tells the system to use the distance you specify, instead of the content size."}
+{"id": "/documentation/GroupActivities/configure-your-app-for-sharing-with-people-nearby", "law": "SharePlay doesn’t require apps to distinguish between nearby and FaceTime participants."}
+{"id": "/documentation/GroupActivities/configure-your-app-for-sharing-with-people-nearby", "law": "The APIs you use to manage group sessions, exchange messages, and position content treat all participants the same."}
+{"id": "/documentation/GroupActivities/configure-your-app-for-sharing-with-people-nearby", "law": "If you don’t donate your activity, the system defaults to window mirroring instead of SharePlay."}
+{"id": "/documentation/GroupActivities/configure-your-app-for-sharing-with-people-nearby", "law": "To observe when participants join and leave an activity use ."}
+{"id": "/documentation/GroupActivities/configure-your-app-for-sharing-with-people-nearby", "law": "To determine if a is nearby, use :"}
+{"id": "/documentation/GroupActivities/configure-your-app-for-sharing-with-people-nearby", "law": "To observe the state of remote FaceTime and nearby participants use ."}
+{"id": "/documentation/GroupActivities/configure-your-app-for-sharing-with-people-nearby", "law": "To observe the state of the local participant, who is wearing Vision Pro, use ."}
+{"id": "/documentation/GroupActivities/configure-your-app-for-sharing-with-people-nearby", "law": "However, if a participant creates a new cube, your app needs to use the to notify the other participants to reflect this change."}
+{"id": "/documentation/GroupActivities/configure-your-app-for-sharing-with-people-nearby", "law": "Apps still need to use to fully synchronize the position of these entities with all spatial participants."}
+{"id": "/documentation/GroupActivities/defining-your-apps-shareplay-activities", "law": "Make activities available on all the platforms your app supports to ensure people can join from any device."}
+{"id": "/documentation/GroupActivities/defining-your-apps-shareplay-activities", "law": "Ensure the data being shared during your activity conforms to ."}
+{"id": "/documentation/GroupActivities/defining-your-apps-shareplay-activities", "law": "If you want to use the share sheet in SwiftUI to share an activity, it requires items to support the protocol."}
+{"id": "/documentation/GroupActivities/defining-your-apps-shareplay-activities", "law": "Most of the content in a type is the data you use to support the activity itself."}
+{"id": "/documentation/GroupActivities/defining-your-apps-shareplay-activities", "law": "The following example defines a type that stores information about the type of game, and a group activity to share the experience: Ensure your type conforms to ."}
+{"id": "/documentation/GroupActivities/defining-your-apps-shareplay-activities", "law": "If you have multiple activities in your app, each type must have a unique string in its property."}
+{"id": "/documentation/GroupActivities/defining-your-apps-shareplay-activities", "law": "You can also provide additional details, such as a fallback URL that someone can use to join the activity from a web browser."}
+{"id": "/documentation/GroupActivities/defining-your-apps-shareplay-activities", "law": "People need to quickly identify the purpose of the activity and whether it’s one they want to join, so make sure your descriptions are clear enough for someone to make a decision."}
+{"id": "/documentation/GroupActivities/joining-and-managing-a-shared-activity", "law": "Your app uses that session object to: Prepare any required UI."}
+{"id": "/documentation/GroupActivities/joining-and-managing-a-shared-activity", "law": "Configure separate asynchronous handlers for each of your app’s activity types, and use each one to receive new sessions for their activity."}
+{"id": "/documentation/GroupActivities/joining-and-managing-a-shared-activity", "law": "Use your code to begin the activity in your app."}
+{"id": "/documentation/GroupActivities/joining-and-managing-a-shared-activity", "law": "This block offers the same behavior as the SwiftUI task modifier, and you use it in similar ways."}
+{"id": "/documentation/GroupActivities/joining-and-managing-a-shared-activity", "law": "However, don’t call that method until you’re ready to display the UI for the activity itself."}
+{"id": "/documentation/GroupActivities/joining-and-managing-a-shared-activity", "law": "Some people might not join an activity right away, because they don’t have the app or are doing something else."}
+{"id": "/documentation/GroupActivities/joining-and-managing-a-shared-activity", "law": "Make sure app-specific controls are easy to access."}
+{"id": "/documentation/GroupActivities/joining-and-managing-a-shared-activity", "law": "If participants need to download your app, or don’t see the invitation to join the activity, they might arrive several minutes after others."}
+{"id": "/documentation/GroupActivities/joining-and-managing-a-shared-activity", "law": "If your activity manages state information that all participants require, devise a way to deliver that information to someone who arrives late."}
+{"id": "/documentation/GroupActivities/joining-and-managing-a-shared-activity", "law": "Make sure any buttons or UI that calls this method makes it clear that the activity ends for everyone."}
+{"id": "/documentation/GroupActivities/promoting-shareplay-activities-from-your-apps-ui", "law": "Starting an activity requires an active FaceTime call or Messages conversation."}
+{"id": "/documentation/GroupActivities/promoting-shareplay-activities-from-your-apps-ui", "law": "When creating buttons in your app, use a style that makes sense for the current platform and your app’s design."}
+{"id": "/documentation/GroupActivities/promoting-shareplay-activities-from-your-apps-ui", "law": "A person can then use the sheet to copy the items to the pasteboard or send them to a different process."}
+{"id": "/documentation/GroupActivities/promoting-shareplay-activities-from-your-apps-ui", "law": "To surface your SharePlay activities from a view, ensure your type conforms to ."}
+{"id": "/documentation/GroupActivities/promoting-shareplay-activities-from-your-apps-ui", "law": "The share sheet in SwiftUI requires items to support the protocol."}
+{"id": "/documentation/GroupActivities/promoting-shareplay-activities-from-your-apps-ui", "law": "The activity you include in the link must conform to ."}
+{"id": "/documentation/GroupActivities/promoting-shareplay-activities-from-your-apps-ui", "law": "Immersive spaces don’t have a system UI by default to start an activity."}
+{"id": "/documentation/GroupActivities/synchronizing-data-during-a-shareplay-activity", "law": "The object requires this protocol when sending types."}
+{"id": "/documentation/GroupActivities/synchronizing-data-during-a-shareplay-activity", "law": "Choose messaging for crucial data that all participants must have."}
+{"id": "/documentation/GroupActivities/synchronizing-data-during-a-shareplay-activity", "law": "Use the of each participant to differentiate them within your app."}
+{"id": "/documentation/GroupActivities/synchronizing-data-during-a-shareplay-activity", "law": "Messages targeting the current participant can arrive at any time, so it’s best to use a separate task to listen for them."}
+{"id": "/documentation/GroupActivities/synchronizing-data-during-a-shareplay-activity", "law": "Inside the task, use a loop to wait on the messages property of your object."}
+{"id": "/documentation/GroupActivities/synchronizing-data-during-a-shareplay-activity", "law": "To share files and other large data objects with participants of an activity, use a object instead of a ."}
+{"id": "/documentation/GroupActivities/synchronizing-data-during-a-shareplay-activity", "law": "Use them to send images or large data objects that the group creates or adds to the activity."}
+{"id": "/documentation/GroupActivities/synchronizing-data-during-a-shareplay-activity", "law": "Don’t use a object to store files larger than 100 megabytes, or when you need to protect or validate content before someone downloads it."}
+{"id": "/documentation/GroupActivities/synchronizing-data-during-a-shareplay-activity", "law": "To receive attachments, configure a task and use a loop and wait on the attachments property of your journal object, as shown in the following example."}
+{"id": "/documentation/GroupActivities/synchronizing-data-during-a-shareplay-activity", "law": "Use the structures your app receives to download the attachment data and fetch any related metadata."}

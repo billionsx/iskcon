@@ -12,3 +12,6 @@
 {"id": "/documentation/speech/sfcustomlanguagemodeldata", "sha": "a742f0913d4c10514c46739b7d38075606eaf3f024e2a8a334ac1d8f2526db2a", "t": "SFCustomLanguageModelData", "n": 969, "laws": 0, "ts": "2026-07-25 23:21 UTC"}
 {"id": "/documentation/swiftui/animations", "sha": "0eb96a69c1b4da6254b891da5091573290659e0b804330cac81b7e4793353cab", "t": "Animations", "n": 3290, "laws": 1, "ts": "2026-07-25 23:24 UTC"}
 {"id": "/documentation/CoreData/NSBatchDeleteRequest", "sha": "e3c9e06eb0668fe5aa0d592c604a44b2ae0de5020167c8d546e50f8774749967", "t": "NSBatchDeleteRequest", "n": 1582, "laws": 2, "ts": "2026-07-25 23:27 UTC"}
+{"id": "/documentation/uikit/uiapplication", "sha": "8a8e7cd444ed70da430c5abc2f0b3a034307684e648b8e6032e6322b058205d0", "t": "UIApplication", "n": 5765, "laws": 6, "ts": "2026-07-26 00:06 UTC"}
+{"id": "/documentation/uikit/uifont", "sha": "502d442efc80cae59f732039b91b9ec59f6dcb4fe2294b2a66012f1d7a37a4a1", "t": "UIFont", "n": 1584, "laws": 4, "ts": "2026-07-26 00:10 UTC"}
+{"id": "/documentation/RealityKit/MeshResource/generateBox(size:cornerRadius:)-2ovma", "sha": "ffde361c4eb86684eb2c2ab88e9b159033fb3eb653260e91fa33010dad551240", "t": "generateBox(size:cornerRadius:)", "n": 359, "laws": 0, "ts": "2026-07-26 00:30 UTC"}

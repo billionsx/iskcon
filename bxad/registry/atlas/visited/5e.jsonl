@@ -24,3 +24,4 @@
 {"id": "/documentation/safariservices/modernizing-safari-web-extensions", "sha": "decaf7bf885fed1d37ffebbe4a890b47bc4efcc2b2090ec090bd7ff0c2cebd6a", "t": "Modernizing Safari Web Extensions", "n": 269, "laws": 0, "ts": "2026-07-25 23:18 UTC"}
 {"id": "/documentation/scenekit/scnbufferstream", "sha": "54692c95cdb13c1620c0424921ce3b9bddc171761cb57be1197821ea9cf914bd", "t": "SCNBufferStream", "n": 371, "laws": 2, "ts": "2026-07-25 23:18 UTC"}
 {"id": "/documentation/storekit/skproductsresponse/invalidproductidentifiers", "sha": "74224c331a973e9d8168ca051c968f92b4b81e07b161fa4949ea21d27b284652", "t": "invalidProductIdentifiers", "n": 877, "laws": 0, "ts": "2026-07-25 23:21 UTC"}
+{"id": "/documentation/xcode/localization", "sha": "0306f1a743b3e2f93f014eeaec5e57c5b3b48c9da2ebce72f8368e938de669f8", "t": "Localization", "n": 2712, "laws": 2, "ts": "2026-07-26 00:22 UTC"}

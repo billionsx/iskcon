@@ -24,3 +24,8 @@
 {"id": "/documentation/screencapturekit/scdisplay", "sha": "7e539e0edf8683c152de386d4f5a940d84ccdbdb72139715c01b584c3ce1ef2c", "t": "SCDisplay", "n": 493, "laws": 1, "ts": "2026-07-25 23:19 UTC"}
 {"id": "/documentation/sirikit/payments", "sha": "b9b286cc6ed136c3948ef3eea43be455c5ad02de33ed4debc5bc935f389f9574", "t": "Payments", "n": 1663, "laws": 0, "ts": "2026-07-25 23:20 UTC"}
 {"id": "/documentation/swift/updating-an-app-to-use-strict-concurrency", "sha": "21d4faf8f0757796a119325c38859d22a7394b3b7e6505077f608cfda4c1fd3c", "t": "Updating an app to use strict concurrency", "n": 2747, "laws": 3, "ts": "2026-07-25 23:22 UTC"}
+{"id": "/documentation/uikit/nsdiffabledatasourcesectionsnapshot-swift.struct", "sha": "9277b080a7a4598aac43e60a9629154cb5030383424f3773f9b957476f84974a", "t": "NSDiffableDataSourceSectionSnapshot", "n": 1508, "laws": 3, "ts": "2026-07-26 00:13 UTC"}
+{"id": "/documentation/vision/generateimagefeatureprintrequest", "sha": "7b66ceaa870fba328106853bf5f8c3bee221fd74915a4a60cee6cfa4360d60d3", "t": "GenerateImageFeaturePrintRequest", "n": 572, "laws": 0, "ts": "2026-07-26 00:20 UTC"}
+{"id": "/documentation/RealityKit/ReverbComponent", "sha": "7124c1126392706c13f9e19fc16d4215569baaf0d13799e6aafdfd5c05ef16cf", "t": "ReverbComponent", "n": 1558, "laws": 3, "ts": "2026-07-26 00:26 UTC"}
+{"id": "/documentation/Network/NetworkBrowser/State/waiting(_:)", "sha": "ab37739356e5cd780a300daba8c736a3b1035636f758c22068df426917d21cd4", "t": "NetworkBrowser.State.waiting(_:)", "n": 248, "laws": 0, "ts": "2026-07-26 00:27 UTC"}
+{"id": "/documentation/RealityKit/ForceEffectComponent", "sha": "2368df1460f1afe8582ae4ea5c81123e06fa3e20c4f2550ffe426406f7b35f38", "t": "ForceEffectComponent", "n": 1187, "laws": 2, "ts": "2026-07-26 00:29 UTC"}

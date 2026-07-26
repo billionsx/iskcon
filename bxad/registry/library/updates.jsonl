@@ -258,3 +258,32 @@
 {"id": "/documentation/Updates/SwiftUI", "law": "Use to set the window anchor point when a window must resize."}
 {"id": "/documentation/Updates/SwiftUI", "law": "Use to create a find navigator in views that support text editing."}
 {"id": "/documentation/Updates/SwiftUI", "law": "Use to render stereo content from your Mac app on Apple Vision Pro."}
+{"id": "/documentation/Updates/WidgetKit", "law": "Use WidgetKit push notifications to request timeline reloads from the system by registering a ."}
+{"id": "/documentation/Updates/WidgetKit", "law": "Update your widget to make sure it appears correctly in CarPlay."}
+{"id": "/documentation/Updates/WidgetKit", "law": "Create controls that use to execute an action and to toggle some state in your app in watchOS and macOS."}
+{"id": "/documentation/Updates/WidgetKit", "law": "Use an container to provide up to three content views, optionally interactive, in a watchOS widget."}
+{"id": "/documentation/Updates/watchos", "law": "Use to align text with the text margins, and to extend content beyond the watch’s safe area."}
+{"id": "/documentation/Updates/watchos", "law": "Use to start a shallow dive session, and and to read depth and temperature samples from HealthKit."}
+{"id": "/documentation/Updates/watchos", "law": "Use the new watchOS user interface design to simplify navigation, better use the Digital Crown, and enrich the app experience."}
+{"id": "/documentation/Updates/watchos", "law": "Use curved text along the bevel or around the corners in WidgetKit-based complications."}
+{"id": "/documentation/Updates/watchos", "law": "Use WorkoutKit to create goal, pacer, multisport, and fully custom interval workouts."}
+{"id": "/documentation/Updates/watchos", "law": "Use this data to analyze motion — such as a golf or baseball swing — after the action occurs."}
+{"id": "/documentation/Updates/watchos", "law": "Use Core Motion’s water submersion manager to monitor shallow dives on Apple Watch Ultra."}
+{"id": "/documentation/Updates/AppKit", "law": "To use control metrics consistent with macOS 15 and earlier, use ."}
+{"id": "/documentation/Updates/AppKit", "law": "Use to efficiently merge these views when they’re in proximity to one other."}
+{"id": "/documentation/Updates/AppKit", "law": "also adds an property to determine if programmatic pasteboard access is always allowed, never allowed, or if it prompts an alert requesting permission."}
+{"id": "/documentation/Updates/AppKit", "law": "Use SwiftUI menus in AppKit with the ."}
+{"id": "/documentation/Updates/AppKit", "law": "Use the keyboard to open context menus for UI elements on which you are focused currently."}
+{"id": "/documentation/Updates/AppKit", "law": "Use the new delegate method on to toggle the visibility of table columns."}
+{"id": "/documentation/Updates/AppKit", "law": "Use a new property to observe progress of an ongoing task."}
+{"id": "/documentation/Updates/AppKit", "law": "Adopt text styles like , , and on to take advantage of enhancements to the font system, like improved hyphenation for non-English languages and dynamic line-height adjustments for languages that require more vertical space."}
+{"id": "/documentation/Updates/UIKit", "law": "Use closures as part of automatic observation tracking to automatically invalidate and update compositional layouts when observable objects change."}
+{"id": "/documentation/Updates/UIKit", "law": "Use and in Mac apps built with Mac Catalyst."}
+{"id": "/documentation/Updates/UIKit", "law": "Starting in iOS 27, apps built with the latest SDK must use the scene-based life cycle or they fail to launch."}
+{"id": "/documentation/Updates/UIKit", "law": "Use to independently control when pointer-initiated drags begin."}
+{"id": "/documentation/Updates/UIKit", "law": "Use , , and to represent table structures in attributed strings."}
+{"id": "/documentation/Updates/UIKit", "law": "Use to render text in custom views and layers, and to identify them for caching."}
+{"id": "/documentation/Updates/UIKit", "law": "Use observable objects in ; then UIKit automatically invalidates and updates the UI when those objects change."}
+{"id": "/documentation/Updates/UIKit", "law": "supports picking HDR colors, with a maximum supported exposure value."}
+{"id": "/documentation/Updates/UIKit", "law": "For collection views, use on ."}
+{"id": "/documentation/Updates/UIKit", "law": "For table views, use on ."}

@@ -718,3 +718,233 @@
 {"id": "/documentation/swiftui/navigationstack", "law": "The following stack displays a view for navigation links that present data of type : In this example, the acts as the root view and is always present."}
 {"id": "/documentation/swiftui/navigationstack", "law": "Use a path to support deep links, state restoration, or other kinds of programmatic navigation."}
 {"id": "/documentation/swiftui/navigationstack", "law": "To create a path for programmatic navigation that contains more than one kind of data, you can use a instance as the path."}
+{"id": "/documentation/swiftui/fetchedresults", "law": "Use a instance to show or edit Core Data managed objects in your app’s user interface."}
+{"id": "/documentation/swiftui/fetchedresults", "law": "The fetch request and its results use the managed object context stored in the environment, which you can access using the environment value."}
+{"id": "/documentation/swiftui/fetchrequest", "law": "Use a property wrapper to declare a property that provides a collection of Core Data managed objects to a SwiftUI view."}
+{"id": "/documentation/swiftui/fetchrequest", "law": "This lets the compiler help you avoid accidentally setting the property from the memberwise initializer of the enclosing view."}
+{"id": "/documentation/swiftui/fetchrequest", "law": "The fetch request and its results use the managed object context stored in the environment, which you can access using the environment value."}
+{"id": "/documentation/swiftui/fetchrequest", "law": "To create a request that groups the fetched results according to a characteristic that they share, use instead."}
+{"id": "/documentation/swiftui/persistent-storage", "law": "The mechanism that you use depends on factors like what and how much you need to store, whether you need serialized or random access to the data, and so on."}
+{"id": "/documentation/swiftui/persistent-storage", "law": "You use the same kinds of storage in a SwiftUI app that you use in any other app."}
+{"id": "/documentation/swiftui/persistent-storage", "law": "However, SwiftUI also provides conveniences that make it easier to use certain kinds of persistent storage in a declarative environment."}
+{"id": "/documentation/swiftui/persistent-storage", "law": "For example, you can use and to interact with a Core Data model."}
+{"id": "/documentation/swiftui/persistent-storage", "law": "Store data for use across sessions of your app."}
+{"id": "/documentation/swiftui/sectionedfetchrequest", "law": "Use a property wrapper to declare a property that provides a grouped collection of Core Data managed objects to a SwiftUI view."}
+{"id": "/documentation/swiftui/sectionedfetchrequest", "law": "If you don’t need sectioning, use instead."}
+{"id": "/documentation/swiftui/sectionedfetchrequest", "law": "Be sure that you choose sorting and sectioning that work together to avoid discontiguous sections."}
+{"id": "/documentation/swiftui/sectionedfetchrequest", "law": "For example, you can request a list of earthquakes, composed of managed objects that the sample code project defines to store earthquake data, sorted by time and grouped by date: Always declare properties that have a sectioned fetch request wrapper as private."}
+{"id": "/documentation/swiftui/sectionedfetchrequest", "law": "This lets the compiler help you avoid accidentally setting the property from the memberwise initializer of the enclosing view."}
+{"id": "/documentation/swiftui/sectionedfetchrequest", "law": "The section identifier type must conform to the protocol."}
+{"id": "/documentation/swiftui/sectionedfetchrequest", "law": "Be sure to mark any computed property with the attribute for it to function as a section identifier."}
+{"id": "/documentation/swiftui/sectionedfetchrequest", "law": "For best performance with large data sets, use stored properties."}
+{"id": "/documentation/swiftui/sectionedfetchrequest", "law": "The sectioned fetch request and its results use the managed object context stored in the environment, which you can access using the environment value."}
+{"id": "/documentation/swiftui/sectionedfetchresults", "law": "Use a instance to show or edit Core Data managed objects, grouped into sections, in your app’s user interface."}
+{"id": "/documentation/swiftui/sectionedfetchresults", "law": "If you don’t need sectioning, use instead."}
+{"id": "/documentation/swiftui/sectionedfetchresults", "law": "For best performance with large data sets, use stored properties."}
+{"id": "/documentation/swiftui/sectionedfetchresults", "law": "For example, you can create nested loops inside a to iterate over the results: Don’t confuse the view that you use to create a hierarchical display with the instances that hold the fetched results."}
+{"id": "/documentation/swiftui/sectionedfetchresults", "law": "Be sure that the sorting and sectioning work together to avoid discontinguous sections."}
+{"id": "/documentation/swiftui/sectionedfetchresults", "law": "The fetch request and its results use the managed object context stored in the environment, which you can access using the environment value."}
+{"id": "/documentation/swiftui/scenestorage", "law": "You use when you need automatic state restoration of the value."}
+{"id": "/documentation/swiftui/scenestorage", "law": "The underlying data that backs is not available to you, so you must access it via the property wrapper."}
+{"id": "/documentation/swiftui/scenestorage", "law": "Ensure that the data you use with is lightweight."}
+{"id": "/documentation/swiftui/scenestorage", "law": "Data of a large size, such as model data, should not be stored in , as poor performance may result."}
+{"id": "/documentation/swiftui/scenestorage", "law": "Do not use with sensitive data."}
+{"id": "/documentation/swiftui/state", "law": "Use state as the single source of truth for a given value type that you store in a view hierarchy."}
+{"id": "/documentation/swiftui/state", "law": "To access a state’s underlying value, you use its property."}
+{"id": "/documentation/swiftui/state", "law": "Use state only for storage that’s local to a view and its subviews."}
+{"id": "/documentation/swiftui/state", "law": "You can also store observable objects that you create with the macro in ; for example: A property always instantiates its default value when SwiftUI instantiates the view."}
+{"id": "/documentation/swiftui/state", "law": "For this reason, avoid side effects and performance-intensive work when initializing the default value."}
+{"id": "/documentation/swiftui/state", "law": "Instead, you can defer the creation of the object using the modifier, which is called only once when the view first appears: Delaying the creation of the observable state object ensures that unnecessary allocations of the object don’t happen each time SwiftUI initializes the view."}
+{"id": "/documentation/swiftui/state", "law": "Using the modifier is also an effective way to defer any other kind of work required to create the initial state of the view, such as network calls or file access."}
+{"id": "/documentation/swiftui/state", "law": "To track changes to both the reference and the object’s published properties, use instead of when storing the object."}
+{"id": "/documentation/swiftui/system-events", "law": "For example, you can use the view modifier to define an action to take when your app receives a universal link, or use the scene modifier to specify an asynchronous task to carry out in response to a background task event, like the completion of a background URL session."}
+{"id": "/documentation/swiftui/view/oncontinueuseractivity(_:perform:)", "law": "Use this view modifier to receive instances in a particular scene within your app."}
+{"id": "/documentation/swiftui/view/oncontinueuseractivity(_:perform:)", "law": "To receive a Universal Link, use the modifier instead."}
+{"id": "/documentation/swiftui/view/useractivity(_:isactive:_:)", "law": "You can use to start, stop, or modify the advertisement of a specific type of user activity."}
+{"id": "/documentation/swiftui/binding", "law": "Use a binding to create a two-way connection between a property that stores data, and a view that displays and changes the data."}
+{"id": "/documentation/swiftui/binding", "law": "It is always safe to pass a sendable binding between different concurrency domains."}
+{"id": "/documentation/swiftui/binding", "law": "To create bindings to properties of a type that conforms to the protocol, use the property wrapper."}
+{"id": "/documentation/swiftui/contentbuilder", "law": "You can use multiple-statement closures to provide several subviews, as the following example shows: You can also use with other SwiftUI-style result builders."}
+{"id": "/documentation/swiftui/declaring-a-custom-view", "law": "Conformance to the protocol comes with both requirements that a view must fulfill, and functionality that the protocol provides."}
+{"id": "/documentation/swiftui/declaring-a-custom-view", "law": "The protocol’s main requirement is that conforming types must define a : SwiftUI reads the value of this property any time it needs to update the view, which can happen repeatedly during the life of the view, typically in response to user input or system events."}
+{"id": "/documentation/swiftui/declaring-a-custom-view", "law": "The protocol’s secondary requirement is that conforming types must indicate an for the body property."}
+{"id": "/documentation/swiftui/declaring-a-custom-view", "law": "However, you don’t make an explicit declaration."}
+{"id": "/documentation/swiftui/declaring-a-custom-view", "law": "For example, you can create a body that draws the string “Hello, World!” using a built-in view: In addition to views for specific kinds of content, controls, and indicators, like , , and , SwiftUI also provides built-in views that you can use to arrange other views."}
+{"id": "/documentation/swiftui/declaring-a-custom-view", "law": "This enables a multiple-statement closure that doesn’t require additional syntax at the call site."}
+{"id": "/documentation/swiftui/declaring-a-custom-view", "law": "For example, you can change the font of a text view by applying the modifier: For more information about how view modifiers work, and how to use them on your views, see ."}
+{"id": "/documentation/swiftui/declaring-a-custom-view", "law": "Because the system may reinitialize a view at any time, it’s important to avoid doing any significant work in your view’s initialization code."}
+{"id": "/documentation/swiftui/view-fundamentals", "law": "Views are the building blocks that you use to declare your app’s user interface."}
+{"id": "/documentation/swiftui/view/toolbartitledisplaymode(_:)", "law": "Use this modifier to override the default toolbar title display mode."}
+{"id": "/documentation/swiftui/viewbuilder", "law": "When you build your project in Xcode 26 and earlier, use as a parameter attribute for view-producing closure parameters, allowing those closures to provide multiple child views."}
+{"id": "/documentation/SwiftUI/View/popoverTip(_:arrowEdge:action:)", "law": "Use this modifier to present a tip as a popover on an existing view when the tip becomes eligible for display."}
+{"id": "/documentation/SwiftUI/State", "law": "Use state as the single source of truth for a given value type that you store in a view hierarchy."}
+{"id": "/documentation/SwiftUI/State", "law": "To access a state’s underlying value, you use its property."}
+{"id": "/documentation/SwiftUI/State", "law": "Use state only for storage that’s local to a view and its subviews."}
+{"id": "/documentation/SwiftUI/State", "law": "You can also store observable objects that you create with the macro in ; for example: A property always instantiates its default value when SwiftUI instantiates the view."}
+{"id": "/documentation/SwiftUI/State", "law": "For this reason, avoid side effects and performance-intensive work when initializing the default value."}
+{"id": "/documentation/SwiftUI/State", "law": "Instead, you can defer the creation of the object using the modifier, which is called only once when the view first appears: Delaying the creation of the observable state object ensures that unnecessary allocations of the object don’t happen each time SwiftUI initializes the view."}
+{"id": "/documentation/SwiftUI/State", "law": "Using the modifier is also an effective way to defer any other kind of work required to create the initial state of the view, such as network calls or file access."}
+{"id": "/documentation/SwiftUI/State", "law": "To track changes to both the reference and the object’s published properties, use instead of when storing the object."}
+{"id": "/documentation/SwiftUI/View/translationPresentation(isPresented:text:attachmentAnchor:arrowEdge:replacementAction:)", "law": "Use this method to show a system UI translation popover when the Boolean variable is ."}
+{"id": "/documentation/SwiftUI/View/translationPresentation(isPresented:text:attachmentAnchor:arrowEdge:replacementAction:)", "law": "Use that string to update the original text with the translated text as shown below: If the system can’t detect the source language, it asks the user to select the language to translate from."}
+{"id": "/documentation/SwiftUI/View/translationTask(_:action:)", "law": "This task provides an instance of to use in translations."}
+{"id": "/documentation/SwiftUI/View/translationTask(_:action:)", "law": "For example, you can create a configuration in response to a button press to initiate the translation: The system throws a if you use a instance after the attached view disappears or if you use it after changing the configuration."}
+{"id": "/documentation/SwiftUI/View/translationTask(source:target:action:)", "law": "This task provides an instance of to use to perform translations."}
+{"id": "/documentation/SwiftUI/View/translationTask(source:target:action:)", "law": "To perform new translations with the same and language, use and call ."}
+{"id": "/documentation/SwiftUI/View/translationTask(source:target:action:)", "law": "For example, you can translate when content appears: The system throws a if you use a instance after the attached view disappears or if you use it after changing the or parameters."}
+{"id": "/documentation/SwiftUI/View/overlay(alignment:content:)", "law": "Use this modifier to place one or more views in front of another view."}
+{"id": "/documentation/SwiftUI/View/overlay(alignment:content:)", "law": "For example, you can place a star and a on a field of : Both the overlay modifier and the implicit composed from the overlay content — the circle and the star — use a default alignment."}
+{"id": "/documentation/SwiftUI/View/overlay(alignment:content:)", "law": "Use the overlay modifier when you want the modified view to dominate the layout."}
+{"id": "/documentation/SwiftUI/View/overlay(alignment:content:)", "law": "If you want to specify a like a or a as the overlay, use instead."}
+{"id": "/documentation/SwiftUI/View/environment(_:)", "law": "Use this modifier to place an object that you declare with the macro into a view’s environment."}
+{"id": "/documentation/SwiftUI/View/environment(_:)", "law": "To add environment objects that conform to the protocol, use instead."}
+{"id": "/documentation/SwiftUI/View/task(id:name:executorPreference:priority:file:line:_:)", "law": "For this to work, the value’s type must conform to the protocol."}
+{"id": "/documentation/SwiftUI/Preparing-views-for-localization", "law": "To add a hint, use the optional parameter to the text view initializer ."}
+{"id": "/documentation/SwiftUI/Preparing-views-for-localization", "law": "For example, SwiftUI uses the string input to the following initializer as a localized string key: If you additionally want to provide a comment for localization, you can use an explicit view instead: Many SwiftUI controls have content builder initializers that enable you to follow this pattern."}
+{"id": "/documentation/SwiftUI/View/frame(minDepth:idealDepth:maxDepth:alignment:)", "law": "Always specify at least one size characteristic when calling this method."}
+{"id": "/documentation/SwiftUI/View/frame(minDepth:idealDepth:maxDepth:alignment:)", "law": "Pass or leave out a characteristic to indicate that the frame should adopt this view’s sizing behavior, constrained by the other non- arguments."}
+{"id": "/documentation/SwiftUI/View/frame(minDepth:idealDepth:maxDepth:alignment:)", "law": "If no minimum or maximum constraint is specified in a given dimension, the frame adopts the sizing behavior of its child in that dimension."}
+{"id": "/documentation/SwiftUI/View/frame(minDepth:idealDepth:maxDepth:alignment:)", "law": "Otherwise, the size of the frame in either dimension is: If a minimum constraint is specified and the size proposed for the frame by the parent is less than the size of this view, the proposed size, clamped to that minimum."}
+{"id": "/documentation/SwiftUI/View/frame(minDepth:idealDepth:maxDepth:alignment:)", "law": "If a maximum constraint is specified and the size proposed for the frame by the parent is greater than the size of this view, the proposed size, clamped to that maximum."}
+{"id": "/documentation/SwiftUI/View/onChange(of:initial:_:)-8wgw9", "law": "You can use to trigger a side effect as the result of a value changing, such as an key or a ."}
+{"id": "/documentation/SwiftUI/View/onChange(of:initial:_:)-8wgw9", "law": "The system may call the action closure on the main actor, so avoid long-running tasks in the closure."}
+{"id": "/documentation/SwiftUI/View/onVolumeViewpointChange(updateStrategy:initial:_:)", "law": "Use the provided to update the content of the volume: By default, the action will only be run when the new viewpoint is equivalent to one of the values provided through ."}
+{"id": "/documentation/SwiftUI/View/ornament(visibility:attachmentAnchor:contentAlignment:ornament:)", "law": "Use this method to show an ornament at the specified position."}
+{"id": "/documentation/SwiftUI/View/scaleEffect(_:anchor:)-7q7as", "law": "Use to scale a view by applying a scaling transform of a specific size, specified by ."}
+{"id": "/documentation/SwiftUI/WorldScalingBehavior/dynamic", "law": "Prefer dynamic window scaling for windows that display dense UI or a lot of text."}
+{"id": "/documentation/SwiftUI/EnvironmentValues/dismissImmersiveSpace", "law": "Use this environment value to get a instance for a given ."}
+{"id": "/documentation/SwiftUI/EnvironmentValues/dismissImmersiveSpace", "law": "Unlike the call to that you use to open the space — which requires an identifier, a value, or both to specify which space to open — the dismiss action requires no parameters because there can be only one immersive space open at a time."}
+{"id": "/documentation/SwiftUI/EnvironmentValues/dismissWindow", "law": "Use the environment value to get an instance for a given ."}
+{"id": "/documentation/SwiftUI/EnvironmentValues/openWindow", "law": "Use the environment value to get an instance for a given ."}
+{"id": "/documentation/SwiftUI/EnvironmentValues/openWindow", "law": "Use the first option to target either a or a scene in your app that has a matching identifier."}
+{"id": "/documentation/SwiftUI/EnvironmentValues/openWindow", "law": "Use the other two options to target a and provide a value to present."}
+{"id": "/documentation/SwiftUI/EnvironmentValues/pushWindow", "law": "Alternatively, use to open a window separate from the window the action is called from."}
+{"id": "/documentation/SwiftUI/EnvironmentValues/pushWindow", "law": "Use the environment value to get an instance for a given ."}
+{"id": "/documentation/SwiftUI/EnvironmentValues/pushWindow", "law": "Use the first option to target either a or a scene in your app that has a matching identifier."}
+{"id": "/documentation/SwiftUI/EnvironmentValues/pushWindow", "law": "Use the other two options to target a and provide a value to present."}
+{"id": "/documentation/SwiftUI/NavigationLink", "law": "For example, you can use a to display a link: For a link composed only of text, you can use one of the convenience initializers that takes a string and creates a view for you:"}
+{"id": "/documentation/SwiftUI/NavigationLink", "law": "Alternatively, you can use a navigation link to perform navigation based on a presented data value."}
+{"id": "/documentation/SwiftUI/NavigationLink", "law": "To support this, use the view modifier inside a navigation stack to associate a view with a kind of data, and then present a value of that data type from a navigation link."}
+{"id": "/documentation/SwiftUI/NavigationLink", "law": "For example, you can create an array of colors to store the stack state from the previous example, and initialize it as an empty array to start with an empty stack: Then pass a to the state to the navigation stack: You can use the array to observe the current state of the stack."}
+{"id": "/documentation/SwiftUI/NavigationLink", "law": "You can also use a navigation link to control selection in a : The list coordinates with the navigation logic so that changing the selection state variable in another part of your code activates the navigation link with the corresponding color."}
+{"id": "/documentation/SwiftUI/NavigationStack", "law": "Use a navigation stack to present a stack of views over a root view."}
+{"id": "/documentation/SwiftUI/NavigationStack", "law": "The stack always displays the most recently added view that hasn’t been removed, and doesn’t allow the root view to be removed."}
+{"id": "/documentation/SwiftUI/NavigationStack", "law": "The following stack displays a view for navigation links that present data of type : In this example, the acts as the root view and is always present."}
+{"id": "/documentation/SwiftUI/NavigationStack", "law": "Use a path to support deep links, state restoration, or other kinds of programmatic navigation."}
+{"id": "/documentation/SwiftUI/NavigationStack", "law": "To create a path for programmatic navigation that contains more than one kind of data, you can use a instance as the path."}
+{"id": "/documentation/SwiftUI/Scene/defaultSize(width:height:depth:in:)", "law": "Use this modifier to indicate the default initial size for a new 3D window created from a using : Each parameter is specified in the unit you provide."}
+{"id": "/documentation/SwiftUI/VStack", "law": "Use the regular when you have a small number of subviews or don’t want the delayed rendering behavior of the “lazy” version."}
+{"id": "/documentation/SwiftUI/VStack", "law": "The following example shows a simple vertical stack of 10 text views: If you need a vertical stack that conforms to the protocol, like when you want to create a conditional layout using , use instead."}
+{"id": "/documentation/SwiftUI/View/navigationDestination(for:destination:)", "law": "Use a to present the data."}
+{"id": "/documentation/SwiftUI/View/navigationDestination(for:destination:)", "law": "Do not put a navigation destination modifier inside a “lazy” container, like or ."}
+{"id": "/documentation/SwiftUI/View/navigationDestination(for:destination:)", "law": "Add the navigation destination modifier outside these containers so that the navigation stack can always see the destination."}
+{"id": "/documentation/SwiftUI/View/navigationDestination(for:destination:)", "law": "Associates a destination view with a presented data type for use within a navigation stack."}
+{"id": "/documentation/SwiftUI/View/onChange(of:initial:_:)-4psgg", "law": "You can use to trigger a side effect as the result of a value changing, such as an key or a ."}
+{"id": "/documentation/SwiftUI/View/onChange(of:initial:_:)-4psgg", "law": "The system may call the action closure on the main actor, so avoid long-running tasks in the closure."}
+{"id": "/documentation/SwiftUI/Window", "law": "Use a scene to augment the main interface of your app with a window that gives people access to supplemental functionality."}
+{"id": "/documentation/SwiftUI/Window", "law": "Use the parameter that you initialize the window with to indicate which window to open."}
+{"id": "/documentation/SwiftUI/Window", "law": "Be sure to use unique identifiers across all of the and instances that you define."}
+{"id": "/documentation/SwiftUI/Window", "law": "You can use a window as the main scene of your app when multi-window functionality isn’t appropriate."}
+{"id": "/documentation/SwiftUI/Window", "law": "In most cases it’s best to use a to represent the main scene of your app."}
+{"id": "/documentation/SwiftUI/Spring", "law": "Use this type to convert between different representations of spring parameters: You can also use it to query for a spring’s position and its other properties for a given set of inputs: A representation of a spring’s motion."}
+{"id": "/documentation/SwiftUI/Text/font(_:)", "law": "Use to apply a specific font to an individual Text View, or all of the text views in a container."}
+{"id": "/documentation/SwiftUI/View/blur(radius:opaque:)", "law": "Use to apply a gaussian blur effect to the rendering of this view."}
+{"id": "/documentation/SwiftUI/ZStack", "law": "The following example creates a of 100 x 100 point views filled with one of six colors, offsetting each successive subview by 10 points so they don’t completely overlap: The uses an to set the x- and y-axis coordinates of each subview, defaulting to a alignment."}
+{"id": "/documentation/SwiftUI/ZStack", "law": "In the following example, the uses a alignment to lay out two subviews, a red 100 x 50 point rectangle below, and a blue 50 x 100 point rectangle on top."}
+{"id": "/documentation/SwiftUI/ZStack", "law": "If you need a version of this stack that conforms to the protocol, like when you want to create a conditional layout using , use instead."}
+{"id": "/documentation/swiftui/immersivespace", "law": "Use an immersive space as a container for a view hierarchy that your app presents."}
+{"id": "/documentation/swiftui/immersivespace", "law": "The hierarchy that you declare as the immersive space’s content serves as a template for it: If you want to create a bounded scene instead, use one of the types that creates a window or a volume, like or ."}
+{"id": "/documentation/swiftui/immersivespace", "law": "By default, immersive spaces use the style which places virtual content in a person’s surroundings."}
+{"id": "/documentation/swiftui/immersivespace", "law": "For example, you can completely control the visual experience using the immersion style: You can change the immersion style after presenting the immersive space by changing the modifier’s input, although you can only use one of the values that you specify in the modifier’s second parameter."}
+{"id": "/documentation/swiftui/immersivespace", "law": "For other styles, windows always render in front of virtual content, no matter how someone positions the window or the content."}
+{"id": "/documentation/swiftui/immersivespace", "law": "This helps people to avoid losing track of windows behind virtual content when passthrough is partially or completely off."}
+{"id": "/documentation/swiftui/immersivespace", "law": "For example, you can label the solar system view from the previous example: Elsewhere in your code, you use the environment value to get the instance of the structure for a given ."}
+{"id": "/documentation/swiftui/immersivespace", "law": "Be sure to close the open immersive space before opening another one."}
+{"id": "/documentation/swiftui/immersivespace", "law": "You don’t need to specify an identifier when dismissing an immersive space because there can only be one immersive space open at a time."}
+{"id": "/documentation/swiftui/immersivespace", "law": "Use the key together with a value that indicates one of the mixed, full, or progressive styles."}
+{"id": "/documentation/SwiftUI/View/preferredSurroundingsEffect(_:)", "law": "Use this modifier to indicate a preference for the appearance of passthrough video when displaying the modified view."}
+{"id": "/documentation/SwiftUI/View/preferredSurroundingsEffect(_:)", "law": "Use a value of to indicate that you have no preference."}
+{"id": "/documentation/SwiftUI/Layout", "law": "If you need more complex layout behavior, you can define a custom layout container by creating a type that conforms to the protocol and implementing its required methods: reports the size of the composite layout view."}
+{"id": "/documentation/SwiftUI/Layout", "law": "You can define a basic layout type with only these two methods: Use your layout the same way you use a built-in layout container, by providing a with the list of subviews to arrange:"}
+{"id": "/documentation/SwiftUI/Layout", "law": "The protocol provides default implementations for these symbols if you don’t implement them."}
+{"id": "/documentation/SwiftUI/Spacer", "law": "The following example provides a simple checklist row to illustrate how you can use a spacer: Adding a spacer before the image creates an adaptive view with no content that expands to push the image and text to the right side of the stack."}
+{"id": "/documentation/SwiftUI/VStackLayout", "law": "This layout container behaves like a , but conforms to the protocol so you can use it in the conditional layouts that you construct with ."}
+{"id": "/documentation/SwiftUI/VStackLayout", "law": "If you don’t need a conditional layout, use instead."}
+{"id": "/documentation/SwiftUI/VStackLayout", "law": "A vertical container that you can use in conditional layouts."}
+{"id": "/documentation/SwiftUI/View/preferredWindowClippingMargins(_:_:)", "law": "Use this space to render extra visual effects that enhance the impact of your app."}
+{"id": "/documentation/SwiftUI/View/preferredWindowClippingMargins(_:_:)", "law": "If multiple views request margins, the scene’s preferred margins will be the maximum preferred value for each face."}
+{"id": "/documentation/SwiftUI/View/rotation3DLayout(_:)", "law": "} The layout system will use a bounding box that completely contains the rotated view, meaning this modifier can change the size of the view it is applied to."}
+{"id": "/documentation/SwiftUI/Shape", "law": "A 2D shape that you can use when drawing a view."}
+{"id": "/documentation/SwiftUI/Button", "law": "Use buttons for any user interface element that initiates an action."}
+{"id": "/documentation/SwiftUI/Button", "law": "For example, a destructive button in a contextual menu appears with a red foreground color: If you don’t specify a role for a button, the system applies an appropriate default appearance."}
+{"id": "/documentation/SwiftUI/Button", "law": "You can customize a button’s appearance using one of the standard button styles, like , and apply the style with the modifier: If you apply the style to a container view, as in the example above, all the buttons in the container use the style: You can also create custom styles."}
+{"id": "/documentation/SwiftUI/Button", "law": "Custom styles can also read the button’s role and use it to adjust the button’s appearance."}
+{"id": "/documentation/SwiftUI/PrimitiveButtonStyle/card", "law": "To apply this style to a button, or to a view that contains buttons, use the modifier."}
+{"id": "/documentation/SwiftUI/Section", "law": "Use instances in views like , , and to organize content into separate sections."}
+{"id": "/documentation/SwiftUI/Section", "law": "A container view that you can use to add hierarchy within certain views."}
+{"id": "/documentation/SwiftUI/TabContent/customizationID(_:)", "law": "All tabs and tab sections that support customization are required to have a customization ID."}
+{"id": "/documentation/SwiftUI/TabContent/customizationID(_:)", "law": "If you apply a customization ID to a , ensure you specify customization IDs for all of the tabs within the section, unless the tab has been marked as having customization turned off."}
+{"id": "/documentation/SwiftUI/TabSection", "law": "Use to organize tab content into separate sections."}
+{"id": "/documentation/SwiftUI/TabSection", "law": "A container that you can use to add hierarchy within a tab view."}
+{"id": "/documentation/SwiftUI/TabView", "law": "On iOS, you can also use one of the badge modifiers, like , to assign a badge to each of the tabs."}
+{"id": "/documentation/SwiftUI/TabView", "law": "To programmatically select different tabs, use the initializer."}
+{"id": "/documentation/SwiftUI/TabView", "law": "Each tab should have a unique selection value and all tabs should have the same selection value type."}
+{"id": "/documentation/SwiftUI/TabView", "law": "You can use the style to display a tab view with multiple scrolling pages of content."}
+{"id": "/documentation/SwiftUI/TabView", "law": "A custom experience should be provided if desired by setting the visibility of the tab on the customization."}
+{"id": "/documentation/SwiftUI/TabView", "law": "You can use or to automatically persist any visibility or section order customizations a person makes."}
+{"id": "/documentation/SwiftUI/TabViewStyle/sidebarAdaptable", "law": "macOS and tvOS always show a sidebar."}
+{"id": "/documentation/SwiftUI/TabViewStyle/sidebarAdaptable", "law": "To apply this style to a tab view, or to a view that contains tab views, use the modifier."}
+{"id": "/documentation/SwiftUI/View/fullScreenCover(isPresented:onDismiss:content:)", "law": "Use this method to show a modal view that covers as much of the screen as possible."}
+{"id": "/documentation/SwiftUI/View/tabViewCustomization(_:)", "law": "A custom experience should be provided if desired by setting the visibility of the tab on the customization."}
+{"id": "/documentation/SwiftUI/View/toolbar(removing:)", "law": "Use this modifier to remove toolbar items other s add by default."}
+{"id": "/documentation/SwiftUI/View/toolbarBackgroundVisibility(_:for:)", "law": "Specify a value of to ensure that the background of a bar remains visible regardless of where any scroll view or list stops scrolling."}
+{"id": "/documentation/SwiftUI/View/toolbarBackgroundVisibility(_:for:)", "law": "This example shows a view that prefers to always have the tab bar visible when the middle tab is selected: You can provide multiple placements to customize multiple bars at once, as in the following example: Specifies the preferred visibility of backgrounds on a bar managed by SwiftUI."}
+{"id": "/documentation/SwiftUI/Scene/defaultLaunchBehavior(_:)", "law": "On platforms that do not support multiple windows, this value is ignored."}
+{"id": "/documentation/SwiftUI/Scene/defaultLaunchBehavior(_:)", "law": "On platforms other than macOS, there must be at least one scene that presents itself."}
+{"id": "/documentation/SwiftUI/Scene/defaultLaunchBehavior(_:)", "law": "Thus, the suppressed behavior additionally specifies that the scene should not be presented when tapping on the application icon with no visible windows."}
+{"id": "/documentation/SwiftUI/Scene/defaultLaunchBehavior(_:)", "law": "For example, you may wish to present a welcome window on launch of your app when there are no previous document windows being restored: The default value for all scenes if you do not apply this modifier is ."}
+{"id": "/documentation/SwiftUI/Scene/restorationBehavior(_:)", "law": "Use this scene modifier to apply a value of this type to a you define in your declaration."}
+{"id": "/documentation/SwiftUI/Scene/restorationBehavior(_:)", "law": "For example, you may have a scene that you do not wish to be restored on launch: The default value for all scenes if you do not apply the modifier is ."}
+{"id": "/documentation/SwiftUI/SceneStorage", "law": "You use when you need automatic state restoration of the value."}
+{"id": "/documentation/SwiftUI/SceneStorage", "law": "The underlying data that backs is not available to you, so you must access it via the property wrapper."}
+{"id": "/documentation/SwiftUI/SceneStorage", "law": "Ensure that the data you use with is lightweight."}
+{"id": "/documentation/SwiftUI/SceneStorage", "law": "Data of a large size, such as model data, should not be stored in , as poor performance may result."}
+{"id": "/documentation/SwiftUI/SceneStorage", "law": "Do not use with sensitive data."}
+{"id": "/documentation/SwiftUI/View/aspectRatio(_:contentMode:)", "law": "Use to constrain a view’s dimensions to an aspect ratio specified by a using the specified content mode."}
+{"id": "/documentation/swiftui/accessible-descriptions", "law": "SwiftUI can often infer some information about your user interface elements, but you can use accessibility modifiers to provide even more information for users that need it."}
+{"id": "/documentation/swiftui/accessible-navigation", "law": "The system automatically provides rotors for many navigable elements, but you can supply additional rotors for specific purposes, or replace system rotors when they don’t automatically pick up off-screen elements, like those far down in a or a ."}
+{"id": "/documentation/swiftui/app-extensions", "law": "Use SwiftUI along with to add widgets to your app."}
+{"id": "/documentation/swiftui/appkit-integration", "law": "Add AppKit views to your SwiftUI app, or use SwiftUI views in your AppKit app."}
+{"id": "/documentation/swiftui/clipboard", "law": "When possible, prefer using transferable items."}
+{"id": "/documentation/swiftui/controls-and-indicators", "law": "Use these built-in controls and indicators when composing custom views, and style them to match the needs of your app’s user interface."}
+{"id": "/documentation/swiftui/gestures", "law": "When you need a button, use a instance rather than a tap gesture."}
+{"id": "/documentation/swiftui/gestures", "law": "You can use any view as the button’s label, and the button type automatically provides many of the standard behaviors that users expect from a button, like accessibility labels and hints."}
+{"id": "/documentation/swiftui/immersive-spaces", "law": "Use an immersive space in visionOS to present SwiftUI views outside of any containers."}
+{"id": "/documentation/swiftui/immersive-spaces", "law": "You can include any views in a space, although you typically use a to present RealityKit content."}
+{"id": "/documentation/swiftui/immersive-spaces", "law": "You might use this style to keep people grounded in the real world while displaying a view into another world."}
+{"id": "/documentation/swiftui/layout-adjustments", "law": "When you need to make fine adjustments, use layout view modifiers."}
+{"id": "/documentation/swiftui/layout-fundamentals", "law": "Use layout containers to arrange the elements of your user interface."}
+{"id": "/documentation/swiftui/lists", "law": "Use a list to display a one-dimensional vertical collection of views."}
+{"id": "/documentation/swiftui/lists", "law": "Use view modifiers to configure the appearance and behavior of a list and its rows, headers, sections, and separators."}
+{"id": "/documentation/swiftui/lists", "law": "You can also use the configuration associated with to control the list’s implicit scrolling behavior."}
+{"id": "/documentation/swiftui/menus-and-commands", "law": "Use a menu to provide people with easy access to common commands."}
+{"id": "/documentation/swiftui/menus-and-commands", "law": "Use a view to create a separator between menu elements."}
+{"id": "/documentation/swiftui/performance-analysis", "law": "Use Instruments to detect hangs and hitches in your app, and to analyze long view body updates and frequently occurring SwiftUI updates that can contribute to hangs and hitches."}
+{"id": "/documentation/swiftui/preferences", "law": "Whereas you use the environment to configure the subviews of a view, you use preferences to send configuration information from subviews toward their container."}
+{"id": "/documentation/swiftui/preferences", "law": "When you use the protocol to define a custom preference, you indicate how to merge preferences from multiple subviews."}
+{"id": "/documentation/swiftui/previews-in-xcode", "law": "You use one of the preview macros — like — to tell Xcode what to display."}
+{"id": "/documentation/swiftui/previews-in-xcode", "law": "For example, in visionOS you can use the macro to preview your view inside an ."}
+{"id": "/documentation/swiftui/scroll-views", "law": "You can put any view type in a scroll view, but you most often use a scroll view for a layout container with too many elements to fit in the display."}
+{"id": "/documentation/swiftui/scroll-views", "law": "and implicitly include a scroll view, so you don’t need to add scrolling to those container types."}
+{"id": "/documentation/swiftui/shapes", "law": "If you need the efficiency or flexibility of immediate mode drawing — for example, to create particle effects — use a view instead."}
+{"id": "/documentation/swiftui/technology-specific-views", "law": "To access SwiftUI views that another framework defines, import both SwiftUI and the other framework into the file where you use the view."}
+{"id": "/documentation/swiftui/technology-specific-views", "law": "For example, to use the view in your app, import both SwiftUI and MapKit."}
+{"id": "/documentation/swiftui/technology-specific-views", "law": "Use SwiftUI views that other Apple frameworks provide."}
+{"id": "/documentation/swiftui/uikit-integration", "law": "For design guidance, see the following sections in the Human Interface Guidelines: Add UIKit views to your SwiftUI app, or use SwiftUI views in your UIKit app."}
+{"id": "/documentation/swiftui/view-configuration", "law": "Designing your app for the Always On state."}
+{"id": "/documentation/swiftui/watchkit-integration", "law": "Add WatchKit views to your SwiftUI app, or use SwiftUI views in your WatchKit app."}
+{"id": "/documentation/swiftui/wishlist-planning-travel-in-a-swiftui-app", "law": "Use the property wrapper to create bindings to properties of an object."}
+{"id": "/documentation/swiftui/wishlist-planning-travel-in-a-swiftui-app", "law": "Always add a navigation title using , which the system uses for the accessibility label when someone navigates back from a detail view."}
+{"id": "/documentation/swiftui/wishlist-planning-travel-in-a-swiftui-app", "law": "For content that extends into the safe area, use placement instead."}
+{"id": "/documentation/swiftui/wishlist-planning-travel-in-a-swiftui-app", "law": "Use the macro to do this."}
+{"id": "/documentation/swiftui/wishlist-planning-travel-in-a-swiftui-app", "law": "Use the property wrapper to create a unique value that associates the source and destination."}

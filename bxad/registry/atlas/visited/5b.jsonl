@@ -25,3 +25,6 @@
 {"id": "/documentation/swiftui/view-groupings", "sha": "da1b1462bac266f1a6c3a17041f9df67e88ecaf28ecbb4d1a4ddf7ebaafae970", "t": "View groupings", "n": 1151, "laws": 0, "ts": "2026-07-25 23:25 UTC"}
 {"id": "/documentation/swiftui/view", "sha": "bf88a124014302a506b0d234c5f6e93689cf1debfde423a99e22a17a14dd7278", "t": "View", "n": 1991, "laws": 4, "ts": "2026-07-25 23:26 UTC"}
 {"id": "/documentation/swiftui/dropsession/reorderdestination(for:in:)", "sha": "fad80b45ea38b991550d0885368a9cc9d4e10c478f43a7bb363bd882eb2dd833", "t": "reorderDestination(for:in:)", "n": 598, "laws": 2, "ts": "2026-07-25 23:26 UTC"}
+{"id": "/documentation/virtualization/running-macos-in-a-virtual-machine-on-apple-silicon", "sha": "ada83b788cb2be247b3ef194b00746a6e59bc5f7e0cb9c5836e9b51c46571147", "t": "Running macOS in a virtual machine on Apple silicon", "n": 5100, "laws": 5, "ts": "2026-07-26 00:17 UTC"}
+{"id": "/documentation/SwiftUI/Shape/stroke(_:lineWidth:)", "sha": "1a11010e1fbbe7daa1d282fc032b63bba257b95b842d56ece35fe8151426d76b", "t": "stroke(_:lineWidth:)", "n": 164, "laws": 0, "ts": "2026-07-26 00:27 UTC"}
+{"id": "/documentation/swiftui/lists", "sha": "bce77ca61f3e4a862bbdf375fb24d7b4967bca9041581915e9f0f6379fedc11e", "t": "Lists", "n": 2279, "laws": 3, "ts": "2026-07-26 00:34 UTC"}

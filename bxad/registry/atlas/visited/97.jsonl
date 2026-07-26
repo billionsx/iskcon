@@ -19,3 +19,10 @@
 {"id": "/documentation/metal/mtldevice/supportsfamily(_:)", "sha": "f8fcbad2e007356e93f95beddc515ca127e7179078bf71c3d479353f254746fc", "t": "supportsFamily(_:)", "n": 112, "laws": 0, "ts": "2026-07-25 23:05 UTC"}
 {"id": "/documentation/swiftui/toolbarspacer", "sha": "35ad5f78ab8bb9f05699957083a62f1c7d95b87409940add01b551b593be760c", "t": "ToolbarSpacer", "n": 499, "laws": 0, "ts": "2026-07-25 23:26 UTC"}
 {"id": "/documentation/swiftui/monitoring-model-data-changes-in-your-app", "sha": "46155b57ac4c1c510706efda521207e1d2bc8efb01cf556aed726a89c1191669", "t": "Monitoring data changes in your app", "n": 5176, "laws": 10, "ts": "2026-07-25 23:26 UTC"}
+{"id": "/documentation/uikit/uigesturerecognizer/touchesmoved(_:with:)", "sha": "84846c6881d0c8e5cee500738fe33c28a373fc09f7cbea478352fb2b538dd4f9", "t": "touchesMoved(_:with:)", "n": 1017, "laws": 3, "ts": "2026-07-26 00:15 UTC"}
+{"id": "/documentation/Network/NetworkConnection", "sha": "1acf6336dd184c94224fdf835d9f21bbe8a8dcd48ad65812cd26ec4feda471d8", "t": "NetworkConnection", "n": 1026, "laws": 1, "ts": "2026-07-26 00:22 UTC"}
+{"id": "/documentation/kernel/iousbhostiosourceclientrecordlist", "sha": "3da31734b36939866c05fc60ba68198b3ccb96ec76edc28700dcdc7f8c7f2509", "t": "IOUSBHostIOSourceClientRecordList", "n": 115, "laws": 0, "ts": "2026-07-26 00:23 UTC"}
+{"id": "/documentation/tvmljs/userdefaults", "sha": "aa1a7e5262cf728dc91ab004fcc2d4adf3e361b42c33c5d9a292f307ad839959", "t": "UserDefaults", "n": 175, "laws": 0, "ts": "2026-07-26 00:24 UTC"}
+{"id": "/documentation/ARKit/CameraFrame/Sample", "sha": "8e387c23641db6aa00f7d876cb582ba8a4bc1e0b97d3122b6e451591861ac391", "t": "CameraFrame.Sample", "n": 395, "laws": 1, "ts": "2026-07-26 00:25 UTC"}
+{"id": "/documentation/RealityKit/MeshResource/Model", "sha": "ea84b4fb3550972fe7cf0bbc7147f1cd9bbd1704bf5d6b74d8e5a4f12c004ece", "t": "MeshResource.Model", "n": 122, "laws": 0, "ts": "2026-07-26 00:27 UTC"}
+{"id": "/documentation/SwiftUI/SceneStorage", "sha": "2b5cbcebfe124c90d9ca002c41ff5b8af13617077ce8f892c275fe386d20afcf", "t": "SceneStorage", "n": 1114, "laws": 5, "ts": "2026-07-26 00:29 UTC"}

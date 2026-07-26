@@ -19,3 +19,8 @@
 {"id": "/documentation/network/nw_parameters_set_local_endpoint(_:_:)", "sha": "c587b4d7c9305507a560c83fbdc732e748b93974ddd7922b0a295ffe68ca7399", "t": "nw_parameters_set_local_endpoint(_:_:)", "n": 79, "laws": 1, "ts": "2026-07-25 23:09 UTC"}
 {"id": "/documentation/photokit/delivering-an-enhanced-privacy-experience-in-your-photos-app", "sha": "7e7c453403ac4d6a88f12b2cf9f190989622ece47c055edcc769f13fa5774a19", "t": "Delivering an Enhanced Privacy Experience in Your Photos App", "n": 6455, "laws": 10, "ts": "2026-07-25 23:13 UTC"}
 {"id": "/documentation/swiftdata/concurrencysupport", "sha": "18f1ca74db8cc7ada71c95bcfe9787f0a114f9382ab1e98b484b747ee639be0e", "t": "Concurrency support", "n": 227, "laws": 1, "ts": "2026-07-25 23:22 UTC"}
+{"id": "/documentation/uikit/uiview", "sha": "7188be96fb97628121abeedef34f7744af8c9c620fa2d24ee559582f8d51832d", "t": "UIView", "n": 17441, "laws": 10, "ts": "2026-07-26 00:07 UTC"}
+{"id": "/documentation/uikit/uipagecontrol", "sha": "07bd999640c06a06f388221d0c8ff9a4497002f00acc8e5baaba126ba29b00d8", "t": "UIPageControl", "n": 1622, "laws": 0, "ts": "2026-07-26 00:16 UTC"}
+{"id": "/documentation/uikit/uislider", "sha": "dc4c65944ff6c58f4ecc9a762d96a8f08bd4126429a7753dcb8bbdb0553386cc", "t": "UISlider", "n": 7132, "laws": 10, "ts": "2026-07-26 00:16 UTC"}
+{"id": "/documentation/Network/NWConnection/State-swift.enum/failed(_:)", "sha": "817af91a3cdcb87d0c012f0305d5e65867739adb7c12d9872326c6f8829ee293", "t": "NWConnection.State.failed(_:)", "n": 56, "laws": 0, "ts": "2026-07-26 00:22 UTC"}
+{"id": "/documentation/mapkit/mklookaroundsnapshotter", "sha": "2f91051d7ad5c2237b906a7718c76eaebeeb899879d18a2f7b37bc3613b15c86", "t": "MKLookAroundSnapshotter", "n": 393, "laws": 1, "ts": "2026-07-26 00:23 UTC"}

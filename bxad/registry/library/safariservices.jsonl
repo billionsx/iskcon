@@ -61,3 +61,13 @@
 {"id": "/documentation/safariservices/updating-a-safari-web-extension", "law": "If you have an existing development workflow for your web extension, you can use another source editor for your HTML, CSS, and JavaScript extension files in the Resources group."}
 {"id": "/documentation/safariservices/updating-a-safari-web-extension", "law": "If your alternative source editor supports custom build commands, configure it to use from the command line to build your extension’s macOS app container."}
 {"id": "/documentation/safariservices/updating-a-safari-web-extension", "law": "When you add new files, make sure that you add the files to the correct target."}
+{"id": "/documentation/SafariServices/SFSafariViewController", "law": "You don’t need to secure data between your app and Safari."}
+{"id": "/documentation/SafariServices/SFSafariViewController", "law": "To share data between your app and Safari, use instead."}
+{"id": "/documentation/SafariServices/SFSafariViewController", "law": "Present an when you don’t need to customize or interact with the web content."}
+{"id": "/documentation/SafariServices/SFSafariViewController", "law": "In accordance with , when you present this view controller, it must visibly present information to users."}
+{"id": "/documentation/SafariServices/SFSafariViewController", "law": "Additionally, you may not use to track users without their knowledge and consent."}
+{"id": "/documentation/SafariServices/SFSafariViewController", "law": "You might use this approach to display terms of service or support documentation."}
+{"id": "/documentation/SafariServices/SFSafariViewController", "law": "Don’t use these presentation styles to display content from websites."}
+{"id": "/documentation/SafariServices/SFSafariViewController", "law": "Don’t embed an as a child view controller in your app, or include it in your view controller hierarchy."}
+{"id": "/documentation/SafariServices/SFSafariViewController", "law": "Always present it modally using the method."}
+{"id": "/documentation/SafariServices/SFSafariViewController", "law": "The custom delegate is recommended, but you can remove it if you prefer the default modal transition behavior."}

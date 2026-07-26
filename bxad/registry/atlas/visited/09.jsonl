@@ -12,3 +12,8 @@
 {"id": "/documentation/photosui/phpickerviewcontroller", "sha": "73b200d4b55333112df635d185f24e7d818e0a35f90711879efe4a678025319e", "t": "PHPickerViewController", "n": 1588, "laws": 1, "ts": "2026-07-25 23:13 UTC"}
 {"id": "/documentation/realitykit/audiomixgroup", "sha": "8b4991e33594a2736d24159df160fde53359ee5209aefb1bbc4203228c4fc139", "t": "AudioMixGroup", "n": 669, "laws": 0, "ts": "2026-07-25 23:15 UTC"}
 {"id": "/documentation/swiftui/animation/bouncy", "sha": "cf25ab904e3e330843bf219c54201171010c01b08938fd5516e9e77fd30f70af", "t": "bouncy", "n": 74, "laws": 0, "ts": "2026-07-25 23:24 UTC"}
+{"id": "/documentation/uikit/touches-presses-and-gestures", "sha": "77b581cc750dbf1fe6609d930118d6a47e18c7c0d70470f17f7189901560cafe", "t": "Touches, presses, and gestures", "n": 1571, "laws": 2, "ts": "2026-07-26 00:08 UTC"}
+{"id": "/documentation/uikit/uinavigationitem/customizationidentifier", "sha": "2136edbaf1b7e1c0f4e71168f221f4e72e5f4498a4cc19b466ddacebf91717ff", "t": "customizationIdentifier", "n": 447, "laws": 0, "ts": "2026-07-26 00:15 UTC"}
+{"id": "/documentation/Foundation/NSURL/stopAccessingSecurityScopedResource()", "sha": "477b8e7c73e6d41c25a39ab3fa81f1251c820f6edc9ddb0229706c7b58a1bbb0", "t": "stopAccessingSecurityScopedResource()", "n": 1053, "laws": 3, "ts": "2026-07-26 00:16 UTC"}
+{"id": "/documentation/vision/vnhomographicimageregistrationrequest", "sha": "da4c710913747aeb6e63a3fbdf438196af506d1bc086af591cfc7627864dabcb", "t": "VNHomographicImageRegistrationRequest", "n": 445, "laws": 0, "ts": "2026-07-26 00:18 UTC"}
+{"id": "/documentation/SwiftUI/Section", "sha": "d8a640984348bab454b0874e290943c0c58645552410bcc9a8609f63e77e32f1", "t": "Section", "n": 1049, "laws": 2, "ts": "2026-07-26 00:28 UTC"}

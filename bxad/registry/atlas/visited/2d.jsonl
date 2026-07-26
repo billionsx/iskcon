@@ -19,3 +19,9 @@
 {"id": "/documentation/metal/mtl4commandencoder/endencoding()", "sha": "e7dde1ea93f483c486593253837dac3ba9acbd8eff6ceceeda32b852a730184d", "t": "endEncoding()", "n": 67, "laws": 0, "ts": "2026-07-25 23:05 UTC"}
 {"id": "/documentation/metal/mtlfunction", "sha": "4ea918f9d37a33ecc5304c048322652284d05d66d904699b874a8d4202a65630", "t": "MTLFunction", "n": 1237, "laws": 4, "ts": "2026-07-25 23:07 UTC"}
 {"id": "/documentation/RealityKit/UnlitMaterial", "sha": "cb3cd3ed6451e9c66528a29d678fee95ad5545acf8b5e8d0ebb22f479a45ed9f", "t": "UnlitMaterial", "n": 1118, "laws": 2, "ts": "2026-07-25 23:14 UTC"}
+{"id": "/documentation/swiftui/view/useractivity(_:isactive:_:)", "sha": "4975a8818945bb02a24f255da5f8fb282a1fa19fedbc84a084ec5274c0e4a86b", "t": "userActivity(_:isActive:_:)", "n": 217, "laws": 1, "ts": "2026-07-26 00:03 UTC"}
+{"id": "/documentation/TVML/button", "sha": "4f95712b319f79981e2ccfdd290e5f28b7f8cd993e132f848c7cb3061b5cab4d", "t": "button", "n": 446, "laws": 0, "ts": "2026-07-26 00:04 UTC"}
+{"id": "/documentation/tabletopkit/baseequipmentstate", "sha": "d225f275e3256c7315a18681e88afcae2018decee8697d6dde0f9e52e028bdbc", "t": "BaseEquipmentState", "n": 321, "laws": 0, "ts": "2026-07-26 00:04 UTC"}
+{"id": "/documentation/videotoolbox/vtcompressionsession-api-collection", "sha": "5f41be5a9c72ee8976797876e06f497c6e3475a9bda99bddd939cd91f1c330b8", "t": "VTCompressionSession", "n": 1768, "laws": 0, "ts": "2026-07-26 00:17 UTC"}
+{"id": "/documentation/swift/double", "sha": "c16cc9c47e5a1da50f245929316a23cb6b9126a27a1b25d593a31cc40de50686", "t": "Double", "n": 3469, "laws": 0, "ts": "2026-07-26 00:24 UTC"}
+{"id": "/documentation/visionos/understanding-transforms", "sha": "6de7aae49a974752a544b5c9ca0d07a2725856b769d0eef470c978f1556df5b9", "t": "Using transforms to move, scale, and rotate entities", "n": 7669, "laws": 10, "ts": "2026-07-26 00:27 UTC"}

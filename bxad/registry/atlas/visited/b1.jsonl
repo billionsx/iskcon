@@ -12,3 +12,9 @@
 {"id": "/documentation/realitykit/ecs-systems", "sha": "8cb0b20316961823d6fbd91b378a461c4c6ceacf2c80b9e5eed1d8c84e86d155", "t": "Systems", "n": 2394, "laws": 2, "ts": "2026-07-25 23:13 UTC"}
 {"id": "/documentation/scenekit/scntechnique", "sha": "e87d17bef816586a3c0c3c694272cf297333d99e9dffbd6bbb9c3905691d9c17", "t": "SCNTechnique", "n": 6091, "laws": 10, "ts": "2026-07-25 23:18 UTC"}
 {"id": "/documentation/Intents/INGetRideStatusIntent", "sha": "9a04bc9a124959a6b5b60e92578a5c197a4d0b28d9cba6e2c8a63cd96735eb04", "t": "INGetRideStatusIntent", "n": 836, "laws": 3, "ts": "2026-07-25 23:19 UTC"}
+{"id": "/documentation/uikit/uibutton/pointerstyleprovider-swift.typealias", "sha": "2cad1466ce2f4d05cae2672461e6b5fd8f9593fb681c9e90e3d051d07ee53993", "t": "UIButton.PointerStyleProvider", "n": 602, "laws": 1, "ts": "2026-07-26 00:16 UTC"}
+{"id": "/documentation/healthkit/hkanchoredobjectquery/init(type:predicate:anchor:limit:resultshandler:)", "sha": "21fb3feee8b0674e61e086c9594423400da1d6d29d6ddd03173db914acbc457a", "t": "init(type:predicate:anchor:limit:resultsHandler:)", "n": 1049, "laws": 1, "ts": "2026-07-26 00:24 UTC"}
+{"id": "/documentation/tvmljs/dataitem", "sha": "fb7c5b680b5e7184b94cc63791a9d76963646cfeca4151bb46f5235998b6646c", "t": "DataItem", "n": 253, "laws": 0, "ts": "2026-07-26 00:24 UTC"}
+{"id": "/documentation/tvmljs/xmlhttprequest", "sha": "c9ef348b11359d34ecf1f05941bcbd9dc48135006b39e93de1bfcf76f473be6e", "t": "XMLHttpRequest", "n": 704, "laws": 0, "ts": "2026-07-26 00:24 UTC"}
+{"id": "/documentation/Network/QUIC/Stream", "sha": "31576db0bd4088eea94d0346509b441e4944d55d8515428e4986cbe392144497", "t": "QUIC.Stream", "n": 95, "laws": 0, "ts": "2026-07-26 00:27 UTC"}
+{"id": "/documentation/UIKit/protecting-the-user-s-privacy", "sha": "501bd40339e70e4de07738d6225619b8b89a7d163f080f12e6da591c6b41bc6b", "t": "Protecting the User’s Privacy", "n": 3867, "laws": 8, "ts": "2026-07-26 00:32 UTC"}

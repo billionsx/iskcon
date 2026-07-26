@@ -22,3 +22,7 @@
 {"id": "/documentation/BundleResources/Information-Property-List/NSAppleMusicUsageDescription", "sha": "4380cf74d21523cc965e52f4cc3fd2cf0fcd1d74dfa09e4f8c9ea9b624f87567", "t": "NSAppleMusicUsageDescription", "n": 607, "laws": 2, "ts": "2026-07-25 23:08 UTC"}
 {"id": "/documentation/Intents/INRequestRideIntentResponse", "sha": "29542ea8a00a01a854f11280b2ee764ebbf186c905a65c205b1b25b4fae196e3", "t": "INRequestRideIntentResponse", "n": 1157, "laws": 2, "ts": "2026-07-25 23:19 UTC"}
 {"id": "/documentation/swiftui/texteditor", "sha": "d70f0b3e8c3aa7b593099372035b0c0e5a237bb0a9598c47210e47507e9a7448", "t": "TextEditor", "n": 1381, "laws": 3, "ts": "2026-07-25 23:27 UTC"}
+{"id": "/documentation/uikit/nstextelement", "sha": "92db98e2c634cd65dd67397df6f5144267da3593a93b55366f9ec05a520f85a7", "t": "NSTextElement", "n": 336, "laws": 0, "ts": "2026-07-26 00:12 UTC"}
+{"id": "/documentation/Swift/Int", "sha": "0a2ee7c093959ca35db646a3ab0739994b743b62e48cc4fec7dbcfad9aaf6a05", "t": "Int", "n": 3064, "laws": 0, "ts": "2026-07-26 00:16 UTC"}
+{"id": "/documentation/webkit/webpage/backforwardlist-swift.struct", "sha": "9ffc6298f065662134f349da5be47435654f106802ee958b61c5ee7882946b78", "t": "WebPage.BackForwardList", "n": 654, "laws": 0, "ts": "2026-07-26 00:21 UTC"}
+{"id": "/documentation/ARKit/ReferenceObject", "sha": "eaf394a497390a9eefa5ab1b8dd1623dd0822373a705cd17ab7847a928fa517b", "t": "ReferenceObject", "n": 321, "laws": 0, "ts": "2026-07-26 00:29 UTC"}

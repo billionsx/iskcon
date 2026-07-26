@@ -38,3 +38,7 @@
 {"id": "/documentation/corehaptics/representing-haptic-patterns-in-ahap-files", "law": "It’s a normalized value that maps to the minimum value the system supports."}
 {"id": "/documentation/corehaptics/representing-haptic-patterns-in-ahap-files", "law": "Likewise, a value of 1 doesn’t indicate 1 second; rather, it maps to the maximum supported value."}
 {"id": "/documentation/corehaptics/delivering-rich-app-experiences-with-haptics", "law": "You must run the sample on iPhone 8 or later."}
+{"id": "/documentation/CoreHaptics/CHHapticEngine", "law": "Although it’s possible to create content— instances—independent of a CHHapticEngine, your app must use an engine to play that content."}
+{"id": "/documentation/CoreHaptics/CHHapticPattern", "law": "More complicated patterns also contain key-value pairs for parameter curves, which you can use to modulate parameters over time."}
+{"id": "/documentation/CoreHaptics/CHHapticPattern", "law": "To add haptics to your app, you create an instance of , load a pattern, and use the engine to create a player to play that pattern."}
+{"id": "/documentation/CoreHaptics/CHHapticPattern", "law": "For example, you can use sharpness values to convey an experience that’s crisp, precise, and mechanical, or one that’s soft, rounded, and organic."}

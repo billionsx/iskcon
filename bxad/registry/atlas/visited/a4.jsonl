@@ -14,3 +14,7 @@
 {"id": "/documentation/photos/phassetchangerequest", "sha": "2b8086718f5adae7deef809ef0d2817a1e3a38c28abe44881713f6e6e16e925e", "t": "PHAssetChangeRequest", "n": 1670, "laws": 4, "ts": "2026-07-25 23:12 UTC"}
 {"id": "/documentation/roomplan", "sha": "965b3d049c46bf83a985ad9ef09269d469a813082d17725eda05372e5d32cf5c", "t": "RoomPlan", "n": 2917, "laws": 2, "ts": "2026-07-25 23:18 UTC"}
 {"id": "/documentation/SwiftUI/Making-a-view-into-a-drag-source", "sha": "bd52f4d73f3e0dbbfd2914bf634bf5acdd06511d31f7bbabb780932b17e66c89", "t": "Making a view into a drag source", "n": 2976, "laws": 7, "ts": "2026-07-25 23:23 UTC"}
+{"id": "/documentation/uikit/uitableviewcontroller", "sha": "587bc7c73c13db20d192687ef5bfd19aeca2bd0886c5d4aaaa57f1c454827ccb", "t": "UITableViewController", "n": 1784, "laws": 3, "ts": "2026-07-26 00:12 UTC"}
+{"id": "/documentation/vision/vnrecognizedpointkey", "sha": "f9be17bff78e76bc0155f2948e722551cbdb58afd67fd2042ac2795f06e53aff", "t": "VNRecognizedPointKey", "n": 122, "laws": 0, "ts": "2026-07-26 00:19 UTC"}
+{"id": "/documentation/BundleResources/Information-Property-List/CFBundleIcons", "sha": "db1862d66e0b625da83861328f2953b869ba253a337dd047c50164072e3ca75b", "t": "CFBundleIcons", "n": 118, "laws": 0, "ts": "2026-07-26 00:22 UTC"}
+{"id": "/documentation/appkit/deprecated-symbols", "sha": "77bc8b5a3da1aeefee04b22be91fa44f3a1adc4a1bac6a1e02badde5ae609cb2", "t": "Deprecated Symbols", "n": 1028, "laws": 1, "ts": "2026-07-26 00:33 UTC"}

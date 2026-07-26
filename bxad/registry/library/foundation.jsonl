@@ -278,3 +278,65 @@
 {"id": "/documentation/Foundation/URLSession", "law": "It returns data to your app in one of three ways, depending on the methods you call: If you’re using Swift, you can use the methods marked with the keyword to perform common tasks."}
 {"id": "/documentation/Foundation/URLSession", "law": "You can also use the method to receive data as an ."}
 {"id": "/documentation/Foundation/URLSession", "law": "With this approach, you use the - - syntax to iterate over the data as your app receives it."}
+{"id": "/documentation/Foundation/UserDefaults", "law": "You use this system to store nonsensitive information, such as app-specific configuration details."}
+{"id": "/documentation/Foundation/UserDefaults", "law": "In your code, you check values from this system and use them to dynamically alter your app’s appearance or behavior."}
+{"id": "/documentation/Foundation/UserDefaults", "law": "Don’t store personal or sensitive information as settings."}
+{"id": "/documentation/Foundation/UserDefaults", "law": "The object is a shared object you use to read and write your app’s standard settings."}
+{"id": "/documentation/Foundation/UserDefaults", "law": "Each item you store in a defaults object consists of a key-value pair, where each key is a string that you use to locate the item and each value is a data object."}
+{"id": "/documentation/Foundation/UserDefaults", "law": "Prefer simple types over custom objects whenever possible."}
+{"id": "/documentation/Foundation/UserDefaults", "law": "Because the data is device-specific, you don’t use the defaults system to share data between devices."}
+{"id": "/documentation/Foundation/UserDefaults", "law": "To share data between someone’s devices, use the instead."}
+{"id": "/documentation/Foundation/UserDefaults", "law": "Don’t access the files of the defaults database directly from the file system."}
+{"id": "/documentation/Foundation/UserDefaults", "law": "In macOS, use the command-line utility to safely view or modify the defaults database outside of your app."}
+{"id": "/documentation/Foundation/NSSecureCoding", "law": "An object that does override must decode any enclosed objects using the method."}
+{"id": "/documentation/Foundation/NSSecureCoding", "law": "For example: In addition, the class must override the getter for its property to return ."}
+{"id": "/documentation/Foundation/NSLocalizedString", "law": "Use this macro to automatically generate the default file from your code when exporting localizations from Xcode or the utility."}
+{"id": "/documentation/Foundation/NSLocalizedString", "law": "To avoid collisions between words or phrases with multiple meanings, use a unique for each use of the same phrase."}
+{"id": "/documentation/Foundation/NSLocalizedString", "law": "Use the macro to specify another value for ."}
+{"id": "/documentation/Foundation/NSLocalizedString", "law": "The values for and must be string literal values."}
+{"id": "/documentation/Foundation/NSLocalizedString", "law": "If you want to use string variables, manually create a strings file and use instead."}
+{"id": "/documentation/Foundation/NSString", "law": "You can use this type in Swift when you need reference semantics or other Foundation-specific behavior."}
+{"id": "/documentation/Foundation/NSString", "law": "To create and manage an immutable string, use the class."}
+{"id": "/documentation/Foundation/NSString", "law": "To construct and manage a string that can be changed after it has been created, use ."}
+{"id": "/documentation/Foundation/NSString", "law": "Most use of strings, however, is at a higher level, with the strings being treated as single entities: You compare strings against one another, search them for substrings, combine them into new strings, and so on."}
+{"id": "/documentation/Foundation/NSString", "law": "If you need to access string objects character by character, you must understand the Unicode character encoding, specifically issues related to composed character sequences."}
+{"id": "/documentation/Foundation/NSString", "law": "When creating an object from an array of values, the returned string is always native-endian, since the array always contains UTF–16 code units in native byte order."}
+{"id": "/documentation/Foundation/NSString", "law": "It is possible to subclass (and ), but doing so requires providing storage facilities for the string (which is not inherited by subclasses) and implementing two primitive methods."}
+{"id": "/documentation/Foundation/NSString", "law": "Make sure your reasons for subclassing are valid."}
+{"id": "/documentation/Foundation/NSString", "law": "Instances of your subclass should represent a string and not something else."}
+{"id": "/documentation/Foundation/NSString", "law": "Thus the only attributes the subclass should have are the length of the character buffer it’s managing and access to individual characters in the buffer."}
+{"id": "/documentation/Foundation/NSCache", "law": "Cache objects differ from other mutable collections in a few ways: The class incorporates various auto-eviction policies, which ensure that a cache doesn’t use too much of the system’s memory."}
+{"id": "/documentation/Foundation/NSCache", "law": "You typically use objects to temporarily store objects with transient data that are expensive to create."}
+{"id": "/documentation/Foundation/NSCache", "law": "Reusing these objects can provide performance benefits, because their values do not have to be recalculated."}
+{"id": "/documentation/Foundation/NSCache", "law": "A mutable collection you use to temporarily store transient key-value pairs that are subject to eviction when resources are low."}
+{"id": "/documentation/Foundation/NSComparisonPredicate", "law": "Use comparison predicates to compare the results of two expressions."}
+{"id": "/documentation/Foundation/NSComparisonPredicate", "law": "You create a comparison predicate with an operator, a left expression, and a right expression, and use instances of the class to represent those expressions."}
+{"id": "/documentation/Foundation/Operation", "law": "Because the class is an abstract class, you do not use it directly but instead subclass or use one of the system-defined subclasses ( or ) to perform the actual task."}
+{"id": "/documentation/Foundation/Operation", "law": "The presence of this built-in logic allows you to focus on the actual implementation of your task, rather than on the glue code needed to ensure it works correctly with other system objects."}
+{"id": "/documentation/Foundation/Operation", "law": "If you do not want to use an operation queue, you can execute an operation yourself by calling its method directly from your code."}
+{"id": "/documentation/Foundation/Operation", "law": "(In other words, canceling an operation similarly marks it as finished.) It is up to you to determine whether an operation with dependencies should proceed in cases where its dependent operations were cancelled or did not complete their task successfully."}
+{"id": "/documentation/Foundation/Operation", "law": "This may require you to incorporate some additional error tracking capabilities into your operation objects."}
+{"id": "/documentation/Foundation/Operation", "law": "Code associated with your user interface typically must execute only in your application’s main thread."}
+{"id": "/documentation/Foundation/Operation", "law": "If you provide custom implementations for any of the preceding properties, your implementations must maintain KVC and KVO compliance."}
+{"id": "/documentation/Foundation/Operation", "law": "If you define additional properties for your objects, it is recommended that you make those properties KVC and KVO compliant as well."}
+{"id": "/documentation/Foundation/Operation", "law": "When you subclass , you must make sure that any overridden methods remain safe to call from multiple threads."}
+{"id": "/documentation/Foundation/Operation", "law": "If you implement custom methods in your subclass, such as custom data accessors, you must also make sure those methods are thread-safe."}
+{"id": "/documentation/Foundation/NSFileCoordinator", "law": "Objects that adopt the protocol must register themselves with the class to be notified of any pending changes."}
+{"id": "/documentation/Foundation/NSFileCoordinator", "law": "A file presenter must balance calls to with a call to before being released, even in a garbage-collected application."}
+{"id": "/documentation/Foundation/NSFileCoordinator", "law": "This helps ensure that your app or extension has sufficient time to finish the read or write operation if it’s suspended, without creating a deadlock on access to that file by other processes."}
+{"id": "/documentation/Foundation/NSFileCoordinator", "law": "Each file coordinator object you create should be used on a single thread only."}
+{"id": "/documentation/Foundation/NSFileCoordinator", "law": "If you need to coordinate file operations across multiple objects in different threads, each object should create its own file coordinator."}
+{"id": "/documentation/Foundation/NSMetadataQuery", "law": "This is suitable for use with Cocoa bindings."}
+{"id": "/documentation/Foundation/NSMetadataQuery", "law": "This is also suitable for use with Cocoa bindings."}
+{"id": "/documentation/Foundation/NSMetadataQuery", "law": "Use the property to customize."}
+{"id": "/documentation/Foundation/NSMetadataQuery", "law": "Use the property to customize."}
+{"id": "/documentation/Foundation/NSMetadataQuery", "law": "You must set a predicate with the property before starting a query."}
+{"id": "/documentation/Foundation/NSMetadataQuery", "law": "Keys for Use with a Notification Info Dictionary."}
+{"id": "/documentation/Foundation/NSString/compare(_:options:range:)", "law": "When working with text that’s presented to the user, use the instead, or use the method, passing the user’s locale."}
+{"id": "/documentation/Foundation/NSURL/startAccessingSecurityScopedResource()", "law": "When you obtain a security-scoped URL, such as by resolving a security-scoped bookmark, you can’t immediately use the resource it points to."}
+{"id": "/documentation/Foundation/NSURL/startAccessingSecurityScopedResource()", "law": "You can also use Core Foundation equivalent, the function."}
+{"id": "/documentation/Foundation/NSURL/startAccessingSecurityScopedResource()", "law": "If this method returns , then you must relinquish access as soon as you finish using the resource."}
+{"id": "/documentation/Foundation/NSURL/startAccessingSecurityScopedResource()", "law": "You must balance each call to for a given security-scoped URL with a call to ."}
+{"id": "/documentation/Foundation/NSURL/stopAccessingSecurityScopedResource()", "law": "You can also use its Core Foundation equivalent, the function."}
+{"id": "/documentation/Foundation/NSURL/stopAccessingSecurityScopedResource()", "law": "You must balance each call to for a given security-scoped URL with a call to ."}
+{"id": "/documentation/Foundation/NSURL/stopAccessingSecurityScopedResource()", "law": "If you call this method on a URL whose referenced resource you don’t have access to, nothing happens."}

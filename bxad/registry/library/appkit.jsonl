@@ -376,3 +376,34 @@
 {"id": "/documentation/AppKit/NSView", "law": "If you subclass directly and handle specific types of events, don’t call in the implementations of your event-related methods."}
 {"id": "/documentation/AppKit/NSView", "law": "Therefore, don’t call if your view implements any of the following methods and handles the event: changes the default behavior of so that it calls and, if non , presents the contextual menu."}
 {"id": "/documentation/AppKit/NSView", "law": "If your view descends from a class other than , call to let the parent view handle any events that you don’t."}
+{"id": "/documentation/appkit/accessibility-for-appkit", "law": "Typically, you don’t need to do extra work to enable the standard accessibility features."}
+{"id": "/documentation/appkit/accessibility-for-appkit", "law": "If your app contains custom user interface elements that don’t inherit from or one of the other AppKit classes with built-in accessibility, make those elements accessible by subclassing ."}
+{"id": "/documentation/appkit/accessibility-for-appkit", "law": "If you’re using a standard AppKit user interface element, you can override its existing accessibility attributes or use it as-is."}
+{"id": "/documentation/appkit/accessibility-for-appkit", "law": "If you’re designing a completely custom user interface element that doesn’t subclass an AppKit view, you must subclass the accessibility element class."}
+{"id": "/documentation/appkit/app-and-environment", "law": "Learn about the objects that you use to interact with the system."}
+{"id": "/documentation/appkit/appearance-customization", "law": "Add Dark Mode support to your app, and use appearance proxies to modify your UI."}
+{"id": "/documentation/appkit/constants", "law": "Constants for use with multiple classes."}
+{"id": "/documentation/appkit/data-types", "law": "Data types for use with multiple classes."}
+{"id": "/documentation/appkit/deprecated-symbols", "law": "Review symbols that are no longer supported, and find the replacements to use instead."}
+{"id": "/documentation/appkit/enumerations", "law": "Enumerations for use with multiple classes."}
+{"id": "/documentation/appkit/macros", "law": "Macros for use with multiple classes."}
+{"id": "/documentation/appkit/menus-cursors-and-the-dock", "law": "Implement menus and cursors to facilitate interactions with your app, and use your app’s Dock tile to convey updated information."}
+{"id": "/documentation/appkit/mouse-keyboard-and-trackpad", "law": "Any object that handles events must inherit from the class."}
+{"id": "/documentation/appkit/nswritingtoolscoordinator/delegate-swift.protocol/writingtoolscoordinator(_:requestspreviewfor:of:in:textdecoration:completion:)", "law": "To support grammar animation, the delegate should provide previews for the relevant text, as with the required method, but in this case showing the text with the specified decoration applied."}
+{"id": "/documentation/appkit/nswritingtoolscoordinator/delegate-swift.protocol/writingtoolscoordinator(_:requestspreviewfor:of:in:textdecoration:completion:)", "law": "If you use grammar animation, you must implement this delegate method to provide them, based on the specified decoration."}
+{"id": "/documentation/appkit/nswritingtoolscoordinator/textdecoration", "law": "Use the constants to determine the type of decoration to be applied to a preview for grammar animation."}
+{"id": "/documentation/appkit/nswritingtoolscoordinator/textdecoration", "law": "If you use grammar animation, you must implement the delegate method to provide both forms of previews, based on the specified decoration."}
+{"id": "/documentation/appkit/supporting-continuity-camera-in-your-mac-app", "law": "With Continuity Camera in macOS 10.14 and later, and iOS 12 and later, you can use your iPhone, iPad, or iPod touch to scan documents or take a picture of something nearby and then access those documents or pictures instantly from your app."}
+{"id": "/documentation/appkit/supporting-continuity-camera-in-your-mac-app", "law": "For example, a text-editing app can use this feature to easily incorporate images into a document."}
+{"id": "/documentation/appkit/supporting-continuity-camera-in-your-mac-app", "law": "You must tell AppKit that your app can take advantage of any image data originating from Continuity Camera."}
+{"id": "/documentation/appkit/supporting-continuity-camera-in-your-mac-app", "law": "Your responder’s implementation must verify that it can receive pasteboard image data of the specified type, then return the object to receive the image data when AppKit places it on the pasteboard."}
+{"id": "/documentation/appkit/supporting-continuity-camera-in-your-mac-app", "law": "Here’s how it looks: If your app doesn’t use a storyboard, you can programmatically add the menu item by following these steps: Get the app’s main menu bar."}
+{"id": "/documentation/appkit/supporting-continuity-camera-in-your-mac-app", "law": "A good place to do this is in your app delegate’s method as the following example shows: You don’t add a Continuity Camera menu item directly to your app’s contextual menus."}
+{"id": "/documentation/appkit/supporting-continuity-camera-in-your-mac-app", "law": "Use that method to determine whether the image is in a format your app supports, and incorporate that image data into your app."}
+{"id": "/documentation/appkit/text-display", "law": "Use the class to add either a label or a simple text input."}
+{"id": "/documentation/appkit/text-display", "law": "Use the class to provide more comprehensive layout and editing features for larger bodies of text."}
+{"id": "/documentation/appkit/text-display", "law": "To connect your app to a spell-checking service, use the class."}
+{"id": "/documentation/appkit/textkit", "law": "In AppKit, you can use , which packages TextKit capabilities to provide a convenient text rendering and editing experience."}
+{"id": "/documentation/appkit/textkit", "law": "Use if you want an -related storage type, or subclass to use your own."}
+{"id": "/documentation/appkit/textkit", "law": "Use for better performance, and support for international languages."}
+{"id": "/documentation/appkit/view-layout", "law": "The user’s language choice requires size changes for labels and text-based views."}

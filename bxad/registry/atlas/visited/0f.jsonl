@@ -19,3 +19,11 @@
 {"id": "/documentation/realitykit/realityview", "sha": "04efeb332775fa08cb405ed0f8bd0ddd8c730f4b3c772c8b8d1491e9e74b2391", "t": "RealityView", "n": 1823, "laws": 5, "ts": "2026-07-25 23:14 UTC"}
 {"id": "/documentation/Intents/INIntentHandlerProviding", "sha": "535a16042bf68e885b822ba70a2b2839a845498fac5617c8a4a8a5e0973c7434", "t": "INIntentHandlerProviding", "n": 796, "laws": 3, "ts": "2026-07-25 23:20 UTC"}
 {"id": "/documentation/swiftui/view/glasseffectid(_:in:)", "sha": "b4d62405c7fb38bb285b4ea51187ccc8c0a89cb8f0bdf18fefc5e6be2cc726d4", "t": "glassEffectID(_:in:)", "n": 258, "laws": 1, "ts": "2026-07-25 23:26 UTC"}
+{"id": "/documentation/uikit/uilongpressgesturerecognizer", "sha": "b0e88a72224cfac419efecb413479740edb299acde610f1955f7bd878b2733b9", "t": "UILongPressGestureRecognizer", "n": 809, "laws": 2, "ts": "2026-07-26 00:08 UTC"}
+{"id": "/documentation/uikit/uiscenedelegate", "sha": "6f17b6a7f7b3bf825e8b2f0105f1187b1066f535d7cc4ae2dc36369a4a62d1e2", "t": "UISceneDelegate", "n": 1571, "laws": 4, "ts": "2026-07-26 00:14 UTC"}
+{"id": "/documentation/vision/detectlenssmudgerequest", "sha": "cbb1c3fbce9da9dc2d0622361e0b0a444b75f5f4d060b36658734a382216ce21", "t": "DetectLensSmudgeRequest", "n": 1528, "laws": 5, "ts": "2026-07-26 00:19 UTC"}
+{"id": "/documentation/wifiaware/wapublisherlistener/devices/allpaireddevices", "sha": "90e67c332cf465b64ec2fb286f238e030fa207beab69c3ff4aa54dd3b55045a6", "t": "allPairedDevices", "n": 74, "laws": 0, "ts": "2026-07-26 00:22 UTC"}
+{"id": "/documentation/SwiftUI/Spring", "sha": "a96c4346dbc3c0e0b8a75f8d38152219c027d70a3b0c52b8182757c852a4918c", "t": "Spring", "n": 1164, "laws": 1, "ts": "2026-07-26 00:25 UTC"}
+{"id": "/documentation/SwiftUI/View/fullScreenCover(isPresented:onDismiss:content:)", "sha": "9a8fdb0e6198752fdb692790fe038c49db9e7676d3ed239dce6e1b2e95ee8595", "t": "fullScreenCover(isPresented:onDismiss:content:)", "n": 307, "laws": 1, "ts": "2026-07-26 00:28 UTC"}
+{"id": "/documentation/RealityKit/AnchoringComponent/TrackingMode-swift.struct/continuous", "sha": "5816d224f6b6245bc7cbf16c4b7ecd26821da4d32142589460adf57cad516dd9", "t": "continuous", "n": 331, "laws": 0, "ts": "2026-07-26 00:31 UTC"}
+{"id": "/documentation/Accelerate/BNNSGraph", "sha": "01aca5abac6e53d095a338713c91122af4142297c0039935b1c1b79e68070b12", "t": "BNNSGraph", "n": 365, "laws": 0, "ts": "2026-07-26 00:32 UTC"}

@@ -16,3 +16,6 @@
 {"id": "/documentation/photosui/phpickerfilter-swift.struct/bursts", "sha": "422236d92929a5588bc896ded3c58334fb3c766b509158eed134056c83fa50c1", "t": "bursts", "n": 64, "laws": 0, "ts": "2026-07-25 23:12 UTC"}
 {"id": "/documentation/realitykit/bodytrackingcomponent", "sha": "09426ed9f99b36d0508845fed77ba72e57b5fddd3f95799171beb3e2f65c0488", "t": "BodyTrackingComponent", "n": 374, "laws": 1, "ts": "2026-07-25 23:15 UTC"}
 {"id": "/documentation/swiftdata/maintaining-a-local-copy-of-server-data", "sha": "f7969a2dec17d5ef81c175a09ae7d96ddc2b3b42a435ba3ea37956de8330d3d0", "t": "Maintaining a local copy of server data", "n": 4333, "laws": 2, "ts": "2026-07-25 23:23 UTC"}
+{"id": "/documentation/uikit/adding-user-focusable-elements-to-a-tvos-app", "sha": "f671d7d53ab8efe5cbd4bd6184de5e20ecb568f5c8eb03a524d32fe9d19f488d", "t": "Adding user-focusable elements to a tvOS app", "n": 2088, "laws": 3, "ts": "2026-07-26 00:14 UTC"}
+{"id": "/documentation/RealityKit/AudioFileGroupResource/init(_:)", "sha": "e58ec1ccde5c98ea5458d95bd26289926a6359158aa4ecdf850ccff70b3d6754", "t": "init(_:)", "n": 319, "laws": 1, "ts": "2026-07-26 00:30 UTC"}
+{"id": "/documentation/appkit/textkit", "sha": "a519a341a40d474ddc3a413a4996f89daef7301c7dc3ccf178eeefa92c33bb89", "t": "TextKit", "n": 2370, "laws": 3, "ts": "2026-07-26 00:33 UTC"}

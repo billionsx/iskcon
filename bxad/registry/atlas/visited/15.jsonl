@@ -18,3 +18,6 @@
 {"id": "/documentation/realitykit/lowlevelbuffer", "sha": "f82c727fe220bdb73cbeaeb46ea382c6acb376397de6c0e751d7b93a1867f802", "t": "LowLevelBuffer", "n": 252, "laws": 0, "ts": "2026-07-25 23:15 UTC"}
 {"id": "/documentation/realitykit/hovereffectcomponent", "sha": "d5a276a0ffeb29bb1fdf1477cd343bb53846268b9b6f89250998cef13ccd186c", "t": "HoverEffectComponent", "n": 2836, "laws": 2, "ts": "2026-07-25 23:17 UTC"}
 {"id": "/documentation/swiftdata/modelcontext", "sha": "f2d0dfdfd21407267a6ad1d3c767a6675e251d9a860b3fa8704d0017e306bd45", "t": "ModelContext", "n": 4314, "laws": 10, "ts": "2026-07-25 23:23 UTC"}
+{"id": "/documentation/translation/translationsession/request", "sha": "76790a1764915b4d49347753ad6f4661b28e4059ca2c7783d07b597b8e9a90b1", "t": "TranslationSession.Request", "n": 707, "laws": 0, "ts": "2026-07-26 00:06 UTC"}
+{"id": "/documentation/uikit/nscollectionlayoutboundarysupplementaryitem/pintovisiblebounds", "sha": "6e400af78c8954e3d2ab6ba53684eb8a35c60a35768a28ccae8c743cdae5dad5", "t": "pinToVisibleBounds", "n": 636, "laws": 0, "ts": "2026-07-26 00:12 UTC"}
+{"id": "/documentation/SwiftUI/Scene/defaultLaunchBehavior(_:)", "sha": "ee101d4cf2c408c6fa1b8a7632e7df538e50190c91d57e9326642e7c39d0796e", "t": "defaultLaunchBehavior(_:)", "n": 1435, "laws": 4, "ts": "2026-07-26 00:29 UTC"}

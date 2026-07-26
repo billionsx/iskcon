@@ -20,3 +20,8 @@
 {"id": "/documentation/pencilkit/pkstrokereference", "sha": "4e1b7ff0dfeb18d14cc194d38a577fb4a2dfa549dafe49d5b6377b3c16294c1c", "t": "PKStrokeReference", "n": 577, "laws": 0, "ts": "2026-07-25 23:12 UTC"}
 {"id": "/documentation/speech/dictationtranscriber", "sha": "56dab8f6a78c5bf6348c9d1a8339987f972a318e076af0a5b787d8347f9e8f46", "t": "DictationTranscriber", "n": 1649, "laws": 1, "ts": "2026-07-25 23:21 UTC"}
 {"id": "/documentation/swiftui/groupelementsofcontent", "sha": "b25b83bb950aaeb374de90846f803ea971c7a146bd9d19a0e1532f1329e33264", "t": "GroupElementsOfContent", "n": 166, "laws": 1, "ts": "2026-07-25 23:25 UTC"}
+{"id": "/documentation/translation/translationsession/response/targettext", "sha": "92d5654db44dc7df4c1a26f4b74e4a5a0df376c0ae3cf66f2fc868193c130200", "t": "targetText", "n": 20, "laws": 0, "ts": "2026-07-26 00:06 UTC"}
+{"id": "/documentation/uikit/uikeyboardlayoutguide", "sha": "8a18ab01e3fcb5155024b666085377d445dec388a393f0b24b2ab040d40604a5", "t": "UIKeyboardLayoutGuide", "n": 523, "laws": 0, "ts": "2026-07-26 00:07 UTC"}
+{"id": "/documentation/uikit/tracking-the-force-of-3d-touch-events", "sha": "3f4c947753230794dff3de9ba8dd6f0def6e46d36014eef6a4fb161e12669488", "t": "Tracking the force of 3D Touch events", "n": 967, "laws": 3, "ts": "2026-07-26 00:12 UTC"}
+{"id": "/documentation/Foundation/Operation", "sha": "66c91240b7dc0a8844df588d0252497ba0cd658eab0a4f816da677d70debb477", "t": "Operation", "n": 13826, "laws": 10, "ts": "2026-07-26 00:14 UTC"}
+{"id": "/documentation/Updates/WidgetKit", "sha": "76ba77af7877004871f38e9be58965080f49d5c8918e0138a15e4d33a4cddd15", "t": "WidgetKit updates", "n": 1281, "laws": 4, "ts": "2026-07-26 00:22 UTC"}

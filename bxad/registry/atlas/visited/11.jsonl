@@ -19,3 +19,8 @@
 {"id": "/documentation/networkextension/wi-fi-configuration", "sha": "9d4e7b58c15a8e30eb9cec95c851fbf831688692fe29622984e69c6dfca037f0", "t": "Wi-Fi configuration", "n": 1161, "laws": 2, "ts": "2026-07-25 23:09 UTC"}
 {"id": "/documentation/photosui/phpickerconfiguration-swift.struct", "sha": "d54a9a2ccd4f6649d297ce670670559b1ba838d5fad272ce23e58f525e9e070d", "t": "PHPickerConfiguration", "n": 714, "laws": 0, "ts": "2026-07-25 23:13 UTC"}
 {"id": "/documentation/realitykit/shadergraphmaterial", "sha": "3499aa715eec1080446d94b75c7c0db22a3c1d5e896aa5620d0c2217fadad12c", "t": "ShaderGraphMaterial", "n": 1450, "laws": 1, "ts": "2026-07-25 23:15 UTC"}
+{"id": "/documentation/uikit/uiimage/init(named:in:with:)", "sha": "0f5669cab3f7e40e0c9575db58339677056316ca0c90b67acc6964c143102e8a", "t": "init(named:in:with:)", "n": 1135, "laws": 1, "ts": "2026-07-26 00:09 UTC"}
+{"id": "/documentation/uikit/uimanageddocument", "sha": "6dd07a59e64b687c5b4e85babc2f7dfe6aad34cf50cc7ac2b62dea1f78785ddd", "t": "UIManagedDocument", "n": 2002, "laws": 3, "ts": "2026-07-26 00:16 UTC"}
+{"id": "/documentation/groupactivities/groupstateobserver", "sha": "bfd20b645ea521f0ee3950be8c479dffb96bc12d9f0bc6b56c0cec10fe3d8776", "t": "GroupStateObserver", "n": 794, "laws": 2, "ts": "2026-07-26 00:23 UTC"}
+{"id": "/documentation/SwiftUI/WorldScalingBehavior/dynamic", "sha": "0c5a696b9dccba6e382f7be37b38291f366c6df2a0c0f390a1ba93d40a26cbc5", "t": "dynamic", "n": 364, "laws": 1, "ts": "2026-07-26 00:24 UTC"}
+{"id": "/documentation/Swift/MainActor", "sha": "e8a8fc9ba02284f403b8b13a25916fa94ec7c23d96abae9e4f7043da9946c801", "t": "MainActor", "n": 382, "laws": 0, "ts": "2026-07-26 00:29 UTC"}

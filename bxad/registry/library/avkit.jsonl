@@ -132,3 +132,6 @@
 {"id": "/documentation/AVKit/adopting-the-system-player-interface-in-visionos", "law": "You can use the visionOS player UI to present controls contextually, which your app displays for a specific range of time in the content and then dismiss."}
 {"id": "/documentation/AVKit/adopting-the-system-player-interface-in-visionos", "law": "A common use for this type of control is a skip button that displays during the title sequence of a movie or TV show."}
 {"id": "/documentation/AVKit/adopting-the-system-player-interface-in-visionos", "law": "provides a property you can use to specify one or more actions to present."}
+{"id": "/documentation/AVKit/trimming-and-exporting-media-in-visionos", "law": "You use to present the system video-player interface in your visionOS app."}
+{"id": "/documentation/AVKit/trimming-and-exporting-media-in-visionos", "law": "This article describes how to adopt this feature in your app, and shows how to use AVFoundation to export the trimmed result."}
+{"id": "/documentation/AVKit/trimming-and-exporting-media-in-visionos", "law": "A convenient way to export your trimmed selection is to use ."}

@@ -19,3 +19,4 @@
 {"id": "/documentation/eventkit/ekeventstore/reset()", "sha": "ca188ce480a90e63588aad70343a2c4b0a24ef4f4d77b6e3a7157de8d6b6ea13", "t": "reset()", "n": 343, "laws": 0, "ts": "2026-07-25 18:27 UTC"}
 {"id": "/documentation/metal/mtlstages/fragment", "sha": "90f8f60a9713e6a7b52c491cf66f9bc3a1f0ef3067b0f4c98d85f12ff722cec9", "t": "fragment", "n": 59, "laws": 0, "ts": "2026-07-25 23:04 UTC"}
 {"id": "/documentation/storekit/skpaymenttransactionobserver", "sha": "276af0c479fcfa646b02373bb82d512426825ca2c22d0576bb8605cd264adffd", "t": "SKPaymentTransactionObserver", "n": 1006, "laws": 0, "ts": "2026-07-25 23:21 UTC"}
+{"id": "/documentation/uikit/pointer-interactions", "sha": "bbdf56f9ed53859232fadba034203f4cb7cfe64cc4de3a2a1198623066354930", "t": "Pointer interactions", "n": 2481, "laws": 2, "ts": "2026-07-26 00:12 UTC"}

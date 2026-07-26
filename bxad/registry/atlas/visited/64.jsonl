@@ -17,3 +17,7 @@
 {"id": "/documentation/PDFKit/PDFDocument", "sha": "44059ca62d4d46408113063f33707a454a5719d394ad170a4abf52ff43e502fc", "t": "PDFDocument", "n": 801, "laws": 0, "ts": "2026-07-25 23:11 UTC"}
 {"id": "/documentation/realitykit/entity/components", "sha": "1ceeacbd81e5a3b7d7d23308bbb989a7a0cae6fa271d5d5113a11186f9e29c22", "t": "components", "n": 118, "laws": 0, "ts": "2026-07-25 23:16 UTC"}
 {"id": "/documentation/swiftui/view/clipshape(_:style:)", "sha": "e9e484a1e07343f38341163930d052d6b40fbe2fe074315b44c5880f23ba12b2", "t": "clipShape(_:style:)", "n": 532, "laws": 1, "ts": "2026-07-25 23:25 UTC"}
+{"id": "/documentation/tvuikit/tvcollectionviewdelegatefullscreenlayout", "sha": "0b2e555fe24dc74d5200b540b7c899fc8551966b27f506ad033489f05f2152dc", "t": "TVCollectionViewDelegateFullScreenLayout", "n": 279, "laws": 0, "ts": "2026-07-26 00:04 UTC"}
+{"id": "/documentation/uikit/uifocusitemcontainer", "sha": "2586d0d944782425f2fcc60a1fc1569a402281e44a81bb819e8f690ce7bc1e5b", "t": "UIFocusItemContainer", "n": 304, "laws": 0, "ts": "2026-07-26 00:14 UTC"}
+{"id": "/documentation/uikit/uistackview", "sha": "59197ee00cc4d76089a4dce1eba68af31f302d0bf6d9f0a5d377d60b35222f55", "t": "UIStackView", "n": 11924, "laws": 10, "ts": "2026-07-26 00:16 UTC"}
+{"id": "/documentation/swiftui/scenes", "sha": "150fe4dda48eda6c2ab531b333361374693bcc640fd598f25db55188e9f30f9b", "t": "Scenes", "n": 1648, "laws": 0, "ts": "2026-07-26 00:34 UTC"}

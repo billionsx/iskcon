@@ -13,3 +13,10 @@
 {"id": "/documentation/realitykit/physics-simulations-and-motion", "sha": "41ac9e27a010ab66b14d0211cdb9c17d79afb1873932bc2942f0022fb7fbfdcf", "t": "Simulations and motion", "n": 1028, "laws": 0, "ts": "2026-07-25 23:17 UTC"}
 {"id": "/documentation/Intents/INPaymentRecord", "sha": "82c0c02c244520327011d1e67735a286afbedbe6999c444261bcb50ee6626ef1", "t": "INPaymentRecord", "n": 1195, "laws": 1, "ts": "2026-07-25 23:19 UTC"}
 {"id": "/documentation/speech/assetinventory", "sha": "ad1377dc17916b15f9d90065cfd568fc43506fba85fdb2316e5461203eae82b9", "t": "AssetInventory", "n": 2245, "laws": 4, "ts": "2026-07-25 23:20 UTC"}
+{"id": "/documentation/tvuikit/tvcollectionviewfullscreenlayoutattributes", "sha": "a2a4193e66c65503f1f4abc30ad898a4d569ec96ce70a407b19c68e4e532022b", "t": "TVCollectionViewFullScreenLayoutAttributes", "n": 232, "laws": 0, "ts": "2026-07-26 00:04 UTC"}
+{"id": "/documentation/tabletopkit/creating-tabletop-games", "sha": "1f737d0229357ec274ba5a85464a98f67d91a046e944210c083b7deca63bce3e", "t": "Creating tabletop games", "n": 2094, "laws": 3, "ts": "2026-07-26 00:05 UTC"}
+{"id": "/documentation/uikit/uiaction", "sha": "b80f9d3df0bab1ddf839a1ce65e9ac0b31b6cc2b6967d606927abc5c6dcb6f4a", "t": "UIAction", "n": 840, "laws": 0, "ts": "2026-07-26 00:06 UTC"}
+{"id": "/documentation/uikit/uimenuleaf", "sha": "e6bed266ae6c5f4fce297106c992bd82ebdffcc03e7032342498c5993d5cb72b", "t": "UIMenuLeaf", "n": 594, "laws": 2, "ts": "2026-07-26 00:08 UTC"}
+{"id": "/documentation/uikit/nstextlayoutmanager", "sha": "cdbfda5d347c1483685caa74a3a657cca5210fa4beb8b148667eb2d6b8d130ee", "t": "NSTextLayoutManager", "n": 1489, "laws": 1, "ts": "2026-07-26 00:12 UTC"}
+{"id": "/documentation/uikit/uiview/transform", "sha": "790bac8c83ea7d9e47dab5b9a43154a59174cf6c64be7319b4d9fe9934fa7390", "t": "transform", "n": 864, "laws": 2, "ts": "2026-07-26 00:15 UTC"}
+{"id": "/documentation/ARKit/PlaneAnchor/Classification-swift.enum/floor", "sha": "4feb76ca6402aecb9eb4eae6709c82f2053b64f83f0d9a85681ece568834944b", "t": "PlaneAnchor.Classification.floor", "n": 8, "laws": 0, "ts": "2026-07-26 00:30 UTC"}

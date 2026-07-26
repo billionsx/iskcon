@@ -20,3 +20,11 @@
 {"id": "/documentation/realitykit/creating-a-spaceship-game", "sha": "a143298cf300bf8ed981f666d56a3f5e6ffaabf883ad82b3dc5746f072452081", "t": "Creating a Spaceship game", "n": 442, "laws": 0, "ts": "2026-07-25 23:13 UTC"}
 {"id": "/documentation/swiftui/textattribute", "sha": "0b4d6a3ff3d4a213a2635266e134da317756235bc8c67a799ac77fa26098f7bb", "t": "TextAttribute", "n": 76, "laws": 0, "ts": "2026-07-25 23:25 UTC"}
 {"id": "/documentation/swiftui/windowdraggesture", "sha": "63b179f53bd3defe586ddf5add0b3cd09fc2ee370f603bef0e732bfd9522d6ae", "t": "WindowDragGesture", "n": 514, "laws": 0, "ts": "2026-07-25 23:25 UTC"}
+{"id": "/documentation/tipkit/tips/rule", "sha": "886c244283da2df8c11517871caed0d91536f4b83e74a5652342d446708055b7", "t": "Rule", "n": 968, "laws": 1, "ts": "2026-07-26 00:05 UTC"}
+{"id": "/documentation/uikit/uicollectionviewdelegate", "sha": "ab6b96778aa0351ce65f94f14ae495cc369789f191c6f16c9e8f139af29efd73", "t": "UICollectionViewDelegate", "n": 3091, "laws": 1, "ts": "2026-07-26 00:06 UTC"}
+{"id": "/documentation/uikit/uiscenedelegate/scene(_:openurlcontexts:)", "sha": "c01c3bd576db9673335ea9f82bb25e33d3a325c3d04f503f38166ea7b90bacc9", "t": "scene(_:openURLContexts:)", "n": 43, "laws": 0, "ts": "2026-07-26 00:16 UTC"}
+{"id": "/documentation/UIKit/UIApplication/alternateIconName", "sha": "10028793d8e366cf3e801d77e2ce430619370e23cf34e727523198cefe1a75b2", "t": "alternateIconName", "n": 304, "laws": 0, "ts": "2026-07-26 00:22 UTC"}
+{"id": "/documentation/groupactivities/groupsessionmessenger/messages(of:)-jvoz", "sha": "307d49b98da459471117364743cc05b698201d118fbff9f29ee21ebdba3c4b2f", "t": "messages(of:)", "n": 426, "laws": 0, "ts": "2026-07-26 00:23 UTC"}
+{"id": "/documentation/RealityKit/ShapeResource/generateStaticMesh(from:)", "sha": "58b3d6e62a2b43c82062ff8dd6cf8f2f8113f7bdef14b6b86938b1b92337aca9", "t": "generateStaticMesh(from:)", "n": 233, "laws": 1, "ts": "2026-07-26 00:29 UTC"}
+{"id": "/documentation/GameController/GCSpatialAccessory/spatialAccessories", "sha": "326eb27b24cc64ef744bb9ae518670a78569410954ae2a1c4f10fdf89cae901a", "t": "spatialAccessories", "n": 76, "laws": 0, "ts": "2026-07-26 00:31 UTC"}
+{"id": "/documentation/swiftui/toolbars", "sha": "dc6cac74864eb7cb45bd445cb0e0f7fe188d964aa782f27aeee8a7dafeddcddb", "t": "Toolbars", "n": 1999, "laws": 0, "ts": "2026-07-26 00:34 UTC"}

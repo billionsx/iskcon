@@ -568,3 +568,13 @@
 {"id": "/documentation/Technotes/tn3186-troubleshooting-in-app-purchases-availability-in-the-sandbox", "law": "To build apps with advanced capabilities such as In-App Purchase, you must have an active developer account."}
 {"id": "/documentation/Technotes/tn3186-troubleshooting-in-app-purchases-availability-in-the-sandbox", "law": "To offer In-App Purchases in your app, you must have a in effect in App Store Connect."}
 {"id": "/documentation/Technotes/tn3186-troubleshooting-in-app-purchases-availability-in-the-sandbox", "law": "After you accept the , your needs to submit all required banking and tax information."}
+{"id": "/documentation/Technotes/tn3179-understanding-local-network-privacy", "law": "The system records their decision, so future accesses don’t prompt."}
+{"id": "/documentation/Technotes/tn3179-understanding-local-network-privacy", "law": "For more information about the Bonjour operations that require this, see below."}
+{"id": "/documentation/Technotes/tn3179-understanding-local-network-privacy", "law": "If you use Xcode’s automatic code signing, use the editor to enable this capability."}
+{"id": "/documentation/Technotes/tn3179-understanding-local-network-privacy", "law": "The multicast entitlement isn’t required on macOS."}
+{"id": "/documentation/Technotes/tn3179-understanding-local-network-privacy", "law": "To handle this smoothly, use an API that supports waiting for connectivity, like framework framework or with enabled."}
+{"id": "/documentation/Technotes/tn3179-understanding-local-network-privacy", "law": "If you can’t use one of these preferred APIs, add appropriate retry logic."}
+{"id": "/documentation/Technotes/tn3179-understanding-local-network-privacy", "law": "Outgoing traffic to a local network address requires local network access."}
+{"id": "/documentation/Technotes/tn3179-understanding-local-network-privacy", "law": "Note these exceptions to the rules above: If your device’s DNS server is on a local network, traffic to it doesn’t require local network access."}
+{"id": "/documentation/Technotes/tn3179-understanding-local-network-privacy", "law": "If your device uses a network proxy and that proxy is on a local network, traffic to it doesn’t require local network access."}
+{"id": "/documentation/Technotes/tn3179-understanding-local-network-privacy", "law": "Traffic originating from , , and Safari doesn’t require local network access."}
