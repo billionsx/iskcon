@@ -47,3 +47,7 @@
 {"id": "/documentation/accelerate/vvsqrt(_:_:_:)", "sha": "adbcc4407ad7b43c65a7481126c746a7a50dbaa2bea33bed591e1c7ab8d8a6e2", "t": "vvsqrt(_:_:_:)", "n": 159, "laws": 0, "ts": "2026-07-26 12:16 UTC"}
 {"id": "/documentation/simd/simd_precise_recip(_:)-61i77", "sha": "33c4a3e4152ba4a471b0dd3e5e18f1b2ef9c4a257af2a31247086bc1c231fc37", "t": "simd_precise_recip(_:)", "n": 59, "laws": 0, "ts": "2026-07-26 12:19 UTC"}
 {"id": "/documentation/simd/simd_step(_:_:)-2gbx7", "sha": "f4dd3a545f7d0b16eaec4a5096db3d08814eb12a33874f14971a8924bc93c046", "t": "simd_step(_:_:)", "n": 96, "laws": 0, "ts": "2026-07-26 12:19 UTC"}
+{"id": "/documentation/appkit/nsaccessibilitysearchcurrentrangekey", "sha": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855", "t": "NSAccessibilitySearchCurrentRangeKey", "n": 0, "laws": 0, "ts": "2026-07-26 18:27 UTC"}
+{"id": "/documentation/appkit/nsslidercell/slidertype", "sha": "06f2ce75d8cb265e08c0311f654b59d14943c070bf6cab31b0e48a953f39a7a3", "t": "sliderType", "n": 680, "laws": 3, "ts": "2026-07-26 18:31 UTC"}
+{"id": "/documentation/foundation/nsuseractivity/contextidentifierpath", "sha": "608231f89370f12ca505c2283e23de3bb54eb2c45c99113edd5554071d4714d7", "t": "contextIdentifierPath", "n": 338, "laws": 0, "ts": "2026-07-26 18:36 UTC"}
+{"id": "/documentation/foundation/nsuseractivity/init(activitytype:)", "sha": "9b74ec00f1d9de1e3b64f397ab2f94b3da76efcaf9841c50159cbe19624a73a9", "t": "init(activityType:)", "n": 82, "laws": 0, "ts": "2026-07-26 18:36 UTC"}

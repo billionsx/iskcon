@@ -33,3 +33,7 @@
 {"id": "/documentation/corevideo/cvdisplaylinkoutputcallback", "sha": "9782730f7b49456b0a05fa1fa395b8216ac795b1b741d2469ddaf78b305e4017", "t": "CVDisplayLinkOutputCallback", "n": 472, "laws": 2, "ts": "2026-07-26 12:11 UTC"}
 {"id": "/documentation/accelerate/vvacos(_:_:_:)", "sha": "055c2d932f6975067ade3de1933af91442b6f834703a2436ec6b9fd96ecb4cad", "t": "vvacos(_:_:_:)", "n": 196, "laws": 0, "ts": "2026-07-26 12:14 UTC"}
 {"id": "/documentation/simd/cos(_:)-9hw4a", "sha": "b4df6d4d62a0344eff626c96c97353c8911f625553efa7054eb4c8d580862e8b", "t": "cos(_:)", "n": 47, "laws": 0, "ts": "2026-07-26 12:16 UTC"}
+{"id": "/documentation/simd/tanh", "sha": "05fa6c084dfc44a956bf3017852c1a007e025a91cc6554d66a46842351246b2b", "t": "tanh", "n": 59, "laws": 0, "ts": "2026-07-26 18:10 UTC"}
+{"id": "/documentation/accelerate/bnnsgraph/builder/tensor/scatteralongaxis(updates:indices:mode:axis:)", "sha": "5a384c4c5e1321289f712a8d705e600122197277847a99543cfc98e371bc108c", "t": "scatterAlongAxis(updates:indices:mode:axis:)", "n": 56, "laws": 0, "ts": "2026-07-26 18:15 UTC"}
+{"id": "/documentation/appkit/nsaccessibility-c.protocol/accessibilityuserinputlabels", "sha": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855", "t": "accessibilityUserInputLabels", "n": 0, "laws": 0, "ts": "2026-07-26 18:22 UTC"}
+{"id": "/documentation/arkit/arreferenceimage/name", "sha": "6c36aaa6be85b6d9a84bab7ffe7a829d5ca19523658af398c6808c09ff1bf77d", "t": "name", "n": 371, "laws": 1, "ts": "2026-07-26 18:36 UTC"}

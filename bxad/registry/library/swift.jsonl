@@ -353,3 +353,9 @@
 {"id": "/documentation/Swift/Void", "law": "However, the type of a function, method, or closure always includes a return type, which is if otherwise unspecified."}
 {"id": "/documentation/Swift/Void", "law": "Use or an empty tuple as the return type when declaring a closure, function, or method that doesn’t return a value."}
 {"id": "/documentation/Swift/Void", "law": "The return type of functions that don’t explicitly specify a return type, that is, an empty tuple ."}
+{"id": "/documentation/Swift/UnsafeMutableBufferPointer", "law": "You can use an instance in low level operations to eliminate uniqueness checks and, in release mode, bounds checks."}
+{"id": "/documentation/Swift/UnsafeMutableBufferPointer", "law": "Bounds checks are always performed in debug mode."}
+{"id": "/documentation/Swift/Never", "law": "Use as the return type of a function that doesn’t return normally — for example, because it runs forever or terminates the program."}
+{"id": "/documentation/Swift/Never", "law": "You can use an uninhabited type like to represent states in your program that are impossible to reach during execution."}
+{"id": "/documentation/Swift/Never", "law": "In the code above, has a failure type of , indicating that it always succeeds."}
+{"id": "/documentation/Swift/Never", "law": "The switch statement is therefore exhaustive, even though it doesn’t contain a case, because that case could never be reached."}

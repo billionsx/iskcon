@@ -40,3 +40,8 @@
 {"id": "/documentation/coreimage/ciimageprocessorkernel/apply(withextents:inputs:arguments:)", "sha": "ee9bb0fef1a02d687229d6e57351832dd27bbfc8a02a083badc3df82871f9954", "t": "apply(withExtents:inputs:arguments:)", "n": 490, "laws": 0, "ts": "2026-07-26 12:09 UTC"}
 {"id": "/documentation/accelerate/vforce/floor(_:)-5awna", "sha": "9156dfbf9c9b17986932f61b29f5b0183c3a35f4dd1559f5ebac94830257c833", "t": "floor(_:)", "n": 73, "laws": 0, "ts": "2026-07-26 12:13 UTC"}
 {"id": "/documentation/simd/cbrt", "sha": "c3fd923b5db96cce999940bbc58cf696db91baa6b7adf4afe51360dcd6cb1598", "t": "cbrt", "n": 50, "laws": 0, "ts": "2026-07-26 12:16 UTC"}
+{"id": "/documentation/appkit/nsaccessibility-c.protocol/accessibilitysharedtextuielements", "sha": "c68e0467c85dfcc39e0f49c027f9fe2d100350ae382c9738bd56efd212138e8a", "t": "accessibilitySharedTextUIElements", "n": 219, "laws": 1, "ts": "2026-07-26 18:21 UTC"}
+{"id": "/documentation/appkit/nsdatepickercell", "sha": "2e7f5235678612f019a6c1ea45e10683bad218cc87f5e5826e9cefbe2c1629fe", "t": "NSDatePickerCell", "n": 523, "laws": 0, "ts": "2026-07-26 18:28 UTC"}
+{"id": "/documentation/appkit/nsbutton/bezelcolor", "sha": "49c9598ee9567c5c91009400e95933f206ad8c7f58b725f79ae0b177fe6aee5c", "t": "bezelColor", "n": 64, "laws": 0, "ts": "2026-07-26 18:29 UTC"}
+{"id": "/documentation/AppClip/testing-the-launch-experience-of-your-app-clip", "sha": "9ca1802f2fc0906ecc69e5829a71f9f5975e695584dd05fbc5accf95775dd9b5", "t": "Testing the launch experience of your App Clip", "n": 11062, "laws": 10, "ts": "2026-07-26 18:36 UTC"}
+{"id": "/documentation/appintents/appintent/performresult", "sha": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855", "t": "PerformResult", "n": 0, "laws": 0, "ts": "2026-07-26 18:38 UTC"}

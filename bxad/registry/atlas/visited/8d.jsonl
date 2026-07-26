@@ -37,3 +37,8 @@
 {"id": "/documentation/coreimage/ciimageprocessorkernel/formatforinput(at:)", "sha": "01ed373a5f8ecd2468c3786a8639b9317c6508f2888edd379a58024d084b650e", "t": "formatForInput(at:)", "n": 549, "laws": 1, "ts": "2026-07-26 12:09 UTC"}
 {"id": "/documentation/accelerate/vforce/acos(_:)-3hl5t", "sha": "61129d9472c15d08509b126b30a07324692bbea0005556f4ef8ab845fbc83aa0", "t": "acos(_:)", "n": 77, "laws": 0, "ts": "2026-07-26 12:11 UTC"}
 {"id": "/documentation/accelerate/vvfloorf(_:_:_:)", "sha": "34ad96f5116888e99f716ee7b50748b4e58bb75ad34e8017f00e77fd95027d44", "t": "vvfloorf(_:_:_:)", "n": 153, "laws": 0, "ts": "2026-07-26 12:15 UTC"}
+{"id": "/documentation/appkit/nsaccessibility-c.protocol/accessibilitylabelvalue", "sha": "15f02790f5a9658458c4b9d5577b44a13fbbf708129a707b02fca6ddb1ee872b", "t": "accessibilityLabelValue", "n": 107, "laws": 1, "ts": "2026-07-26 18:21 UTC"}
+{"id": "/documentation/appkit/nsaccessibilityprotocol/setaccessibilitymenubar(_:)", "sha": "2cd524aaf05869ce29441a2e10d3dcda4bbf82dda820ae73b922e6cf1e2bf4a4", "t": "setAccessibilityMenuBar(_:)", "n": 24, "laws": 0, "ts": "2026-07-26 18:26 UTC"}
+{"id": "/documentation/appkit/nsaccessibilityprotocol/setaccessibilitymodal(_:)", "sha": "8d69f98c00ffc4cfe95b6c206d20780b3b7f5a1f98ad23ce1e73f0fc92ad6f4b", "t": "setAccessibilityModal(_:)", "n": 65, "laws": 0, "ts": "2026-07-26 18:26 UTC"}
+{"id": "/documentation/appkit/nsslider", "sha": "2834861b549aa1f76e87da724ef6cd4511911ac8218ce2fca37e0c0401e8e563", "t": "NSSlider", "n": 1091, "laws": 0, "ts": "2026-07-26 18:29 UTC"}
+{"id": "/documentation/appclip/responding-to-invocations", "sha": "598f3d921872b85be3774a32576a6e2015022e10906ae8082fffdfa6ba1c1e3a", "t": "Responding to invocations", "n": 5780, "laws": 10, "ts": "2026-07-26 18:35 UTC"}

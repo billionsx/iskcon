@@ -27,3 +27,6 @@
 {"id": "/documentation/Foundation/NSError", "sha": "933e9769fecbbf41cdfc131ccd392338855b67b21c87bd32818f608ba872ca3f", "t": "NSError", "n": 2041, "laws": 0, "ts": "2026-07-26 12:05 UTC"}
 {"id": "/documentation/accelerate/vforce/atanh(_:)-922d", "sha": "9ce4d15425b484c51e76ec59bc9f0598cd65af94921066e75059852a4d87d640", "t": "atanh(_:)", "n": 94, "laws": 0, "ts": "2026-07-26 12:12 UTC"}
 {"id": "/documentation/accelerate/vforce/log1p(_:result:)-5ckl", "sha": "f29f3c6f2739785097105ab8483ea143a5eac25531f06ce235739d25903c2b45", "t": "log1p(_:result:)", "n": 76, "laws": 0, "ts": "2026-07-26 12:13 UTC"}
+{"id": "/documentation/accelerate/vimagehistogramspecification_argbffff(_:_:_:_:_:_:_:_:)", "sha": "17452111feea1c52ba82130f3178ca9b0826d811f77c56d2a3d70768c3fa88e6", "t": "vImageHistogramSpecification_ARGBFFFF(_:_:_:_:_:_:_:_:)", "n": 1957, "laws": 8, "ts": "2026-07-26 18:13 UTC"}
+{"id": "/documentation/activitykit/activity/attributes", "sha": "1f3a794789b8d5f79ba28b777753dd74b863c033c02e238abd0cf5355facfcc4", "t": "attributes", "n": 66, "laws": 0, "ts": "2026-07-26 18:32 UTC"}
+{"id": "/documentation/bundleresources/information-property-list", "sha": "f382ee7eb80a468d51b368e04bcccbdf7158ac3ca869ff3cdcb4dd4bc3828898", "t": "Information Property List", "n": 2643, "laws": 5, "ts": "2026-07-26 18:33 UTC"}

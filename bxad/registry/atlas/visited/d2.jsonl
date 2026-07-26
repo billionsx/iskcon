@@ -29,3 +29,9 @@
 {"id": "/documentation/accelerate/vvatan2(_:_:_:_:)", "sha": "cf8416d45dbae121aac32f436c494a226fa72f8533ab88342931ff265b0ed6a4", "t": "vvatan2(_:_:_:_:)", "n": 275, "laws": 0, "ts": "2026-07-26 12:14 UTC"}
 {"id": "/documentation/simd/simd_dot-8l0kd", "sha": "8310309432e1e3c27003e372d4ec3883ab8b24d28c0642346bba86faad24f626", "t": "simd_dot", "n": 39, "laws": 0, "ts": "2026-07-26 12:18 UTC"}
 {"id": "/documentation/simd/simd_fast_rsqrt(_:)-80w49", "sha": "7b76527c6a048ef69006704000a5d4b5307613cf14caba6c1033f4d04b0cab73", "t": "simd_fast_rsqrt(_:)", "n": 68, "laws": 0, "ts": "2026-07-26 12:18 UTC"}
+{"id": "/documentation/accelerate/bnnsgraph/builder/direction", "sha": "5e90e8899e1529222ba5b24d0db00700d48cba83c47550e974fd5a058ba6ee6e", "t": "BNNSGraph.Builder.Direction", "n": 134, "laws": 0, "ts": "2026-07-26 18:13 UTC"}
+{"id": "/documentation/accelerate/bnnsgraph/builder/intent", "sha": "a04390341a05a9dd2ef9e0a3cf33ca97a8a1d96c9d793078c5af8d88ac289125", "t": "BNNSGraph.Builder.Intent", "n": 132, "laws": 0, "ts": "2026-07-26 18:13 UTC"}
+{"id": "/documentation/accelerate/bnnsgraph/builder/tensor/'.!=(_:_:)", "sha": "5f501686f4ac073e18698ff8ed229d75b48005cfe7a95e44f0c6205d26a3d032", "t": ".!=(_:_:)", "n": 63, "laws": 0, "ts": "2026-07-26 18:13 UTC"}
+{"id": "/documentation/appkit/nsaccessibility-c.protocol/accessibilityselected", "sha": "d8fe546d90dbf2e97d072eaf77faa817b530613d4a90477c651adc6f13c9bad3", "t": "accessibilitySelected", "n": 99, "laws": 0, "ts": "2026-07-26 18:21 UTC"}
+{"id": "/documentation/UIKit/UIDevice/name", "sha": "cbe57d7037cc7575de0df1c58855bd251d71b2dc99f018ae1757758934041977", "t": "name", "n": 443, "laws": 1, "ts": "2026-07-26 18:35 UTC"}
+{"id": "/documentation/AppClip/configuring-the-launch-experience-of-your-app-clip", "sha": "d16c6c99f9b0522f8d99a77ae353ef99bd6990414ac97158341622a273592526", "t": "Configuring App Clip experiences", "n": 14454, "laws": 10, "ts": "2026-07-26 18:36 UTC"}

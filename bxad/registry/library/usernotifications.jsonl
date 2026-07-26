@@ -48,3 +48,11 @@
 {"id": "/documentation/usernotifications/handling-communication-notifications-and-focus-status-updates", "law": "To request authorization, use and parse the result."}
 {"id": "/documentation/usernotifications/handling-communication-notifications-and-focus-status-updates", "law": "Unauthorized apps don’t receive a Focus status value."}
 {"id": "/documentation/usernotifications/handling-communication-notifications-and-focus-status-updates", "law": "Ensure the app handles the Focus status case."}
+{"id": "/documentation/UserNotifications/pushing-background-updates-to-your-app", "law": "If your app’s server-based content changes infrequently or at irregular intervals, you can use background notifications to notify your app when new content becomes available."}
+{"id": "/documentation/UserNotifications/pushing-background-updates-to-your-app", "law": "The system treats background notifications as low priority: you can use them to refresh your app’s content, but the system doesn’t guarantee their delivery."}
+{"id": "/documentation/UserNotifications/pushing-background-updates-to-your-app", "law": "The number of background notifications allowed by the system depends on current conditions, but don’t try to send more than two or three per hour."}
+{"id": "/documentation/UserNotifications/pushing-background-updates-to-your-app", "law": "To receive background notifications, you must add the remote notifications background mode to your app."}
+{"id": "/documentation/UserNotifications/pushing-background-updates-to-your-app", "law": "The figure below shows what you must select to recieve background notifications."}
+{"id": "/documentation/UserNotifications/pushing-background-updates-to-your-app", "law": "You may include custom keys in the payload, but the dictionary must not contain any keys that would trigger user interactions."}
+{"id": "/documentation/UserNotifications/pushing-background-updates-to-your-app", "law": "Additionally, the notification’s POST request should contain the header field with a value of , and the field with a value of ."}
+{"id": "/documentation/UserNotifications/pushing-background-updates-to-your-app", "law": "The APNs server requires the field when sending push notifications to Apple Watch, and recommends it for all platforms."}

@@ -42,3 +42,5 @@
 {"id": "/documentation/avfoundation/avcapturephoto/semanticsegmentationmatte(for:)", "sha": "11686f0ab809205af4349781072bd3d7644cc8572ba986c8b1cf06ad21f5f7a6", "t": "semanticSegmentationMatte(for:)", "n": 492, "laws": 0, "ts": "2026-07-26 12:04 UTC"}
 {"id": "/documentation/accelerate/vdsp_dft_setupd", "sha": "3dc8c793e360d7274937f2c1e4dd5fe1bfd75c9a863e2373935d94e3e18e1e2b", "t": "vDSP_DFT_SetupD", "n": 246, "laws": 0, "ts": "2026-07-26 12:08 UTC"}
 {"id": "/documentation/accelerate/vforce/expm1(_:result:)-2yhs3", "sha": "d0869777e69d1c0dd799040755fd1d70ae5a26f52d62c4fb73a4a86bf4291f2d", "t": "expm1(_:result:)", "n": 76, "laws": 0, "ts": "2026-07-26 12:12 UTC"}
+{"id": "/documentation/uikit/uiaccessibilityelement/isaccessibilityelement", "sha": "fd11795b2919ac3f7b62df96ed62bf78dafe123fddfebc74ea47a143ff9084aa", "t": "isAccessibilityElement", "n": 222, "laws": 0, "ts": "2026-07-26 18:17 UTC"}
+{"id": "/documentation/appkit/nsslider/settitle:", "sha": "50f78ce7f0953715385a09b7fba4de16649cc608c6a626c76ad3531df9c41839", "t": "setTitle:", "n": 62, "laws": 0, "ts": "2026-07-26 18:31 UTC"}

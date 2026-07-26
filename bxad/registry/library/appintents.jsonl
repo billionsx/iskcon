@@ -287,3 +287,103 @@
 {"id": "/documentation/AppIntents/providing-contextual-cues-to-apple-intelligence-and-siri", "law": "For locations, names, and contacts, you can use the type to provide a version of your data that other apps can use directly."}
 {"id": "/documentation/AppIntents/providing-contextual-cues-to-apple-intelligence-and-siri", "law": "To share your app’s content with the system, attach app entities to the views you use to show content: In SwiftUI, assign the identifier of your app entity to a view using the or modifier."}
 {"id": "/documentation/AppIntents/spotlight", "law": "When a search finds your content, the system can use the associated entity to open your app and navigate to that content."}
+{"id": "/documentation/AppIntents/AppEntityAnnotatable", "law": "System types adopt the protocol and use it to store a reference to an app entity."}
+{"id": "/documentation/AppIntents/AppEntityAnnotatable", "law": "Don’t add support for this protocol to your own custom types."}
+{"id": "/documentation/AppIntents/AppEntityAnnotatable", "law": "The system types use the presence of an entity to improve system experiences like Apple Intelligence, Siri, and Shortcuts."}
+{"id": "/documentation/AppIntents/AppEntityAnnotatable", "law": "An interface that system types adopt and use to manage their relationship to app entities."}
+{"id": "/documentation/appintents/acceleratingappinteractionswithappintents", "law": "Expressing these features as intents allows people to use them through Siri, Spotlight search, and Shortcuts."}
+{"id": "/documentation/appintents/acceleratingappinteractionswithappintents", "law": "The sample app includes two key features that people are likely to use frequently: looking up information on a trail, and recording activity on a trail."}
+{"id": "/documentation/appintents/acceleratingappinteractionswithappintents", "law": "To make it easy for people to use these features without even opening the app, the sample code creates intents for them to use with Siri, Spotlight search, and Shortcuts."}
+{"id": "/documentation/appintents/acceleratingappinteractionswithappintents", "law": "An App Shortcut combines an intent with phrases people may use with Siri to perform the action, and additional metadata, such as an icon, and then uses this information in a Spotlight search."}
+{"id": "/documentation/appintents/acceleratingappinteractionswithappintents", "law": "To teach people a phrase to use the intent, the app provides a in the associated view."}
+{"id": "/documentation/appintents/acceleratingappinteractionswithappintents", "law": "The app doesn’t provide App Shortcuts for intents that people use less commonly."}
+{"id": "/documentation/appintents/acceleratingappinteractionswithappintents", "law": "This implementation provides a custom UI with a shorter supporting dialog to use when the custom UI is visible, and a different dialog containing additional information if the system can’t show the snippet."}
+{"id": "/documentation/appintents/acceleratingappinteractionswithappintents", "law": "An app intent can optionally require certain parameters to complete its action."}
+{"id": "/documentation/appintents/acceleratingappinteractionswithappintents", "law": "The sample app implements all of them for demonstration purposes, but a real app can use only the ones that meet its needs."}
+{"id": "/documentation/appintents/acceleratingappinteractionswithappintents", "law": "For example, the sample app focuses its UI on providing trail information, but people can also use its data to plan activities for a vacation."}
+{"id": "/documentation/appintents/actionbuttonarticle", "law": "To add your dive or workout app to the list of apps that appear when someone chooses Settings > Action Button, use App Intents to register actions for your app."}
+{"id": "/documentation/appintents/actionbuttonarticle", "law": "For workout apps, you can implement the following protocols: For dive apps, you can implement the following protocols: When creating intents for the Action button, don’t implement them in an ."}
+{"id": "/documentation/appintents/actionbuttonarticle", "law": "Always implement the intents directly in your watchOS app."}
+{"id": "/documentation/appintents/actionbuttonarticle", "law": "If you don’t start a workout session in that time, the system displays an error message, but the app remains in the foreground."}
+{"id": "/documentation/appintents/actionbuttonarticle", "law": "To ensure that your app requests authorization for the current set of HealthKit data types it intends to use during its workout sessions, you need to schedule an authorization request from within your intent’s method."}
+{"id": "/documentation/appintents/actionbuttonarticle", "law": "If your app has never requested authorization for any HealthKit data types, the system just launches your app when someone presses the Action button."}
+{"id": "/documentation/appintents/actionbuttonarticle", "law": "Next, request authorization for all the HealthKit data types that your workout sessions use."}
+{"id": "/documentation/appintents/actionbuttonarticle", "law": "The system always launches your app before running the method for your or structures."}
+{"id": "/documentation/appintents/actionbuttonarticle", "law": "To ensure these intents run as expected, don’t change the property’s value."}
+{"id": "/documentation/appintents/actionbuttonarticle", "law": "And, finally, request authorization for all the data types that your workout sessions use."}
+{"id": "/documentation/appintents/adding-parameters-to-an-app-intent", "law": "Many of your app’s actions likely require input data to perform their work."}
+{"id": "/documentation/appintents/adding-parameters-to-an-app-intent", "law": "To help people provide the input that an needs to perform its functionality, add parameters to the intent to tell the system about that data and whether it’s required or optional."}
+{"id": "/documentation/appintents/adding-parameters-to-an-app-intent", "law": "Always provide localized strings for app intents, App Shortcuts, and their parameters."}
+{"id": "/documentation/appintents/adding-parameters-to-an-app-intent", "law": "How you define your parameter variables determines whether the system treats that parameter as required or optional."}
+{"id": "/documentation/appintents/adding-parameters-to-an-app-intent", "law": "If you define a variable as a non-optional type, the system knows the parameter is required and, when necessary, requests a value."}
+{"id": "/documentation/appintents/adding-parameters-to-an-app-intent", "law": "In this scenario, use the property wrapper’s method to pause execution and request a value if the intent can’t proceed otherwise."}
+{"id": "/documentation/appintents/adding-parameters-to-an-app-intent", "law": "When you want to specify app-specific data in a parameter, create an or type and use it to specify your data."}
+{"id": "/documentation/appintents/adding-parameters-to-an-app-intent", "law": "Apps make their app entities findable using queries, and the system can use those same queries to resolve parameters that contain entities."}
+{"id": "/documentation/appintents/adding-parameters-to-an-app-intent", "law": "When a person provides input that your app intents use, the input doesn’t always match the type that your parameters require."}
+{"id": "/documentation/appintents/adding-parameters-to-an-app-intent", "law": "For example, natural spoken language commands from Siri are strings, but your app intent might require an integer or floating-point value."}
+{"id": "/documentation/appintents/appentity/defaultquery-4khg7", "law": "The default query to use to retrieve entity property instances."}
+{"id": "/documentation/appintents/appentity/valuerepresentation", "law": "Use in your entity’s to enable bidirectional conversion with system types like , , and other types."}
+{"id": "/documentation/appintents/appvalue", "law": "An interface that describes conceptual types you use in app intents."}
+{"id": "/documentation/appintents/assistantentity", "law": "Don’t adopt this protocol directly, instead use the macro to meet requirements for making your discoverable by Apple Intelligence and Siri."}
+{"id": "/documentation/appintents/entityidentifierconvertible", "law": "Wherever possible, use , , or for an identifier’s type."}
+{"id": "/documentation/appintents/entityidentifierconvertible", "law": "If you must use a different data type, use this protocol to extend that type and implement the required support."}
+{"id": "/documentation/appintents/entityidentifierconvertible", "law": "For example, an app that integrates with the framework might use as the type for an entity’s identifier."}
+{"id": "/documentation/appintents/entityurlrepresentation", "law": "Note that you need to use a universal link for your URL representation, you can’t use a custom URL scheme."}
+{"id": "/documentation/appintents/ownershipprovidingentity", "law": "When your app passes app entities as parameters to an and returns them from app intent results, people can use Apple Intelligence, Siri, and custom shortcuts to work with those entities across apps."}
+{"id": "/documentation/appintents/ownershipprovidingentity", "law": "For destructive or sensitive actions like deleting or updating an app entity, your app can require a person’s confirmation."}
+{"id": "/documentation/appintents/syncableentity", "law": "For example, if you initialize entities with a UUID you retrieve from your server, you can use that value for the identifier and not make any additional changes to your type."}
+{"id": "/documentation/appintents/syncableentity", "law": "When you need to refer to an entity in your code, use the local identifier."}
+{"id": "/documentation/appintents/urlrepresentableentity", "law": "Note that you need to use a universal link for your URL representation, you can’t use a custom URL scheme."}
+{"id": "/documentation/appintents/appintent/allowedexecutiontargets", "law": "Use this property to restrict execution to specific targets such as the main app, an App Intents extension, or a WidgetKit extension."}
+{"id": "/documentation/appintents/appintent/callasfunction(donate:)-3qvbt", "law": "For example, you might call this method if you use your app intent types to implement your app’s underlying features."}
+{"id": "/documentation/appintents/appintent/callasfunction(donate:)-7v1om", "law": "For example, you might call this method if you use app intents to implement your app’s underlying features."}
+{"id": "/documentation/appintents/appintent/continueinforeground(_:alwaysconfirm:)", "law": "Before calling this method, use the contextual information in the intent’s property to verify the app can transition to the foreground."}
+{"id": "/documentation/appintents/appintent/donate()-1e60c", "law": "An opaque identifier you can use to manage the donation later using an type."}
+{"id": "/documentation/appintents/appintent/donate()-1e60c", "law": "Don’t donate app intents that the system creates and asks you to handle."}
+{"id": "/documentation/appintents/appintent/donate()-jp6k", "law": "An opaque identifier you can use to manage the donation later using an type."}
+{"id": "/documentation/appintents/appintent/donate()-jp6k", "law": "Don’t donate app intents that the system creates and asks you to handle."}
+{"id": "/documentation/appintents/appintent/donate(result:)-36cia", "law": "An opaque identifier you can use to manage the donation later using an type."}
+{"id": "/documentation/appintents/appintent/donate(result:)-36cia", "law": "Use this method when the result of the intent is also relevant, such as when the result of the action triggers another app intent."}
+{"id": "/documentation/appintents/appintent/donate(result:)-36cia", "law": "Don’t donate app intents that the system creates and asks you to handle."}
+{"id": "/documentation/appintents/appintent/donate(result:)-9b25i", "law": "Use this method when the result of the intent is also relevant, such as when the result of the action triggers another app intent."}
+{"id": "/documentation/appintents/appintent/donate(result:)-9b25i", "law": "Don’t donate intents that the system creates during interactions with your app."}
+{"id": "/documentation/appintents/appintent/isdiscoverable", "law": "When the value of this property is , system features like Siri, Spotlight, and the Shortcuts app can discover and use the app intent."}
+{"id": "/documentation/appintents/appintent/isdiscoverable", "law": "App Shortcuts require this property to be for the app intents they use."}
+{"id": "/documentation/appintents/appintent/needstocontinueinforegrounderror(_:alwaysconfirm:)", "law": "Before calling this method, use the contextual information in the intent’s property to verify the app can transition to the foreground."}
+{"id": "/documentation/appintents/appintent/parametersummary", "law": "Use this property to create interactive descriptions of your app intent that include relevant parameter values."}
+{"id": "/documentation/appintents/appintent/parametersummary", "law": "You can use this property to provide multiple summaries reflecting specific parameter values or combinations of values."}
+{"id": "/documentation/appintents/appintent/perform()", "law": "You can use the result to tell the system to perform additional actions."}
+{"id": "/documentation/appintents/appintent/perform()", "law": "Use your implementation to perform the action using the provided information and deliver a result back to the system."}
+{"id": "/documentation/appintents/appintent/perform()", "law": "At any point in your implementation, you can also use methods of the protocol to request confirmation or ask someone to choose from a set of options you provide."}
+{"id": "/documentation/appintents/appintent/supportedmodes", "law": "Use this property to specify whether your app needs to be in the foreground or background when running an app intent’s action."}
+{"id": "/documentation/appintents/appintent/supportedmodes", "law": "Combine the and foreground mode to run the app in either the foreground or background, but to prefer the background."}
+{"id": "/documentation/appintents/appintent/supportedmodes", "law": "You can also use the property to determine if a transition to the foreground is possible."}
+{"id": "/documentation/appintents/assistantintent", "law": "Don’t adopt this protocol directly, instead use the macro to meet requirements for making your discoverable by Apple Intelligence and Siri."}
+{"id": "/documentation/appintents/audioplaybackintent", "law": "The system can then avoid dialogue or other experiences that might interrupt that audio."}
+{"id": "/documentation/appintents/audiorecordingintent", "law": "In iOS, iPadOS, and watchOS, When you adopt the protocol, you must start a Live Activity when you begin the audio recording and keep it active as long as you record audio."}
+{"id": "/documentation/appintents/audiorecordingintent", "law": "If you don’t start a Live Activity, the audio recording stops."}
+{"id": "/documentation/appintents/audiostartingintent", "law": "The system can then avoid dialogue or other experiences that might interrupt that audio."}
+{"id": "/documentation/appintents/controlconfigurationintent", "law": "When using this protocol, you don’t need to provide an implementation for ."}
+{"id": "/documentation/appintents/controlconfigurationintent", "law": "You can, however, still implement to use the same implementation for both control configuration and as an actionable intent."}
+{"id": "/documentation/appintents/controlconfigurationintent", "law": "By providing a default value, you can use a non-optional value for the intent parameter."}
+{"id": "/documentation/appintents/controlconfigurationintent", "law": "If you don’t provide a default value for the intent parameter, the parameter’s value must be optional, to allow the system to preview the control before someone configures it."}
+{"id": "/documentation/appintents/deprecatedappintent", "law": "An app intent that marks an action as deprecated and informs people which action to use instead."}
+{"id": "/documentation/appintents/displaying-static-and-interactive-snippets", "law": "People might use it to create shortcuts and perform its action from Spotlight or the Action button."}
+{"id": "/documentation/appintents/displaying-static-and-interactive-snippets", "law": "When the app intent finds information about a nearby landmark, it displays an interactive snippet with the most important information, a button to add it to a list favorites, and a button to search for available tickets if the landmark requires people to pay an entrance fee."}
+{"id": "/documentation/appintents/displaying-static-and-interactive-snippets", "law": "If your app intent doesn’t require a follow-up action, return a static snippet that enables someone to view the outcome of the app intent."}
+{"id": "/documentation/appintents/displaying-static-and-interactive-snippets", "law": "To display an interactive snippet as a result of an app intent, create an app intent for your action - or use an existing app intent."}
+{"id": "/documentation/appintents/displaying-static-and-interactive-snippets", "law": "By keeping an existing result type and additionally returning a snippet intent, you avoid breaking people’s custom shortcuts that use the previous version of your intent."}
+{"id": "/documentation/appintents/displaying-static-and-interactive-snippets", "law": "Make sure the intent’s method returns a ."}
+{"id": "/documentation/appintents/displaying-static-and-interactive-snippets", "law": "Snippets are great candidates to reuse views you use in your widgets, and, like widgets, you must initialize the snippet’s or with an that performs the underlying action."}
+{"id": "/documentation/appintents/displaying-static-and-interactive-snippets", "law": "People can use them in their custom shortcuts, and you can reuse them."}
+{"id": "/documentation/appintents/displaying-static-and-interactive-snippets", "law": "For example, the sample app might use in an App Shortcut or interactive widget."}
+{"id": "/documentation/appintents/displaying-static-and-interactive-snippets", "law": "Because the system creates and performs your repeatedly, make sure calling its method doesn’t produce side effects: If you pass data between intents, pass a minimum amount of immutable data."}
+{"id": "/documentation/appintents/emptysnippetintent", "law": "You don’t create this type directly."}
+{"id": "/documentation/appintents/foregroundcontinuableintent", "law": "For backward compatibility, you can provide conformance to this protocol in an extension, for example: A protocol you use for app intents which begin their work with the app in the background but may request to continue in the foreground."}
+{"id": "/documentation/appintents/intentmodes", "law": "For example, the mode requires your app intent code to run in a foreground process."}
+{"id": "/documentation/appintents/intentmodes", "law": "Use that information to make additional decisions about how to perform the action."}
+{"id": "/documentation/appintents/intentmodes", "law": "A set of options you use to configure the runtime behavior of an app intent."}
+{"id": "/documentation/appintents/liveactivityintent", "law": "However, you can use a and start the Live Activity in its method."}
+{"id": "/documentation/appintents/openintent", "law": "Use this intent to open both dynamic items such as and static items such as an with voice commands; for example, “Open ‘Vacation Ideas’” or “Open bookmarks”."}
+{"id": "/documentation/appintents/openurlintent", "law": "Return an as the of another app intent’s method or use place the intent on a button that appears on an interactive widget or Live Activity."}
+{"id": "/documentation/appintents/openurlintent", "law": "Note that you need to use a universal link for your URL representation, you can’t use a custom URL scheme."}

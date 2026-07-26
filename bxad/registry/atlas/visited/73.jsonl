@@ -32,3 +32,6 @@
 {"id": "/documentation/accelerate/vdsp_zaspec", "sha": "09ae45f62ec5d05e5b763a36f2e7b583b9e7cd0a875f9d4bbb2b795a2658b0a5", "t": "vDSP_zaspec", "n": 642, "laws": 2, "ts": "2026-07-26 12:08 UTC"}
 {"id": "/documentation/accelerate/vforce/exp(_:)-76nrd", "sha": "aa10bd935dddacc2fe2fd9e06dc4555c1fa9247e726455a3eceb576ddcc0fb3b", "t": "exp(_:)", "n": 91, "laws": 0, "ts": "2026-07-26 12:12 UTC"}
 {"id": "/documentation/simd/hypot", "sha": "e346e23011e16e4f72f5e7e9e4dda285ddc059006f50231d6c55e169b45ee230", "t": "hypot", "n": 126, "laws": 0, "ts": "2026-07-26 12:17 UTC"}
+{"id": "/documentation/appkit/nspathcontrol", "sha": "dfc8d4988a9d916468aed2f7f4c98e27697bc60395597c1039039a6ecf7d2db2", "t": "NSPathControl", "n": 1504, "laws": 0, "ts": "2026-07-26 18:28 UTC"}
+{"id": "/documentation/swiftui/wkextensiondelegateadaptor", "sha": "79a1152321afbef8c611528114fd3f486b064fe07b7a48ad7db4c8a4702efe80", "t": "WKExtensionDelegateAdaptor", "n": 1375, "laws": 4, "ts": "2026-07-26 18:34 UTC"}
+{"id": "/documentation/swiftui/windowgroup/init(_:for:content:)", "sha": "ae3931f60af2d53cb9b7acc167f9e4a980578ff5cb2723818ce3589fd3a846cb", "t": "init(_:for:content:)", "n": 422, "laws": 0, "ts": "2026-07-26 18:34 UTC"}

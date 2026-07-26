@@ -52,3 +52,6 @@
 {"id": "/documentation/simd/atan(_:)-2h77h", "sha": "584d0c9845e47fd0176eff18802b3cb81bb731ede1cb7faa11cea2c63c8f45df", "t": "atan(_:)", "n": 51, "laws": 0, "ts": "2026-07-26 12:16 UTC"}
 {"id": "/documentation/simd/erfc(_:)-7ux6y", "sha": "95e2c6a75f1718ce973fb23b84dd36c1a7ab8a1122eef2b0219737f557640dba", "t": "erfc(_:)", "n": 70, "laws": 0, "ts": "2026-07-26 12:17 UTC"}
 {"id": "/documentation/simd/simd_double1", "sha": "b22838a7a592851f0a4f8cc571f6995743728f2f597c557d55c92e8ab01c49e7", "t": "simd_double1", "n": 538, "laws": 0, "ts": "2026-07-26 12:18 UTC"}
+{"id": "/documentation/modelio/mdlsubmesh", "sha": "85b07b843df603ed414b5caf8ea341cd3fd74b1e94859c08a0ecdd19a893d7e7", "t": "MDLSubmesh", "n": 992, "laws": 0, "ts": "2026-07-26 18:11 UTC"}
+{"id": "/documentation/appkit/nsaccessibilityprotocol/isaccessibilityrequired()", "sha": "396fe6ac22716902b8cb8e1449cbdcc608adc978d8b6574cfb1ec2c87d0b59c0", "t": "isAccessibilityRequired()", "n": 128, "laws": 1, "ts": "2026-07-26 18:25 UTC"}
+{"id": "/documentation/appkit/nsslider/allowstickmarkvaluesonly", "sha": "04ab302bb3c380e6c0142f402c580782d681762ffe0b90ff7fa4e79d56048adb", "t": "allowsTickMarkValuesOnly", "n": 650, "laws": 1, "ts": "2026-07-26 18:30 UTC"}

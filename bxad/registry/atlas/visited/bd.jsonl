@@ -28,3 +28,7 @@
 {"id": "/documentation/accelerate/vdsp/subtract(multiplication:multiplication:)-1ghyu", "sha": "49a5b7980d5bcc997bcc36d1916d306aab203ab73140fac0fe1da4d1dff060dc", "t": "subtract(multiplication:multiplication:)", "n": 332, "laws": 0, "ts": "2026-07-26 12:01 UTC"}
 {"id": "/documentation/avfoundation/avcapturephotooutput/qualityprioritization", "sha": "8a6f9e9397fcd27aac9fa511370195ff6c644fd0dbcde2e6f3df50f03ba3e6df", "t": "AVCapturePhotoOutput.QualityPrioritization", "n": 293, "laws": 0, "ts": "2026-07-26 12:06 UTC"}
 {"id": "/documentation/simd/norm_inf(_:)-7ga8i", "sha": "0ea37d830c5245a22c9694412ee4a2ec5d8d8d1f000763bd23a89f7ee57e7931", "t": "norm_inf(_:)", "n": 47, "laws": 1, "ts": "2026-07-26 12:18 UTC"}
+{"id": "/documentation/simd/vector_double3", "sha": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855", "t": "vector_double3", "n": 0, "laws": 0, "ts": "2026-07-26 18:10 UTC"}
+{"id": "/documentation/modelio/mdlcheckerboardtexture", "sha": "7c68070899c5b73759cd7f2dbcf7013e5640841d0ea7f033f4af96842adfc6a2", "t": "MDLCheckerboardTexture", "n": 420, "laws": 1, "ts": "2026-07-26 18:11 UTC"}
+{"id": "/documentation/accelerate/pixelformat/componenttype", "sha": "3ee953557d852ba13d612e6be460d89da7f4f12d2c12923fa64be499e4d517f8", "t": "ComponentType", "n": 34, "laws": 0, "ts": "2026-07-26 18:16 UTC"}
+{"id": "/documentation/alarmkit/alarmpresentation/alert-swift.struct/title", "sha": "69366e68634c88924cd16e880ccdc6e8123936e853913ef4937ac1b92dbb169d", "t": "title", "n": 23, "laws": 0, "ts": "2026-07-26 18:34 UTC"}

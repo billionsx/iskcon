@@ -31,3 +31,10 @@
 {"id": "/documentation/coreimage/ciimage", "sha": "fa3c1eeddf9cc2c7b13d002be812f94b6eba84b880224f74cf4acbef8fc39ed0", "t": "CIImage", "n": 5140, "laws": 4, "ts": "2026-07-26 12:09 UTC"}
 {"id": "/documentation/accelerate/double_complex", "sha": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855", "t": "DOUBLE_COMPLEX", "n": 0, "laws": 0, "ts": "2026-07-26 12:11 UTC"}
 {"id": "/documentation/accelerate/vforce/exp2(_:)-2m5q", "sha": "f345c655d4c72f2957675b7d034f87ce4cde80686d6472b6685a8df3bf1e910b", "t": "exp2(_:)", "n": 90, "laws": 0, "ts": "2026-07-26 12:12 UTC"}
+{"id": "/documentation/simd/simd_negate(_:)-3yt2y", "sha": "edd27b1b468d430b044530d851aa3b4081080fc04cc6c217d3c23dbd65c1603f", "t": "simd_negate(_:)", "n": 37, "laws": 0, "ts": "2026-07-26 18:10 UTC"}
+{"id": "/documentation/uikit/uilabel/enablesmarqueewhenancestorfocused", "sha": "b55cce657a044de990f94e5b8b26087e7eef7056cd5edf73bf1c15fa5be88270", "t": "enablesMarqueeWhenAncestorFocused", "n": 296, "laws": 0, "ts": "2026-07-26 18:18 UTC"}
+{"id": "/documentation/appkit/nsaccessibility-c.protocol/accessibilityfocusedwindow", "sha": "56c76cb9dee77d6d970051af99e3a688dec77791519e5b1f0eb640f01458d667", "t": "accessibilityFocusedWindow", "n": 40, "laws": 0, "ts": "2026-07-26 18:20 UTC"}
+{"id": "/documentation/appkit/nsaccessibilityprotocol/accessibilitycontents()", "sha": "16fa37decc23a250d5b4bf45c36b6816ea2aca41478bcaff2eee2affe2e21607", "t": "accessibilityContents()", "n": 58, "laws": 0, "ts": "2026-07-26 18:22 UTC"}
+{"id": "/documentation/appkit/nsaccessibilityprotocol/accessibilitysubrole()", "sha": "b2f92fc14e4ebdbaffb6df577559dafa7f6e83c9284d174b1648f8c00f007150", "t": "accessibilitySubrole()", "n": 89, "laws": 0, "ts": "2026-07-26 18:24 UTC"}
+{"id": "/documentation/accessorysetupkit/aspickerdisplayitem/descriptor", "sha": "18deb7e1e6974b400983aa5c2844552411e9d09b3b496ae3067a2551329bb5c2", "t": "descriptor", "n": 87, "laws": 0, "ts": "2026-07-26 18:32 UTC"}
+{"id": "/documentation/appintents/appintent/summarycontent", "sha": "2bdd457058b11b034064fe896291a61fd52e316df01f89472f0d0822a472a95c", "t": "SummaryContent", "n": 161, "laws": 0, "ts": "2026-07-26 18:38 UTC"}

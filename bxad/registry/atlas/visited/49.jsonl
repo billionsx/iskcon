@@ -44,3 +44,9 @@
 {"id": "/documentation/accelerate/fft_forward", "sha": "6d13d6326a31317816689e910f1dbd6c2fccab5c29c6a16753b537471de65d13", "t": "FFT_FORWARD", "n": 12, "laws": 0, "ts": "2026-07-26 12:08 UTC"}
 {"id": "/documentation/accelerate/vvatan(_:_:_:)", "sha": "87eecf3d01bff05250dbdca0454713182b39a749c76aaa7b3e7b66e35a77c684", "t": "vvatan(_:_:_:)", "n": 222, "laws": 0, "ts": "2026-07-26 12:14 UTC"}
 {"id": "/documentation/simd/simd_max(_:_:)-6ykq4", "sha": "a557bd321d4a3b01afc56f4a9bd6cb051078303b50ef555bd5a85c69747cc5af", "t": "simd_max(_:_:)", "n": 54, "laws": 1, "ts": "2026-07-26 12:19 UTC"}
+{"id": "/documentation/modelio/mdltexture/channelcount", "sha": "ff436d0efe6c0afba0140ff94bd9d980e970feed75bb22d2a1b5fed6b9b4d95f", "t": "channelCount", "n": 196, "laws": 0, "ts": "2026-07-26 18:11 UTC"}
+{"id": "/documentation/uikit/uicontentsizecategoryadjusting", "sha": "7d6ed784a98f6ae30bf86afe1c2cd7d42e143fa19277b5edf88ec878ac154647", "t": "UIContentSizeCategoryAdjusting", "n": 179, "laws": 0, "ts": "2026-07-26 18:18 UTC"}
+{"id": "/documentation/appkit/nsaccessibilityprotocol/accessibilitytitleuielement()", "sha": "eeb8a1eb01bebefea8f7eadbfc23449d0bee90b0d28ecb27ab9a00f8e33efe2c", "t": "accessibilityTitleUIElement()", "n": 82, "laws": 0, "ts": "2026-07-26 18:24 UTC"}
+{"id": "/documentation/appkit/nsscrollview", "sha": "16b59b13a80fd2edfa660be3745aa50fb210c22f098e48803b48abf2749568ec", "t": "NSScrollView", "n": 2710, "laws": 1, "ts": "2026-07-26 18:28 UTC"}
+{"id": "/documentation/alarmkit/alarm/state-swift.enum", "sha": "509aa9e4a3de5bca23cbd54098aab5d657845df87bf3efe2113bae92927f39e4", "t": "Alarm.State", "n": 163, "laws": 0, "ts": "2026-07-26 18:33 UTC"}
+{"id": "/documentation/foundation/nsuseractivity/expirationdate", "sha": "385b058702205b5220900f5e7a11c89fb661e9f38769d770243306e36442da98", "t": "expirationDate", "n": 209, "laws": 1, "ts": "2026-07-26 18:36 UTC"}

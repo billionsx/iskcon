@@ -1557,3 +1557,100 @@
 {"id": "/documentation/UIKit/view-controllers", "law": "You use view controllers to manage your UIKit app’s interface."}
 {"id": "/documentation/UIKit/view-controllers", "law": "Every app has at least one view controller whose content fills the main window."}
 {"id": "/documentation/UIKit/view-controllers", "law": "If your app has more content than can fit on-screen at once, use multiple view controllers to manage different parts of that content."}
+{"id": "/documentation/UIKit/UISlider", "law": "Sliders use the target-action design pattern to notify your app when the user moves the slider."}
+{"id": "/documentation/UIKit/UISlider", "law": "When debugging issues with sliders, follow these tips to avoid common pitfalls: Use either a custom tint color or a custom image, but not both."}
+{"id": "/documentation/UIKit/UISlider", "law": "When customizing slider appearance with images or tint, use one option or the other, but not both."}
+{"id": "/documentation/UIKit/UISlider", "law": "For example, setting a new minimum track image for any state clears any custom tint color you may have provided for minimum track images."}
+{"id": "/documentation/UIKit/UISlider", "law": "The current value must be between the minimum and maximum values."}
+{"id": "/documentation/UIKit/UISlider", "law": "If you try to programmatically set a slider’s current value to be below the minimum or above the maximum, it’s set to the minimum or maximum instead."}
+{"id": "/documentation/UIKit/UISlider", "law": "However, if you set the value beyond the range of the minimum or maximum in Interface Builder, the minimum or minimum values are updated instead."}
+{"id": "/documentation/UIKit/UISlider", "law": "If you use custom track and thumb images for your slider, remember to set an image for every possible ."}
+{"id": "/documentation/UIKit/UISlider", "law": "If you set one custom image, be sure to set them all."}
+{"id": "/documentation/UIKit/UISlider", "law": "Use Auto Layout to specify the position and width of a slider."}
+{"id": "/documentation/uikit/uiaccessibilitycustomaction", "law": "Apps that support custom actions can create instances of this class, specifying the user-readable name of the action and the object and selector to use when performing the action."}
+{"id": "/documentation/uikit/uiaccessibilitycustomaction/selector", "law": "The signature of the selector must take one of the following forms: When the user selects a custom action, the assistive technology calls the specified method of the object in the property."}
+{"id": "/documentation/uikit/uiaccessibilitycustomaction/selector", "law": "Use your method to perform the indicated action."}
+{"id": "/documentation/UIKit/uiaccessibility-protocol", "law": "Assistive apps, such as VoiceOver, convey this information to users with disabilities to help them use the app."}
+{"id": "/documentation/uikit/uiaccessibilityelement", "law": "You can use to provide information about an icon or text image that isn’t automatically accessible because it doesn’t inherit from (or )."}
+{"id": "/documentation/uikit/uiaccessibilityelement", "law": "You might need to set an element’s property even if you don’t need to create an instance of to represent it."}
+{"id": "/documentation/uikit/uiaccessibilityelement", "law": "An element that should be accessible to users with disabilities, but that isn’t accessible by default."}
+{"id": "/documentation/uikit/uiaccessibilityelement/accessibilityframe", "law": "When you create an accessibility element to represent an element in your application, you must set this property to the structure that specifies the object’s screen location and size."}
+{"id": "/documentation/uikit/uiaccessibilityelement/accessibilityframeincontainerspace", "law": "Use this property to set the frame rectangle of an element whose frame rectangle could be affected by its container view."}
+{"id": "/documentation/uikit/uiaccessibilityelement/accessibilityframeincontainerspace", "law": "For example, use this property to set the frame rectangle for an element in a scroll view’s content view."}
+{"id": "/documentation/uikit/uiaccessibilityelement/accessibilitytraits", "law": "When combining traits for a custom accessibility element, be sure to: Use common sense."}
+{"id": "/documentation/uikit/uiaccessibilityelement/accessibilitytraits", "law": "Don’t combine traits that characterize the element in mutually exclusive ways, such as combining the button and search-field traits."}
+{"id": "/documentation/uikit/uiaccessibilityelement/accessibilitytraits", "law": "Specifically, always combine your custom traits with in the method you use to set a custom element’s traits."}
+{"id": "/documentation/uikit/uiaccessibilityelement/accessibilityvalue", "law": "For example, the value of a slider might be 9.5 or 35% and the value of a text field is the text it contains."}
+{"id": "/documentation/uikit/uiaccessibilityelement/accessibilityvalue", "law": "Use the value property only when an accessibility element can have a value that is not represented by its label."}
+{"id": "/documentation/uikit/uiaccessibilityelement/init(accessibilitycontainer:)", "law": "In general, you do not create accessibility elements for items in your application because standard UIKit controls and views are accessible by default."}
+{"id": "/documentation/uikit/uiaccessibilityelement/init(accessibilitycontainer:)", "law": "In this case, the containing view should implement the UIAccessibilityContainer informal protocol and use this method to create an accessibility element to represent each item that should be exposed to an assistive application."}
+{"id": "/documentation/uikit/uiaccessibilityidentification", "law": "You can use the identifiers you define in UI Automation scripts because the value of corresponds to the return value of the name method of ."}
+{"id": "/documentation/uikit/uiaccessibilitytraits/adjustable", "law": "Use this trait to characterize an accessibility element that users can adjust in a continuous manner, such as a slider or a picker view."}
+{"id": "/documentation/uikit/uiaccessibilitytraits/adjustable", "law": "If you specify this trait on an accessibility element, you must also implement the and methods in the protocol."}
+{"id": "/documentation/uikit/uiaccessibilitytraits/allowsdirectinteraction", "law": "Use this trait to characterize an accessibility element that represents an object that users interact with directly, such as a view that represents a piano keyboard."}
+{"id": "/documentation/uikit/uiaccessibilitytraits/selected", "law": "Use this trait to characterize an accessibility element that represents a selected UI element, such as a selected table row or a selected segment in a segmented control."}
+{"id": "/documentation/uikit/uiaccessibilitytraits/summaryelement", "law": "Use this trait to characterize an accessibility element that provides a summary of current conditions, settings, or state, such as the current temperature in the Weather app."}
+{"id": "/documentation/uikit/uiaccessibilitytraits/tabbar", "law": "Use this trait to characterize an accessibility element that represents an ordered list of tabs."}
+{"id": "/documentation/uikit/uiaccessibilitytraits/togglebutton", "law": "Use this trait to characterize an accessibility element that represents a button that toggles a value on, off, or mixed status."}
+{"id": "/documentation/uikit/uiaccessibilitytraits/updatesfrequently", "law": "Use this trait to characterize an accessibility element that updates its label or value too frequently to send update notifications."}
+{"id": "/documentation/uikit/uiaccessibilitytraits/updatesfrequently", "law": "Include this trait when you want an assistive app to avoid handling continual notifications and, instead, poll for changes when it needs updated information."}
+{"id": "/documentation/uikit/uiaccessibilitytraits/updatesfrequently", "law": "For example, you might use this trait to characterize the readout of a stopwatch."}
+{"id": "/documentation/uikit/adding-a-custom-font-to-your-app", "law": "If your company has its own branded font, for example, you can use it in your app."}
+{"id": "/documentation/uikit/adding-a-custom-font-to-your-app", "law": "Add the font file that contains your font to your app bundle, then use your font the same way you use any of the iOS-provided custom fonts."}
+{"id": "/documentation/uikit/adding-a-custom-font-to-your-app", "law": "Also, make sure the font file is a target member of your app; otherwise, the project will not distribute the font file as part of your app."}
+{"id": "/documentation/uikit/adding-a-custom-font-to-your-app", "law": "Be sure to include the file extension as part of the name."}
+{"id": "/documentation/uikit/adding-a-custom-font-to-your-app", "law": "However, the name of the font isn’t always obvious, and rarely matches the font file name."}
+{"id": "/documentation/uikit/adding-a-custom-font-to-your-app", "law": "Add a custom font to your app and use it in your app’s interface."}
+{"id": "/documentation/uikit/uiappearance", "law": "To customize the appearance of all instances of a class, use to get the appearance proxy for the class."}
+{"id": "/documentation/uikit/uiappearance", "law": "For example, to modify the bar background tint color for all instances of : To customize the appearances for instances of a class when contained within an instance of a container class, or instances in a hierarchy, use to get the appearance proxy for the class."}
+{"id": "/documentation/uikit/uiappearance", "law": "Use the and methods to retrieve the proxy for a class with the specified trait collection."}
+{"id": "/documentation/uikit/uiappearance", "law": "To support appearance customization, a class must conform to the protocol and relevant accessor methods must be marked with ."}
+{"id": "/documentation/uikit/uiappearancecontainer", "law": "Appearance property accessor methods must be of the form: You may have no axes or as many as you like for any property."}
+{"id": "/documentation/uikit/uiappearancecontainer", "law": "Axis parameter values must be either or ."}
+{"id": "/documentation/uikit/uiappearancecontainer", "law": "For example, defines these methods: A protocol that a class must adopt to allow appearance customization using the API."}
+{"id": "/documentation/uikit/uicoordinatespace", "law": "Instead, window and screen coordinates change to match the app’s interface orientation, which typically (but not always) matches the current device orientation."}
+{"id": "/documentation/uikit/uicoordinatespace", "law": "In cases where you still need a fixed frame of reference — for example, because you need to store the location of a touch event or onscreen item persistently — you can use the methods of this protocol to convert coordinate values to the fixed coordinate space provided by the object."}
+{"id": "/documentation/uikit/uicoordinatespace", "law": "To convert a point from a view’s current coordinate space to the screen’s fixed coordinate space, use code similar to the following: When implementing the methods of this protocol, you must convert coordinate values to or from your local coordinate space."}
+{"id": "/documentation/uikit/uicoordinatespace", "law": "When performing such conversions, use the screen coordinate space as an intermediate coordinate space, converting to screen coordinates before converting to the target coordinate space."}
+{"id": "/documentation/uikit/uilabel/adjustsfontsizetofitwidth", "law": "If this property is , and the text in the property exceeds the label’s bounding rectangle, the label reduces the font size until the text fits or it has scaled the font down to the minimum font size."}
+{"id": "/documentation/uikit/uilabel/adjustsfontsizetofitwidth", "law": "If you change it to , be sure that you also set an appropriate minimum font scale by modifying the property."}
+{"id": "/documentation/uikit/uilabel/adjustsfontsizetofitwidth", "law": "This autoshrinking behavior is only intended for use with a single-line label."}
+{"id": "/documentation/uikit/uilabel/adjustsfontsizetofitwidth", "law": "To enable in Interface Builder, choose Minimum Font Scale from the Autoshrink pop-up menu in the label’s Attributes inspector."}
+{"id": "/documentation/uikit/uilabel/allowsdefaulttighteningfortruncation", "law": "The label determines the maximum amount of tightening automatically based on the font, current line width, line break mode, and other relevant information."}
+{"id": "/documentation/uikit/uilabel/allowsdefaulttighteningfortruncation", "law": "This autoshrinking behavior is only intended for use with a single-line label."}
+{"id": "/documentation/uikit/uilabel/drawtext(in:)", "law": "Don’t call this method directly."}
+{"id": "/documentation/uikit/uilabel/drawtext(in:)", "law": "If you do render the text yourself, don’t invoke ."}
+{"id": "/documentation/uikit/uilabel/highlightedtextcolor", "law": "Subclasses that use labels to implement a type of text button can use the value in this property when drawing the pressed state for the button."}
+{"id": "/documentation/uikit/uilabel/ishighlighted", "law": "In order for the label to draw the highlight, the property must contain a non- value."}
+{"id": "/documentation/uikit/uilabel/linebreakmode", "law": "This property is in effect both during normal drawing and in cases where the label must reduce the font size to fit the text in its bounding box."}
+{"id": "/documentation/uikit/uilabel/minimumfontsize", "law": "When drawing text that might not fit within the bounding rectangle of the label, you can use this property to prevent the label from reducing the font size to a point where it’s no longer legible."}
+{"id": "/documentation/uikit/uilabel/minimumfontsize", "law": "If you enable font adjustment for the label, you should always increase this value."}
+{"id": "/documentation/uikit/uilabel/minimumscalefactor", "law": "If the is , use this property to specify the smallest multiplier for the current font size that yields an acceptable font size for the label’s text."}
+{"id": "/documentation/uikit/uilabel/minimumscalefactor", "law": "To reveal the text field for editing minimum scale factor in Interface Builder, choose Minimum Font Scale from the Autoshrink pop-up menu in the label’s Attributes inspector."}
+{"id": "/documentation/uikit/uilabel/minimumscalefactor", "law": "The minimum scale factor for the label’s text."}
+{"id": "/documentation/uikit/uilabel/numberoflines", "law": "This property controls the maximum number of lines to use in order to fit the label’s text into its bounding rectangle."}
+{"id": "/documentation/uikit/uilabel/numberoflines", "law": "To remove any maximum limit, and use as many lines as needed, set the value of this property to ."}
+{"id": "/documentation/uikit/uilabel/numberoflines", "law": "If you constrain your text using this property, the label truncates any text that doesn’t fit within the maximum number of lines and inside the bounding rectangle."}
+{"id": "/documentation/uikit/uilabel/numberoflines", "law": "To specify which part of the text the label should truncate, set the property."}
+{"id": "/documentation/uikit/uilabel/numberoflines", "law": "The maximum number of lines for rendering text."}
+{"id": "/documentation/uikit/uilabel/preferredmaxlayoutwidth", "law": "The preferred maximum width, in points, for a multiline label."}
+{"id": "/documentation/uikit/uilabel/shadowoffset", "law": "The shadow color must be not be for this property to have any effect."}
+{"id": "/documentation/uikit/uilabel/textrect(forbounds:limitedtonumberoflines:)", "law": "Override this method in subclasses that require changes in the label’s bounding rectangle to occur before the system performs other text layout calculations."}
+{"id": "/documentation/uikit/uilabel/textrect(forbounds:limitedtonumberoflines:)", "law": "Use the value in the parameter to limit the height of the returned rectangle to the specified number of lines of text."}
+{"id": "/documentation/uikit/uiletterformawareadjusting", "law": "For nontext-style fonts, and don’t increase the calculated height for oversize characters."}
+{"id": "/documentation/uikit/uiletterformawareadjusting", "law": "Set to to use this behavior explicitly."}
+{"id": "/documentation/uikit/uitraitchangeobservable-67e94", "law": "Keep your trait registrations focused, and avoid doing work not directly relevant to updated traits."}
+{"id": "/documentation/uikit/uitraitchangeobservable-67e94", "law": "Traits may change more than once before the system updates a view, so avoid expensive work in response to trait changes."}
+{"id": "/documentation/uikit/uitraitchangeobservable-67e94", "law": "For example, use the trait change notification to call , and update your view in ."}
+{"id": "/documentation/UIKit/supporting-voiceover-in-your-app", "law": "VoiceOver assists all types of people, but those who are blind rely on VoiceOver whenever they use their devices."}
+{"id": "/documentation/UIKit/supporting-voiceover-in-your-app", "law": "By increasing accessibility, you open your app to a wider audience, and make it easier for everyone to use."}
+{"id": "/documentation/UIKit/supporting-voiceover-in-your-app", "law": "To test the accessibility of your app, turn on VoiceOver and navigate through the interface."}
+{"id": "/documentation/UIKit/supporting-voiceover-in-your-app", "law": "Then, open your app and use the specified action whenever you want to test VoiceOver."}
+{"id": "/documentation/UIKit/supporting-voiceover-in-your-app", "law": "To audit your app with VoiceOver on, you use VoiceOver’s unique set of gestures to navigate your app."}
+{"id": "/documentation/UIKit/supporting-voiceover-in-your-app", "law": "For testing, there are five key gestures that you may use: Swipe left or right to navigate to the next or previous UI element."}
+{"id": "/documentation/UIKit/supporting-voiceover-in-your-app", "law": "For example, when you’re navigating back to your app’s initial view, or you’re sharing content with another app or user, how can you use VoiceOver to make it accessible?"}
+{"id": "/documentation/UIKit/supporting-voiceover-in-your-app", "law": "If you want VoiceOver to read your elements in a different order, use groups to facilitate navigation that makes sense for your app."}
+{"id": "/documentation/UIKit/supporting-voiceover-in-your-app", "law": "Make sure that VoiceOver says whether the button is in a selected state."}
+{"id": "/documentation/UIKit/supporting-voiceover-in-your-app", "law": "Depending on the context, hints aren’t always necessary."}
+{"id": "/documentation/UIKit/UIDevice/identifierForVendor", "law": "Therefore, if your app stores the value of this property anywhere, you should gracefully handle situations where the identifier changes."}
+{"id": "/documentation/UIKit/UIDevice/name", "law": "To access the user-assigned device name through this property in iOS 16 and later, your app must meet certain criteria and be assigned an entitlement."}

@@ -681,3 +681,5 @@
 {"id": "/documentation/avfoundation/choosing-a-capture-device", "law": "If you know exactly what kind of capture devices you’re looking for, use one of the convenience methods to select a default device."}
 {"id": "/documentation/avfoundation/choosing-a-capture-device", "law": "To see the entire set of devices matching certain criteria so that you can use your own logic to choose one, use the class."}
 {"id": "/documentation/avfoundation/choosing-a-capture-device", "law": "The discovery session automatically sorts its list based on the device types you asked for, so you can use the array order to find the best device with certain features."}
+{"id": "/documentation/AVFoundation/speech-synthesis", "law": "The Speech Synthesis framework manages voice and speech synthesis, and requires two primary tasks: Create an instance that contains the text to speak."}
+{"id": "/documentation/AVFoundation/speech-synthesis", "law": "Optionally, use the speech synthesizer instance to control or respond to ongoing speech; for example, assign its to receive speech event notifications."}

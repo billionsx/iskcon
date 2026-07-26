@@ -34,3 +34,7 @@
 {"id": "/documentation/avfoundation/avcapturevideodataoutput/availablevideopixelformattypes", "sha": "8e607feaf1eb2e0e60bf0b878dc74e3d489929c7f01b4fc28b60b06d5a489a51", "t": "availableVideoPixelFormatTypes", "n": 316, "laws": 0, "ts": "2026-07-26 06:02 UTC"}
 {"id": "/documentation/accelerate/bnnsdestroyrandomgenerator(_:)", "sha": "b6a0c587ee3c95b9c15f35b6a789a06cff1ef92c5bb4de3accf4a8227399e8b8", "t": "BNNSDestroyRandomGenerator(_:)", "n": 35, "laws": 0, "ts": "2026-07-26 06:09 UTC"}
 {"id": "/documentation/coregraphics/cgimage/colorspace", "sha": "3a4b99b17d0073c5c4d8bf1f28dbfc021045286295ea309f320084306a745f6f", "t": "colorSpace", "n": 42, "laws": 0, "ts": "2026-07-26 06:12 UTC"}
+{"id": "/documentation/appkit/nsaccessibilityprotocol/accessibilitylabeluielements()", "sha": "e9b65fdf404b8f6fda14ea0ef667f8d2e251ea06c9de3cefc96a5b52f8b77289", "t": "accessibilityLabelUIElements()", "n": 70, "laws": 0, "ts": "2026-07-26 18:23 UTC"}
+{"id": "/documentation/accessorysetupkit/aspickerdisplayitem", "sha": "8e55da715add97470b28b7755468ca038fcf18c44ae5a45621010b23c86d0517", "t": "ASPickerDisplayItem", "n": 1287, "laws": 1, "ts": "2026-07-26 18:31 UTC"}
+{"id": "/documentation/BackgroundAssets/BADownload/isEssential", "sha": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855", "t": "isEssential", "n": 0, "laws": 0, "ts": "2026-07-26 18:35 UTC"}
+{"id": "/documentation/appintents/assistantentity", "sha": "d0b23d0148cf0e3bba489587086be2988cb9d97257f7ed219132ea8e9277ba5b", "t": "AssistantEntity", "n": 233, "laws": 1, "ts": "2026-07-26 18:37 UTC"}

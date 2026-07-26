@@ -82,3 +82,12 @@
 {"id": "/documentation/CoreLocation/CLLocationManager/startUpdatingLocation()", "law": "Therefore, if your app needs to receive location events while in the background, it must include the key (with the value) in its file."}
 {"id": "/documentation/CoreLocation/CLLocationManager/startUpdatingLocation()", "law": "In addition to your delegate object implementing the method, it should also implement the method to respond to potential errors."}
 {"id": "/documentation/CoreLocation/kCLLocationAccuracyBest", "law": "Specify this constant when you want very high accuracy but don’t need the same level of accuracy required for navigation apps."}
+{"id": "/documentation/CoreLocation/CLLocationManager/requestWhenInUseAuthorization()", "law": "You must call this method or before you can receive location-related information."}
+{"id": "/documentation/CoreLocation/CLLocationManager/requestWhenInUseAuthorization()", "law": "Your app must be in the foreground to show a location authorization prompt."}
+{"id": "/documentation/CoreLocation/CLLocationManager/requestWhenInUseAuthorization()", "law": "This method runs asynchronously and prompts the user to grant permission to the app to use location services."}
+{"id": "/documentation/CoreLocation/CLLocationManager/requestWhenInUseAuthorization()", "law": "The user prompt contains the text from the key in your app file, and the presence of that key is required when calling this method."}
+{"id": "/documentation/CoreLocation/CLLocationManager/requestWhenInUseAuthorization()", "law": "If the user’s choice grants When In Use authorization to your app, your app can start any location service and is eligible to receive the results while it’s in use."}
+{"id": "/documentation/CoreLocation/CLLocationManager/requestWhenInUseAuthorization()", "law": "If the user’s choice grants temporary When In Use authorization, the authorization expires when the app is no longer in use, reverting to Not Determined status ( )."}
+{"id": "/documentation/CoreLocation/CLLocationManager/requestWhenInUseAuthorization()", "law": "For information about when an app is considered to be in use, see ."}
+{"id": "/documentation/CoreLocation/CLLocationManager/requestWhenInUseAuthorization()", "law": "Be mindful of battery use and user privacy by monitoring the device’s location only when necessary and when the user expects it."}
+{"id": "/documentation/CoreLocation/CLLocationManager/requestWhenInUseAuthorization()", "law": "Requests the user’s permission to use location services while the app is in use."}

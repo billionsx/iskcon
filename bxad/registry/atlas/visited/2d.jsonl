@@ -32,3 +32,6 @@
 {"id": "/documentation/accelerate/vforce/exp2(_:)-4mm9y", "sha": "e5e0c8696d7dbfe1f8cc834e95dd64d77651bbe1c3657c1ecef57b96fed45136", "t": "exp2(_:)", "n": 90, "laws": 0, "ts": "2026-07-26 12:12 UTC"}
 {"id": "/documentation/accelerate/vforce/log10(_:result:)-3j9cp", "sha": "0211f7a8286ac474c168840abf8ca20ce3ab3a99605ce879d3d5f3dc97a65508", "t": "log10(_:result:)", "n": 88, "laws": 0, "ts": "2026-07-26 12:13 UTC"}
 {"id": "/documentation/simd/simd_orient-4dorr", "sha": "7a900e3dd8e713d578634eee79861e5b015bced5adb39108209660d718861cbe", "t": "simd_orient", "n": 52, "laws": 0, "ts": "2026-07-26 12:19 UTC"}
+{"id": "/documentation/accessibility/accessibilitysettings/showbordersenabledstatusdidchangenotification", "sha": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855", "t": "showBordersEnabledStatusDidChangeNotification", "n": 0, "laws": 0, "ts": "2026-07-26 18:16 UTC"}
+{"id": "/documentation/uikit/adding-a-custom-font-to-your-app", "sha": "4b46a3f6d907ae7fe76f4c54341eb9634c465d3154e18f66a54423a5db4b99bd", "t": "Adding a custom font to your app", "n": 2175, "laws": 6, "ts": "2026-07-26 18:18 UTC"}
+{"id": "/documentation/appkit/nsglasseffectview", "sha": "97150916ab4eb8b27f2774afb2ce12a4fe59f91326d0955a03604584472915a2", "t": "NSGlassEffectView", "n": 151, "laws": 0, "ts": "2026-07-26 18:28 UTC"}

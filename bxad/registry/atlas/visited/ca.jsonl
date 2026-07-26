@@ -40,3 +40,7 @@
 {"id": "/documentation/accelerate/vvlog2f(_:_:_:)", "sha": "7de48e6af7fdc3884d15ed36f619b2e527920acf666cf14c0746137fb3508be3", "t": "vvlog2f(_:_:_:)", "n": 102, "laws": 0, "ts": "2026-07-26 12:15 UTC"}
 {"id": "/documentation/accelerate/vvsinpi(_:_:_:)", "sha": "1192980b992c33be3739b7587dfd6c9b0a7fb5cd11a93ab98c700a0a1947e1af", "t": "vvsinpi(_:_:_:)", "n": 169, "laws": 0, "ts": "2026-07-26 12:16 UTC"}
 {"id": "/documentation/simd/simd_precise_distance-274w4", "sha": "380e3c242abefbd2e0eef6f6dd7d2936e0b9f71b3be6ac959fc8fd4b66af7092", "t": "simd_precise_distance", "n": 49, "laws": 0, "ts": "2026-07-26 12:19 UTC"}
+{"id": "/documentation/modelio/mdlcolorswatchtexture", "sha": "e9e3f3f27f1b9d334eb0772f9460cf6ce9506f1b40c9342e7146c8d37edbc411", "t": "MDLColorSwatchTexture", "n": 574, "laws": 1, "ts": "2026-07-26 18:11 UTC"}
+{"id": "/documentation/uikit/uidynamicitem", "sha": "36a6f750c8e7e7838ae4410fac66d1acb32ffd25d98fbf7f0f68eaee2c679e58", "t": "UIDynamicItem", "n": 317, "laws": 0, "ts": "2026-07-26 18:18 UTC"}
+{"id": "/documentation/appkit/nsdraggingdestination", "sha": "6f8e70e7fdb9cce0c1ab00d3b14b2ea91251491c1520f91368bcfb7efba40eb7", "t": "NSDraggingDestination", "n": 920, "laws": 1, "ts": "2026-07-26 18:30 UTC"}
+{"id": "/documentation/appintents/appintent/donate(result:)-36cia", "sha": "aae462a7bded5d3c646bd32d1664d0963e1da781eac2aab9cf21fef5eaaee04f", "t": "donate(result:)", "n": 589, "laws": 3, "ts": "2026-07-26 18:38 UTC"}

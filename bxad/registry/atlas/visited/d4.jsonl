@@ -30,3 +30,7 @@
 {"id": "/documentation/avfoundation/avcapturesession/commitconfiguration()", "sha": "cbcdb91f6c034db6b234295677bf78829cce3df96da3dcfad1b657d150dd7930", "t": "commitConfiguration()", "n": 99, "laws": 0, "ts": "2026-07-26 12:06 UTC"}
 {"id": "/documentation/accelerate/out-of-place-functions-for-1d-real-fft", "sha": "da65c4e6d4749c9988e83c8ba660fcf388d9f9b84451ac190725616810fd0059", "t": "Out-of-Place Functions for 1D Real FFT", "n": 378, "laws": 0, "ts": "2026-07-26 12:08 UTC"}
 {"id": "/documentation/accelerate/vvlogb(_:_:_:)", "sha": "1d903e3e4f924faaccc09de9ae2a62a340dd01b6f4d853319bcc0a015aebf608", "t": "vvlogb(_:_:_:)", "n": 282, "laws": 0, "ts": "2026-07-26 12:15 UTC"}
+{"id": "/documentation/simd/simd_real(_:)-75sl3", "sha": "9eed7de9a99e75218d1ba52b39f975bca24c19058346ba65638e760cd92fa1bf", "t": "simd_real(_:)", "n": 47, "laws": 0, "ts": "2026-07-26 18:10 UTC"}
+{"id": "/documentation/modelio/mdlnormalmaptexture", "sha": "f1cd7b6cd35e5505e0e38615eda0f6586099e658e17a2ba99424710752d26bde", "t": "MDLNormalMapTexture", "n": 711, "laws": 1, "ts": "2026-07-26 18:11 UTC"}
+{"id": "/documentation/uikit/uiaccessibilityelement/accessibilityhint", "sha": "47f972085ab0c42a2c16b0f00913a07071ecf5d91345ad7aa533022a5d1c5acb", "t": "accessibilityHint", "n": 659, "laws": 0, "ts": "2026-07-26 18:17 UTC"}
+{"id": "/documentation/appkit/nsaccessibilityprotocol/setaccessibilitytabs(_:)", "sha": "0032716561eb1fdf0d9e5dca2e39c13b399b04eee724e35f9be3344e51397039", "t": "setAccessibilityTabs(_:)", "n": 53, "laws": 0, "ts": "2026-07-26 18:27 UTC"}

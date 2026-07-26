@@ -31,3 +31,6 @@
 {"id": "/documentation/avfoundation/avassetreader/cancelreading()", "sha": "23a3f6669e8b1440011c212fd54ad1f123415bd682161fe4b7234b270b19a291", "t": "cancelReading()", "n": 235, "laws": 0, "ts": "2026-07-26 12:02 UTC"}
 {"id": "/documentation/accelerate/vdsp_biquadm_setupd", "sha": "18795260bb9ee13594e8e2f555d5f7c1efe44b8eed66725d59713f7bfa0291e5", "t": "vDSP_biquadm_SetupD", "n": 131, "laws": 1, "ts": "2026-07-26 12:03 UTC"}
 {"id": "/documentation/simd/erf", "sha": "60ac538ee8d4a3250eaac2045d7a8f7d469ff26d7805974ec2fef7fbd366f70c", "t": "erf", "n": 56, "laws": 0, "ts": "2026-07-26 12:17 UTC"}
+{"id": "/documentation/CoreGraphics/CGRectNull", "sha": "3faca174714b5c78bf54ddd1fad00beb69bd6fd800f64a7d20c140ab4b210878", "t": "CGRectNull", "n": 355, "laws": 0, "ts": "2026-07-26 18:18 UTC"}
+{"id": "/documentation/accessorysetupkit/asaccessorysession/finishauthorization(for:settings:completionhandler:)", "sha": "53b50cac18e5adc146c3c21e8faa3337502d584ed66e07fcca7dfea91d48c373", "t": "finishAuthorization(for:settings:completionHandler:)", "n": 384, "laws": 1, "ts": "2026-07-26 18:32 UTC"}
+{"id": "/documentation/alarmkit/alarm/countdownduration-swift.struct/init(prealert:postalert:)", "sha": "922739c903dc4833971d621fe3721bafb6c1a25a61872d72151d92eff4483280", "t": "init(preAlert:postAlert:)", "n": 44, "laws": 0, "ts": "2026-07-26 18:33 UTC"}

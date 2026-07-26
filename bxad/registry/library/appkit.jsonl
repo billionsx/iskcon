@@ -457,3 +457,291 @@
 {"id": "/documentation/AppKit/text-display", "law": "Use the class to add either a label or a simple text input."}
 {"id": "/documentation/AppKit/text-display", "law": "Use the class to provide more comprehensive layout and editing features for larger bodies of text."}
 {"id": "/documentation/AppKit/text-display", "law": "To connect your app to a spell-checking service, use the class."}
+{"id": "/documentation/appkit/nsaccessibility-c.protocol/accessibilitychildren", "law": "If you create an subclass, you don’t typically need to set this value."}
+{"id": "/documentation/appkit/nsaccessibility-c.protocol/accessibilitychildren", "law": "If you use an subclass to represent an interface element that is not backed by a view, you can either set the property or you can call the convenience method."}
+{"id": "/documentation/appkit/nsaccessibility-c.protocol/accessibilitychildreninnavigationorder", "law": "The array should match all elements found in , rearranged in an easily navigable order."}
+{"id": "/documentation/appkit/nsaccessibility-c.protocol/accessibilityelement", "law": "Use this property to expose this object to accessibility clients as a functional interface element."}
+{"id": "/documentation/appkit/nsaccessibility-c.protocol/accessibilityelement", "law": "Users, however, don’t care about the view hierarchy details."}
+{"id": "/documentation/appkit/nsaccessibility-c.protocol/accessibilityelement", "law": "They should only be told that there’s a button in a window."}
+{"id": "/documentation/appkit/nsaccessibility-c.protocol/accessibilityparent", "law": "This property must contain a reference to another element in the accessibility hierarchy."}
+{"id": "/documentation/appkit/nsaccessibility-c.protocol/accessibilityparent", "law": "If you create an subclass, you don’t typically need to set this value."}
+{"id": "/documentation/appkit/nsaccessibility-c.protocol/accessibilityparent", "law": "If you use an subclass to represent an interface element that is not backed by a view, you can either set the parent property or you can call the convenience method, which sets it automatically."}
+{"id": "/documentation/appkit/nsaccessibilityelement-swift.class", "law": "Create subclasses of the class to represent any of your user interface elements that don’t inherit from or from one of the standard AppKit controls."}
+{"id": "/documentation/appkit/nsaccessibilityelement-swift.class", "law": "In your subclass, implement any additional properties and methods you may need to use to further customize your user interface element’s accessibility behavior."}
+{"id": "/documentation/appkit/nsaccessibilityprotocol", "law": "To be accessible, an app must provide information to the assistive app about its user interface and capabilities."}
+{"id": "/documentation/appkit/nsaccessibilityprotocol", "law": "The role-specific protocols don’t include these notifications; however, standard AppKit controls already send appropriate messages for their standard usage patterns."}
+{"id": "/documentation/appkit/nsaccessibilityprotocol", "law": "If you’re using custom user interface elements that don’t inherit from or one of the other accessibility-enabled AppKit classes, subclass the class instead of adopting instead of ."}
+{"id": "/documentation/appkit/nsaccessibilityprotocol", "law": "You can control which accessor methods the assistive app can use by overriding ."}
+{"id": "/documentation/appkit/nsview", "law": "You typically don’t use objects directly."}
+{"id": "/documentation/appkit/nsview", "law": "Instead, you use objects that descend from or you subclass yourself and override its methods to implement the behavior you need."}
+{"id": "/documentation/appkit/nsview", "law": "Unless you’re implementing a concrete subclass of or working intimately with the content of the view hierarchy at runtime, you don’t need to know much about this class’s interface."}
+{"id": "/documentation/appkit/nsview", "law": "For any view, there are many methods that you can use as-is."}
+{"id": "/documentation/appkit/nsview", "law": "(All subclasses must implement this method, but it’s rarely invoked explicitly.) An alternative to drawing is to update the layer directly using the method."}
+{"id": "/documentation/appkit/nsview", "law": "If you subclass directly and handle specific types of events, don’t call in the implementations of your event-related methods."}
+{"id": "/documentation/appkit/nsview", "law": "Therefore, don’t call if your view implements any of the following methods and handles the event: changes the default behavior of so that it calls and, if non , presents the contextual menu."}
+{"id": "/documentation/appkit/nsview", "law": "If your view descends from a class other than , call to let the parent view handle any events that you don’t."}
+{"id": "/documentation/appkit/nsaccessibility-c.protocol/accessibilityrequired", "law": "Returns YES if the element is required to have content; otherwise, NO."}
+{"id": "/documentation/appkit/nsaccessibility-c.protocol/accessibilityrequired", "law": "A Boolean value that determines whether the accessibility element must have content for successful submission of a form."}
+{"id": "/documentation/appkit/nsaccessibility-c.protocol/accessibilityroledescription", "law": "If possible, use a single word."}
+{"id": "/documentation/appkit/nsaccessibility-c.protocol/accessibilityroledescription", "law": "These descriptions should be noun phrases, all lowercase, with no period at the end."}
+{"id": "/documentation/appkit/nsaccessibilitybutton", "law": "Use this protocol when you want a user interface element to behave like a button—a control that triggers an action when the user clicks it—in the accessibility hierarchy."}
+{"id": "/documentation/appkit/nsaccessibilitybutton", "law": "Any class that adopts this protocol must implement all of its methods, and the required methods of any protocol it inherits from."}
+{"id": "/documentation/appkit/nsaccessibilitybutton", "law": "The compiler may require you to override some methods that your ancestors have already implemented."}
+{"id": "/documentation/appkit/nsaccessibilitybutton", "law": "A role-based protocol that declares the minimum interface necessary for an accessibility element to act as a button."}
+{"id": "/documentation/appkit/nsaccessibilitybutton/accessibilitylabel()", "law": "Do not include the accessibility element’s type in the label (for example, write not .)."}
+{"id": "/documentation/appkit/nsaccessibilitybutton/accessibilitylabel()", "law": "If possible, use a single word."}
+{"id": "/documentation/appkit/nsaccessibilitybutton/accessibilitylabel()", "law": "To help ensure that accessibility clients like VoiceOver read the label with the correct intonation, this label should start with a capital letter."}
+{"id": "/documentation/appkit/nsaccessibilitybutton/accessibilitylabel()", "law": "Do not put a period at the end."}
+{"id": "/documentation/appkit/nsaccessibilitybutton/accessibilitylabel()", "law": "Always localize the label."}
+{"id": "/documentation/appkit/nsaccessibilitycheckbox", "law": "Use this protocol when you want a user interface element to behave like a checkbox—a control that toggles between an on state, an off state, and an optional mixed state—in the accessibility hierarchy."}
+{"id": "/documentation/appkit/nsaccessibilitycheckbox", "law": "Any class that adopts this protocol must implement all of its methods, and the required methods of any protocol it inherits from."}
+{"id": "/documentation/appkit/nsaccessibilitycheckbox", "law": "The compiler may require you to override some methods that your ancestors have already implemented."}
+{"id": "/documentation/appkit/nsaccessibilitycheckbox", "law": "A role-based protocol that declares the minimum interface necessary for an accessibility element to act as a checkbox."}
+{"id": "/documentation/appkit/nsaccessibilityelementprotocol", "law": "They should adopt a more specific, role-based protocol instead."}
+{"id": "/documentation/appkit/nsaccessibilityelementprotocol", "law": "Any class that adopts this protocol must implement all of its methods, and the required methods of any protocol it inherits from."}
+{"id": "/documentation/appkit/nsaccessibilityelementprotocol", "law": "The compiler may require you to override some methods that your ancestors have already implemented."}
+{"id": "/documentation/appkit/nsaccessibilityelementprotocol", "law": "A role-based protocol that declares the minimum interface necessary to interact with an assistive app."}
+{"id": "/documentation/appkit/nsaccessibilityradiobutton", "law": "Use this protocol when you want a user interface element to behave like a radio button—a control for constraining a selection to a single element from several elements—in the accessibility hierarchy."}
+{"id": "/documentation/appkit/nsaccessibilityradiobutton", "law": "Any class that adopts this protocol must implement all of its methods, and the required methods of any protocol it inherits from."}
+{"id": "/documentation/appkit/nsaccessibilityradiobutton", "law": "The compiler may require you to override some methods that your ancestors have already implemented."}
+{"id": "/documentation/appkit/nsaccessibilityradiobutton", "law": "A role-based protocol that declares the minimum interface necessary for an accessibility element to act as a radio button."}
+{"id": "/documentation/appkit/nsaccessibilityswitch", "law": "Use this protocol when you want a user interface element to behave like a switch—a control that toggles between an on state and an off state—in the accessibility hierarchy."}
+{"id": "/documentation/appkit/nsaccessibilityswitch", "law": "Any class that adopts this protocol must implement all of its methods, and the required methods of any protocol it inherits from."}
+{"id": "/documentation/appkit/nsaccessibilityswitch", "law": "The compiler may require you to override some methods that your ancestors have already implemented."}
+{"id": "/documentation/appkit/nsaccessibilityswitch", "law": "A role-based protocol that declares the minimum interface necessary for an accessibility element to act as a switch."}
+{"id": "/documentation/appkit/nsbutton", "law": "You use the action method to perform your app-specific tasks."}
+{"id": "/documentation/appkit/nsbutton", "law": "However, while a matrix requires you to access the button cell objects directly, most button class methods act as “covers” for identically declared button cell methods."}
+{"id": "/documentation/appkit/nsbutton", "law": "The only button cell methods that don’t have covers relate to the font you use to display the key equivalent and to specific methods for highlighting or showing the state of the button."}
+{"id": "/documentation/appkit/nsswitch", "law": "doesn’t use an instance of to provide its functionality."}
+{"id": "/documentation/appkit/custom-controls", "law": "Simply implement these methods, and your control is ready to use."}
+{"id": "/documentation/appkit/nsaccessibilityelement-swift.class/element(withrole:frame:label:parent:)", "law": "Regardless of how you create the accessibility element, you need to set its property to ensure that the element’s frame is updated as its parent moves."}
+{"id": "/documentation/appkit/nsaccessibility-c.protocol/accessibilityframe", "law": "If you are working with an subclass, use the property instead."}
+{"id": "/documentation/appkit/nsaccessibilityelementprotocol/accessibilityframe()", "law": "If you are working with an subclass, use the property instead."}
+{"id": "/documentation/appkit/nsaccessibility-c.protocol/accessibilityallowedvalues", "law": "Use this property if the slider can be set only to predefined values (for example, if the slider’s level indicator automatically snaps to the closest integer values between 0 and 100)."}
+{"id": "/documentation/appkit/nsaccessibility-c.protocol/accessibilityalternateuivisible", "law": "Use this property for elements that present an alternative UI—for example, when the pointer hovers over an interface element for a few seconds."}
+{"id": "/documentation/appkit/nsaccessibility-c.protocol/accessibilityclearbutton", "law": "Use this property on a search field."}
+{"id": "/documentation/appkit/nsaccessibility-c.protocol/accessibilitycolumncount", "law": "Use this property for UI elements that present a grid of child elements."}
+{"id": "/documentation/appkit/nsaccessibility-c.protocol/accessibilitycolumnindexrange", "law": "Use this property in the elements representing a table’s cell."}
+{"id": "/documentation/appkit/nsaccessibility-c.protocol/accessibilitycriticalvalue", "law": "Use this property for elements such as the battery level indicator."}
+{"id": "/documentation/appkit/nsaccessibility-c.protocol/accessibilitydecrementbutton", "law": "Use this property on a stepper."}
+{"id": "/documentation/appkit/nsaccessibility-c.protocol/accessibilitydisclosed", "law": "Use this property in the elements representing an outline’s row."}
+{"id": "/documentation/appkit/nsaccessibility-c.protocol/accessibilitydisclosedbyrow", "law": "Use this property in the elements representing an outline’s row."}
+{"id": "/documentation/appkit/nsaccessibility-c.protocol/accessibilitydisclosedrows", "law": "Use this property in the elements representing an outline’s row."}
+{"id": "/documentation/appkit/nsaccessibility-c.protocol/accessibilitydisclosurelevel", "law": "Use this property in the elements representing an outline’s row."}
+{"id": "/documentation/appkit/nsaccessibility-c.protocol/accessibilityexpanded", "law": "Use this property on elements that can expand to reveal additional information, such as outline rows and combo boxes."}
+{"id": "/documentation/appkit/nsaccessibility-c.protocol/accessibilityheader", "law": "Use this property on a table view."}
+{"id": "/documentation/appkit/nsaccessibility-c.protocol/accessibilityhelp", "law": "Use this property only when the results of activating this element are not obvious from the element’s label."}
+{"id": "/documentation/appkit/nsaccessibility-c.protocol/accessibilityhelp", "law": "To help ensure that accessibility clients like VoiceOver read the help text with the proper inflection, begin this string with a verb, capitalize the first letter, and end the string with a period."}
+{"id": "/documentation/appkit/nsaccessibility-c.protocol/accessibilityhelp", "law": "Always localize this string."}
+{"id": "/documentation/appkit/nsaccessibility-c.protocol/accessibilityhorizontalscrollbar", "law": "Use this property on a scrollable view."}
+{"id": "/documentation/appkit/nsaccessibility-c.protocol/accessibilityincrementbutton", "law": "Use this property on a stepper."}
+{"id": "/documentation/appkit/nsaccessibility-c.protocol/accessibilityindex", "law": "Use this property for any element that can be accessed through an index: cells, rows, columns, and so forth."}
+{"id": "/documentation/appkit/nsaccessibility-c.protocol/accessibilitylabel", "law": "Do not include the accessibility element’s type in the label (for example, write , not .)."}
+{"id": "/documentation/appkit/nsaccessibility-c.protocol/accessibilitylabel", "law": "If possible, use a single word."}
+{"id": "/documentation/appkit/nsaccessibility-c.protocol/accessibilitylabel", "law": "To help ensure that accessibility clients such as VoiceOver read the label with the correct intonation, start this label with a capital letter."}
+{"id": "/documentation/appkit/nsaccessibility-c.protocol/accessibilitylabel", "law": "Do not put a period at the end."}
+{"id": "/documentation/appkit/nsaccessibility-c.protocol/accessibilitylabel", "law": "Always localize the label."}
+{"id": "/documentation/appkit/nsaccessibility-c.protocol/accessibilitylabelvalue", "law": "Use this property on a slider element’s labels."}
+{"id": "/documentation/appkit/nsaccessibility-c.protocol/accessibilitylinkeduielements", "law": "Use this property to define a relationship between different user interface elements."}
+{"id": "/documentation/appkit/nsaccessibility-c.protocol/accessibilitylinkeduielements", "law": "For example, use this property to link a list item with contents displayed in another pane or window."}
+{"id": "/documentation/appkit/nsaccessibility-c.protocol/accessibilitymarkergroupuielement", "law": "Use this property on a ruler element."}
+{"id": "/documentation/appkit/nsaccessibility-c.protocol/accessibilitymarkeruielements", "law": "Use this property on a ruler element."}
+{"id": "/documentation/appkit/nsaccessibility-c.protocol/accessibilitymarkervalues", "law": "Use this property on a ruler element."}
+{"id": "/documentation/appkit/nsaccessibility-c.protocol/accessibilitymaxvalue", "law": "Set this property only when the element has an property and you want to define the maximum possible value."}
+{"id": "/documentation/appkit/nsaccessibility-c.protocol/accessibilitymaxvalue", "law": "The maximum value for the accessibility element."}
+{"id": "/documentation/appkit/nsaccessibility-c.protocol/accessibilityminvalue", "law": "Set this property only when the element has an property and you want to define the minimum possible value."}
+{"id": "/documentation/appkit/nsaccessibility-c.protocol/accessibilityminvalue", "law": "The minimum value for the accessibility element."}
+{"id": "/documentation/appkit/nsaccessibility-c.protocol/accessibilitynextcontents", "law": "For example, use this property to set the subview adjacent to a split view’s splitter element."}
+{"id": "/documentation/appkit/nsaccessibility-c.protocol/accessibilityorderedbyrow", "law": "Use this property for UI elements that present a grid of child elements."}
+{"id": "/documentation/appkit/nsaccessibility-c.protocol/accessibilityoverflowbutton", "law": "Use this property on a toolbar element."}
+{"id": "/documentation/appkit/nsaccessibility-c.protocol/accessibilityplaceholdervalue", "law": "Use this property for accessibility elements that support placeholder values, such as text fields."}
+{"id": "/documentation/appkit/nsaccessibility-c.protocol/accessibilitypreviouscontents", "law": "For example, use this property to set the subview adjacent to a split view’s splitter element."}
+{"id": "/documentation/appkit/nsaccessibility-c.protocol/accessibilityrowcount", "law": "Use this property for elements that present a grid of child elements."}
+{"id": "/documentation/appkit/nsaccessibility-c.protocol/accessibilityrowindexrange", "law": "Use this property in the elements representing a table’s cell."}
+{"id": "/documentation/appkit/nsaccessibility-c.protocol/accessibilityrulermarkertype", "law": "Use this property on a ruler element."}
+{"id": "/documentation/appkit/nsaccessibility-c.protocol/accessibilitysearchbutton", "law": "Use this property on a search field."}
+{"id": "/documentation/appkit/nsaccessibility-c.protocol/accessibilitysearchmenu", "law": "Use this property on a search field."}
+{"id": "/documentation/appkit/nsaccessibility-c.protocol/accessibilityselectedcells", "law": "This property is required for all elements that act like cell-based tables."}
+{"id": "/documentation/appkit/nsaccessibility-c.protocol/accessibilityservesastitleforuielements", "law": "Use on a static text label to associate that label with one or more user interface elements."}
+{"id": "/documentation/appkit/nsaccessibility-c.protocol/accessibilitysharedcharacterrange", "law": "Use this property to manage text that is split across multiple elements—for example, an ebook reader that splits the text into multiple pages."}
+{"id": "/documentation/appkit/nsaccessibility-c.protocol/accessibilitysharedfocuselements", "law": "Use this property to manage elements that share the keyboard focus—for example, a search field with completion menu below it."}
+{"id": "/documentation/appkit/nsaccessibility-c.protocol/accessibilitysharedtextuielements", "law": "Use this property to manage text that is split across multiple elements—for example, an ebook reader that splits the text into multiple pages."}
+{"id": "/documentation/appkit/nsaccessibility-c.protocol/accessibilitysplitters", "law": "Use this property on a split view element."}
+{"id": "/documentation/appkit/nsaccessibility-c.protocol/accessibilitytabs", "law": "Use this property on a tab view element."}
+{"id": "/documentation/appkit/nsaccessibility-c.protocol/accessibilitytitleuielement", "law": "Use this property to associate a static text label with another element—for example, to associate a label with its corresponding text field."}
+{"id": "/documentation/appkit/nsaccessibility-c.protocol/accessibilityunitdescription", "law": "Use this property on a ruler element."}
+{"id": "/documentation/appkit/nsaccessibility-c.protocol/accessibilityunits", "law": "Use this property on a ruler element."}
+{"id": "/documentation/appkit/nsaccessibility-c.protocol/accessibilityvaluedescription", "law": "Use this property to provide a more useful description of the accessibility element’s raw value."}
+{"id": "/documentation/appkit/nsaccessibility-c.protocol/accessibilityvaluedescription", "law": "Always localize this description."}
+{"id": "/documentation/appkit/nsaccessibility-c.protocol/accessibilityverticalscrollbar", "law": "Use this property on a scrollable view."}
+{"id": "/documentation/appkit/nsaccessibility-c.protocol/accessibilityvisiblecells", "law": "This property is required for all elements that act like cell-based tables."}
+{"id": "/documentation/appkit/nsaccessibility-c.protocol/accessibilityvisiblecharacterrange", "law": "Use this property to store the range for entire lines."}
+{"id": "/documentation/appkit/nsaccessibility-c.protocol/accessibilitywarningvalue", "law": "Use this property for elements such as the battery level indicator."}
+{"id": "/documentation/appkit/nsaccessibility-swift.struct/post(element:notification:)", "law": "Accessibility notifications require special handling, so they can’t post using ."}
+{"id": "/documentation/appkit/nsaccessibility-swift.struct/post(element:notification:userinfo:)", "law": "The dictionary can also be (most accessibility notifications don’t require it)."}
+{"id": "/documentation/appkit/nsaccessibilitycustomaction", "law": "Apps that support custom actions can create instances of this class, specifying the user-readable name of the action, and either a handler closure or the object and selector to use when performing the action."}
+{"id": "/documentation/appkit/nsaccessibilityprotocol/accessibilitycell(forcolumn:row:)", "law": "This property is required for all elements that function as cell-based tables."}
+{"id": "/documentation/appkit/nsaccessibilityprotocol/accessibilitymaxvalue()", "law": "Returns the maximum value for the accessibility element."}
+{"id": "/documentation/appkit/nsaccessibilityprotocol/accessibilityminvalue()", "law": "Returns the minimum value for the accessibility element."}
+{"id": "/documentation/appkit/nsaccessibilityprotocol/accessibilityperformconfirm()", "law": "Use this method on elements that take keyboard input, such as a text field."}
+{"id": "/documentation/appkit/nsaccessibilityprotocol/accessibilityperformdecrement()", "law": "Use this method on elements that have an adjustable property."}
+{"id": "/documentation/appkit/nsaccessibilityprotocol/accessibilityperformdelete()", "law": "Use this method on elements with values."}
+{"id": "/documentation/appkit/nsaccessibilityprotocol/accessibilityperformincrement()", "law": "Use this method on elements that have an adjustable property."}
+{"id": "/documentation/appkit/nsaccessibilityprotocol/accessibilityperformpick()", "law": "Use this method on selectable elements, such as a menu item."}
+{"id": "/documentation/appkit/nsaccessibilityprotocol/accessibilityperformpress()", "law": "Use this method on elements that behave like buttons."}
+{"id": "/documentation/appkit/nsaccessibilityprotocol/accessibilityperformshowalternateui()", "law": "Use this method to trigger changes to the UI due to a mouse-hover or similar event."}
+{"id": "/documentation/appkit/nsaccessibilityprotocol/accessibilityperformshowmenu()", "law": "Use this method to display the contextual menu for the element."}
+{"id": "/documentation/appkit/nsaccessibilityprotocol/accessibilityrange(for:)-6kv3", "law": "This value always includes the specified character but may include additional characters if that character is part of a multicharacter glyph."}
+{"id": "/documentation/appkit/nsaccessibilityprotocol/accessibilitystylerange(for:)", "law": "This method returns a range of characters that meet two conditions: The range must include the specified character, and all the other characters in the range must match the specified character’s style."}
+{"id": "/documentation/appkit/nsaccessibilityprotocol/isaccessibilityrequired()", "law": "Returns a Boolean value that determines whether the accessibility element must have content for successful submission of a form."}
+{"id": "/documentation/appkit/nsaccessibilityprotocol/setaccessibilitymaxvalue(_:)", "law": "Sets the maximum value for the accessibility element."}
+{"id": "/documentation/appkit/nsaccessibilityprotocol/setaccessibilityminvalue(_:)", "law": "Sets the minimum value for the accessibility element."}
+{"id": "/documentation/appkit/nsaccessibilityprotocol/setaccessibilityrequired(_:)", "law": "Sets a Boolean value that determines whether the accessibility element must have content for successful submission of a form."}
+{"id": "/documentation/appkit/nsapplication", "law": "An object has a delegate (an object that you assign) that’s notified when the app starts or terminates, is hidden or activated, should open a file selected by the user, and so forth."}
+{"id": "/documentation/appkit/nsapplication", "law": "After creating the application object, the function should load your app’s main nib file and then start the event loop by sending the application object a message."}
+{"id": "/documentation/appkit/nsapplication", "law": "The method also initializes the global variable , which you use to retrieve the instance."}
+{"id": "/documentation/appkit/nsapplication", "law": "You can also use the class to register your own Apple event handlers."}
+{"id": "/documentation/appkit/nsapplication", "law": "However, if you do need to use Cocoa classes within the function itself (other than to load nib files or to instantiate ), you should create an block to contain the code using the classes."}
+{"id": "/documentation/appkit/nsapplication", "law": "Another message, , lets the delegate determine whether the app should be allowed to quit."}
+{"id": "/documentation/appkit/nsapplication", "law": "You rarely should find a real need to create a custom subclass."}
+{"id": "/documentation/appkit/nsapplication", "law": "Unlike some object-oriented libraries, Cocoa doesn’t require you to subclass to customize app behavior."}
+{"id": "/documentation/appkit/nsapplication", "law": "To use a custom subclass of , send to your subclass rather than directly to ."}
+{"id": "/documentation/appkit/nsapplication", "law": "As a result, you should not, for example, attempt to invoke methods of other AppKit classes from an initialization method of an subclass."}
+{"id": "/documentation/appkit/nsbox", "law": "Use box objects to visually group the contents of your window."}
+{"id": "/documentation/appkit/nsbox", "law": "For example, you might use boxes to group related views."}
+{"id": "/documentation/appkit/nsbox", "law": "Use an object to configure the appearance of the box."}
+{"id": "/documentation/appkit/nsbox", "law": "You must override the method (inherited from ) if you want to customize the appearance of your objects."}
+{"id": "/documentation/appkit/nscell", "law": "When subclassing you must implement all of the designated initializers."}
+{"id": "/documentation/appkit/nsclipview", "law": "You don’t typically use the class directly; it’s provided primarily as the scrolling machinery for the class."}
+{"id": "/documentation/appkit/nsclipview", "law": "However, you might use the class to implement a class similar to ."}
+{"id": "/documentation/appkit/nsclipview", "law": "When using an within an (the usual configuration), you should access the properties that control background drawing state, rather than accessing these properties of the ."}
+{"id": "/documentation/appkit/nsclipview", "law": "In the usual case, should be allowed to manage the background-drawing properties of its associated ."}
+{"id": "/documentation/appkit/nsclipview", "law": "The two objects do not maintain independent and distinct and properties; rather, the accessors for these properties on largely defer to the associated and allow the to maintain the state."}
+{"id": "/documentation/appkit/nscolorwell", "law": "For example, a drawing app might include a color well to let someone choose the color to use when drawing."}
+{"id": "/documentation/appkit/nscombobutton", "law": "Use this control in places where you want to offer a button with a default action and one or more alternative actions."}
+{"id": "/documentation/appkit/nscombobutton", "law": "This control doesn’t use an object for its underlying implementation."}
+{"id": "/documentation/appkit/nscontrol", "law": "The class is abstract and must be subclassed to be used."}
+{"id": "/documentation/appkit/nscontrol", "law": "Although you can subclass it yourself, more often you use one of the subclasses already defined by AppKit."}
+{"id": "/documentation/appkit/nscontrol", "law": "Any subclass that uses these methods must have a delegate and the methods to get and set it."}
+{"id": "/documentation/appkit/nscontrol", "law": "Any subclass that uses these methods must have a delegate and the methods to get and set it."}
+{"id": "/documentation/appkit/nsglasseffectcontainerview", "law": "Using a glass effect container view can improve performance by reducing the number of passes required to render similar glass effect views."}
+{"id": "/documentation/appkit/nsimage", "law": "You use instances of to load existing images, create new images, and draw the resulting image data into your views."}
+{"id": "/documentation/appkit/nsimage", "law": "Although you use this class predominantly for image-related operations, the class itself knows little about the underlying image data."}
+{"id": "/documentation/appkit/nsimage", "law": "Although you can assign an object directly to the property of a object, doing so may not always yield the best results."}
+{"id": "/documentation/appkit/nsimage", "law": "Instead of using your image object, you can use the method to obtain an object that you can use for your layer’s contents."}
+{"id": "/documentation/appkit/nsimage", "law": "Before calling the method, use the method to get the recommended scale factor for the resulting image."}
+{"id": "/documentation/appkit/nsimage", "law": "You might use this code for images that fit the layer bounds precisely or for which you rely on the property of the layer to position or scale the image."}
+{"id": "/documentation/appkit/nsimagecell", "law": "The object value of an object must be an object, so if you use the method of , be sure to supply an object as an argument."}
+{"id": "/documentation/appkit/nsimagecell", "law": "Because an object does not need to be converted for display, do not use the methods relating to formatters."}
+{"id": "/documentation/appkit/nsimagecell", "law": "When subclassing you must implement all of the designated initializers."}
+{"id": "/documentation/appkit/nsimageview", "law": "An image view calls its action method only when the user drags an image into the image view’s bounds, and the image view must be editable to receive dragged images."}
+{"id": "/documentation/appkit/nsimageview", "law": "If you want to display an image and respond to clicks in the image, use an object instead."}
+{"id": "/documentation/appkit/nslevelindicator", "law": "Unlike sliders, level indicators do not have a “knob” indicating the current setting, and they do not allow the user to adjust the current setting."}
+{"id": "/documentation/appkit/nsmatrix", "law": "Use of NSMatrix is discouraged in apps that run in macOS 10.8 and later."}
+{"id": "/documentation/appkit/nsopenglview", "law": "When creating an object in Interface Builder, you use the inspector window to specify the pixel format attributes you want for the view."}
+{"id": "/documentation/appkit/nsopenpanel", "law": "Apps use the Open panel as a convenient way to query the user for the name of a file to open."}
+{"id": "/documentation/appkit/nsopenpanel", "law": "In macOS 10.15 and later, the system always draws Open panels in a separate process, regardless of whether the app is sandboxed."}
+{"id": "/documentation/appkit/nsopenpanel", "law": "Avoid using deprecated classes and protocols in your apps."}
+{"id": "/documentation/appkit/nspathcell", "law": "This is not required if the is set to , or if you wish to not have the animation."}
+{"id": "/documentation/appkit/nspathcell", "law": "When the path style is set to , you cannot change the control size, and it is always set to ."}
+{"id": "/documentation/appkit/nsruleeditor", "law": "Each object in the collection should have the following properties: If you override in a subclass of , you must invoke super’s implementation."}
+{"id": "/documentation/appkit/nssavepanel", "law": "An object reports user interactions to its associated object, which must adopt the protocol."}
+{"id": "/documentation/appkit/nssavepanel", "law": "Use your delegate object to validate the user’s selection and respond to user interactions with the panel."}
+{"id": "/documentation/appkit/nssavepanel", "law": "In macOS 10.15, the system always displays the Save dialog in a separate process, regardless of whether the app is sandboxed."}
+{"id": "/documentation/appkit/nssavepanel", "law": "Avoid using deprecated classes and protocols in your apps."}
+{"id": "/documentation/appkit/nsscroller", "law": "Typically, you don’t need to program with scrollers; instead, you configure them with an object in a ."}
+{"id": "/documentation/appkit/nsscroller", "law": "Don’t use an scroller when a slider would be more appropriate."}
+{"id": "/documentation/appkit/nsscrollview", "law": "When using an object within a scroll view (the usual configuration), you should issue messages that control background drawing state to the scroll view directly, rather than messaging the clip view."}
+{"id": "/documentation/appkit/nsscrubberimageitemview", "law": "Use the property to determine how the scaled image is cropped within that frame."}
+{"id": "/documentation/appkit/nssearchfield", "law": "You can use an object to manipulate some aspects of the search field."}
+{"id": "/documentation/appkit/nssearchfieldcell", "law": "Do not rely on the sender of the action to be an object because the menu may change."}
+{"id": "/documentation/appkit/nssecuretextfield", "law": "A secure text field is suitable for use as a password-entry object or for any item in which the text value must be kept secret."}
+{"id": "/documentation/appkit/nssecuretextfieldcell", "law": "works with and overrides the general cell use of the field editor to provide its own field editor, which doesn’t display text or allow the user to cut or copy its value."}
+{"id": "/documentation/appkit/nssegmentedcell", "law": "Use the methods of to customize the attributes of a segmented control."}
+{"id": "/documentation/appkit/nssegmentedcontrol", "law": "The methods of that do not have covers relate to accessing and setting values for tags and tooltips, programatically setting the key segment, and establishing the mode of the control."}
+{"id": "/documentation/appkit/nssegmentedcontrol", "law": "You use these modes with the property."}
+{"id": "/documentation/appkit/nstablecellview", "law": "Additional properties can be added by subclassing and adding the required properties and connecting them programmatically or in Interface Builder."}
+{"id": "/documentation/appkit/nstablecellview", "law": "If you use your own custom view cells that are not based on you should implement this property in order to be able to receive changes to cell values."}
+{"id": "/documentation/appkit/nstext", "law": "In general, you’re more likely to use the subclass, because it extends the interface declared by and provides much more sophisticated functionality than that declared in ."}
+{"id": "/documentation/appkit/nstextfieldcell", "law": "When subclassing you must implement the designated initializers and ."}
+{"id": "/documentation/appkit/nstextinsertionindicator", "law": "and both use to display the insertion indicator."}
+{"id": "/documentation/appkit/nstextinsertionindicator", "law": "You can use this indicator if you have your own text engine or need to display an indicator elsewhere."}
+{"id": "/documentation/appkit/nstextinsertionindicator", "law": "To use the indicator, instantiate an , then add the view to your view hierarchy."}
+{"id": "/documentation/appkit/nstokenfield", "law": "Use a token field when you want typed text to be transformed into “tokens”, which are visually distinct elements in the text field interface."}
+{"id": "/documentation/appkit/nstokenfield", "law": "For example, you might use a token field in a mail app to display email addresses for individual users."}
+{"id": "/documentation/appkit/nstokenfield", "law": "If you do not want the whitespace-trimming behavior, link against the v10.5 binary and implement this method, returning the editing string if you have no represented object."}
+{"id": "/documentation/appkit/nsvisualeffectview", "law": "Use visual effect views primarily as background views for your app’s content."}
+{"id": "/documentation/appkit/nsvisualeffectview", "law": "The appearance and behavior of materials can also change based on system settings, so always pick a material based on its intended use."}
+{"id": "/documentation/appkit/nsvisualeffectview", "law": "For example, use the material when your view serves as the background of your window’s sidebar."}
+{"id": "/documentation/appkit/nsvisualeffectview", "law": "Don’t select materials based on the apparent colors they impart on your interface."}
+{"id": "/documentation/appkit/nsvisualeffectview", "law": "You don’t need to add visual effect views to those elements of your interface."}
+{"id": "/documentation/appkit/nsvisualeffectview", "law": "For visual effect views you create yourself, use the property to specify how and where you want the translucency applied."}
+{"id": "/documentation/appkit/nsvisualeffectview", "law": "Sheets and popovers use behind-window blending."}
+{"id": "/documentation/appkit/nsvisualeffectview", "law": "Typically, you use in-window blending with scrolling content, so that the scrolled content remains partially visible under other parts of your window chrome."}
+{"id": "/documentation/appkit/nsvisualeffectview", "law": "Toolbars always use in-window blending."}
+{"id": "/documentation/appkit/nsvisualeffectview", "law": "For custom views, you must explicitly enable vibrancy by overriding the property and returning ."}
+{"id": "/documentation/appkit/nsaccessibilityslider", "law": "Use this protocol when you want a user interface element to behave like a slider—a control that represents a continuous range of numerical values with a knob that represents the currently selected value—in the accessibility hierarchy."}
+{"id": "/documentation/appkit/nsaccessibilityslider", "law": "Any class that adopts this protocol must implement all of its methods, and the required methods of any protocol it inherits from."}
+{"id": "/documentation/appkit/nsaccessibilityslider", "law": "The compiler may require you to override some methods that your ancestors have already implemented."}
+{"id": "/documentation/appkit/nsaccessibilityslider", "law": "A role-based protocol that declares the minimum interface necessary for an accessibility element to act as a slider."}
+{"id": "/documentation/appkit/nsaccessibilityslider/accessibilitylabel()", "law": "Do not include the control’s type in the label (for example, use , not )."}
+{"id": "/documentation/appkit/nsaccessibilityslider/accessibilitylabel()", "law": "If possible use a single word."}
+{"id": "/documentation/appkit/nsaccessibilityslider/accessibilitylabel()", "law": "To help ensure that accessibility clients such as VoiceOver read the label with the correct intonation, start this label with a capital letter."}
+{"id": "/documentation/appkit/nsaccessibilityslider/accessibilitylabel()", "law": "Do not put a period at the end."}
+{"id": "/documentation/appkit/nsaccessibilityslider/accessibilitylabel()", "law": "Always localize the label."}
+{"id": "/documentation/appkit/nsaccessibilityslider/accessibilityperformdecrement()", "law": "This method must post an notification after changing the slider’s value."}
+{"id": "/documentation/appkit/nsaccessibilityslider/accessibilityperformincrement()", "law": "This method must post an notification after changing the slider’s value."}
+{"id": "/documentation/appkit/nsaccessibilitystepper", "law": "Use this protocol when you want a user interface element to behave like a stepper—a control with up and down arrow buttons for incrementing or decrementing a value—in the accessibility hierarchy."}
+{"id": "/documentation/appkit/nsaccessibilitystepper", "law": "Any class that adopts this protocol must implement all of its methods, and the required methods of any protocol it inherits from."}
+{"id": "/documentation/appkit/nsaccessibilitystepper", "law": "The compiler may require you to override some methods that your ancestors have already implemented."}
+{"id": "/documentation/appkit/nsaccessibilitystepper", "law": "A role-based protocol that declares the minimum interface necessary for an accessibility element to act as a stepper."}
+{"id": "/documentation/appkit/nsanimatablepropertycontainer", "law": "An object’s animator proxy should be treated as if it was the object itself, and may be passed to any code that accepts the object as a parameter."}
+{"id": "/documentation/appkit/nsanimatablepropertycontainer", "law": "A set of methods that defines a way to add animation to an existing class with a minimum of API impact."}
+{"id": "/documentation/appkit/nsappearancecustomization", "law": "When an object adopts this protocol, assigning a value to the property causes that object to use the appearance attributes you specified instead of any inherited attributes."}
+{"id": "/documentation/appkit/nsbutton/alternateimage", "law": "Note that some button types don’t display an alternate image, and buttons don’t display images by default."}
+{"id": "/documentation/appkit/nsbutton/alternateimage", "law": "If you use this property to set an image, the button redraws its contents if necessary."}
+{"id": "/documentation/appkit/nsbutton/attributedtitle", "law": "A button’s title is always displayed if the button doesn’t use its alternate contents for highlighting or displaying the on state."}
+{"id": "/documentation/appkit/nsbutton/contenttintcolor", "law": "A tint color to use for the template image and text content."}
+{"id": "/documentation/appkit/nsbutton/hasdestructiveaction", "law": "Setting this to allows the system to guard a destructive-action button against accidental presses, and can give the button a special appearance in certain contexts to caution against unintentional use."}
+{"id": "/documentation/appkit/nsbutton/image", "law": "The image contained in this property is always displayed on a button that doesn’t change its contents when highlighting or showing an on state."}
+{"id": "/documentation/appkit/nsbutton/image", "law": "Buttons don’t display images by default."}
+{"id": "/documentation/appkit/nsbutton/init(image:target:action:)", "law": "Set the image’s property to ensure accessibility for this control."}
+{"id": "/documentation/appkit/nsbutton/isspringloaded", "law": "On systems that don’t support pressure sensitivity, simply hovering over the button for a short period of time is sufficient to activate the button."}
+{"id": "/documentation/appkit/nsbutton/istransparent", "law": "A transparent button never draws itself, but it receives mouse events, sends its action, and tracks the mouse properly."}
+{"id": "/documentation/appkit/nsbutton/keyequivalent", "law": "Buttons don’t have a default key equivalent."}
+{"id": "/documentation/appkit/nsbutton/keyequivalent", "law": "However, the key equivalent isn’t displayed if the image position is set to , , or ; that is, the button must display both its title and its “image” (which is the key equivalent in this case), and they must not overlap."}
+{"id": "/documentation/appkit/nsbutton/maxacceleratorlevel", "law": "On a system that doesn’t support pressure sensitivity, a multilevel accelerator button always has a value of when the user clicks it."}
+{"id": "/documentation/appkit/nsbutton/maxacceleratorlevel", "law": "An integer value indicating the maximum pressure level for a button of type ."}
+{"id": "/documentation/appkit/nsbutton/minimumsize(withprioritizedcompressionoptions:)", "law": "Returns the minimum size of the button by using the compression options."}
+{"id": "/documentation/appkit/nsbutton/showsborderonlywhilemouseinside", "law": "If is , the border is never displayed, regardless of the value of ."}
+{"id": "/documentation/appkit/nsbutton/state", "law": "To check whether the button uses the mixed state, use the property."}
+{"id": "/documentation/appkit/nsbutton/symbolconfiguration", "law": "If you don’t provide a symbol configuration, the button uses its property to size and display the symbol image."}
+{"id": "/documentation/appkit/nsbutton/symbolconfiguration", "law": "The combination of point size, weight, and scale to use when sizing and displaying symbol images."}
+{"id": "/documentation/appkit/nsbutton/tintprominence", "law": "Use tint prominence to gently suggest a hierarchy when multiple buttons perform similar actions."}
+{"id": "/documentation/appkit/nsbutton/title", "law": "This title is always displayed if the button doesn’t use its alternate contents for highlighting or displaying the on state."}
+{"id": "/documentation/appkit/nscontrol/imageposition", "law": "Use these constants with the property of and ."}
+{"id": "/documentation/appkit/nsdraggingdestination", "law": "A set of methods that the destination object (or recipient) of a dragged image must implement."}
+{"id": "/documentation/appkit/nsmultilevelacceleratorbutton", "law": "On a system that doesn’t support pressure sensitivity, a multilevel accelerator button always has a value of when the user clicks it."}
+{"id": "/documentation/appkit/nsstandardkeybindingresponding", "law": "You can create your own methods as well, but use these if the concepts map to functionality in your app."}
+{"id": "/documentation/appkit/nstintprominence", "law": "A tint prominence of will use the app’s tint color with full saturation and brightness, while will apply it more subtly."}
+{"id": "/documentation/appkit/nsuseractivityrestoring", "law": "Don’t conform your classes to , as it’s a marker protocol adopted by and for user activity state restoration."}
+{"id": "/documentation/appkit/nsuserinterfacecompression", "law": "A protocol that describes how a UI control should redisplay when space is restricted."}
+{"id": "/documentation/appkit/nsslider/acceptsfirstmouse(for:)", "law": "If you want the slider to wait for its own mouse-down event, you must override this method."}
+{"id": "/documentation/appkit/nsslider/allowstickmarkvaluesonly", "law": "For example, if a slider has a minimum value of , a maximum value of , and five markers, the allowable values are , , , , and ."}
+{"id": "/documentation/appkit/nsslider/altincrementvalue", "law": "The value of this property must fit the range of values the slider can represent—for example, if the slider has a minimum value of and a maximum value of , the value should be between and ."}
+{"id": "/documentation/appkit/nsslider/maxvalue", "law": "The slider’s maximum value."}
+{"id": "/documentation/appkit/nsslider/maxvalue", "law": "A horizontal slider sends the maximum value when the knob is all the way to the trailing end of the bar."}
+{"id": "/documentation/appkit/nsslider/maxvalue", "law": "A vertical slider sends the maximum value when the knob is at the top."}
+{"id": "/documentation/appkit/nsslider/maxvalue", "law": "The maximum value the slider can send to its target."}
+{"id": "/documentation/appkit/nsslider/minvalue", "law": "A horizontal slider sends the minimum value when the knob is all the way to the leading end of the bar."}
+{"id": "/documentation/appkit/nsslider/minvalue", "law": "A vertical slider sends the minimum value when its knob is at the bottom."}
+{"id": "/documentation/appkit/nsslider/minvalue", "law": "The minimum value the slider can send to its target."}
+{"id": "/documentation/appkit/nsslider/numberoftickmarks", "law": "This property includes tick marks assigned to the minimum and maximum values."}
+{"id": "/documentation/appkit/nsslider/numberoftickmarks", "law": "The number of tick marks assigned to a slider, along with the slider’s minimum and maximum values, determines the values associated with the tick marks."}
+{"id": "/documentation/appkit/nsslider/settitlecell:", "law": "When you do choose to override the default, should be an instance of a subclass of ."}
+{"id": "/documentation/appkit/nsslider/tickmarkposition-swift.enum", "law": "Use these constants for setting ."}
+{"id": "/documentation/appkit/nsslider/tickmarkposition-swift.property", "law": "For horizontal sliders, use and ."}
+{"id": "/documentation/appkit/nsslider/tickmarkposition-swift.property", "law": "For vertical sliders, use , and ."}
+{"id": "/documentation/appkit/nsslidercell/slidertype", "law": "The minimum value ( ) is at the top, and the value increases clockwise around the dial."}
+{"id": "/documentation/appkit/nsslidercell/slidertype", "law": "The maximum selectable value is just below ; for example, if is 360, you can set the dial up to 359.999."}
+{"id": "/documentation/appkit/nsslidercell/slidertype", "law": "You can use the property to display tick marks, and you can use the property to specify that values are limited to those values represented by tick marks."}

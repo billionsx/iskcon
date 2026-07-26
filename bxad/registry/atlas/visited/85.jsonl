@@ -40,3 +40,7 @@
 {"id": "/documentation/accelerate/vdsp_biquadm_settargetssingle", "sha": "fc8a7de523cbf18a6d0eb27db25627ddc96db1cd65b3180769976e55342368d8", "t": "vDSP_biquadm_SetTargetsSingle", "n": 750, "laws": 1, "ts": "2026-07-26 12:03 UTC"}
 {"id": "/documentation/accelerate/out-of-place-functions-for-2d-real-fft", "sha": "2ea780dbdafd4ae172b5321c0bd33b776c801606a15d3fbd36d2ed4fd34541e1", "t": "Out-of-Place Functions for 2D Real FFT", "n": 378, "laws": 0, "ts": "2026-07-26 12:08 UTC"}
 {"id": "/documentation/simd/simd_fast_distance-9625l", "sha": "a565134e1acd8aa501261ea3b89647b4996c8be281d41c690e24b21266f2a2cf", "t": "simd_fast_distance", "n": 46, "laws": 0, "ts": "2026-07-26 12:18 UTC"}
+{"id": "/documentation/modelio/mdltexture", "sha": "5c380f3dbb45983d602f05cee4a41befddcabc7fe35e65c1ca9954ddef244953", "t": "MDLTexture", "n": 1422, "laws": 1, "ts": "2026-07-26 18:11 UTC"}
+{"id": "/documentation/modelio/mdltexture/texeldatawithtopleftorigin(atmiplevel:create:)", "sha": "8ce4718fd41ff1cab072fb680821a30c58c5a8427bd80d9840eed0062aee67e0", "t": "texelDataWithTopLeftOrigin(atMipLevel:create:)", "n": 804, "laws": 0, "ts": "2026-07-26 18:11 UTC"}
+{"id": "/documentation/appkit/nsscroller", "sha": "1d886b10f09b12bc63d42fdf0a59568250a86d4bd62d3e45abd75c070490229f", "t": "NSScroller", "n": 1682, "laws": 2, "ts": "2026-07-26 18:28 UTC"}
+{"id": "/documentation/accessorysetupkit/aserrordomain", "sha": "417ff6b4840c602b578474ecb89072df43ca66bf748f273562bf5d706a6a9033", "t": "ASErrorDomain", "n": 44, "laws": 0, "ts": "2026-07-26 18:31 UTC"}

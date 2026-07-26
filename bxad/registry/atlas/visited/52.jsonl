@@ -29,3 +29,7 @@
 {"id": "/documentation/accelerate/cblas_ssyr(_:_:_:_:_:_:_:_:)", "sha": "1560315cc48a50d508f280b765d3a97f1a7b6ca0a6fa1399d24440dd5dea3d70", "t": "cblas_ssyr(_:_:_:_:_:_:_:_:)", "n": 758, "laws": 1, "ts": "2026-07-26 06:16 UTC"}
 {"id": "/documentation/accelerate/vdsp/divide(_:_:result:)-44mff", "sha": "2c6ccb72b086808e03084181907899c66e0248a0ee0e190289efc574edb6a6eb", "t": "divide(_:_:result:)", "n": 273, "laws": 0, "ts": "2026-07-26 11:57 UTC"}
 {"id": "/documentation/accelerate/vforce/trunc(_:)-11ss3", "sha": "5f025bf3790be0075aaeae8689ae0a1bbbbc7502e80fa012293f184c40f2f4a1", "t": "trunc(_:)", "n": 86, "laws": 0, "ts": "2026-07-26 12:14 UTC"}
+{"id": "/documentation/accelerate/densematrix_float", "sha": "2ce273b59e87bd34fb915c16db497bc5b5a2e4e2ec2fb56011a4ff418c40e75a", "t": "DenseMatrix_Float", "n": 826, "laws": 3, "ts": "2026-07-26 18:12 UTC"}
+{"id": "/documentation/appkit/nsaccessibilityprotocol/accessibilitytabs()", "sha": "84c6b971af03ef9612063f6fa1f959f96dda2b08e62e9148d66329cf18db3632", "t": "accessibilityTabs()", "n": 56, "laws": 0, "ts": "2026-07-26 18:24 UTC"}
+{"id": "/documentation/appkit/nsaccessibilityprotocol/setaccessibilityproxy(_:)", "sha": "693a87ff3913471e365a6d63f8a14d7921de3deee1fc3061f659684cfcec094a", "t": "setAccessibilityProxy(_:)", "n": 77, "laws": 0, "ts": "2026-07-26 18:26 UTC"}
+{"id": "/documentation/appkit/nsbutton/performkeyequivalent(with:)", "sha": "fd31e661ab0a149d418777dd120557f91edc923069c44996ab85495bfd68b292", "t": "performKeyEquivalent(with:)", "n": 536, "laws": 0, "ts": "2026-07-26 18:30 UTC"}

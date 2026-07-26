@@ -36,3 +36,4 @@
 {"id": "/documentation/accelerate/vdsp/formramp(withinitialvalue:increment:result:)-40zxg", "sha": "2e539853f7b79358a28d788528365ae9ac079478bc37ca11174763a9bb40d1b2", "t": "formRamp(withInitialValue:increment:result:)", "n": 294, "laws": 1, "ts": "2026-07-26 11:58 UTC"}
 {"id": "/documentation/accelerate/vdsp/sum(_:)-6jamg", "sha": "ae5bd5b683c1173fbdc3ea205ad240d781c4c0380ae7c2a388f275f56aedfc21", "t": "sum(_:)", "n": 176, "laws": 0, "ts": "2026-07-26 12:01 UTC"}
 {"id": "/documentation/avfoundation/avassetreader/error", "sha": "b81fdb75bacfae3ec8a9461a7133142829ea8d0ed65de45142de6b8b9e8ce03c", "t": "error", "n": 143, "laws": 0, "ts": "2026-07-26 12:02 UTC"}
+{"id": "/documentation/CoreText/CTLineDraw(_:_:)", "sha": "e91c695f496087d851ba4e5775d5bd9fad229fd8299c96557088d53f6806c5af", "t": "CTLineDraw(_:_:)", "n": 313, "laws": 0, "ts": "2026-07-26 18:16 UTC"}

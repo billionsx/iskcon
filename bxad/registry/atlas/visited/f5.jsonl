@@ -35,3 +35,9 @@
 {"id": "/documentation/accelerate/bnnsndarraydescriptor/init()", "sha": "75acd6387fb2203355cc9cbb9207f82aa1cc9a3730cf2c401550b083796b2fb0", "t": "init()", "n": 45, "laws": 0, "ts": "2026-07-26 06:07 UTC"}
 {"id": "/documentation/simd/simd_compiler_has_required_features", "sha": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855", "t": "SIMD_COMPILER_HAS_REQUIRED_FEATURES", "n": 0, "laws": 0, "ts": "2026-07-26 12:11 UTC"}
 {"id": "/documentation/simd/simd_length-3r7wy", "sha": "58dfd9a918506b53c7917b51a895bff3491f78994aea7024d35b0ceae8580a67", "t": "simd_length", "n": 31, "laws": 0, "ts": "2026-07-26 12:19 UTC"}
+{"id": "/documentation/simd/step(_:edge:)-4azct", "sha": "f4dd3a545f7d0b16eaec4a5096db3d08814eb12a33874f14971a8924bc93c046", "t": "step(_:edge:)", "n": 96, "laws": 0, "ts": "2026-07-26 18:10 UTC"}
+{"id": "/documentation/simd/trunc(_:)-4p8mg", "sha": "ab983ef4fe595e0700abbafd3ce03d655f0b058aeb955b763046df13d584e868", "t": "trunc(_:)", "n": 76, "laws": 0, "ts": "2026-07-26 18:10 UTC"}
+{"id": "/documentation/modelio/mdlskycubetexture/contrast", "sha": "23aefdf3c5c84882416d6c320d045fd5cafa99d189766d723eff5b489f702586", "t": "contrast", "n": 377, "laws": 0, "ts": "2026-07-26 18:11 UTC"}
+{"id": "/documentation/modelio/mdlskycubetexture/horizonelevation", "sha": "2a3df78f12a479f13bdd13f52dbe16cd6bb6391a4d500f7739e6ccaa48ab264b", "t": "horizonElevation", "n": 427, "laws": 0, "ts": "2026-07-26 18:11 UTC"}
+{"id": "/documentation/appkit/nsaccessibility-c.protocol/accessibilityhorizontalunitdescription", "sha": "dbe4aac88fc8a97436de81b15738a0dc7d71da5623c6a8efb15e0f956d85a451", "t": "accessibilityHorizontalUnitDescription", "n": 52, "laws": 0, "ts": "2026-07-26 18:21 UTC"}
+{"id": "/documentation/appkit/nsaccessibilityprotocol/accessibilityperformshowdefaultui()", "sha": "60f791364cb4af924fde54919bbe1c5ec7718b286bb2421dffcf2872a5ade244", "t": "accessibilityPerformShowDefaultUI()", "n": 336, "laws": 0, "ts": "2026-07-26 18:24 UTC"}

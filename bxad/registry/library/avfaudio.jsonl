@@ -155,3 +155,5 @@
 {"id": "/documentation/AVFAudio/creating-an-audio-unit-extension", "law": "Use the function to implement your custom signal-processing algorithm."}
 {"id": "/documentation/AVFAudio/AVAudioUnit/instantiate(with:options:completionHandler:)", "law": "You must create components with flags that include asynchronously through this method if they’re for use with ."}
 {"id": "/documentation/AVFAudio/AVAudioPlayer", "law": "For more advanced playback capabilities, like playing streaming or positional audio, use instead."}
+{"id": "/documentation/AVFAudio/AVSpeechSynthesizer", "law": "You can optionally also retrieve an and set it on the utterance’s property to have the speech synthesizer use that voice when speaking the utterance’s text."}
+{"id": "/documentation/AVFAudio/AVSpeechSynthesizer", "law": "After speech begins, you can use the synthesizer object to pause or stop speech."}

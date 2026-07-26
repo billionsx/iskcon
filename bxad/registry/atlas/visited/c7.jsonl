@@ -38,3 +38,10 @@
 {"id": "/documentation/avfoundation/avcapturephotooutput/maxphotodimensions", "sha": "0557f47e1dce3b5191fdcbea04cd567a67958aae299e0e0b34f8aa915a0f1ffc", "t": "maxPhotoDimensions", "n": 569, "laws": 4, "ts": "2026-07-26 12:06 UTC"}
 {"id": "/documentation/accelerate/kvimageconvert_orderednoiseshapemask", "sha": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855", "t": "kvImageConvert_OrderedNoiseShapeMask", "n": 0, "laws": 0, "ts": "2026-07-26 12:09 UTC"}
 {"id": "/documentation/simd/isnan(_:)-6l7v3", "sha": "74c766f06bd5e4780b3e93d59dc62b9588ad6a32cbebb6582d206c45b258ed63", "t": "isnan(_:)", "n": 69, "laws": 0, "ts": "2026-07-26 12:17 UTC"}
+{"id": "/documentation/accelerate/sparse_parameter_check", "sha": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855", "t": "SPARSE_PARAMETER_CHECK", "n": 0, "laws": 0, "ts": "2026-07-26 18:12 UTC"}
+{"id": "/documentation/accelerate/sparsematrix_complex_float", "sha": "0dbcaacae9ea3970949d73f2441bb747d273ec235c75d14342a3f1ba7566b0a8", "t": "SparseMatrix_Complex_Float", "n": 464, "laws": 0, "ts": "2026-07-26 18:13 UTC"}
+{"id": "/documentation/accelerate/bnnsgraph/builder/tensor/linear(weight:)", "sha": "8103de687178482ed54e52aeaf5a923de934c319b266377e80469a85010720db", "t": "linear(weight:)", "n": 110, "laws": 0, "ts": "2026-07-26 18:15 UTC"}
+{"id": "/documentation/accelerate/bnnsflags", "sha": "45fb0a5d1810fc4d160281fb9f0e83054e62047c9c8cdb8838ef3fd62c09d4b3", "t": "BNNSFlags", "n": 124, "laws": 0, "ts": "2026-07-26 18:16 UTC"}
+{"id": "/documentation/appkit/nsstepper", "sha": "35b58fd8638cc29ddc6b66b568207e02b4a15ab5dea00fd820a200c92d8a58e3", "t": "NSStepper", "n": 549, "laws": 0, "ts": "2026-07-26 18:29 UTC"}
+{"id": "/documentation/accessorysetupkit/asdiscovereddisplayitem", "sha": "73c76ee5d241f0c247c4a6a8ddf80d38e62c7ca6b2196166f78c04932ae7d0b0", "t": "ASDiscoveredDisplayItem", "n": 547, "laws": 1, "ts": "2026-07-26 18:31 UTC"}
+{"id": "/documentation/alarmkit/alarmmanager/authorizationstate-swift.property", "sha": "9605884681d1cdbc40ebde2c24cd3f03ea5f051c1d22c7690aa2d8b08c2d0c22", "t": "authorizationState", "n": 56, "laws": 0, "ts": "2026-07-26 18:33 UTC"}

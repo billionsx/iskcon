@@ -39,3 +39,6 @@
 {"id": "/documentation/accelerate/vvfabsf(_:_:_:)", "sha": "8631dd7b79273457a66d45b1933358b0c813ea20b7a042b56e3d17760fe77541", "t": "vvfabsf(_:_:_:)", "n": 163, "laws": 0, "ts": "2026-07-26 12:15 UTC"}
 {"id": "/documentation/simd/fract(_:)-swov", "sha": "1291f9047107bd9ea30b198815bce564316fa09a8abba7ced6f31e84df1f37db", "t": "fract(_:)", "n": 56, "laws": 0, "ts": "2026-07-26 12:17 UTC"}
 {"id": "/documentation/simd/simd_double-50kxh", "sha": "d5691f494fb4d87c9aa0f8373cfa27cf1741a1ffdb9f70b0bf4c266ea05f7a15", "t": "simd_double", "n": 82, "laws": 0, "ts": "2026-07-26 12:18 UTC"}
+{"id": "/documentation/accelerate/sparse_public_interface", "sha": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855", "t": "SPARSE_PUBLIC_INTERFACE", "n": 0, "laws": 0, "ts": "2026-07-26 18:12 UTC"}
+{"id": "/documentation/appkit/nsaccessibilityprotocol/accessibilitychildren()", "sha": "23fba1bddfeb6259c417c6710bfcbb3dc9dbcd7c147e047ef23a46f00ac3ac05", "t": "accessibilityChildren()", "n": 72, "laws": 0, "ts": "2026-07-26 18:22 UTC"}
+{"id": "/documentation/appkit/nsaccessibilityprotocol/isaccessibilityorderedbyrow()", "sha": "d589316be8d974b941a68a4a0a2b727350ffce3bdc83d71d34f60388fbe2467f", "t": "isAccessibilityOrderedByRow()", "n": 128, "laws": 0, "ts": "2026-07-26 18:25 UTC"}

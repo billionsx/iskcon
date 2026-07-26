@@ -29,3 +29,4 @@
 {"id": "/documentation/accelerate/vimage/pixelbuffer/init(size:pixelformat:)-12gl9", "sha": "ab4b95a6c56367b8b4e6a63eb2794b60357e7755cf60ac94655e76b91448c5b9", "t": "init(size:pixelFormat:)", "n": 231, "laws": 0, "ts": "2026-07-26 12:07 UTC"}
 {"id": "/documentation/coreimage/ciformat/rgbx16", "sha": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855", "t": "RGBX16", "n": 0, "laws": 0, "ts": "2026-07-26 12:09 UTC"}
 {"id": "/documentation/simd/log1p(_:)-50npd", "sha": "665278cb4f1ff48355fdf1c9fe1dc528923c70493fedf350a2066d2e0a584566", "t": "log1p(_:)", "n": 45, "laws": 0, "ts": "2026-07-26 12:17 UTC"}
+{"id": "/documentation/appkit/nsaccessibilityprotocol/setaccessibilityvalue(_:)", "sha": "7340b7e5828de11f0eaa430ac3cb9b047c73bc84f1227b7ded79c2fe798dd65e", "t": "setAccessibilityValue(_:)", "n": 39, "laws": 0, "ts": "2026-07-26 18:27 UTC"}

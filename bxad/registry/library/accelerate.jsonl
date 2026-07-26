@@ -1213,3 +1213,91 @@
 {"id": "/documentation/accelerate/kvimageedgeextend", "law": "The morphology functions do not use this flag because they do not use pixels outside the image in any of their calculations."}
 {"id": "/documentation/accelerate/kvimagebackgroundcolorfill", "law": "The morphology functions do not use this flag because they do not use pixels outside the image in any of their calculations."}
 {"id": "/documentation/accelerate/veclib", "law": "For this reason, unless you are writing specialized code that targets a single CPU, you should generally use these functions rather than directly using vector instructions."}
+{"id": "/documentation/accelerate/compositing-images-with-alpha-blending", "law": "Use the function to blend two images when the top image contains alpha information (for example, when compositing text over a photograph)."}
+{"id": "/documentation/accelerate/compositing-images-with-alpha-blending", "law": "The following function performs an alpha composite of two instances and returns the result as a instance: Because the blending function requires that the alpha channel source buffers are first, the code calls to ensure the correct ordering."}
+{"id": "/documentation/accelerate/compositing-images-with-alpha-blending", "law": "Use the function to overwrite an image’s alpha channel."}
+{"id": "/documentation/accelerate/compositing-images-with-alpha-blending", "law": "The following shows an example of setting a radial gradient as the alpha channel of an image to produce a vignette style blend: The function requires buffers with nonpremultiplied alpha."}
+{"id": "/documentation/accelerate/vimage/pixelbuffer/alphacomposite(_:toplayer:destination:)-w1zc", "law": "This function treats as the bottom layer and both pixel buffers must have alpha as their first channel."}
+{"id": "/documentation/accelerate/creating-a-sparse-matrix-from-coordinate-format-arrays", "law": "This approach requires three separate arrays: one that contains the column indexes, a second that contains the row indexes, and a third that contains the matrix values."}
+{"id": "/documentation/accelerate/creating-a-sparse-matrix-from-coordinate-format-arrays", "law": "Use the parameter to specify that the matrix is symmetric and the items in the values array derive from the lower triangle."}
+{"id": "/documentation/accelerate/creating-sparse-matrices", "law": "The blocks along the diagonal of a symmetric block matrix must, themselves, be symmetrical."}
+{"id": "/documentation/accelerate/creating-sparse-matrices", "law": "This array requires an additional, final entry that defines the final column’s length."}
+{"id": "/documentation/accelerate/creating-sparse-matrices", "law": "The initializer requires an attributes object, and the default parameters of a instance specify an unsymmetric matrix."}
+{"id": "/documentation/accelerate/creating-sparse-matrices", "law": "When you create a symmetric matrix with a block size greater than 1, the blocks along the matrix’s diagonal must also be symmetric."}
+{"id": "/documentation/accelerate/densematrix_double", "law": "You typically use dense matrices to represent the unknowns matrix, X , and the right-hand-side matrix, B , in the matrix equation AX = B."}
+{"id": "/documentation/accelerate/densematrix_double", "law": "In this case, use to pass a pointer to your collection."}
+{"id": "/documentation/accelerate/densematrix_double", "law": "Don’t store or return the structure for later use."}
+{"id": "/documentation/accelerate/densematrix_float", "law": "You typically use dense matrices to represent the unknowns matrix, X , and the right-hand-side matrix, B , in the matrix equation AX = B."}
+{"id": "/documentation/accelerate/densematrix_float", "law": "In this case, use to pass a pointer to your collection."}
+{"id": "/documentation/accelerate/densematrix_float", "law": "Don’t store or return the structure for later use."}
+{"id": "/documentation/accelerate/densevector_double", "law": "You typically use dense vectors to represent the unknowns vector, x , and the right-hand-side vector, b , in the matrix equation Ax = b."}
+{"id": "/documentation/accelerate/densevector_double", "law": "In this case, use to pass a pointer to your collection."}
+{"id": "/documentation/accelerate/densevector_double", "law": "Don’t store or return the structure for later use."}
+{"id": "/documentation/accelerate/densevector_float", "law": "You typically use dense vectors to represent the unknowns vector, x , and the right-hand-side vector, b , in the matrix equation Ax = b."}
+{"id": "/documentation/accelerate/densevector_float", "law": "In this case, use to pass a pointer to your collection."}
+{"id": "/documentation/accelerate/densevector_float", "law": "Don’t store or return the structure for later use."}
+{"id": "/documentation/accelerate/solving-systems-using-direct-methods", "law": "However, it’s essential for larger systems that don’t otherwise fit in memory, even on a large computer."}
+{"id": "/documentation/accelerate/solving-systems-using-direct-methods", "law": "Use the code below to define the matrix structure."}
+{"id": "/documentation/accelerate/solving-systems-using-direct-methods", "law": "Use the factorization to solve the equation."}
+{"id": "/documentation/accelerate/solving-systems-using-direct-methods", "law": "The actual values of don’t matter because the function overwrites them."}
+{"id": "/documentation/accelerate/solving-systems-using-direct-methods", "law": "Use direct methods to solve systems of equations where the coefficient matrix is sparse."}
+{"id": "/documentation/accelerate/solving-systems-using-iterative-methods", "law": "The code in this article solves the following equation by using the iterative method of least squares minimum residual (LSMR) to find the solution."}
+{"id": "/documentation/accelerate/solving-systems-using-iterative-methods", "law": "Unlike direct methods that factorize the matrix , iterative methods only require the ability to multiply by the matrix (and its transpose, )."}
+{"id": "/documentation/accelerate/solving-systems-using-iterative-methods", "law": "Resolving these issues requires expert knowledge, and is sometimes impossible."}
+{"id": "/documentation/accelerate/solving-systems-using-iterative-methods", "law": "The most common method to improve and accelerate convergence is to use a preconditioner — an operator that approximates ."}
+{"id": "/documentation/accelerate/solving-systems-using-iterative-methods", "law": "Use the code below — which covers in detail — to define the unsymmetric matrix :"}
+{"id": "/documentation/accelerate/solving-systems-using-iterative-methods", "law": "If you don’t have a good estimate, initialize all the values to zero."}
+{"id": "/documentation/accelerate/solving-systems-using-iterative-methods", "law": "Use the matrix and vectors to perform the full LSMR iteration and iterate over the results in ."}
+{"id": "/documentation/accelerate/solving-systems-using-iterative-methods", "law": "Use iterative methods to solve systems of equations where the coefficient matrix is sparse."}
+{"id": "/documentation/accelerate/sparse-iterative-methods", "law": "Sparse Iterative methods solve Ax = b through an iterative process that only requires multiplication by A or A__ᵀ ."}
+{"id": "/documentation/accelerate/sparsematrix_double", "law": "You typically use sparse matrices to represent the sparse coefficient matrix in the matrix equation Ax = b."}
+{"id": "/documentation/accelerate/sparsematrix_float", "law": "You typically use sparse matrices to represent the sparse coefficient matrix in the matrix equation Ax = b."}
+{"id": "/documentation/accelerate/sparseopaquefactorization_complex_double", "law": "Use the function to free resources held by these objects."}
+{"id": "/documentation/accelerate/sparseopaquefactorization_complex_float", "law": "Use the function to free resources held by these objects."}
+{"id": "/documentation/accelerate/sparseopaquefactorization_double", "law": "Use the function to free resources that these objects hold."}
+{"id": "/documentation/accelerate/sparseopaquefactorization_float", "law": "Use the function to free resources that these objects hold."}
+{"id": "/documentation/accelerate/vimagehistogramspecification_argbffff(_:_:_:_:_:_:_:_:)", "law": "; otherwise, a negative value indicates one of the error codes that describes, and a positive value indicates the required size for the temporary buffer."}
+{"id": "/documentation/accelerate/vimagehistogramspecification_argbffff(_:_:_:_:_:_:_:_:)", "law": "Use this function to apply a histogram — that you’ve generated using — to each channel of another image."}
+{"id": "/documentation/accelerate/vimagehistogramspecification_argbffff(_:_:_:_:_:_:_:_:)", "law": "In some cases, the destination buffer may not be large enough to store that intermediate data, so the operation requires additional storage."}
+{"id": "/documentation/accelerate/vimagehistogramspecification_argbffff(_:_:_:_:_:_:_:_:)", "law": "To use your own temporary buffer, first call the function with the same values for all other parameters that you intend to use for subsequent calls."}
+{"id": "/documentation/accelerate/vimagehistogramspecification_argbffff(_:_:_:_:_:_:_:_:)", "law": "The instructs the function not to perform any processing, and to return a positive value that represents the minimum size, in bytes, of the temporary buffer."}
+{"id": "/documentation/accelerate/vimagehistogramspecification_argbffff(_:_:_:_:_:_:_:_:)", "law": "After you allocate the memory for the temporary buffer, pass that to the parameter for subsequent calls to the function, and don’t pass the flag."}
+{"id": "/documentation/accelerate/vimagehistogramspecification_argbffff(_:_:_:_:_:_:_:_:)", "law": "You can use the same workspace memory for a group of images that are different sizes."}
+{"id": "/documentation/accelerate/vimagehistogramspecification_argbffff(_:_:_:_:_:_:_:_:)", "law": "To do this, create a vImage buffer structure with a size that shares the maximum width and maximum height of the images that you’re working with."}
+{"id": "/documentation/accelerate/vimagehistogramspecification_planar8(_:_:_:_:)", "law": "Use this function to apply a histogram — that you’ve generated using — to another image."}
+{"id": "/documentation/accelerate/vimagehistogramspecification_planarf(_:_:_:_:_:_:_:_:)", "law": "; otherwise, a negative value indicates one of the error codes that describes, and a positive value indicates the required size for the temporary buffer."}
+{"id": "/documentation/accelerate/vimagehistogramspecification_planarf(_:_:_:_:_:_:_:_:)", "law": "Use this function to apply a histogram — that you’ve generated using — to another image."}
+{"id": "/documentation/accelerate/vimagehistogramspecification_planarf(_:_:_:_:_:_:_:_:)", "law": "In some cases, the destination buffer may not be large enough to store that intermediate data, so the operation requires additional storage."}
+{"id": "/documentation/accelerate/vimagehistogramspecification_planarf(_:_:_:_:_:_:_:_:)", "law": "To use your own temporary buffer, first call the function with the same values for all other parameters that you intend to use for subsequent calls."}
+{"id": "/documentation/accelerate/vimagehistogramspecification_planarf(_:_:_:_:_:_:_:_:)", "law": "The instructs the function not to perform any processing, and to return a positive value that represents the minimum size, in bytes, of the temporary buffer."}
+{"id": "/documentation/accelerate/vimagehistogramspecification_planarf(_:_:_:_:_:_:_:_:)", "law": "After you allocate the memory for the temporary buffer, pass that to the parameter for subsequent calls to the function, and don’t pass the flag."}
+{"id": "/documentation/accelerate/vimagehistogramspecification_planarf(_:_:_:_:_:_:_:_:)", "law": "You can use the same workspace memory for a group of images that are different sizes."}
+{"id": "/documentation/accelerate/vimagehistogramspecification_planarf(_:_:_:_:_:_:_:_:)", "law": "To do this, create a vImage buffer structure with a size that shares the maximum width and maximum height of the images that you’re working with."}
+{"id": "/documentation/accelerate/bnnsgraph/builder/constant(values:rowmajor:)-6b7b8", "law": "Each sub-array must contain the same number of elements."}
+{"id": "/documentation/accelerate/bnnsgraph/builder/constant(values:rowmajor:)-6b7b8", "law": "The following code shows how to use this function to multiply two 2x2 matrices: Returns a rank 2 tensor from an array of arrays."}
+{"id": "/documentation/accelerate/bnnsgraph/builder/convolutionpadding", "law": "The padding that you use for convolution operations to specify zero-padding."}
+{"id": "/documentation/accelerate/bnnsgraph/builder/padding", "law": "The padding that you use for pad operations."}
+{"id": "/documentation/accelerate/bnnsgraph/builder/poolingpadding", "law": "The padding that you use for pooling operations to specify zero-padding."}
+{"id": "/documentation/accelerate/bnnsgraph/builder/scattermode", "law": "BNNSGraph.Builder.ScatterMode.maximum."}
+{"id": "/documentation/accelerate/bnnsgraph/builder/scattermode", "law": "BNNSGraph.Builder.ScatterMode.minimum."}
+{"id": "/documentation/accelerate/bnnsgraph/builder/slicerange", "law": "You can use standard Swift range operators to specify the range in slice operation."}
+{"id": "/documentation/accelerate/bnnsgraph/builder/tensor/argmax(axis:keepdimension:)", "law": "This function calculates the first index of the maximum value in the tensor."}
+{"id": "/documentation/accelerate/bnnsgraph/builder/tensor/argmin(axis:keepdimension:)", "law": "This function calculates the first index of the minimum value in the tensor."}
+{"id": "/documentation/accelerate/bnnsgraph/builder/tensor/channelnorm(epsilon:)", "law": "must be at least three-dimensional."}
+{"id": "/documentation/accelerate/bnnsgraph/builder/tensor/channelnorm(weight:bias:epsilon:)", "law": "and must be one-dimensional and have size ."}
+{"id": "/documentation/accelerate/bnnsgraph/builder/tensor/channelnorm(weight:bias:epsilon:)", "law": "must be at least three-dimensional."}
+{"id": "/documentation/accelerate/bnnsgraph/builder/tensor/gather(indices:axis:batchdimensioncount:)", "law": "specifies the number of additional leading dimensions present in both and which should be only used for a batch processing loop."}
+{"id": "/documentation/accelerate/bnnsgraph/builder/tensor/gathernd(indices:batchdimensioncount:)", "law": "specifies the number of additional leading dimensions present in both and which should be only used for a batch processing loop."}
+{"id": "/documentation/accelerate/bnnsgraph/builder/tensor/instancenorm(epsilon:)", "law": "must be at least three-dimensional."}
+{"id": "/documentation/accelerate/bnnsgraph/builder/tensor/instancenorm(weight:bias:epsilon:)", "law": "and must be one-dimensional and have size ."}
+{"id": "/documentation/accelerate/bnnsgraph/builder/tensor/instancenorm(weight:bias:epsilon:)", "law": "must be at least three-dimensional."}
+{"id": "/documentation/accelerate/bnnsgraph/builder/tensor/layernorm(weight:bias:axes:epsilon:)", "law": "The shape of and must match the corresponding dimensions of specified in ."}
+{"id": "/documentation/accelerate/bnnsgraph/builder/tensor/max(y:)", "law": "Adds an element-wise maximum operation to the current graph."}
+{"id": "/documentation/accelerate/bnnsgraph/builder/tensor/maximum(axes:keepdimensions:)", "law": "Adds a maximum reduction operation along the given axis operation to the current graph."}
+{"id": "/documentation/accelerate/bnnsgraph/builder/tensor/min(y:)", "law": "Adds an element-wise minimum operation to the current graph."}
+{"id": "/documentation/accelerate/bnnsgraph/builder/tensor/minimum(axes:keepdimensions:)", "law": "Adds a minimum reduction operation along the given axis operation to the current graph."}
+{"id": "/documentation/accelerate/bnnsgraph/builder/tensor/prelu(alpha:)", "law": "must have at least two dimensions."}
+{"id": "/documentation/accelerate/bnnsgraph/builder/tensor/prelu(alpha:)", "law": "The number of elements in must be either 1 or ."}
+{"id": "/documentation/accelerate/bnnsfilterparameters/alloc_memory", "law": "Must be compatible with the function."}
+{"id": "/documentation/accelerate/bnnsfilterparameters/free_memory", "law": "Must be compatible with the function."}
+{"id": "/documentation/accelerate/vdsp_vgend", "law": "Use this function to generate and return a vector populated with ramped values."}

@@ -33,3 +33,8 @@
 {"id": "/documentation/accelerate/kfftdirection_inverse", "sha": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855", "t": "kFFTDirection_Inverse", "n": 0, "laws": 0, "ts": "2026-07-26 12:08 UTC"}
 {"id": "/documentation/accelerate/vvexp2(_:_:_:)", "sha": "763b995b5e8324d2d30132e84526945bc2a886135569341136aaf21d84242d90", "t": "vvexp2(_:_:_:)", "n": 103, "laws": 0, "ts": "2026-07-26 12:15 UTC"}
 {"id": "/documentation/simd/fmax(_:_:)-4pce8", "sha": "a557bd321d4a3b01afc56f4a9bd6cb051078303b50ef555bd5a85c69747cc5af", "t": "fmax(_:_:)", "n": 54, "laws": 1, "ts": "2026-07-26 12:17 UTC"}
+{"id": "/documentation/appkit/nsaccessibility-c.protocol/accessibilityedited", "sha": "d81553ebeb7f405fd245456733f14078c61e7392f15bf94f15aedd509122392f", "t": "accessibilityEdited", "n": 87, "laws": 0, "ts": "2026-07-26 18:20 UTC"}
+{"id": "/documentation/appkit/nsaccessibilityprotocol/accessibilityverticalunitdescription()", "sha": "fdebcc1fb1c4f61dc28a5e223a652d9a8b0aabe3efca7f2629bdfe83507c1a2a", "t": "accessibilityVerticalUnitDescription()", "n": 60, "laws": 0, "ts": "2026-07-26 18:24 UTC"}
+{"id": "/documentation/appkit/nsslider/numberoftickmarks", "sha": "7ee01e4f901f7d4df955ad2bf1abd076bba7882c243baa55f1c7ab885a48f1c9", "t": "numberOfTickMarks", "n": 468, "laws": 2, "ts": "2026-07-26 18:31 UTC"}
+{"id": "/documentation/alarmkit/alarmpresentation/paused-swift.struct/title", "sha": "70d8607acf2b65b70d904a4726a845b08c5f47e9d5fd6d1ec426f9dfb48603c4", "t": "title", "n": 27, "laws": 0, "ts": "2026-07-26 18:34 UTC"}
+{"id": "/documentation/foundation/nsuseractivityerrorminimum-c.enum.case", "sha": "bbee3642ac33ef080f026843c5dc1751447133e1f4a747be0a782ee390d200ae", "t": "NSUserActivityErrorMinimum", "n": 72, "laws": 0, "ts": "2026-07-26 18:37 UTC"}

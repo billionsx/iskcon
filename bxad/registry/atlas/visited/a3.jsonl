@@ -26,3 +26,6 @@
 {"id": "/documentation/swift/cvararg", "sha": "1de101efaf3fea44e580dfbe71c071c19c4530dbd55555b6b336ca4796f064dd", "t": "CVarArg", "n": 889, "laws": 4, "ts": "2026-07-26 06:13 UTC"}
 {"id": "/documentation/accelerate/cblas_zswap(_:_:_:_:_:)", "sha": "084ccc1090669d4b5c9e89ddbe661727fc9fd65e21161cf76791e54c648921b4", "t": "cblas_zswap(_:_:_:_:_:)", "n": 661, "laws": 1, "ts": "2026-07-26 11:49 UTC"}
 {"id": "/documentation/accelerate/vforce/sinh(_:)-fwj2", "sha": "e5306358581f88f09e4a75009b31c3d5cefb57127dd5c8eb34f0f8345b65cc2b", "t": "sinh(_:)", "n": 83, "laws": 0, "ts": "2026-07-26 12:14 UTC"}
+{"id": "/documentation/accelerate/bnnsgraph/builder/tensor/sigmoid()", "sha": "9660efdee5ff3862fee2c5d56fe95501ce4732e08ab16cdb07d81c1b723ae351", "t": "sigmoid()", "n": 57, "laws": 0, "ts": "2026-07-26 18:15 UTC"}
+{"id": "/documentation/uikit/uiaccessibilitycustomaction/init(attributedname:image:target:selector:)", "sha": "c63267c29d77ae281a2937f2265e2e87c03fdf2a8ca8c8d689f1c67bad588318", "t": "init(attributedName:image:target:selector:)", "n": 95, "laws": 0, "ts": "2026-07-26 18:17 UTC"}
+{"id": "/documentation/uikit/uiaccessibilitytraits/link", "sha": "38266259534fec92c6447801f5f8eb6a1fe610e60519bc1f42509963c35292ad", "t": "link", "n": 46, "laws": 0, "ts": "2026-07-26 18:18 UTC"}

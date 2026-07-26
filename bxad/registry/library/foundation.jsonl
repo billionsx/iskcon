@@ -466,3 +466,45 @@
 {"id": "/documentation/Foundation/NSCopying", "law": "The exact meaning of “copy” can vary from class to class, but a copy must be a functionally independent object with values identical to the original at the time the copy was made."}
 {"id": "/documentation/Foundation/NSCopying", "law": "Your options for implementing this protocol are as follows: Implement using and in classes that don’t inherit ."}
 {"id": "/documentation/Foundation/NSCopying", "law": "If the superclass implementation might use the function, make explicit assignments to pointer instance variables for retained objects."}
+{"id": "/documentation/foundation/data/copybytes(to:from:)-4o6zj", "law": "If the count of the range is greater than then only the first bytes will be copied into the buffer.Precondition: The range must be within the bounds of the data."}
+{"id": "/documentation/foundation/data/copybytes(to:from:)-8qk4r", "law": "This method does not verify that the contents at pointer have enough space to hold the required number of bytes."}
+{"id": "/documentation/foundation/data/withunsafebytes(_:)", "law": "The byte pointer argument should not be stored and used outside of the lifetime of the call to the closure."}
+{"id": "/documentation/foundation/data/withunsafemutablebytes(_:)-7ac1g", "law": "The byte pointer argument should not be stored and used outside of the lifetime of the call to the closure."}
+{"id": "/documentation/Foundation/NSCoding", "law": "The protocol declares the two methods that a class must implement so that instances of that class can be encoded and decoded."}
+{"id": "/documentation/Foundation/NSCoding", "law": "Any object class that should be codeable must adopt the protocol and implement its methods."}
+{"id": "/documentation/Foundation/NSArray", "law": "You can use this type in Swift instead of an constant in cases that require reference semantics."}
+{"id": "/documentation/Foundation/NSArray", "law": "You can use arrays when you need an ordered collection of objects."}
+{"id": "/documentation/Foundation/NSArray", "law": "You should not terminate the list of objects with when using this literal syntax, and in fact is an invalid value."}
+{"id": "/documentation/Foundation/NSArray", "law": "Any subclass of must override the primitive instance methods and ."}
+{"id": "/documentation/Foundation/NSArray", "law": "These methods must operate on the backing store that you provide for the elements of the collection."}
+{"id": "/documentation/Foundation/NSArray", "law": "For this backing store you can use a static array, a standard object, or some other data type or mechanism."}
+{"id": "/documentation/Foundation/NSArray", "law": "If you do, your initializer must invoke one of the designated initializers of the class, either or ."}
+{"id": "/documentation/Foundation/NSArray", "law": "The class adopts the , , and protocols; custom subclasses of should override the methods in these protocols as necessary."}
+{"id": "/documentation/Foundation/NSArray", "law": "You must provide the storage for your subclass and implement the primitive methods that directly act on that storage."}
+{"id": "/documentation/Foundation/NSArray", "law": "Although they are corresponding types, and do not have identical interfaces or implementations, and you can sometimes do things with that you cannot easily do with ."}
+{"id": "/documentation/Foundation/TimeInterval", "law": "A value is always specified in seconds; it yields sub-millisecond precision over a range of 10,000 years."}
+{"id": "/documentation/Foundation/Locale", "law": "Apps use locales to provide, format, and interpret information about and according to the user’s customs and preferences."}
+{"id": "/documentation/Foundation/Locale", "law": "Data formatting APIs commonly make use of locales to present data in a locale-appropriate way."}
+{"id": "/documentation/Foundation/Locale", "law": "You can use a locale’s language to compare whether two locales use the same language, or if one language is a parent of another."}
+{"id": "/documentation/Foundation/Locale", "law": "Information about linguistic, cultural, and technological conventions for use in formatting data for presentation."}
+{"id": "/documentation/foundation/nsuseractivity/adduserinfoentries(from:)", "law": "Use this method to add the keys from into the dictionary in the property."}
+{"id": "/documentation/foundation/nsuseractivity/adduserinfoentries(from:)", "law": "It’s recommended that you keep the dictionary as small as possible."}
+{"id": "/documentation/foundation/nsuseractivity/appclipactivationpayload", "law": "When your App Clip launches, use the activation payload to verify a user’s location."}
+{"id": "/documentation/foundation/nsuseractivity/expirationdate", "law": "If you don’t set the value of this property, the system automatically expires the activity after a period of time."}
+{"id": "/documentation/foundation/nsuseractivity/getcontinuationstreams(completionhandler:)", "law": "The streams are provided by the completion handler in an unopened state, and the delegate should open them immediately to start communicating with the continuing side."}
+{"id": "/documentation/foundation/nsuseractivity/getcontinuationstreams(completionhandler:)", "law": "Continuation streams are an optional feature of Handoff, and most user activities do not need them for successful continuation."}
+{"id": "/documentation/foundation/nsuseractivity/interaction", "law": "Use the information in this property to configure your app’s interface and show any relevant interaction details."}
+{"id": "/documentation/foundation/nsuseractivity/interaction", "law": "The SiriKit interaction object to use when configuring your app."}
+{"id": "/documentation/foundation/nsuseractivity/isclasskitdeeplink", "law": "Use the property of a instance that you receive to test if that activity is from ClassKit."}
+{"id": "/documentation/foundation/nsuseractivity/mapitem", "law": "Use this property to share a map item’s location information with other apps so that users can benefit from a more contextually integrated experience."}
+{"id": "/documentation/foundation/nsuseractivity/persistentidentifier", "law": "A unique and persistent value you use to identify the activity."}
+{"id": "/documentation/foundation/nsuseractivity/requireduserinfokeys", "law": "A set of keys that represent the minimal information about the activity that should be stored for later restoration."}
+{"id": "/documentation/foundation/nsuseractivity/settypedpayload(_:)", "law": "Use this method to set the user activity’s dictionary in a type-safe manner."}
+{"id": "/documentation/foundation/nsuseractivity/shortcutavailability", "law": "If none of the availability options apply to your intent, use the empty set."}
+{"id": "/documentation/foundation/nsuseractivity/targetcontentidentifier", "law": "This property is optional but is highly recommended to create a great multitasking experience for apps that run on iPad."}
+{"id": "/documentation/foundation/nsuseractivity/title", "law": "Always specify a title string for activity objects that are eligible for searches, and it’s recommended that you include a title string for all user activity objects."}
+{"id": "/documentation/foundation/nsuseractivity/typedpayload(_:)", "law": "Use this method to retrieve information from the user activity’s dictionary in a type-safe manner."}
+{"id": "/documentation/foundation/nsuseractivity/typedpayloaderror", "law": "Use this enumeration to manage errors from and ."}
+{"id": "/documentation/foundation/nsuseractivityconnectionunavailableerror-c.enum.case", "law": "The user activity couldn’t be continued because a required connection wasn’t available."}
+{"id": "/documentation/foundation/nsuseractivityconnectionunavailableerror-swift.var", "law": "The user activity couldn’t be continued because a required connection wasn’t available."}
+{"id": "/documentation/foundation/nsuseractivitypersistentidentifier", "law": "In Swift, persistent identifiers use the structure."}

@@ -34,3 +34,5 @@
 {"id": "/documentation/CoreBluetooth/CBPeripheralManagerDelegate/peripheralManagerDidUpdateState(_:)", "law": "You implement this required method to ensure that Bluetooth low energy is available to use on the local peripheral device."}
 {"id": "/documentation/CoreBluetooth/CBPeripheralManagerDelegate/peripheralManagerDidUpdateState(_:)", "law": "If the state moves below , advertising has stopped you must explicitly restart it."}
 {"id": "/documentation/CoreBluetooth/CBPeripheralManagerDelegate/peripheralManagerDidUpdateState(_:)", "law": "In addition, the powered off state clears the local database; in this case you must explicitly re-add all services."}
+{"id": "/documentation/CoreBluetooth/CBPeer", "law": "You typically don’t create instances of either or its concrete subclasses."}
+{"id": "/documentation/CoreBluetooth/CBPeer/identifier", "law": "Peers use instances to identify themselves, instead of by the objects that identify a peripheral’s services, characteristics, and descriptors."}

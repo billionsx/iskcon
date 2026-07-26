@@ -47,3 +47,7 @@
 {"id": "/documentation/accelerate/vvcopysign(_:_:_:_:)", "sha": "2699a9e66f9a0e7c009cc44501dbf22a0aa599e577e647ef8dcdd61d9bae0676", "t": "vvcopysign(_:_:_:_:)", "n": 178, "laws": 0, "ts": "2026-07-26 12:15 UTC"}
 {"id": "/documentation/simd/dot(_:_:)-2sdb", "sha": "8310309432e1e3c27003e372d4ec3883ab8b24d28c0642346bba86faad24f626", "t": "dot(_:_:)", "n": 39, "laws": 0, "ts": "2026-07-26 12:17 UTC"}
 {"id": "/documentation/simd/simd_double-50ppx", "sha": "e31f9f7e0848565dd188805effb783615b62f527e9b56b2346f174924cf2e6d5", "t": "simd_double", "n": 81, "laws": 0, "ts": "2026-07-26 12:18 UTC"}
+{"id": "/documentation/accelerate/bnnsfilterparameters/init()", "sha": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855", "t": "init()", "n": 0, "laws": 0, "ts": "2026-07-26 18:16 UTC"}
+{"id": "/documentation/accessibility/cognitive", "sha": "631dd376ec2fc3b55a29bff3ba0e52a585395ebbe5d5bfb579ebec99359eb7b0", "t": "Cognitive", "n": 644, "laws": 1, "ts": "2026-07-26 18:16 UTC"}
+{"id": "/documentation/appkit/nsaccessibilityprotocol/isaccessibilitymain()", "sha": "dedad90267d03a1d3f3733ef100476a3d7d2877922e2801e53597e61462a8353", "t": "isAccessibilityMain()", "n": 84, "laws": 0, "ts": "2026-07-26 18:25 UTC"}
+{"id": "/documentation/appkit/nstintprominence", "sha": "8518dbb7fcae10aa2f36ddd394398b6d39f2632aef0c2a8a0a31297b25890336", "t": "NSTintProminence", "n": 383, "laws": 1, "ts": "2026-07-26 18:30 UTC"}

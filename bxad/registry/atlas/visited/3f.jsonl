@@ -33,3 +33,7 @@
 {"id": "/documentation/accelerate/vdsp/divide(_:_:)-70npt", "sha": "d953fef42efe2e61c36ec05c261865be967df6e202c18f1c4678ec5cc735edee", "t": "divide(_:_:)", "n": 307, "laws": 0, "ts": "2026-07-26 11:57 UTC"}
 {"id": "/documentation/accelerate/vdsp/invertedclip(_:to:)-4pkxw", "sha": "06d84f8dda08e9fd1ea3e898c391ba3d8de5eb35199514d352fdbe41950dead6", "t": "invertedClip(_:to:)", "n": 81, "laws": 0, "ts": "2026-07-26 11:58 UTC"}
 {"id": "/documentation/corevideo/kcvpixelformattype_420ypcbcr8biplanarvideorange", "sha": "368503437baba98a9e34b69843396f69dae9bd74a4b960abaee96ddc99729a28", "t": "kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange", "n": 115, "laws": 0, "ts": "2026-07-26 12:07 UTC"}
+{"id": "/documentation/simd/dot(_:_:)-2en8e", "sha": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855", "t": "dot(_:_:)", "n": 0, "laws": 0, "ts": "2026-07-26 18:10 UTC"}
+{"id": "/documentation/accelerate/bnnsgraph/builder/tensor/'.&(_:_:)", "sha": "158ca5191ae4d2956559cc787b998469c64066e2eb25aeb8a9bea993642cdb8f", "t": ".&(_:_:)", "n": 64, "laws": 0, "ts": "2026-07-26 18:13 UTC"}
+{"id": "/documentation/accelerate/bnnsgraph/builder/tensor/operationparameter-implementations", "sha": "c5391f402feff31ed76f9edef6089743225d7a541584484c109e7daf0091b93b", "t": "OperationParameter Implementations", "n": 43, "laws": 0, "ts": "2026-07-26 18:15 UTC"}
+{"id": "/documentation/appintents/appentity/defaultquery-3qobd", "sha": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855", "t": "defaultQuery", "n": 0, "laws": 0, "ts": "2026-07-26 18:38 UTC"}

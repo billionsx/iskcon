@@ -46,3 +46,9 @@
 {"id": "/documentation/simd/fma(_:_:_:)-6w3jf", "sha": "947e4f6ddca768ce76bb28612979f64a7fc551b430f1849d112d1f82714f4169", "t": "fma(_:_:_:)", "n": 108, "laws": 0, "ts": "2026-07-26 12:17 UTC"}
 {"id": "/documentation/simd/simd_equal(_:_:)-4v2cb", "sha": "53bc318f1a38a4adfa39083d1cfde6c6c3c5d062bbc2698b0e54b07490203a3d", "t": "simd_equal(_:_:)", "n": 136, "laws": 0, "ts": "2026-07-26 12:18 UTC"}
 {"id": "/documentation/simd/sincos(_:)-6572x", "sha": "441268e06a48cceb98df912f97a7056be218442f66ced52992b51de452e4fcc5", "t": "sincos(_:)", "n": 176, "laws": 0, "ts": "2026-07-26 12:19 UTC"}
+{"id": "/documentation/accelerate/bnnsgraph/builder/tensor/gelutanhapproximation()", "sha": "af5b4dce8272b191521e4d90b8fe8d87f835f3185afb488a72bacbcd8ba64188", "t": "geluTanhApproximation()", "n": 102, "laws": 0, "ts": "2026-07-26 18:14 UTC"}
+{"id": "/documentation/accelerate/bnnsgraph/builder/tensor/subscript(_:)", "sha": "e66f2ed38131987ce481cbc10240582695641cfffa57f694abf53c773b60d6ed", "t": "subscript(_:)", "n": 44, "laws": 0, "ts": "2026-07-26 18:15 UTC"}
+{"id": "/documentation/appkit/nsaccessibility-c.protocol/accessibilityframe", "sha": "96ab5ac9b147742404b8d2c20cb721228bde47cd1a39d80a025d46f545298653", "t": "accessibilityFrame", "n": 333, "laws": 1, "ts": "2026-07-26 18:20 UTC"}
+{"id": "/documentation/appkit/nsaccessibility-c.protocol/accessibilitymaxvalue", "sha": "be523c4e445d54d2679cca009ca417581dd91a67256c6d9337c8b3c5db74fef0", "t": "accessibilityMaxValue", "n": 268, "laws": 2, "ts": "2026-07-26 18:21 UTC"}
+{"id": "/documentation/appkit/nsaccessibility-c.protocol/accessibilityverticalunits", "sha": "8dc92318107169c598ff71c3616ef51a8fa3b64a2970488e427f5dc9868422fd", "t": "accessibilityVerticalUnits", "n": 107, "laws": 0, "ts": "2026-07-26 18:22 UTC"}
+{"id": "/documentation/foundation/nsuseractivity/init()", "sha": "e76bb64971d6e0fea7a236ae85eaf473fe522a2271cb86d26fc589c54c4038bb", "t": "init()", "n": 233, "laws": 0, "ts": "2026-07-26 18:36 UTC"}

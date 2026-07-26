@@ -43,3 +43,10 @@
 {"id": "/documentation/accelerate/vimageconvert_planar8to16u(_:_:_:)", "sha": "814dad973d2befbe46f17f484e5cf3207457ea71c54c1c2406a0b3cc966688ac", "t": "vImageConvert_Planar8To16U(_:_:_:)", "n": 210, "laws": 0, "ts": "2026-07-26 12:09 UTC"}
 {"id": "/documentation/accelerate/vvfloor(_:_:_:)", "sha": "cddf6599696420ead446b6f56aecd88556abd7b144682e99c4a17b07327d1283", "t": "vvfloor(_:_:_:)", "n": 153, "laws": 0, "ts": "2026-07-26 12:15 UTC"}
 {"id": "/documentation/simd/asin", "sha": "e918fb0acc657e222e77fd480bbce843ac24e3d90d15a763c77d9a57f19f8a88", "t": "asin", "n": 48, "laws": 0, "ts": "2026-07-26 12:16 UTC"}
+{"id": "/documentation/appkit/nsaccessibility-c.protocol/accessibilityvisiblecharacterrange", "sha": "ad5fe01006f9ff2054044b440e145612f0b79678faed6ec4763c8a0e710d1ca2", "t": "accessibilityVisibleCharacterRange", "n": 186, "laws": 1, "ts": "2026-07-26 18:22 UTC"}
+{"id": "/documentation/appkit/nsformcell", "sha": "75e46ec12f326b568e9e31e8f4684f09d8c6d89fe2add2bfd14a5af922a5b057", "t": "NSFormCell", "n": 635, "laws": 0, "ts": "2026-07-26 18:28 UTC"}
+{"id": "/documentation/appkit/nsbutton/keyequivalent", "sha": "6711a4622393ab78f28850343702f82f838252ff9b40449005a88c7fac08dca8", "t": "keyEquivalent", "n": 649, "laws": 2, "ts": "2026-07-26 18:30 UTC"}
+{"id": "/documentation/appkit/slider", "sha": "f3bddb6ba7ac66773b706d410e65f6f81d2ca31932a16ca57a13c25213b9e222", "t": "Slider", "n": 195, "laws": 0, "ts": "2026-07-26 18:30 UTC"}
+{"id": "/documentation/appkit/nsslider/settitlefont:", "sha": "253ad5a6421c986aded76c30dc859e55ccf1925dcd561b65650b3ec160881977", "t": "setTitleFont:", "n": 46, "laws": 0, "ts": "2026-07-26 18:31 UTC"}
+{"id": "/documentation/accessorysetupkit/asdiscoverydescriptor/bluetoothservicedatablob", "sha": "c319ab7f18d3a976a7431e53d909270bb42d7732ca036eb262d7b0fde833ce11", "t": "bluetoothServiceDataBlob", "n": 66, "laws": 0, "ts": "2026-07-26 18:32 UTC"}
+{"id": "/documentation/swiftui/environmentvalues/openwindow", "sha": "6316309ce542dfd5e39d3ccc01e0feba431f153829c3539ae2b47993042bcabb", "t": "openWindow", "n": 1338, "laws": 3, "ts": "2026-07-26 18:34 UTC"}

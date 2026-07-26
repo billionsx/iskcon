@@ -37,3 +37,8 @@
 {"id": "/documentation/accelerate/vforce/log10(_:)-9wr68", "sha": "6fb4fa6677a7b7578ffd753cb400a73712462a511057bf7265071669eb855e63", "t": "log10(_:)", "n": 85, "laws": 0, "ts": "2026-07-26 12:13 UTC"}
 {"id": "/documentation/accelerate/vforce/trunc(_:)-5wx8z", "sha": "a8afc5b6221827e4943e2461334ee3ca4aa7ee9d405d1472737e45195edf5ebf", "t": "trunc(_:)", "n": 86, "laws": 0, "ts": "2026-07-26 12:14 UTC"}
 {"id": "/documentation/accelerate/vvcosisinf(_:_:_:)", "sha": "92cbe46d3a90a224e29cdcaefc299b1636d1ef7fc2f2856278c89b3d1cbe2a2e", "t": "vvcosisinf(_:_:_:)", "n": 366, "laws": 0, "ts": "2026-07-26 12:15 UTC"}
+{"id": "/documentation/modelio/mdlskycubetexture/exposure", "sha": "df12f8a075a72fdf7cece1003c789a8a5cbfe861ea79e442c09acf71beeef056", "t": "exposure", "n": 389, "laws": 0, "ts": "2026-07-26 18:11 UTC"}
+{"id": "/documentation/modelio/mdltexture/dimensions", "sha": "c6cc3479426e48514244dae47f8a76af79a69f5d448f4bbb94f0d47895863fd0", "t": "dimensions", "n": 471, "laws": 0, "ts": "2026-07-26 18:11 UTC"}
+{"id": "/documentation/uikit/uilabel/attributedtext", "sha": "bdeb6d043683fde97cbc067c0fe290e6d10dbfe08358ebecdc6f26e17f6c607d", "t": "attributedText", "n": 492, "laws": 0, "ts": "2026-07-26 18:18 UTC"}
+{"id": "/documentation/foundation/nsuseractivity/appentityannotatable-implementations", "sha": "56a8487e36f5fcfc8f7f29f00c24a066dc0cd3ebe27b8d73fd253e17d98c8c25", "t": "AppEntityAnnotatable Implementations", "n": 43, "laws": 0, "ts": "2026-07-26 18:36 UTC"}
+{"id": "/documentation/appintents/appintent/case", "sha": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855", "t": "AppIntent.Case", "n": 0, "laws": 0, "ts": "2026-07-26 18:38 UTC"}

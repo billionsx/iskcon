@@ -32,3 +32,8 @@
 {"id": "/documentation/accelerate/vdsp_dft_setup", "sha": "747c972ff0feadf7a68cd6c2e9e199190cf89573af6541a5a95e5de9c16e7cae", "t": "vDSP_DFT_Setup", "n": 246, "laws": 0, "ts": "2026-07-26 12:08 UTC"}
 {"id": "/documentation/accelerate/vforce/logb(_:result:)-14tuo", "sha": "1d563e41df9318f16fdc281f5d5dbedf43c15ea4f8dc89744538440cf7fa7c24", "t": "logb(_:result:)", "n": 88, "laws": 0, "ts": "2026-07-26 12:13 UTC"}
 {"id": "/documentation/accelerate/vforce/trunc(_:result:)-8luud", "sha": "0d110534bd1833e2da75b2f1b652957f373c488d03a165e2419002f27ceedd18", "t": "trunc(_:result:)", "n": 89, "laws": 0, "ts": "2026-07-26 12:14 UTC"}
+{"id": "/documentation/simd/sinpi(_:)-291vx", "sha": "17a41fda2a2eb013d7cff1b71ecf3f6c92f4a26cd246d33dae0d21f48d84a7ce", "t": "sinpi(_:)", "n": 62, "laws": 0, "ts": "2026-07-26 18:10 UTC"}
+{"id": "/documentation/appkit/nsaccessibility-c.protocol/accessibilityselectedcolumns", "sha": "b86659049de2a5da3028c31d2ed21b2a79c1696d5f61902618e0645384279b81", "t": "accessibilitySelectedColumns", "n": 56, "laws": 0, "ts": "2026-07-26 18:21 UTC"}
+{"id": "/documentation/appkit/nsaccessibilityprotocol/isaccessibilityhidden()", "sha": "cffaf174e9798376dedae3fdd797e17138b8da4cece2edcab6b53399b48f2afa", "t": "isAccessibilityHidden()", "n": 77, "laws": 0, "ts": "2026-07-26 18:25 UTC"}
+{"id": "/documentation/alarmkit/alarmkitversionstring", "sha": "894d48fa912e041319344ceff32de0ad030049cd9e173bb494646cc6cebc5e77", "t": "AlarmKitVersionString", "n": 36, "laws": 0, "ts": "2026-07-26 18:33 UTC"}
+{"id": "/documentation/AppIntents/AppEntityAnnotatable", "sha": "fc2b7e130db43e7fa5946267aff1303f529ea31c5559750e2467699d78cbc222", "t": "AppEntityAnnotatable", "n": 498, "laws": 4, "ts": "2026-07-26 18:36 UTC"}

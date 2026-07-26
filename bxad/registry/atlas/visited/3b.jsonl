@@ -36,3 +36,8 @@
 {"id": "/documentation/accelerate/vvcosf(_:_:_:)", "sha": "ce03e5ab5c5967cf24743c38c6307c1a71858b03027cfb7e0eab86c0e38fdb48", "t": "vvcosf(_:_:_:)", "n": 178, "laws": 0, "ts": "2026-07-26 12:15 UTC"}
 {"id": "/documentation/simd/min(_:_:)-32b0w", "sha": "63ad6d909722226530c9617a2275cabc6b68be976ad7d855f038f04baeba874f", "t": "min(_:_:)", "n": 54, "laws": 1, "ts": "2026-07-26 12:17 UTC"}
 {"id": "/documentation/simd/norm_one(_:)-mrh", "sha": "d35bf58a7e997462308597cd010e758a0dc2b2d27b8acd76ca2d7df9e5262423", "t": "norm_one(_:)", "n": 51, "laws": 0, "ts": "2026-07-26 12:18 UTC"}
+{"id": "/documentation/accelerate/sparseopaquefactorization_float", "sha": "172683bb280577c77ffd8b29061ef48fde14870ce01a967bfa770d0a0283f3dd", "t": "SparseOpaqueFactorization_Float", "n": 578, "laws": 1, "ts": "2026-07-26 18:13 UTC"}
+{"id": "/documentation/objectivec/nsobject-swift.class/accessibilitytraits", "sha": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855", "t": "accessibilityTraits", "n": 0, "laws": 0, "ts": "2026-07-26 18:17 UTC"}
+{"id": "/documentation/appkit/combo-box", "sha": "806d08e8043aee971e7f56761ae2029edf703f26471186e6d1fa8b878ecbac29", "t": "Combo Box", "n": 229, "laws": 0, "ts": "2026-07-26 18:29 UTC"}
+{"id": "/documentation/appintents/appentity/identifiable-implementations", "sha": "53b33403779dc778b4a146d211839be1094f75f80d533f95a6d1775040273a2b", "t": "Identifiable Implementations", "n": 26, "laws": 0, "ts": "2026-07-26 18:37 UTC"}
+{"id": "/documentation/appintents/appintent/systemcontext", "sha": "9d7c6f83256cbdfec5f422168f5ec162fd06d1d2546c007d9e9df1e88fc90b3e", "t": "systemContext", "n": 422, "laws": 0, "ts": "2026-07-26 18:38 UTC"}

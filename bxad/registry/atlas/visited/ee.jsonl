@@ -37,3 +37,7 @@
 {"id": "/documentation/Swift/ClosedRange", "sha": "eead8f50c7718c461dab63f2f548fee73e97cb2d4710479e8b04f5b4b215dbcf", "t": "ClosedRange", "n": 1998, "laws": 1, "ts": "2026-07-26 12:09 UTC"}
 {"id": "/documentation/accelerate/vforce/acos(_:result:)-3c9qz", "sha": "3dab13c74252e84e9f7a12fb93ed081a35effff4df453adba93fb0e2cc4c3a30", "t": "acos(_:result:)", "n": 80, "laws": 0, "ts": "2026-07-26 12:11 UTC"}
 {"id": "/documentation/accelerate/vvceil(_:_:_:)", "sha": "574c718d976d27da3d3bd2542d6dd483b5a391a1cdbbc0b78bd61fd385daa956", "t": "vvceil(_:_:_:)", "n": 155, "laws": 0, "ts": "2026-07-26 12:15 UTC"}
+{"id": "/documentation/modelio/mdltexture/channelencoding", "sha": "b7e49002768cc6db14c495041a5ecb0b51260fb65b79047b4ec65fa0f919c431", "t": "channelEncoding", "n": 203, "laws": 0, "ts": "2026-07-26 18:11 UTC"}
+{"id": "/documentation/accelerate/vimage/pixelbuffer/specifyhistogram(_:destination:)-28844", "sha": "2be12e7291daf2bb6952bf9645315d915a80bb5583a8ed9b8c8388867b0b6c67", "t": "specifyHistogram(_:destination:)", "n": 744, "laws": 0, "ts": "2026-07-26 18:13 UTC"}
+{"id": "/documentation/appkit/nsslider/title", "sha": "27ae2b7b5e05720291b5e4f63766cd834b53a33e743d429400c2fc3dba80bf11", "t": "title", "n": 97, "laws": 0, "ts": "2026-07-26 18:31 UTC"}
+{"id": "/documentation/foundation/nsuseractivity/ndefmessagepayload", "sha": "8f3eb16e3c3c7ce83418d1116713e87ce46c57afddf8a3402471390a920b553b", "t": "ndefMessagePayload", "n": 229, "laws": 0, "ts": "2026-07-26 18:36 UTC"}

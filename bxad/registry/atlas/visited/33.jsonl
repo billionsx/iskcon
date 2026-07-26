@@ -29,3 +29,9 @@
 {"id": "/documentation/accelerate/vforce/asinh(_:result:)-17vv4", "sha": "352eb6e045bc777078bffe6a24c2699f638af867ca66f0fed1a77304d5e55d7a", "t": "asinh(_:result:)", "n": 94, "laws": 0, "ts": "2026-07-26 12:12 UTC"}
 {"id": "/documentation/accelerate/vvlogbf(_:_:_:)", "sha": "bbba6158dd4114634bbd5be2b3124c4e9a8e05bde96650c4a285f19c1cb7bbe1", "t": "vvlogbf(_:_:_:)", "n": 279, "laws": 0, "ts": "2026-07-26 12:15 UTC"}
 {"id": "/documentation/simd/simd_make_double3(_:)-3qbde", "sha": "f3c3b33fc5725879e6c6c0e7eba952b8a2872a065228eefef27ed8e4b1b67d0d", "t": "simd_make_double3(_:)", "n": 98, "laws": 0, "ts": "2026-07-26 12:19 UTC"}
+{"id": "/documentation/modelio/mdlasset", "sha": "1543434bd84f7dd328e1f8233056e77ff36b6191212ae621817966a49640aee9", "t": "MDLAsset", "n": 2071, "laws": 3, "ts": "2026-07-26 18:11 UTC"}
+{"id": "/documentation/accelerate/bnnsgraph/builder/tensor/datatype", "sha": "9cf8c07eced88ed3cc39074898737af09906af20667d2abd4c06ce022cede725", "t": "dataType", "n": 28, "laws": 0, "ts": "2026-07-26 18:14 UTC"}
+{"id": "/documentation/accessibility/hearing", "sha": "d011a0abfd20f0f84e0077380c6328734cc846cf0d453b83db651e8c10b6d796", "t": "Hearing", "n": 526, "laws": 1, "ts": "2026-07-26 18:16 UTC"}
+{"id": "/documentation/appkit/nsaccessibility-c.protocol/accessibilityrequired", "sha": "b7b5d7168bebd7124d694957f0d5f0fe590288bea11e6508f16fd5d812e51bea", "t": "accessibilityRequired", "n": 205, "laws": 2, "ts": "2026-07-26 18:19 UTC"}
+{"id": "/documentation/appkit/nsaccessibility-c.protocol/accessibilityservesastitleforuielements", "sha": "cdb4ae426400952b0ccf2417c26c5f2020e117274922fb95db86d9b7e94bdb39", "t": "accessibilityServesAsTitleForUIElements", "n": 174, "laws": 1, "ts": "2026-07-26 18:21 UTC"}
+{"id": "/documentation/appkit/nsslider/image", "sha": "3af2e003b08ce799cc663cedcb8a794b40161dc666097e57b54066f3107e93b0", "t": "image", "n": 9, "laws": 0, "ts": "2026-07-26 18:30 UTC"}

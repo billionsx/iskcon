@@ -32,3 +32,7 @@
 {"id": "/documentation/accelerate/vdsp/negative(_:result:)-5bwqv", "sha": "56b1f718221fc28c829a31d6bffe942619678fc12c6f638afa630be9f823eb9c", "t": "negative(_:result:)", "n": 192, "laws": 0, "ts": "2026-07-26 12:00 UTC"}
 {"id": "/documentation/accelerate/vdsp/subtract(multiplication:_:)-2hhme", "sha": "00b2a5df65e4c3a78d1183fffcfcdcf695ab7ed6649fb2be49a61ecbb61ad7e1", "t": "subtract(multiplication:_:)", "n": 377, "laws": 0, "ts": "2026-07-26 12:01 UTC"}
 {"id": "/documentation/accelerate/vvrsqrtf(_:_:_:)", "sha": "6fdfdef0ef63f2b2a81e4c02211912477b39eab5bd988259338af5e86b429466", "t": "vvrsqrtf(_:_:_:)", "n": 170, "laws": 0, "ts": "2026-07-26 12:15 UTC"}
+{"id": "/documentation/accelerate/bnnsgraph/builder/tensor/leakyrelu(alpha:)", "sha": "dacc371ac3b077825f65fc64e43f71bef1dc25fa984ccfcdf56165634ca4963d", "t": "leakyReLU(alpha:)", "n": 84, "laws": 0, "ts": "2026-07-26 18:15 UTC"}
+{"id": "/documentation/appkit/nstext", "sha": "bb02a597309ef9168c8a5f7df1a01d000be215913a167e189c826bc94a33d0d1", "t": "NSText", "n": 2352, "laws": 1, "ts": "2026-07-26 18:29 UTC"}
+{"id": "/documentation/foundation/nsuseractivity/deleteallsaveduseractivities(completionhandler:)", "sha": "031b88195ae661305c49ac063631f488764086e9f65e279be3369af534efd893", "t": "deleteAllSavedUserActivities(completionHandler:)", "n": 145, "laws": 0, "ts": "2026-07-26 18:36 UTC"}
+{"id": "/documentation/appintents/progressreportingintent", "sha": "be1d66129cbcff449799d06509f20c71742b606651c2cc247791a29bf3209153", "t": "ProgressReportingIntent", "n": 99, "laws": 0, "ts": "2026-07-26 18:39 UTC"}

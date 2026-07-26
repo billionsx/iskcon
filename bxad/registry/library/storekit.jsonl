@@ -151,3 +151,11 @@
 {"id": "/documentation/StoreKit/SubscriptionStoreView", "law": "Use the modifier to set the function your app calls when someone uses the sign-in button."}
 {"id": "/documentation/StoreKit/SubscriptionStoreView", "law": "To override this behavior, use the modifier to unconditionally show, or hide, the Close button."}
 {"id": "/documentation/StoreKit/SubscriptionStoreView", "law": "Use subscription store control styles to customize the display of subscription options, and how people interact with your store."}
+{"id": "/documentation/StoreKit/AppStore/requestReview(in:)-1q8qs", "law": "When your app calls this API, StoreKit uses the following criteria: If the person hasn’t rated or reviewed your app on this device, StoreKit displays the ratings and review request a maximum of three times within a 365-day period."}
+{"id": "/documentation/StoreKit/AppStore/requestReview(in:)-1q8qs", "law": "Because this method may not present an alert, don’t call or in response to a button tap or other user action."}
+{"id": "/documentation/StoreKit/AppStore/requestReview(in:)-1q8qs", "law": "When your app calls this method while it’s in development mode, StoreKit always displays the rating and review request view, so you can test the user interface and experience."}
+{"id": "/documentation/StoreKit/SKAdNetwork", "law": "Use for app ad campaigns on the App Store and alternative marketplaces."}
+{"id": "/documentation/StoreKit/SKAdNetwork", "law": "Apple determines a postback data tier for the app download, and the device uses the tier later to determine the level of detail the postback can contain to ensure crowd anonymity."}
+{"id": "/documentation/StoreKit/SKAdNetwork", "law": "Up to five other ad networks receive a postback with a parameter value of if their ad impressions qualify for the attribution, but don’t win."}
+{"id": "/documentation/StoreKit/SKAdNetwork", "law": "The following diagram shows the path of ad impressions that qualify for, but don’t win, the ad attribution."}
+{"id": "/documentation/StoreKit/SKAdNetwork", "law": "Apps don’t need to use before calling SKAdNetwork APIs, and can call these APIs regardless of their tracking authorization status."}

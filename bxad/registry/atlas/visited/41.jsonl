@@ -35,3 +35,6 @@
 {"id": "/documentation/accelerate/vforce/asinh(_:result:)-7wn57", "sha": "30c6c22b3b15f58890d21143f678f8f30939249e0508a20d686834ddfe271f33", "t": "asinh(_:result:)", "n": 94, "laws": 0, "ts": "2026-07-26 12:12 UTC"}
 {"id": "/documentation/accelerate/vforce/pow(bases:exponents:)-3gl7v", "sha": "bc010b17e2153bc9712f3f56282b32d45cdec4a25ac0700113055c93104956d5", "t": "pow(bases:exponents:)", "n": 132, "laws": 0, "ts": "2026-07-26 12:13 UTC"}
 {"id": "/documentation/simd/simd_make_double3(_:_:)-2va6", "sha": "bbceda35a4ca300055b6adb9443beaff892ce1b66b8ca0d93909ac60e4d3ef2c", "t": "simd_make_double3(_:_:)", "n": 54, "laws": 0, "ts": "2026-07-26 12:19 UTC"}
+{"id": "/documentation/uikit/uiaccessibilitytraits/keyboardkey", "sha": "9b6163f357ff97c750d354a394ea242302703b6032f8cdd3461621bb9ff8fdd0", "t": "keyboardKey", "n": 54, "laws": 0, "ts": "2026-07-26 18:18 UTC"}
+{"id": "/documentation/appkit/nsaccessibilityprotocol/setaccessibilityselectedtextranges(_:)", "sha": "6c2264c6cdaf5704746a0617ec84c62b7be6bb06f04ebf46637fc955618a874c", "t": "setAccessibilitySelectedTextRanges(_:)", "n": 56, "laws": 0, "ts": "2026-07-26 18:27 UTC"}
+{"id": "/documentation/appkit/nsaccessibilitystepper", "sha": "6f3d217e4404bc6c98899721062510a5651c696a8d690bf2f729232351b6faee", "t": "NSAccessibilityStepper", "n": 917, "laws": 4, "ts": "2026-07-26 18:29 UTC"}

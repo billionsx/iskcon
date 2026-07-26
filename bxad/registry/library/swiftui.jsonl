@@ -1147,3 +1147,66 @@
 {"id": "/documentation/swiftui/view/togglestyle(_:)", "law": "Use this modifier on a instance to set a style that defines the control’s appearance and behavior."}
 {"id": "/documentation/swiftui/view/togglestyle(_:)", "law": "If you don’t set a style, SwiftUI assumes a value of , which corresponds to a context-specific default."}
 {"id": "/documentation/swiftui/view/togglestyle(_:)", "law": "Always include a descriptive title for better accessibility."}
+{"id": "/documentation/SwiftUI/Accessibility-fundamentals", "law": "You don’t have to do any extra work to enable these standard accessibility features."}
+{"id": "/documentation/SwiftUI/Accessibility-fundamentals", "law": "To find out what enhancements you need, try using your app with accessibility features like VoiceOver, Voice Control, and Switch Control, or get feedback from users of your app that regularly use these features."}
+{"id": "/documentation/SwiftUI/Accessibility-fundamentals", "law": "Then use the accessibility view modifiers that SwiftUI provides to improve the experience."}
+{"id": "/documentation/SwiftUI/Accessibility-fundamentals", "law": "Customize your use of accessibility modifiers for all the platforms that your app runs on."}
+{"id": "/documentation/swiftui/app/body-swift.associatedtype", "law": "When you create a custom app, Swift infers this type from your implementation of the required property."}
+{"id": "/documentation/swiftui/app/init()", "law": "Swift synthesizes a default initializer for structures that don’t provide one."}
+{"id": "/documentation/swiftui/creating-a-tvos-media-catalog-app-in-swiftui", "law": "The button style provides the primary lockup style you use in tvOS, including all the focus interactions and hover effects."}
+{"id": "/documentation/swiftui/creating-a-tvos-media-catalog-app-in-swiftui", "law": "Provide a separate and view in the button’s label closure to ensure the correct vertical appearance."}
+{"id": "/documentation/swiftui/creating-a-tvos-media-catalog-app-in-swiftui", "law": "To ensure the hover effect applies to exactly the right view, you can manually attach it to a particular subview of the button’s label using the modifier."}
+{"id": "/documentation/swiftui/creating-a-tvos-media-catalog-app-in-swiftui", "law": "For instance, to ensure an SF Symbols image hovers along with its background, do the following: You can also attach the hover effect to a custom view."}
+{"id": "/documentation/swiftui/creating-a-tvos-media-catalog-app-in-swiftui", "law": "You can also use a custom to create a standard card-based lockup appearance while keeping your button’s declarations clean at the point of use."}
+{"id": "/documentation/swiftui/creating-a-tvos-media-catalog-app-in-swiftui", "law": "To arrange your lockups nicely, use the modifier to let SwiftUI determine the best size for each."}
+{"id": "/documentation/swiftui/creating-a-tvos-media-catalog-app-in-swiftui", "law": "To detect when focus moves below the fold, use to detect when the header view moves more than halfway off the screen."}
+{"id": "/documentation/swiftui/creating-a-tvos-media-catalog-app-in-swiftui", "law": "It’s common for product pages to use a material gradient appearance with above- and below-the-fold snapping."}
+{"id": "/documentation/swiftui/creating-a-tvos-media-catalog-app-in-swiftui", "law": "For your search page, prefer using a to contain your results, and a landscape orientation for the lockups themselves."}
+{"id": "/documentation/swiftui/creating-a-tvos-media-catalog-app-in-swiftui", "law": "Be sure to sort your search results so that the content of your grid is stable and predictable."}
+{"id": "/documentation/swiftui/nsapplicationdelegateadaptor", "law": "For example, you can implement the method to handle remote notification registration: Then use the property wrapper inside your declaration to tell SwiftUI about the delegate type: SwiftUI instantiates the delegate and calls the delegate’s methods in response to life cycle events."}
+{"id": "/documentation/swiftui/nsapplicationdelegateadaptor", "law": "You can access the delegate from any scene or view in your app using the property wrapper: This enables you to use the dollar sign ( ) prefix to get a binding to published properties that you declare in the delegate."}
+{"id": "/documentation/swiftui/nsapplicationdelegateadaptor", "law": "For example, prefer to handle changes in instead of relying on delegate callbacks, like ."}
+{"id": "/documentation/swiftui/nsapplicationdelegateadaptor", "law": "A property wrapper type that you use to create an AppKit app delegate."}
+{"id": "/documentation/swiftui/uiapplicationdelegateadaptor", "law": "For example, you can implement the method to handle remote notification registration: Then use the property wrapper inside your declaration to tell SwiftUI about the delegate type: SwiftUI instantiates the delegate and calls the delegate’s methods in response to life cycle events."}
+{"id": "/documentation/swiftui/uiapplicationdelegateadaptor", "law": "You can access the delegate from any scene or view in your app using the property wrapper: This enables you to use the dollar sign ( ) prefix to get a binding to published properties that you declare in the delegate."}
+{"id": "/documentation/swiftui/uiapplicationdelegateadaptor", "law": "For example, prefer to handle changes in instead of relying on delegate callbacks, like ."}
+{"id": "/documentation/swiftui/uiapplicationdelegateadaptor", "law": "A property wrapper type that you use to create a UIKit app delegate."}
+{"id": "/documentation/swiftui/wkextensiondelegateadaptor", "law": "For example, you can implement the method to handle remote notification registration: Then use the property wrapper inside your declaration to tell SwiftUI about the delegate type: SwiftUI instantiates the delegate and calls the delegate’s methods in response to life cycle events."}
+{"id": "/documentation/swiftui/wkextensiondelegateadaptor", "law": "You can access the delegate from any scene or view in your extension using the property wrapper: This enables you to use the dollar sign ( ) prefix to get a binding to published properties that you declare in the delegate."}
+{"id": "/documentation/swiftui/wkextensiondelegateadaptor", "law": "For example, prefer to handle changes in instead of relying on delegate callbacks, like ."}
+{"id": "/documentation/swiftui/wkextensiondelegateadaptor", "law": "A property wrapper type that you use to create a WatchKit extension delegate."}
+{"id": "/documentation/swiftui/building-and-customizing-the-menu-bar-with-swiftui", "law": "You can also bind menu bar to keyboard shortcuts to make your app quicker and easier to use."}
+{"id": "/documentation/swiftui/building-and-customizing-the-menu-bar-with-swiftui", "law": "On iPadOS, this menu bar item doesn’t require an additional scene and when performed; it switches to the app’s settings in the Settings app."}
+{"id": "/documentation/swiftui/building-and-customizing-the-menu-bar-with-swiftui", "law": "Use to create contextual dependencies with your menus and menu items."}
+{"id": "/documentation/swiftui/building-and-customizing-the-menu-bar-with-swiftui", "law": "A focused value is state data that requires an active scene with its view hierarchy in focus."}
+{"id": "/documentation/swiftui/building-and-customizing-the-menu-bar-with-swiftui", "law": "Use a dynamic property to react to changes in the views of the scene."}
+{"id": "/documentation/swiftui/building-and-customizing-the-menu-bar-with-swiftui", "law": "Use the property wrapper to represent the active scene’s data model in the menu bar."}
+{"id": "/documentation/swiftui/building-and-customizing-the-menu-bar-with-swiftui", "law": "Custom entry values must always be optional."}
+{"id": "/documentation/swiftui/building-and-customizing-the-menu-bar-with-swiftui", "law": "Use when a menu item depends on the current placement of focus within the active scene’s view hierarchy."}
+{"id": "/documentation/swiftui/environmentvalues/dismiss", "law": "Use this environment value to get the instance for the current ."}
+{"id": "/documentation/swiftui/environmentvalues/dismiss", "law": "You can use this action to: Dismiss a modal presentation, like a sheet or a popover."}
+{"id": "/documentation/swiftui/environmentvalues/dismiss", "law": "On apps targetting iOS 18 and aligned releases, you also use the dismiss action to pop the implicit stack of a collapsed , or clear the equivalent state in an expanded split view."}
+{"id": "/documentation/swiftui/environmentvalues/dismiss", "law": "For example, you can create a button that calls the inside a view that acts as a sheet: When you present the view, someone can dismiss the sheet by tapping or clicking the sheet’s button: Be sure that you define the action in the appropriate environment."}
+{"id": "/documentation/swiftui/environmentvalues/dismiss", "law": "While the dismiss action can be used to a close window that you create with or , prefer for that use case instead."}
+{"id": "/documentation/swiftui/environmentvalues/openwindow", "law": "Use the environment value to get an instance for a given ."}
+{"id": "/documentation/swiftui/environmentvalues/openwindow", "law": "Use the first option to target either a or a scene in your app that has a matching identifier."}
+{"id": "/documentation/swiftui/environmentvalues/openwindow", "law": "Use the other two options to target a and provide a value to present."}
+{"id": "/documentation/swiftui/presentedwindowcontent", "law": "You don’t create this type directly."}
+{"id": "/documentation/swiftui/window", "law": "Use a scene to augment the main interface of your app with a window that gives people access to supplemental functionality."}
+{"id": "/documentation/swiftui/window", "law": "Use the parameter that you initialize the window with to indicate which window to open."}
+{"id": "/documentation/swiftui/window", "law": "Be sure to use unique identifiers across all of the and instances that you define."}
+{"id": "/documentation/swiftui/window", "law": "You can use a window as the main scene of your app when multi-window functionality isn’t appropriate."}
+{"id": "/documentation/swiftui/window", "law": "In most cases it’s best to use a to represent the main scene of your app."}
+{"id": "/documentation/swiftui/windowgroup", "law": "Use a as a container for a view hierarchy that your app presents."}
+{"id": "/documentation/swiftui/windowgroup", "law": "To enable an iPadOS app to simultaneously display multiple windows, be sure to include the key with a value of in the dictionary of your app’s Information Property List."}
+{"id": "/documentation/swiftui/windowgroup", "law": "For document-based apps, use to define windows instead."}
+{"id": "/documentation/swiftui/windowgroup", "law": "For example, you can give the mail viewer scene from the previous example an identifier: Elsewhere in your code, you can use the action from the environment to create a new window from the group: Be sure to use unique strings for identifiers that you apply to window groups in your app."}
+{"id": "/documentation/swiftui/windowgroup", "law": "For example, you can define a button that opens a message by passing the message’s identifier: Be sure that the type you present conforms to both the and protocols."}
+{"id": "/documentation/swiftui/windowgroup", "law": "Also, prefer lightweight data for the presentation value."}
+{"id": "/documentation/swiftui/windowgroup", "law": "To avoid receiving a value, you can optionally specify a default value in your window group initializer."}
+{"id": "/documentation/swiftui/windowgroup", "law": "If you don’t provide a title for a window, the system refers to the window using the app’s name instead."}
+{"id": "/documentation/swiftui/windowgroup", "law": "To programmatically distinguish between windows that present the same type of data, like when you use a as the identifier for more than one model type, add the parameter to the group’s initializer to provide a unique string identifier: Then use both the identifer and a value to open the window:"}
+{"id": "/documentation/swiftui/windowgroup/init(_:content:)", "law": "However, you can use the formatting controls that the view offers, like for localization, dates, and numerical representations."}
+{"id": "/documentation/swiftui/windowgroup/init(_:id:content:)", "law": "However, you can use the formatting controls that the view offers, like for localization, dates, and numerical representations."}
+{"id": "/documentation/swiftui/windowgroup/init(_:id:makecontent:)", "law": "However, you can use the formatting controls that the view offers, like for localization, dates, and numerical representations."}
+{"id": "/documentation/swiftui/windowgroup/init(_:makecontent:)", "law": "However, you can use the formatting controls that the view offers, like for localization, dates, and numerical representations."}

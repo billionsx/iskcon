@@ -111,3 +111,26 @@
 {"id": "/documentation/BundleResources/Information-Property-List/LSMinimumSystemVersion", "law": "Use this key to indicate the minimum macOS release that your app supports."}
 {"id": "/documentation/BundleResources/Information-Property-List/LSMinimumSystemVersion", "law": "To specify the minimum version of iOS, iPadOS, tvOS, or watchOS that your app supports, use ."}
 {"id": "/documentation/BundleResources/Information-Property-List/LSMinimumSystemVersion", "law": "The minimum version of the operating system required for the app to run in macOS."}
+{"id": "/documentation/bundleresources/information-property-list", "law": "Some keys are required, and others are specific to particular features of the executable."}
+{"id": "/documentation/bundleresources/information-property-list", "law": "The information property list file always has the name ."}
+{"id": "/documentation/bundleresources/information-property-list", "law": "The file name is case-sensitive and must begin with a capital letter ."}
+{"id": "/documentation/bundleresources/information-property-list", "law": "When you let Xcode prepare your bundle’s information property list, you don’t need to edit the file directly."}
+{"id": "/documentation/bundleresources/information-property-list", "law": "To access values in an information property list programmatically, you use an instance of the class, which represents a bundle on disk."}
+{"id": "/documentation/bundleresources/entitlements", "law": "Key-value pairs that grant an executable permission to use a service or technology."}
+{"id": "/documentation/bundleresources/entitlements", "law": "Account Creation Requires Phone Number."}
+{"id": "/documentation/bundleresources/entitlements/com.apple.developer.parent-application-identifiers", "law": "Because an App Clip is always associated with exactly one app, ensure the parent application entitlement has exactly one entry, the corresponding app’s application identifier."}
+{"id": "/documentation/bundleresources/entitlements/com.apple.developer.parent-application-identifiers", "law": "Ensure that the application identifier for the App Clip uses the full app’s application identifier as its prefix, followed by a string."}
+{"id": "/documentation/BundleResources/Information-Property-List/UILaunchScreen", "law": "You use this key to define the launch screen that the system displays while your app launches."}
+{"id": "/documentation/BundleResources/Information-Property-List/UILaunchScreen", "law": "If you need to provide different launch screens in response to being launched by different URL schemes, use instead."}
+{"id": "/documentation/BundleResources/Information-Property-List/UILaunchScreen", "law": "Use this key to configure the user interface during app launch in a way that doesn’t rely on storyboards."}
+{"id": "/documentation/BundleResources/Information-Property-List/UILaunchScreen", "law": "If you prefer to use storyboards, use instead."}
+{"id": "/documentation/BundleResources/Information-Property-List/UILaunchScreens", "law": "You use this key if your app supports launching in response to one or more URL schemes, and if you want to provide different launch screens for different launch triggers."}
+{"id": "/documentation/BundleResources/Information-Property-List/UILaunchScreens", "law": "If you need only one launch screen, use instead."}
+{"id": "/documentation/BundleResources/Information-Property-List/UILaunchScreens", "law": "Use this key to configure the user interface during app launch in a way that doesn’t rely on storyboards."}
+{"id": "/documentation/BundleResources/Information-Property-List/UILaunchScreens", "law": "If you prefer to use storyboards to define the launch screen, use the key instead."}
+{"id": "/documentation/BundleResources/Entitlements/com.apple.developer.networking.HotspotConfiguration", "law": "This key indicates whether your app may use the and classes to configure Wi-Fi networks."}
+{"id": "/documentation/BundleResources/Entitlements/com.apple.developer.networking.HotspotConfiguration", "law": "A Boolean value indicating whether your app can use the hotspot manager to configure Wi-Fi networks."}
+{"id": "/documentation/BundleResources/Entitlements/com.apple.developer.pass-type-identifiers", "law": "Use to access all of the passes for your team."}
+{"id": "/documentation/BundleResources/Entitlements/com.apple.developer.pass-type-identifiers", "law": "In iOS 17 and later, App Clips can use the Wallet capability."}
+{"id": "/documentation/BundleResources/Information-Property-List/NSFaceIDUsageDescription", "law": "This key is required if your app uses APIs that access Face ID."}
+{"id": "/documentation/BundleResources/Information-Property-List/NSFaceIDUsageDescription", "law": "Also note that App Clips can’t use Face ID."}

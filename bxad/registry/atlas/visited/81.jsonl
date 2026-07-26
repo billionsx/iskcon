@@ -40,3 +40,7 @@
 {"id": "/documentation/corevideo/kcvpixelformattype_16le5551", "sha": "e2de35e1ce9db60e80b56c98993dcba544a8fa0fab139ef0f2d97721d3efdf23", "t": "kCVPixelFormatType_16LE5551", "n": 19, "laws": 0, "ts": "2026-07-26 12:06 UTC"}
 {"id": "/documentation/coreimage/ciformat", "sha": "2ef97a15290a915c95d9d9a881fb6fd241c009ec93324f9992da58395b3e5e09", "t": "CIFormat", "n": 307, "laws": 0, "ts": "2026-07-26 12:09 UTC"}
 {"id": "/documentation/accelerate/vforce/pow(bases:exponents:result:)-6pffz", "sha": "0696d81b30685ddda7100b787abf11c2e4000573fec9f46a25ba3da740875118", "t": "pow(bases:exponents:result:)", "n": 135, "laws": 0, "ts": "2026-07-26 12:13 UTC"}
+{"id": "/documentation/accelerate/bnnsgraph/builder/scattermode", "sha": "3ab4b83c2012814b40efebcb50aca22c020269d8bdb9f7a968264d215d5ffabe", "t": "BNNSGraph.Builder.ScatterMode", "n": 367, "laws": 2, "ts": "2026-07-26 18:13 UTC"}
+{"id": "/documentation/uikit/uiaccessibilityelement/accessibilitycontainer", "sha": "6afc91e4af5b91ee7cd712163ecf2793e0c9d27e2258b39fdd9c350a3d71a3cc", "t": "accessibilityContainer", "n": 49, "laws": 0, "ts": "2026-07-26 18:17 UTC"}
+{"id": "/documentation/appkit/nstableheaderview", "sha": "073dc98030895837094b5fd880f1f32f0ddb8e79bc83d2ed1c1f3a5805424c19", "t": "NSTableHeaderView", "n": 316, "laws": 0, "ts": "2026-07-26 18:29 UTC"}
+{"id": "/documentation/accessorysetupkit/asaccessory/bluetoothidentifier", "sha": "e14d2f4182cb47f27872086e1f2aa78d1f7701f26678e87c090aab3a5b5a8b50", "t": "bluetoothIdentifier", "n": 130, "laws": 1, "ts": "2026-07-26 18:32 UTC"}

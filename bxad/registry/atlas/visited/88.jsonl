@@ -37,3 +37,7 @@
 {"id": "/documentation/simd/asinh(_:)-8b3vg", "sha": "f1e2cc417293e1b5385a470a689eea2c1eefdfb2835374e33a0214e29e994d32", "t": "asinh(_:)", "n": 64, "laws": 0, "ts": "2026-07-26 12:16 UTC"}
 {"id": "/documentation/simd/max(_:_:)-9e6ry", "sha": "a557bd321d4a3b01afc56f4a9bd6cb051078303b50ef555bd5a85c69747cc5af", "t": "max(_:_:)", "n": 54, "laws": 1, "ts": "2026-07-26 12:17 UTC"}
 {"id": "/documentation/simd/reduce_max(_:)-96cb3", "sha": "dbf0ce4bde160c9a529968a0083dea4ef24d3ea5463b87e3e3cba21fa980ca30", "t": "reduce_max(_:)", "n": 38, "laws": 1, "ts": "2026-07-26 12:18 UTC"}
+{"id": "/documentation/accelerate/bnnsgraph/builder/tensor/asinh()", "sha": "3e113c9b5061d268e81ac17f45073a755965933cf4767e8c3de172d44130ffd0", "t": "asinh()", "n": 58, "laws": 0, "ts": "2026-07-26 18:14 UTC"}
+{"id": "/documentation/appkit/nsaccessibilityprotocol", "sha": "bb6b5188117e0b5d31c224dfb1d6347a196dad1c5e0a713ff2738f97977a2705", "t": "NSAccessibilityProtocol", "n": 13565, "laws": 4, "ts": "2026-07-26 18:19 UTC"}
+{"id": "/documentation/appkit/nsaccessibilityprotocol/accessibilityactivationpoint()", "sha": "34b6a7a5038d207071c0ee07972f99538f33c9fbd499aa6ab049eb5b60940403", "t": "accessibilityActivationPoint()", "n": 60, "laws": 0, "ts": "2026-07-26 18:22 UTC"}
+{"id": "/documentation/appkit/nsaccessibilityprotocol/setaccessibilityselectedtext(_:)", "sha": "c8e1be41edf8f2fcfeb0ce8be31abc00184101b059f8659885d230b6dfcffd74", "t": "setAccessibilitySelectedText(_:)", "n": 33, "laws": 0, "ts": "2026-07-26 18:27 UTC"}

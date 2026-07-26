@@ -42,3 +42,11 @@
 {"id": "/documentation/ObjectiveC/BOOL", "sha": "7e23bdc7c48b16d379236cd6d1344223eb09e17ca50787a06792c44a09975be2", "t": "BOOL", "n": 437, "laws": 0, "ts": "2026-07-26 12:10 UTC"}
 {"id": "/documentation/simd/simd_fract(_:)-47n4w", "sha": "1291f9047107bd9ea30b198815bce564316fa09a8abba7ced6f31e84df1f37db", "t": "simd_fract(_:)", "n": 56, "laws": 0, "ts": "2026-07-26 12:19 UTC"}
 {"id": "/documentation/simd/simd_sign(_:)-6goju", "sha": "3faa8466cf1425f73a03149d5e0c3adbbad6cff90419f6ebd7a6db3a48c65914", "t": "simd_sign(_:)", "n": 45, "laws": 0, "ts": "2026-07-26 12:19 UTC"}
+{"id": "/documentation/accelerate/bnnsgraph/builder/tensor/select(_:_:)-3ha1f", "sha": "352f7ba2c367fd9bbc62063b3578fe47dac08f9a95efe77cb3639e1cc834dd0f", "t": "select(_:_:)", "n": 210, "laws": 0, "ts": "2026-07-26 18:15 UTC"}
+{"id": "/documentation/CoreMotion/CMBodyIdentifiable", "sha": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855", "t": "CMBodyIdentifiable", "n": 0, "laws": 0, "ts": "2026-07-26 18:18 UTC"}
+{"id": "/documentation/appkit/nsview", "sha": "3150334a491e2c0bf657e5c6a114173d5876d0a3c44f4f5ca16e47267238c188", "t": "NSView", "n": 3699, "laws": 8, "ts": "2026-07-26 18:19 UTC"}
+{"id": "/documentation/appkit/nsaccessibilityprotocol/setaccessibilityfocusedwindow(_:)", "sha": "65ebe6e2f6d2c9998ff30d3e591e382e5cc192932a938db2f04c910b201ef270", "t": "setAccessibilityFocusedWindow(_:)", "n": 45, "laws": 0, "ts": "2026-07-26 18:26 UTC"}
+{"id": "/documentation/appkit/nscolorpanel", "sha": "dc2607f4ac591d9173431252bb88bb296905697bb0a10fd46bef5dbcaa0af4ac", "t": "NSColorPanel", "n": 916, "laws": 0, "ts": "2026-07-26 18:28 UTC"}
+{"id": "/documentation/accessibility/braille-displays", "sha": "d8472e3897e1fb3073977173e8e6505aa61b0846bc2ee25d51581334d1b1f0ca", "t": "Braille displays", "n": 701, "laws": 2, "ts": "2026-07-26 18:31 UTC"}
+{"id": "/documentation/BundleResources/Entitlements/com.apple.developer.pass-type-identifiers", "sha": "f6ba19c47cbbb8646661dff36334d4e05863bbcf69e39d52f32d0464e949242d", "t": "Pass Type IDs Entitlement", "n": 585, "laws": 2, "ts": "2026-07-26 18:35 UTC"}
+{"id": "/documentation/appintents/persistentlyidentifiable", "sha": "783c19c8de6ad6e88737b66794335e9590c64bb36d23bc4c2f779118a302fea1", "t": "PersistentlyIdentifiable", "n": 181, "laws": 0, "ts": "2026-07-26 18:38 UTC"}

@@ -31,3 +31,5 @@
 {"id": "/documentation/accelerate/vdsp_dft_interleaved_createsetupd(_:_:_:_:)", "sha": "ac51775dc8d0b6592628ae08b1c0403f0479d8a064362b0c21177dad75c31da3", "t": "vDSP_DFT_Interleaved_CreateSetupD(_:_:_:_:)", "n": 1121, "laws": 2, "ts": "2026-07-26 12:08 UTC"}
 {"id": "/documentation/simd/nextafter(_:_:)-7qi1e", "sha": "f8d1007b60084068c437ac6b9cfb52f0ce9a1183c708a04c39e70cacf2da54aa", "t": "nextafter(_:_:)", "n": 130, "laws": 0, "ts": "2026-07-26 12:18 UTC"}
 {"id": "/documentation/simd/sign(_:)-2qtea", "sha": "3faa8466cf1425f73a03149d5e0c3adbbad6cff90419f6ebd7a6db3a48c65914", "t": "sign(_:)", "n": 45, "laws": 0, "ts": "2026-07-26 12:18 UTC"}
+{"id": "/documentation/accelerate/bnnsgraph/builder/argument(name:datatype:shape:intent:)", "sha": "4769e3404ca978b10e5c2a7ac4cb1d995db9e2e5393555c23b778dd47975b8db", "t": "argument(name:dataType:shape:intent:)", "n": 274, "laws": 0, "ts": "2026-07-26 18:13 UTC"}
+{"id": "/documentation/accelerate/bnnsfilterparameters/deallocator", "sha": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855", "t": "deallocator", "n": 0, "laws": 0, "ts": "2026-07-26 18:16 UTC"}

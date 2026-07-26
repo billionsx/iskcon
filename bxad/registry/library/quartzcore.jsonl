@@ -19,3 +19,4 @@
 {"id": "/documentation/QuartzCore/CAMetalDrawable", "law": "Don’t implement this protocol yourself."}
 {"id": "/documentation/QuartzCore/CALayer", "law": "If the layer object was created by a view, the view typically assigns itself as the layer’s delegate automatically, and you should not change that relationship."}
 {"id": "/documentation/QuartzCore/CALayer", "law": "For layers you create yourself, you can assign a object and use that object to provide the contents of the layer dynamically and perform other tasks."}
+{"id": "/documentation/QuartzCore/CALayerDelegate", "law": "The object that implements this protocol must be assigned to the property of the layer object."}

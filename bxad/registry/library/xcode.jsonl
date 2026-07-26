@@ -540,3 +540,14 @@
 {"id": "/documentation/Xcode/understanding-hitches-in-your-app", "law": "During user interaction, a display updates at the maximum refresh rate the device supports."}
 {"id": "/documentation/Xcode/understanding-hitches-in-your-app", "law": "Unlike hangs in discrete interaction, where only a delay on the order of 100 ms or more on the main thread becomes noticeable, people are much more sensitive to interruptions in fluid motion."}
 {"id": "/documentation/Xcode/understanding-hitches-in-your-app", "law": "These times usually, but not always, align with the vsyncs of the underlying display, meaning that the presentation time is at a given vsync, the commit deadline is a vsync before that, and the begin time is a vsync before the commit deadline."}
+{"id": "/documentation/Xcode/organizing-your-code-with-local-packages", "law": "Choose a project and a group, but don’t create a new Git repository if your app is already under version control; then create the new Swift package."}
+{"id": "/documentation/Xcode/reducing-your-app-s-size", "law": "To ensure that app downloads don’t take a long time or result in additional costs to users, the App Store limits the size of the apps they can install over a mobile connection."}
+{"id": "/documentation/Xcode/reducing-your-app-s-size", "law": "Run the following command to use to export your app for distribution and create an app thinning size report: Replace all file names and paths as necessary."}
+{"id": "/documentation/Xcode/reducing-your-app-s-size", "law": "Be sure to include the key, with as the value."}
+{"id": "/documentation/Xcode/reducing-your-app-s-size", "law": "Be sure to escape the angle brackets for the value in your export options property list."}
+{"id": "/documentation/Xcode/allowing-apps-and-websites-to-link-to-your-content", "law": "Use universal links to link directly to content within your app and share data securely."}
+{"id": "/documentation/Xcode/supporting-universal-links-in-your-app", "law": "Universal links offer a potential attack vector into your app, so make sure to validate all URL parameters and discard any malformed URLs."}
+{"id": "/documentation/Xcode/supporting-universal-links-in-your-app", "law": "In addition, limit the available actions to those that don’t risk the user’s data."}
+{"id": "/documentation/Xcode/supporting-universal-links-in-your-app", "law": "For example, don’t allow universal links to directly delete content or access sensitive information about the user."}
+{"id": "/documentation/Xcode/supporting-universal-links-in-your-app", "law": "When testing your URL-handling code, make sure your test cases include improperly formatted URLs."}
+{"id": "/documentation/Xcode/supporting-universal-links-in-your-app", "law": "Use APIs to extract the components of the URL."}

@@ -42,3 +42,4 @@
 {"id": "/documentation/Compression/compression_decode_buffer(_:_:_:_:_:_:)", "sha": "cd97480e27e5f17b9f135e48fcd091037f518c43899509865570c487a133f81f", "t": "compression_decode_buffer(_:_:_:_:_:_:)", "n": 439, "laws": 0, "ts": "2026-07-26 11:53 UTC"}
 {"id": "/documentation/accelerate/vdsp/convertelements(of:to:rounding:)-3sgv7", "sha": "a45e1055c812cd81f718339e8d47ffede8617ae8fdf9d50f2da9e409acf1f28f", "t": "convertElements(of:to:rounding:)", "n": 60, "laws": 0, "ts": "2026-07-26 11:56 UTC"}
 {"id": "/documentation/accelerate/vforce/sinpi(_:)-3a7fm", "sha": "f322beecdcc21e18f029a90a5d434e5331637f5524345e735f18a94f11ea119a", "t": "sinPi(_:)", "n": 90, "laws": 0, "ts": "2026-07-26 12:14 UTC"}
+{"id": "/documentation/arkit/arappclipcodeanchor/url", "sha": "15e56bde2a57ab05eac8c764de2333eeb25369c7e0bffe1eac9ee994e437b950", "t": "url", "n": 1160, "laws": 0, "ts": "2026-07-26 18:35 UTC"}

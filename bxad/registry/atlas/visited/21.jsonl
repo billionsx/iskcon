@@ -37,3 +37,7 @@
 {"id": "/documentation/accelerate/vdsp/linearinterpolate(_:_:using:)-71as1", "sha": "b7e032c8d2b356d486be27d599444c7b08b59e54701520d88bba64f2249d9bd0", "t": "linearInterpolate(_:_:using:)", "n": 595, "laws": 0, "ts": "2026-07-26 11:58 UTC"}
 {"id": "/documentation/accelerate/vdsp/negative(_:)-8mo1p", "sha": "a18b5a5199ddae89d646fd69b8cd666311e43f4f1a62eb44bb6258fa06ea8d50", "t": "negative(_:)", "n": 189, "laws": 0, "ts": "2026-07-26 12:00 UTC"}
 {"id": "/documentation/simd/acos", "sha": "94e12a4d93dfb2efd31d8f1b8f6d601f91cd73a3d490c14adeb9b8b64657fd49", "t": "acos", "n": 50, "laws": 0, "ts": "2026-07-26 12:16 UTC"}
+{"id": "/documentation/CoreFoundation/CGRect", "sha": "d1d78de3e3ee6c2fc0e5f41d59e287428794189a767621bcf3adcc4f6fe57abd", "t": "CGRect", "n": 649, "laws": 0, "ts": "2026-07-26 18:18 UTC"}
+{"id": "/documentation/uikit/uilabel/drawtext(in:)", "sha": "8ec9c896b0adecce30d0b3ea04980e7bc1f95a38d30eb8de83268cb7bc6b674b", "t": "drawText(in:)", "n": 559, "laws": 2, "ts": "2026-07-26 18:18 UTC"}
+{"id": "/documentation/TVServices/TVUserActivityTypeBrowsingChannelGuide", "sha": "3ac31b5a985e8fb17d9777fa7811e44e2916942ecf909a3bfac0e4a7d725e488", "t": "TVUserActivityTypeBrowsingChannelGuide", "n": 256, "laws": 0, "ts": "2026-07-26 18:36 UTC"}
+{"id": "/documentation/foundation/nsuseractivity/adduserinfoentries(from:)", "sha": "c1b7d1ddf28ecc3e16f8001117913d96b70f71d433d76956d0198e340e458316", "t": "addUserInfoEntries(from:)", "n": 426, "laws": 2, "ts": "2026-07-26 18:36 UTC"}

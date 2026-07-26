@@ -30,3 +30,6 @@
 {"id": "/documentation/accelerate/cblaslower", "sha": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855", "t": "CblasLower", "n": 0, "laws": 0, "ts": "2026-07-26 11:49 UTC"}
 {"id": "/documentation/Foundation/NSData/compressed(using:)", "sha": "8f78aac25ba954d927a8313a7fd2cd37afd2e8cd105c513fa05c954d191cc958", "t": "compressed(using:)", "n": 711, "laws": 2, "ts": "2026-07-26 11:53 UTC"}
 {"id": "/documentation/accelerate/vvatanf(_:_:_:)", "sha": "de37fac18824901b032887c772b6288f6a8ab1ed117c6f56eb90b76c58911e5a", "t": "vvatanf(_:_:_:)", "n": 222, "laws": 0, "ts": "2026-07-26 12:14 UTC"}
+{"id": "/documentation/accelerate/sparsematrix_float", "sha": "dc6be47956d44f598fe6f5bd5fc96596e23906dfe932ffc92b595923a2a27ed7", "t": "SparseMatrix_Float", "n": 885, "laws": 1, "ts": "2026-07-26 18:13 UTC"}
+{"id": "/documentation/accelerate/bnnsgraph/builder/tensor/select(_:_:)-77itm", "sha": "c900b4cfca41001bf213af016a88d03f100bd46fa25b24af0f064a84de95da1d", "t": "select(_:_:)", "n": 213, "laws": 0, "ts": "2026-07-26 18:15 UTC"}
+{"id": "/documentation/foundation/nsuseractivityconnectionunavailableerror-swift.var", "sha": "ff1682e7ce07fdb5980fa245c02733e847bad21551359be855f92276fb06af83", "t": "NSUserActivityConnectionUnavailableError", "n": 87, "laws": 1, "ts": "2026-07-26 18:37 UTC"}

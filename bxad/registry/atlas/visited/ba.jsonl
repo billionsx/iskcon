@@ -42,3 +42,7 @@
 {"id": "/documentation/accelerate/kfftradix2", "sha": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855", "t": "kFFTRadix2", "n": 0, "laws": 0, "ts": "2026-07-26 12:08 UTC"}
 {"id": "/documentation/simd/atanh", "sha": "b522bdcaf8bedc316bd7cbb59448fad6bb7b994f297e45e34a3bac7b1c869e2a", "t": "atanh", "n": 67, "laws": 0, "ts": "2026-07-26 12:16 UTC"}
 {"id": "/documentation/simd/clamp(_:min:max:)-5otf7", "sha": "e6c4da66e5892aee04342c64977721dc80be50819afca1769906b008662ade49", "t": "clamp(_:min:max:)", "n": 62, "laws": 0, "ts": "2026-07-26 12:16 UTC"}
+{"id": "/documentation/simd/simd_dot(_:_:)-7frqx", "sha": "c1c5a1fff77080d4955d3c070f0442138e456694f0e1c4a919f3618f2f84a93a", "t": "simd_dot(_:_:)", "n": 43, "laws": 0, "ts": "2026-07-26 18:10 UTC"}
+{"id": "/documentation/modelio", "sha": "b7df3d0c2870cc7d916d318b21bf4698f7d2dbe09b532e9a940d0578b94ffcb8", "t": "Model I/O", "n": 5587, "laws": 10, "ts": "2026-07-26 18:11 UTC"}
+{"id": "/documentation/accelerate/preconditioners", "sha": "cc8c28751168d11e8beaa31bf21b1d74e574cb25b7342254b58ee10e63431ac5", "t": "Preconditioners", "n": 691, "laws": 0, "ts": "2026-07-26 18:12 UTC"}
+{"id": "/documentation/uikit/uipasteconfigurationsupporting", "sha": "f223e44450c48f82fb8ab673bbba1a8b40c0a765acd1cf6d6d988b4a63f0b1b9", "t": "UIPasteConfigurationSupporting", "n": 212, "laws": 0, "ts": "2026-07-26 18:17 UTC"}

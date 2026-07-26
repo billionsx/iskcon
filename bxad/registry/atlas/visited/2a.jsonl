@@ -48,3 +48,7 @@
 {"id": "/documentation/simd/simd_precise_normalize-4z8q1", "sha": "b980bb8f435b96293db0123cc6476c732e96ea24519224d22181ce9b6d3fdd8a", "t": "simd_precise_normalize", "n": 254, "laws": 0, "ts": "2026-07-26 12:19 UTC"}
 {"id": "/documentation/simd/simd_reduce_max(_:)-4gytr", "sha": "dbf0ce4bde160c9a529968a0083dea4ef24d3ea5463b87e3e3cba21fa980ca30", "t": "simd_reduce_max(_:)", "n": 38, "laws": 1, "ts": "2026-07-26 12:19 UTC"}
 {"id": "/documentation/simd/simd_reflect-26oex", "sha": "dbec9ff1c16ca31de0d3700587ed188e592ac12b992fb35eeb9c272787a9504d", "t": "simd_reflect", "n": 80, "laws": 0, "ts": "2026-07-26 12:19 UTC"}
+{"id": "/documentation/accelerate/vimage/pixelbuffer/specifyhistogram(_:destination:)-7xiz4", "sha": "f10b20f28d0350f4b6018585814e177dca25f123683ebe1f88c217e96d1ad932", "t": "specifyHistogram(_:destination:)", "n": 741, "laws": 0, "ts": "2026-07-26 18:13 UTC"}
+{"id": "/documentation/accelerate/bnnsgraph/builder/tensor/asin()", "sha": "554f58d6cdd68325ccbe653a09fa12a5d8c4fbcc73a244640211a40951068c41", "t": "asin()", "n": 57, "laws": 0, "ts": "2026-07-26 18:14 UTC"}
+{"id": "/documentation/accelerate/bnnsgraph/builder/tensor/tanh()", "sha": "2bafad1dd35e1d2d9755071a190b411a005b31ca28dcd31d24cfe7c4a8eeadd7", "t": "tanh()", "n": 71, "laws": 0, "ts": "2026-07-26 18:16 UTC"}
+{"id": "/documentation/objectivec/nsobject-swift.class/accessibilityperformescape()", "sha": "25e19ebe0e958588ab6438e66f447629ecc823dbc53292f7236a25a8d7e886f9", "t": "accessibilityPerformEscape()", "n": 524, "laws": 0, "ts": "2026-07-26 18:17 UTC"}

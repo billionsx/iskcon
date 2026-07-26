@@ -38,3 +38,5 @@
 {"id": "/documentation/accelerate/vforce/cospi(_:)-8ouii", "sha": "a8f18025ae45a9c2d44d3ecdc26b1107f232885c9249c1931588c5a9997993e8", "t": "cosPi(_:)", "n": 92, "laws": 0, "ts": "2026-07-26 12:12 UTC"}
 {"id": "/documentation/accelerate/vvlog1p(_:_:_:)", "sha": "1423431595c58f973113d8bc6ec535030703a5d391058a0d410657ebb8ba5c2f", "t": "vvlog1p(_:_:_:)", "n": 310, "laws": 0, "ts": "2026-07-26 12:15 UTC"}
 {"id": "/documentation/simd/asinh", "sha": "f1e2cc417293e1b5385a470a689eea2c1eefdfb2835374e33a0214e29e994d32", "t": "asinh", "n": 64, "laws": 0, "ts": "2026-07-26 12:16 UTC"}
+{"id": "/documentation/appkit/nsaccessibilityprotocol/accessibilityhorizontalunits()", "sha": "af5bfa0444094c0c6b8ff79fa8d01583448e7f48a3ffdc9248fcf7e1e944ab36", "t": "accessibilityHorizontalUnits()", "n": 66, "laws": 0, "ts": "2026-07-26 18:23 UTC"}
+{"id": "/documentation/activitykit/displaying-live-data-with-live-activities", "sha": "55d3e785b5353c60f4999caa4baabdfd768781bba78f7ab65afd8e2f13bdc423", "t": "Displaying live data with Live Activities", "n": 25706, "laws": 10, "ts": "2026-07-26 18:33 UTC"}

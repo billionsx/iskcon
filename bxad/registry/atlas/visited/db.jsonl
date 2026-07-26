@@ -23,3 +23,9 @@
 {"id": "/documentation/simd/simd_float3", "sha": "f6ac6c1db80087e5d0df5ac4a07c95a9fa315e39dd5aceddfd80b87efdbf5cc4", "t": "simd_float3", "n": 2348, "laws": 0, "ts": "2026-07-26 05:58 UTC"}
 {"id": "/documentation/accelerate/bnnsndarraydescriptor/table_data_type", "sha": "1880db84d7bd3876a057fe54fce8c529a145f41affc02dadc6aa0e2d9a0e2b45", "t": "table_data_type", "n": 34, "laws": 0, "ts": "2026-07-26 06:07 UTC"}
 {"id": "/documentation/coreimage/ciformat/a8", "sha": "720663e00c25599e97f81c67c95ca7bdc34f80d43d95ff6cd5cdb77751a11e7e", "t": "A8", "n": 82, "laws": 0, "ts": "2026-07-26 12:09 UTC"}
+{"id": "/documentation/accelerate/bnnsgraph/builder/tensor/gelu()", "sha": "075166893703eafc3d06847c9c92a72fa11db3f6573080aef3c8f202f6e8007f", "t": "gelu()", "n": 83, "laws": 0, "ts": "2026-07-26 18:14 UTC"}
+{"id": "/documentation/accessibility/accessibility-inspector", "sha": "ddc04051c3582386bf0343410f696b58d89669d925913e5aea49d78f6270de71", "t": "Accessibility Inspector", "n": 881, "laws": 2, "ts": "2026-07-26 18:16 UTC"}
+{"id": "/documentation/appkit/nsaccessibility-c.protocol/accessibilityunits", "sha": "647e3d3857196a730d4e7abaf291d18d4bc7aeddf51f5c281d6448ad704ab696", "t": "accessibilityUnits", "n": 112, "laws": 1, "ts": "2026-07-26 18:22 UTC"}
+{"id": "/documentation/appkit/nslevelindicatorcell", "sha": "321cb189968b849e664afaf014c7289cce715f093edaed8188412b8cf290010f", "t": "NSLevelIndicatorCell", "n": 517, "laws": 0, "ts": "2026-07-26 18:28 UTC"}
+{"id": "/documentation/appkit/nsvisualeffectview", "sha": "55ed6479e97b15f0a4691ca25c12379268bb313e34a5d6ce25147b90ee73cefc", "t": "NSVisualEffectView", "n": 3993, "laws": 10, "ts": "2026-07-26 18:29 UTC"}
+{"id": "/documentation/appintents/appintent/defaultcase", "sha": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855", "t": "AppIntent.DefaultCase", "n": 0, "laws": 0, "ts": "2026-07-26 18:38 UTC"}

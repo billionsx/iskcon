@@ -5,3 +5,5 @@
 {"id": "/documentation/CoreTelephony", "law": "You can still use the APIs of this framework, but services don’t return carrier information."}
 {"id": "/documentation/CoreTelephony", "law": "Carrier apps use the classes in this group to provision cellular plan eSIMs on supported devices."}
 {"id": "/documentation/CoreTelephony/iphone-quick-switch", "law": "To ensure a high quality user experience, your app, as well as its supporting services need to handle this transition seamlessly, and keep track of both active and passive devices to ensure people aren’t locked out of services your app provides."}
+{"id": "/documentation/CoreTelephony/CTCellularPlanProvisioning", "law": "An object you use to download and install a carrier eSIM."}
+{"id": "/documentation/CoreTelephony/CTCellularPlanProvisioningRequest", "law": "You must set the property for the request to be valid."}

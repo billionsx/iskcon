@@ -445,3 +445,24 @@
 {"id": "/documentation/ARKit/WorldTrackingProvider/queryDeviceAnchor(atTimestamp:)", "law": "You typically only use this method when implementing your own rendering with the framework."}
 {"id": "/documentation/ARKit/AccessoryTrackingProvider/predictAnchor(for:at:)", "law": "For accuracy sensitive use cases like drawing, use a small offset or ."}
 {"id": "/documentation/ARKit/AccessoryTrackingProvider/predictAnchor(for:at:)", "law": "Use a prediction timestamp smaller than the latest anchor timestamp for interpolation."}
+{"id": "/documentation/arkit/arappclipcodeanchor", "law": "You can use physical App Clip Codes in the real world to enable users to discover your App Clip."}
+{"id": "/documentation/arkit/artrackable", "law": "World-tracking sessions use non-trackable anchors to optimize tracking quality in the area around each anchor."}
+{"id": "/documentation/arkit/artrackable", "law": "Trackable anchors do not affect world tracking."}
+{"id": "/documentation/arkit/tracking-and-altering-images", "law": "To complete the effect of augmenting an image in the user’s environment, you use ARKit’s image tracking feature."}
+{"id": "/documentation/arkit/tracking-and-altering-images", "law": "As shown below, you can use Vision in real-time to check the camera feed for rectangles."}
+{"id": "/documentation/arkit/tracking-and-altering-images", "law": "When you make Vision requests in real-time with an ARKit–based app, you should do so serially."}
+{"id": "/documentation/arkit/tracking-and-altering-images", "law": "By waiting for one request to finish before invoking another, you ensure that the AR experience remains smooth and free of interruptions."}
+{"id": "/documentation/arkit/tracking-and-altering-images", "law": "In the function, you use the flag to ensure you’re only checking for one rectangle at a time: The sample sets the flag to when a Vision request completes or fails."}
+{"id": "/documentation/arkit/tracking-and-altering-images", "law": "ARKit requires that reference images contain sufficient detail to be recognizable; for example, a plain white image cannot be tracked."}
+{"id": "/documentation/arkit/tracking-and-altering-images", "law": "To prevent ARKit from failing to track a reference image, you validate it first before attempting to use it."}
+{"id": "/documentation/arkit/arreferenceimage/init(_:orientation:physicalwidth:)-8b3bs", "law": "To accurately recognize the position and orientation of an image in the AR environment, ARKit must know the image’s physical size."}
+{"id": "/documentation/arkit/arreferenceimage/init(_:orientation:physicalwidth:)-8b3bs", "law": "Use the property of the created object to retrieve these values."}
+{"id": "/documentation/arkit/arreferenceimage/init(_:orientation:physicalwidth:)-8b3bs", "law": "To provide reference images bundled with your app, create AR Reference Image assets in your Xcode asset catalog, and use the method to load them."}
+{"id": "/documentation/arkit/arreferenceimage/init(_:orientation:physicalwidth:)-ir2z", "law": "To accurately recognize the position and orientation of an image in the AR environment, ARKit must know the image’s physical size."}
+{"id": "/documentation/arkit/arreferenceimage/init(_:orientation:physicalwidth:)-ir2z", "law": "Use the property of the created object to retrieve these values."}
+{"id": "/documentation/arkit/arreferenceimage/init(_:orientation:physicalwidth:)-ir2z", "law": "To provide reference images bundled with your app, create AR reference image assets in your Xcode asset catalog, and use the method to load them."}
+{"id": "/documentation/arkit/arreferenceimage/name", "law": "However, in debugging you can use this property to indicate which image was detected."}
+{"id": "/documentation/arkit/arreferenceimage/referenceimages(ingroupnamed:bundle:)", "law": "To use the images for image detection in a world-tracking AR session, provide this set for your session configuration’s property."}
+{"id": "/documentation/arkit/arreferenceimage/validate(completionhandler:)", "law": "Call this function on a reference image you create programmatically to make sure ARKit can track it, before passing it in to your session’s array."}
+{"id": "/documentation/arkit/arworldtrackingconfiguration/appclipcodetrackingenabled", "law": "To avoid scanning a physical code that’s not connected to an App Clip, the system ensures that an app provides an App Clip before allowing the app to interact with App Clip Codes."}
+{"id": "/documentation/arkit/arworldtrackingconfiguration/supportsappclipcodetracking", "law": "Devices require the Apple Neural Engine (ANE) to track App Clip Codes."}
