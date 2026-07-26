@@ -23,3 +23,7 @@
 {"id": "/documentation/accelerate/bnns/reductionfunction/logicaland", "sha": "89280958284227d7069f3ad84149b67d33e29aa4744eb788667e3a06fb226174", "t": "BNNS.ReductionFunction.logicalAnd", "n": 65, "laws": 0, "ts": "2026-07-26 06:06 UTC"}
 {"id": "/documentation/coregraphics/cgimage/copywithcalculatedhdrstats()", "sha": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855", "t": "copyWithCalculatedHDRStats()", "n": 0, "laws": 0, "ts": "2026-07-26 06:12 UTC"}
 {"id": "/documentation/swift/strideable", "sha": "f5ddee63f96020a65dd8e12739e06443a1c6c2532b7662f26461cd104edd3b22", "t": "Strideable", "n": 1499, "laws": 4, "ts": "2026-07-26 06:13 UTC"}
+{"id": "/documentation/accelerate/vdsp/dfttransformtype", "sha": "5439e2c27d6b664d28f1e063f56ec76ee54bd5ac87482945d509044b0273a7c6", "t": "vDSP.DFTTransformType", "n": 127, "laws": 0, "ts": "2026-07-26 11:57 UTC"}
+{"id": "/documentation/accelerate/vdsp/trunc(_:)-80rfo", "sha": "f505c761e01ad9d029f8a91bd6d2fa51f6f75acfa5eae2485b008e6295a8f5b5", "t": "trunc(_:)", "n": 104, "laws": 0, "ts": "2026-07-26 12:02 UTC"}
+{"id": "/documentation/accelerate/vforce/tanpi(_:)-9lrix", "sha": "f47e4ccfda3ff3f96e555a6b7ae0acbc06874c7c0082c0e7da304445ec9f96ff", "t": "tanPi(_:)", "n": 93, "laws": 0, "ts": "2026-07-26 12:14 UTC"}
+{"id": "/documentation/simd/sin", "sha": "72eef591bac641e2795d1f0e2a132fe511f4cf73c503c681774386a000d1eb8a", "t": "sin", "n": 45, "laws": 0, "ts": "2026-07-26 12:19 UTC"}

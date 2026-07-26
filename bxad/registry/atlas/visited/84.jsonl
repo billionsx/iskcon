@@ -21,3 +21,5 @@
 {"id": "/documentation/accelerate/vimage/pixelbuffer/interleave(destination:)-6ib0t", "sha": "ddac7bc4ff73992dfd826280626360f5bfd5f5d8e3b722a9e24e72978b013d2d", "t": "interleave(destination:)", "n": 251, "laws": 1, "ts": "2026-07-26 06:01 UTC"}
 {"id": "/documentation/accelerate/bnns/dequantize(batchsize:input:output:axis:scale:bias:filterparameters:)", "sha": "dae233e60702f1b0f542edbfd00dd9620cfdf758ecd48500c163a08d55b5d58e", "t": "dequantize(batchSize:input:output:axis:scale:bias:filterParameters:)", "n": 277, "laws": 0, "ts": "2026-07-26 06:08 UTC"}
 {"id": "/documentation/swift/equatable", "sha": "b4bfb603f11d2463c26631dd05ea0dfd31c80ab79ef808e42f9c73bf91c625e6", "t": "Equatable", "n": 3921, "laws": 7, "ts": "2026-07-26 06:13 UTC"}
+{"id": "/documentation/foundation/nsusername()", "sha": "ac27ee527dea8c18e1b1916e6b3411404b63113ab80a9b3c38b2ca76d51e3409", "t": "NSUserName()", "n": 95, "laws": 0, "ts": "2026-07-26 11:53 UTC"}
+{"id": "/documentation/accelerate/fft_radix2", "sha": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855", "t": "FFT_RADIX2", "n": 0, "laws": 0, "ts": "2026-07-26 12:08 UTC"}

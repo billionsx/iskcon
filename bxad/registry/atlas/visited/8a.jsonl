@@ -20,3 +20,6 @@
 {"id": "/documentation/accelerate/bnns/nearestneighbors", "sha": "387ecbfa0d80ab1f24f358ee609ae5f56776dd9d3029e245299278d523413323", "t": "BNNS.NearestNeighbors", "n": 670, "laws": 0, "ts": "2026-07-26 06:08 UTC"}
 {"id": "/documentation/accelerate/cblas_dtrsm(_:_:_:_:_:_:_:_:_:_:_:_:)", "sha": "37d9b84425f3de765a8cf09460e55150a0d003ba331dcedbb7ad8f231b85686a", "t": "cblas_dtrsm(_:_:_:_:_:_:_:_:_:_:_:_:)", "n": 810, "laws": 1, "ts": "2026-07-26 06:15 UTC"}
 {"id": "/documentation/accelerate/cblas_zgerc(_:_:_:_:_:_:_:_:_:_:)", "sha": "5208273882f3e73a697a1fc10d0067ab1532a72ef91cd8f876a9e1a5bf13a177", "t": "cblas_zgerc(_:_:_:_:_:_:_:_:_:_:)", "n": 713, "laws": 1, "ts": "2026-07-26 06:17 UTC"}
+{"id": "/documentation/imageio/cgimagepropertyorientation", "sha": "888f173fa17d2057386bcc9aef1fbccd620d7543caaf623041aaadcc5d38d238", "t": "CGImagePropertyOrientation", "n": 2163, "laws": 2, "ts": "2026-07-26 12:07 UTC"}
+{"id": "/documentation/simd/atanh(_:)-7z6qz", "sha": "b522bdcaf8bedc316bd7cbb59448fad6bb7b994f297e45e34a3bac7b1c869e2a", "t": "atanh(_:)", "n": 67, "laws": 0, "ts": "2026-07-26 12:16 UTC"}
+{"id": "/documentation/simd/cosh", "sha": "1c1202833af544d94eb99d73f34714fb27172c16b865d6188dc3d66d69f5eaa1", "t": "cosh", "n": 58, "laws": 0, "ts": "2026-07-26 12:16 UTC"}

@@ -26,3 +26,6 @@
 {"id": "/documentation/uikit/uikit-enumerations", "sha": "00d6d9f04e5a81825541f5a24a8157d50466023f8528b8777b28d8e182613847", "t": "UIKit Enumerations", "n": 220, "laws": 0, "ts": "2026-07-26 05:47 UTC"}
 {"id": "/documentation/accelerate/bnnsgraphargumenttype", "sha": "84856ba0dbe204c3c4a9fc3df39bbde0daa9078d79b33ceceda22a46f56e05eb", "t": "BNNSGraphArgumentType", "n": 198, "laws": 0, "ts": "2026-07-26 06:05 UTC"}
 {"id": "/documentation/swift/withunsafebytes(of:_:)-5gesg", "sha": "bacdaac507bb85765135f0e079773327b93352b96c9cff217ad07533c30f8d12", "t": "withUnsafeBytes(of:_:)", "n": 352, "laws": 0, "ts": "2026-07-26 06:13 UTC"}
+{"id": "/documentation/accelerate/applying-geometric-transforms-to-images", "sha": "3371d654f59248b90c1262ab31c0f9dc4888bc13b459c39781ebd85e07b40b79", "t": "Applying geometric transforms to images", "n": 6474, "laws": 10, "ts": "2026-07-26 12:07 UTC"}
+{"id": "/documentation/accelerate/vforce/ceil(_:)-57grr", "sha": "eacbd14d4e53d04223a5758523bc9f019ef39777f729fc5736ae120858136ad4", "t": "ceil(_:)", "n": 75, "laws": 0, "ts": "2026-07-26 12:12 UTC"}
+{"id": "/documentation/accelerate/vvfmodf(_:_:_:_:)", "sha": "5dc48c520fc510e226bf145b18babf42da65271f9ac4ddc79d78557d70973778", "t": "vvfmodf(_:_:_:_:)", "n": 214, "laws": 0, "ts": "2026-07-26 12:15 UTC"}

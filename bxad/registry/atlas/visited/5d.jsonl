@@ -28,3 +28,7 @@
 {"id": "/documentation/Swift/true", "sha": "468fc2f458af439b8cdca7ed775a311756e7bad627bf3da196a2a29924ea27e1", "t": "true", "n": 81, "laws": 0, "ts": "2026-07-26 06:03 UTC"}
 {"id": "/documentation/accelerate/vimage/edgemode", "sha": "5aef2102887f0482863d36c96400134262d9e70ec231dd15da40fe7ce8364e5d", "t": "vImage.EdgeMode", "n": 207, "laws": 0, "ts": "2026-07-26 06:04 UTC"}
 {"id": "/documentation/accelerate/catlas_caxpby(_:_:_:_:_:_:_:)", "sha": "57539930ad196c3096f2d946eb8e35fcf6c01df4bb55788c7f10ca21fb26d387", "t": "catlas_caxpby(_:_:_:_:_:_:_:)", "n": 752, "laws": 1, "ts": "2026-07-26 06:14 UTC"}
+{"id": "/documentation/accelerate/vdsp/integertofloatingpoint(_:floatingpointtype:)-8b7ni", "sha": "8975475cfe0a3f3d22051f7632c6d410a861affffa3aedc8a71430b4782f43b3", "t": "integerToFloatingPoint(_:floatingPointType:)", "n": 86, "laws": 0, "ts": "2026-07-26 11:58 UTC"}
+{"id": "/documentation/accelerate/vdsp_dft_destroysetup", "sha": "b4cfa8d51c702f29d615d239b9cb2ab8d8b3fb01be6568c11771f4c452650148", "t": "vDSP_DFT_DestroySetup", "n": 382, "laws": 1, "ts": "2026-07-26 12:07 UTC"}
+{"id": "/documentation/coreimage/ciformat/r8", "sha": "fb0acb448cf8286f3051434082943e294d2fd5d41c8f54b66c6fe6ec2dfc1bb5", "t": "R8", "n": 94, "laws": 0, "ts": "2026-07-26 12:09 UTC"}
+{"id": "/documentation/accelerate/vforce/tan(_:result:)-8bosl", "sha": "1f87f36e5855f2995fd747314760d126da585e9fe71c08cfcae526efec77b420", "t": "tan(_:result:)", "n": 78, "laws": 0, "ts": "2026-07-26 12:14 UTC"}

@@ -41,3 +41,9 @@
 {"id": "/documentation/accelerate/bnnsnormtype", "sha": "b94a2a2ebfabd95ac1f5d3296a1b8b19923d0db0a7a79fa4756b2e8d749f6347", "t": "BNNSNormType", "n": 97, "laws": 0, "ts": "2026-07-26 06:11 UTC"}
 {"id": "/documentation/accelerate/vimage_buffer/init()", "sha": "343967b63508c4ed696cafe42dd7c714687a110fd4c546d6b2bcf7c672d1a7a5", "t": "init()", "n": 301, "laws": 1, "ts": "2026-07-26 06:12 UTC"}
 {"id": "/documentation/accelerate/cblas_srotg(_:_:_:_:)", "sha": "b69027ee54497f3698117ae36e2c81f67998a6e1cb13d5fe2012dd39a43acda4", "t": "cblas_srotg(_:_:_:_:)", "n": 804, "laws": 1, "ts": "2026-07-26 06:16 UTC"}
+{"id": "/documentation/foundation/filehandle/writeabilityhandler", "sha": "60ad15d7a82494c5477482fce64a9aa8a962de72d517a7eec39bb75f17501dd5", "t": "writeabilityHandler", "n": 893, "laws": 3, "ts": "2026-07-26 11:52 UTC"}
+{"id": "/documentation/accelerate/vdsp_biquadm_copystate", "sha": "d6db35eeca5139d3ed3e081b7062dba4fd0f77dceac7cd3fd0e7392e8d5c98f9", "t": "vDSP_biquadm_CopyState", "n": 300, "laws": 1, "ts": "2026-07-26 12:03 UTC"}
+{"id": "/documentation/accelerate/fft_radix5", "sha": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855", "t": "FFT_RADIX5", "n": 0, "laws": 0, "ts": "2026-07-26 12:08 UTC"}
+{"id": "/documentation/accelerate/vdsp_create_fftsetupd", "sha": "6e9fab4912bc462d94efc6383d6718b23650949cb88b5c39abe4b0df8c794113", "t": "vDSP_create_fftsetupD", "n": 739, "laws": 3, "ts": "2026-07-26 12:08 UTC"}
+{"id": "/documentation/coreimage/ciformat/rgbah", "sha": "41bcfd72fe4366f5b5bafc07260fc95f9b4abb9e257e9f6c90e7919759a3de84", "t": "RGBAh", "n": 48, "laws": 0, "ts": "2026-07-26 12:09 UTC"}
+{"id": "/documentation/accelerate/vforce/atanh(_:)-2t372", "sha": "34423a2b81db99a0515a60ce1c846c4dad69f0d0d99aa478444d10161e18d9eb", "t": "atanh(_:)", "n": 94, "laws": 0, "ts": "2026-07-26 12:12 UTC"}

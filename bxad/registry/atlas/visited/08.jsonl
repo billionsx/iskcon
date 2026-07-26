@@ -28,3 +28,5 @@
 {"id": "/documentation/accelerate/bnnsdirectapplyquantizer(_:_:_:_:_:)", "sha": "1ad8647c18e5b576e66fa371046396658e0ba5bb9725c62be0db7ec85dcfb970", "t": "BNNSDirectApplyQuantizer(_:_:_:_:_:)", "n": 848, "laws": 3, "ts": "2026-07-26 06:09 UTC"}
 {"id": "/documentation/accelerate/bnnspointerspecifier", "sha": "e29a9dfd590bd3b7ca357d67f9c73ac8e22e5cd314393962b9559d0a71c7b60e", "t": "BNNSPointerSpecifier", "n": 209, "laws": 0, "ts": "2026-07-26 06:11 UTC"}
 {"id": "/documentation/accelerate/appleblas_sgeadd(_:_:_:_:_:_:_:_:_:_:_:_:_:)", "sha": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855", "t": "appleblas_sgeadd(_:_:_:_:_:_:_:_:_:_:_:_:_:)", "n": 0, "laws": 0, "ts": "2026-07-26 06:14 UTC"}
+{"id": "/documentation/corevideo/cvdisplaylinkstart(_:)", "sha": "cd30bbe2c185ec91646469e3b4e809749e14966f513b7dc26207fc5bb59e6b6b", "t": "CVDisplayLinkStart(_:)", "n": 319, "laws": 0, "ts": "2026-07-26 12:11 UTC"}
+{"id": "/documentation/accelerate/vvlog1pf(_:_:_:)", "sha": "148d36b9846e036c87f9d8f0458d7c25708504e73aa6e890ec14e8f0c87c4040", "t": "vvlog1pf(_:_:_:)", "n": 310, "laws": 0, "ts": "2026-07-26 12:15 UTC"}

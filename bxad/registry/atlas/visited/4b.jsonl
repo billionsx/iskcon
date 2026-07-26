@@ -38,3 +38,7 @@
 {"id": "/documentation/accelerate/bnnsgraph", "sha": "01aca5abac6e53d095a338713c91122af4142297c0039935b1c1b79e68070b12", "t": "BNNSGraph", "n": 365, "laws": 0, "ts": "2026-07-26 06:05 UTC"}
 {"id": "/documentation/accelerate/bnnsrandomgeneratormethod", "sha": "5a4890428727d352a95263bb5eaf35022c1c4500d8f73bdfcfe16c86b10375c9", "t": "BNNSRandomGeneratorMethod", "n": 164, "laws": 0, "ts": "2026-07-26 06:11 UTC"}
 {"id": "/documentation/accelerate/cblas_dscal(_:_:_:_:)", "sha": "cae966c1a730e2777c06c1fafea9864084316dad773d746506143fbe45e5b737", "t": "cblas_dscal(_:_:_:_:)", "n": 665, "laws": 1, "ts": "2026-07-26 06:15 UTC"}
+{"id": "/documentation/accelerate/vdsp/negativeabsolute(_:result:)-85gj0", "sha": "8c39339afb1cfc0be7e7853b7d64c0b031a7a52353aef4db26e4fd90c0cac268", "t": "negativeAbsolute(_:result:)", "n": 210, "laws": 0, "ts": "2026-07-26 12:00 UTC"}
+{"id": "/documentation/avfoundation/avcapturephoto/semanticsegmentationmatte(for:)", "sha": "11686f0ab809205af4349781072bd3d7644cc8572ba986c8b1cf06ad21f5f7a6", "t": "semanticSegmentationMatte(for:)", "n": 492, "laws": 0, "ts": "2026-07-26 12:04 UTC"}
+{"id": "/documentation/accelerate/vdsp_dft_setupd", "sha": "3dc8c793e360d7274937f2c1e4dd5fe1bfd75c9a863e2373935d94e3e18e1e2b", "t": "vDSP_DFT_SetupD", "n": 246, "laws": 0, "ts": "2026-07-26 12:08 UTC"}
+{"id": "/documentation/accelerate/vforce/expm1(_:result:)-2yhs3", "sha": "d0869777e69d1c0dd799040755fd1d70ae5a26f52d62c4fb73a4a86bf4291f2d", "t": "expm1(_:result:)", "n": 76, "laws": 0, "ts": "2026-07-26 12:12 UTC"}

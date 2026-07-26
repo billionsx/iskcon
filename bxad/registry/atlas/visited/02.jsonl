@@ -32,3 +32,7 @@
 {"id": "/documentation/AVFoundation/AVCaptureDevice/formats", "sha": "308ee0f74bf22f9a01e5c33d320394d63623ba87773cf84746adc5dc2b470a13", "t": "formats", "n": 361, "laws": 1, "ts": "2026-07-26 05:50 UTC"}
 {"id": "/documentation/accelerate/swapping-bytes", "sha": "8bef0b94ddae522e22b43b69dc717c086ac0eea95d2f96de27cb2bb00f039e25", "t": "Swapping bytes", "n": 71, "laws": 0, "ts": "2026-07-26 05:51 UTC"}
 {"id": "/documentation/accelerate/bnns_user_message_data_t", "sha": "c1461ee85d3a02de8d65f6802f698cb739b861fee38ee21fa85a5ff7982f368c", "t": "bnns_user_message_data_t", "n": 148, "laws": 0, "ts": "2026-07-26 06:05 UTC"}
+{"id": "/documentation/foundation/filehandle/init(forupdatingatpath:)", "sha": "a27236a46c1b73b3189969daa6b2f78ea8cce755ae2245d3eb30ec9fb818f77c", "t": "init(forUpdatingAtPath:)", "n": 456, "laws": 0, "ts": "2026-07-26 11:51 UTC"}
+{"id": "/documentation/accelerate/vdsp/formramp(withinitialvalue:increment:result:)-40zxg", "sha": "2e539853f7b79358a28d788528365ae9ac079478bc37ca11174763a9bb40d1b2", "t": "formRamp(withInitialValue:increment:result:)", "n": 294, "laws": 1, "ts": "2026-07-26 11:58 UTC"}
+{"id": "/documentation/accelerate/vdsp/sum(_:)-6jamg", "sha": "ae5bd5b683c1173fbdc3ea205ad240d781c4c0380ae7c2a388f275f56aedfc21", "t": "sum(_:)", "n": 176, "laws": 0, "ts": "2026-07-26 12:01 UTC"}
+{"id": "/documentation/avfoundation/avassetreader/error", "sha": "b81fdb75bacfae3ec8a9461a7133142829ea8d0ed65de45142de6b8b9e8ce03c", "t": "error", "n": 143, "laws": 0, "ts": "2026-07-26 12:02 UTC"}

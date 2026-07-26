@@ -1111,3 +1111,39 @@
 {"id": "/documentation/swiftui/image/renderingmode(_:)", "law": "Keep in mind that some multicolor symbols use both the foreground and accent colors."}
 {"id": "/documentation/swiftui/image/scale", "law": "Use this type with the modifier, or the environment key, to set the image scale."}
 {"id": "/documentation/swiftui/view/aspectratio(_:contentmode:)", "law": "Use to constrain a view’s dimensions to an aspect ratio specified by a using the specified content mode."}
+{"id": "/documentation/swiftui/defaultbuttonlabel", "law": "You don’t use this type directly."}
+{"id": "/documentation/swiftui/defaultbuttonlabel", "law": "The default label to use for a button."}
+{"id": "/documentation/swiftui/gauge", "law": "Some visual presentations of don’t display all the labels required by the API."}
+{"id": "/documentation/swiftui/gauge", "law": "However, the accessibility system does use the label content and you should use these labels to fully describe the gauge for accessibility users."}
+{"id": "/documentation/swiftui/gauge", "law": "To change the style of a gauge, use the view modifier and supply an initializer for a specific gauge style."}
+{"id": "/documentation/swiftui/gauge", "law": "In the example below, the current value, minimum and maximum value labels have custom colors: You can further style a gauge’s appearance by supplying a tint color or a gradient to the style’s initializer."}
+{"id": "/documentation/swiftui/progressview", "law": "Use a progress view to show that a task is incomplete but advancing toward completion."}
+{"id": "/documentation/swiftui/progressview", "law": "A “More” button below the progress view allows people to increment the progress in increments of five percent: To create an indeterminate progress view, use an initializer that doesn’t take a progress value: You can also create a progress view that covers a closed range of values."}
+{"id": "/documentation/swiftui/progressview", "law": "To set a specific style for all progress view instances within a view, use the modifier."}
+{"id": "/documentation/swiftui/progressview/init(_:)", "law": "To initialize a indeterminate progress view with a string variable, use the corresponding initializer that takes a instance."}
+{"id": "/documentation/swiftui/progressview/init(_:)-3q5nf", "law": "To initialize a progress view with a localized string key, use the corresponding initializer that takes a instance."}
+{"id": "/documentation/swiftui/progressview/init(_:)-6k5se", "law": "To initialize a indeterminate progress view with a string variable, use the corresponding initializer that takes a instance."}
+{"id": "/documentation/swiftui/progressview/init(_:value:total:)", "law": "To initialize a determinate progress view with a string variable, use the corresponding initializer that takes a instance."}
+{"id": "/documentation/swiftui/progressview/init(timerinterval:countsdown:)", "law": "Use this initializer to create a view that shows continuous progress within a date range."}
+{"id": "/documentation/swiftui/progressview/init(timerinterval:countsdown:)", "law": "By default, the progress view empties as time passes from the start of the date range to the end, but you can use the parameter to create a progress view that fills as time passes, as the above example demonstrates."}
+{"id": "/documentation/swiftui/progressview/init(timerinterval:countsdown:)", "law": "To provide custom views for these labels, use instead."}
+{"id": "/documentation/swiftui/progressview/init(timerinterval:countsdown:)", "law": "Date-relative progress views, such as those created with this initializer, don’t support custom styles."}
+{"id": "/documentation/swiftui/progressview/init(timerinterval:countsdown:label:)", "law": "Use this initializer to create a view that shows continuous progress within a date range."}
+{"id": "/documentation/swiftui/progressview/init(timerinterval:countsdown:label:)", "law": "By default, the progress view empties as time passes from the start of the date range to the end, but you can use the parameter to create a progress view that fills as time passes, as the above example demonstrates."}
+{"id": "/documentation/swiftui/progressview/init(timerinterval:countsdown:label:)", "law": "To provide a custom label to show the current value, use instead."}
+{"id": "/documentation/swiftui/progressview/init(timerinterval:countsdown:label:)", "law": "Date-relative progress views, such as those created with this initializer, don’t support custom styles."}
+{"id": "/documentation/swiftui/progressview/init(timerinterval:countsdown:label:currentvaluelabel:)", "law": "Use this initializer to create a view that shows continuous progress within a date range."}
+{"id": "/documentation/swiftui/progressview/init(timerinterval:countsdown:label:currentvaluelabel:)", "law": "By default, the progress view empties as time passes from the start of the date range to the end, but you can use the parameter to create a progress view that fills as time passes, as the above example demonstrates."}
+{"id": "/documentation/swiftui/progressview/init(timerinterval:countsdown:label:currentvaluelabel:)", "law": "Date-relative progress views, such as those created with this initializer, don’t support custom styles."}
+{"id": "/documentation/swiftui/progressviewstyle", "law": "To configure the current progress view style for a view hierarchy, use the modifier."}
+{"id": "/documentation/swiftui/progressviewstyle", "law": "A type conforming to this protocol inherits isolation from the protocol if the conformance is included in the type’s base declaration: Isolation to the main actor is the default, but it’s not required."}
+{"id": "/documentation/swiftui/progressviewstyle/circular", "law": "In cases where no determinate circular progress view style is available, circular progress views use an indeterminate style."}
+{"id": "/documentation/swiftui/slider", "law": "The ends of the track represent the minimum and maximum possible values."}
+{"id": "/documentation/swiftui/slider", "law": "You can also use a parameter to provide incremental steps along the path of the slider."}
+{"id": "/documentation/swiftui/slider", "law": "The following example shows this approach, and also adds optional minimum and maximum value labels."}
+{"id": "/documentation/swiftui/slidertickbuilder", "law": "A result builder that constructs s for use when creating a ."}
+{"id": "/documentation/swiftui/stepper", "law": "Use a stepper control when you want the user to have granular control while incrementing or decrementing a value."}
+{"id": "/documentation/swiftui/stepper", "law": "For example, you can use a stepper to: Change a value up or down by ."}
+{"id": "/documentation/swiftui/view/togglestyle(_:)", "law": "Use this modifier on a instance to set a style that defines the control’s appearance and behavior."}
+{"id": "/documentation/swiftui/view/togglestyle(_:)", "law": "If you don’t set a style, SwiftUI assumes a value of , which corresponds to a context-specific default."}
+{"id": "/documentation/swiftui/view/togglestyle(_:)", "law": "Always include a descriptive title for better accessibility."}

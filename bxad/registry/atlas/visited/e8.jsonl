@@ -37,3 +37,4 @@
 {"id": "/documentation/swift/unsafemutablepointer", "sha": "f8c69637030142324bd6f5ddda1eb978e9f11af0b88e71e1a76ddf9fcc10b9da", "t": "UnsafeMutablePointer", "n": 5804, "laws": 10, "ts": "2026-07-26 06:13 UTC"}
 {"id": "/documentation/accelerate/cblas_dnrm2(_:_:_:)", "sha": "e67d90b5b170d4675414aae3eebbab8f55c42f09aa56c89c354ce231a929f2a8", "t": "cblas_dnrm2(_:_:_:)", "n": 667, "laws": 1, "ts": "2026-07-26 06:15 UTC"}
 {"id": "/documentation/accelerate/cblas_ssbmv(_:_:_:_:_:_:_:_:_:_:_:_:)", "sha": "61de56dd66796219026212f054ba7499349ef00b416a10230abced8bfc28f64c", "t": "cblas_ssbmv(_:_:_:_:_:_:_:_:_:_:_:_:)", "n": 740, "laws": 1, "ts": "2026-07-26 06:16 UTC"}
+{"id": "/documentation/accelerate/half-precision-floating-point-vectors", "sha": "06799c9d031e1dd4ef62453dc72a436a9843e4923a6587c56037cd26ac5be86a", "t": "Half-precision floating-point vectors", "n": 817, "laws": 0, "ts": "2026-07-26 12:11 UTC"}

@@ -357,3 +357,112 @@
 {"id": "/documentation/Foundation/data-formatting", "law": "Foundation supports two approaches for data formatting: When working in Swift, use methods directly on the types you want to format, optionally using and its subtypes to customize formatter output."}
 {"id": "/documentation/Foundation/data-formatting", "law": "In Objective-C, create instances of and its subtypes, and use the method to convert objects to formatted strings."}
 {"id": "/documentation/Foundation/NSExceptionName/invalidArgumentException", "law": "Name of an exception that occurs when you pass an invalid argument to a method, such as a pointer where a non- object is required."}
+{"id": "/documentation/foundation/about-apple-file-system", "law": "You can use this behavior, for example, to reduce storage space required for document revisions and copies."}
+{"id": "/documentation/foundation/about-apple-file-system", "law": "Each volume in the container can use the shared free space, so they all include that amount when reporting the available free space."}
+{"id": "/documentation/foundation/about-apple-file-system", "law": "In general, check whether the space required to perform a particular operation is available on the volume, rather than trying to calculate the partition’s total free space."}
+{"id": "/documentation/foundation/about-apple-file-system", "law": "When you use the class to create a new write handle, a sparse file is created automatically."}
+{"id": "/documentation/foundation/about-apple-file-system", "law": "You can’t use to create a sparse file from an existing file that has blank data already stored on disk."}
+{"id": "/documentation/foundation/about-apple-file-system", "law": "Use high-level APIs to get the most out of Apple File System."}
+{"id": "/documentation/foundation/filehandle", "law": "You use file handle objects to access data associated with files, sockets, pipes, and devices."}
+{"id": "/documentation/foundation/filehandle", "law": "For sockets, pipes, and devices, you can use a file handle object to monitor the device and process data asynchronously."}
+{"id": "/documentation/foundation/filehandle", "law": "If you want to use a file handle object with a file descriptor that you created, use the method or use the method and pass for the parameter."}
+{"id": "/documentation/foundation/filehandle", "law": "When using a file handle object to communicate asynchronously with a socket, you must initiate the corresponding operations from a thread with an active run loop."}
+{"id": "/documentation/foundation/filehandle", "law": "Therefore, you must call those methods from your application’s main thread or from any thread where you’ve configured a run loop and are using it to process events."}
+{"id": "/documentation/foundation/filehandle/acceptconnectioninbackgroundandnotify()", "law": "You must call this method from a thread that has an active run loop."}
+{"id": "/documentation/foundation/filehandle/acceptconnectioninbackgroundandnotify()", "law": "The receiver must be created by an message that takes as an argument a stream-type socket created by the appropriate system routine, and that is being listened on ."}
+{"id": "/documentation/foundation/filehandle/acceptconnectioninbackgroundandnotify()", "law": "In other words, you must the socket, and ensure that the socket has a connection backlog defined by ."}
+{"id": "/documentation/foundation/filehandle/acceptconnectioninbackgroundandnotify()", "law": "The object that will write data to the returned file handle must add itself as an observer of ."}
+{"id": "/documentation/foundation/filehandle/acceptconnectioninbackgroundandnotify(formodes:)", "law": "You must call this method from a thread that has an active run loop."}
+{"id": "/documentation/foundation/filehandle/asyncbytes", "law": "Use the - - syntax to iterate over the bytes in this sequence."}
+{"id": "/documentation/foundation/filehandle/asyncbytes", "law": "For text files, you can also use its , , or properties to retrieve the contents in a more convenient format."}
+{"id": "/documentation/foundation/filehandle/asyncbytes", "law": "Since all of these properties conform to , as does the property , you can use methods defined by to perform powerful inline processing."}
+{"id": "/documentation/foundation/filehandle/availabledata", "law": "The data currently available through the receiver, up to the maximum size that can be represented by an object."}
+{"id": "/documentation/foundation/filehandle/bytes", "law": "Use the - - syntax to iterate over the bytes in this sequence."}
+{"id": "/documentation/foundation/filehandle/bytes", "law": "For text files, you can also use its , , or properties to retrieve the contents in a more convenient format."}
+{"id": "/documentation/foundation/filehandle/bytes", "law": "Since all of these properties conform to , as does itself, you can use methods defined by to perform powerful inline processing."}
+{"id": "/documentation/foundation/filehandle/bytes", "law": "Rather than creating a to read a file asynchronously, you can instead use a URL in combination with the property in ."}
+{"id": "/documentation/foundation/filehandle/close()", "law": "If you initialized the file handle object using the method, or you initialized it using the and passed for the parameter, you can use this method to close the file descriptor; otherwise, you must close the file descriptor yourself."}
+{"id": "/documentation/foundation/filehandle/close()", "law": "After calling this method, you may still use the file handle object, but you must not attempt to read or write data or use the object to operate on the file descriptor."}
+{"id": "/documentation/foundation/filehandle/closefile()", "law": "If you initialized the file handle object using the method, or you initialized it using the and passed for the parameter, you can use this method to close the file descriptor; otherwise, you must close the file descriptor yourself."}
+{"id": "/documentation/foundation/filehandle/closefile()", "law": "After calling this method, you may still use the file handle object but must not attempt to read or write data or use the object to operate on the file descriptor."}
+{"id": "/documentation/foundation/filehandle/filedescriptor", "law": "You can use this method to retrieve the file descriptor while it is open."}
+{"id": "/documentation/foundation/filehandle/filedescriptor", "law": "If the file handle object owns the file descriptor, you must not close it yourself."}
+{"id": "/documentation/foundation/filehandle/filedescriptor", "law": "However, you can use the method to close the file descriptor programmatically."}
+{"id": "/documentation/foundation/filehandle/init(forreadingatpath:)", "law": "Use the or methods to read data from it."}
+{"id": "/documentation/foundation/filehandle/init(forreadingfrom:)", "law": "Use the or methods to read data from it."}
+{"id": "/documentation/foundation/filehandle/init(forreadingfromurl:)", "law": "Use the or methods to read data from it."}
+{"id": "/documentation/foundation/filehandle/init(forwritingatpath:)", "law": "Use the method to write data to the file handle."}
+{"id": "/documentation/foundation/filehandle/nulldevice", "law": "You can use null-device file handles as “placeholders” for standard-device file handles or in collection objects to avoid exceptions and other errors resulting from messages being sent to invalid file handles."}
+{"id": "/documentation/foundation/filehandle/read(uptocount:)", "law": "The data available through the receiver up to a maximum of bytes, or the maximum size that can be represented by an object, whichever is the smaller."}
+{"id": "/documentation/foundation/filehandle/readabilityhandler", "law": "The block you provide must accept a single parameter that is the current file handle."}
+{"id": "/documentation/foundation/filehandle/readabilityhandler", "law": "The return type of your block should be ."}
+{"id": "/documentation/foundation/filehandle/readabilityhandler", "law": "The block to use for reading the contents of the file handle asynchronously."}
+{"id": "/documentation/foundation/filehandle/readcompletionnotification", "law": "To cause the posting of this notification, you must send either or to an appropriate object."}
+{"id": "/documentation/foundation/filehandle/readdata(oflength:)", "law": "The data available through the receiver up to a maximum of bytes, or the maximum size that can be represented by an object, whichever is the smaller."}
+{"id": "/documentation/foundation/filehandle/readdatatoendoffile()", "law": "The data available through the receiver up to maximum size that can be represented by an object or, if a communications channel, until an end-of-file indicator is returned."}
+{"id": "/documentation/foundation/filehandle/readdatatoendoffile()", "law": "Reads the available data synchronously up to the end of file or maximum number of bytes."}
+{"id": "/documentation/foundation/filehandle/readinbackgroundandnotify()", "law": "You must call this method from a thread that has an active run loop."}
+{"id": "/documentation/foundation/filehandle/readinbackgroundandnotify()", "law": "Any object interested in receiving this data asynchronously must add itself as an observer of ."}
+{"id": "/documentation/foundation/filehandle/readinbackgroundandnotify(formodes:)", "law": "You must call this method from a thread that has an active run loop."}
+{"id": "/documentation/foundation/filehandle/readtoend()", "law": "The data available through the file handle up to the maximum size that can be represented by an object or, if a communications channel, until an end-of-file indicator is returned."}
+{"id": "/documentation/foundation/filehandle/readtoend()", "law": "Reads the available data synchronously up to the end of file or maximum number of bytes."}
+{"id": "/documentation/foundation/filehandle/readtoendoffileinbackgroundandnotify()", "law": "You must call this method from a thread that has an active run loop."}
+{"id": "/documentation/foundation/filehandle/readtoendoffileinbackgroundandnotify()", "law": "Any object interested in receiving this data asynchronously must add itself as an observer of ."}
+{"id": "/documentation/foundation/filehandle/readtoendoffileinbackgroundandnotify(formodes:)", "law": "You must call this method from a thread that has an active run loop."}
+{"id": "/documentation/foundation/filehandle/synchronize()", "law": "Programs that require the file to always be in a known state should call this method."}
+{"id": "/documentation/foundation/filehandle/synchronizefile()", "law": "Programs that require the file to always be in a known state should call this method."}
+{"id": "/documentation/foundation/filehandle/waitfordatainbackgroundandnotify()", "law": "You must call this method from a thread that has an active run loop."}
+{"id": "/documentation/foundation/filehandle/waitfordatainbackgroundandnotify(formodes:)", "law": "You must call this method from a thread that has an active run loop."}
+{"id": "/documentation/foundation/filehandle/writeabilityhandler", "law": "The block you provide must accept a single parameter that is the current file handle."}
+{"id": "/documentation/foundation/filehandle/writeabilityhandler", "law": "The return type of your block should be ."}
+{"id": "/documentation/foundation/filehandle/writeabilityhandler", "law": "The block to use for writing the contents of the file handle asynchronously."}
+{"id": "/documentation/foundation/nscoding", "law": "The protocol declares the two methods that a class must implement so that instances of that class can be encoded and decoded."}
+{"id": "/documentation/foundation/nscoding", "law": "Any object class that should be codeable must adopt the protocol and implement its methods."}
+{"id": "/documentation/foundation/nsfilehandle/readdatatoendoffileandreturnerror:", "law": "The data available through the file handle up to the maximum size that can be represented by an object or, if a communications channel, until an end-of-file indicator is returned."}
+{"id": "/documentation/foundation/nsfilehandle/readdatatoendoffileandreturnerror:", "law": "Reads the available data synchronously up to the end of file or maximum number of bytes."}
+{"id": "/documentation/foundation/nsfilehandle/readdatauptolength:error:", "law": "The data available through the receiver up to a maximum of bytes, or the maximum size that can be represented by an object, whichever is the smaller."}
+{"id": "/documentation/foundation/nsfileversion", "law": "Use the methods of this class to access, create, and manage file revisions in your app."}
+{"id": "/documentation/foundation/nsfileversion", "law": "In Mac apps, you can use file version objects to track changes to a local file over time and to prevent the loss of data during editing."}
+{"id": "/documentation/foundation/nsfileversion", "law": "Conflict versions are reported to the appropriate file presenter objects and should be resolved as soon as possible so that the corresponding files can be removed from the cloud."}
+{"id": "/documentation/foundation/nsnotification/name-swift.struct/nsfilehandleconnectionaccepted", "law": "To cause the posting of this notification, you must send either or to an object representing a server stream-type socket."}
+{"id": "/documentation/foundation/nsnotification/name-swift.struct/nsfilehandledataavailable", "law": "To cause the posting of this notification, you must send either or to an appropriate object."}
+{"id": "/documentation/foundation/nsnotification/name-swift.struct/nsfilehandlereadtoendoffilecompletion", "law": "To cause the posting of this notification, you must send either or to an appropriate object."}
+{"id": "/documentation/foundation/nssecurecoding", "law": "An object that does override must decode any enclosed objects using the method."}
+{"id": "/documentation/foundation/nssecurecoding", "law": "For example: In addition, the class must override the getter for its property to return ."}
+{"id": "/documentation/foundation/data", "law": "You can use these interchangeably in code that interacts with Objective-C APIs."}
+{"id": "/documentation/foundation/nsdata", "law": "In Swift, the buffer bridges to ; use when you need reference semantics or other Foundation-specific behavior."}
+{"id": "/documentation/foundation/nsdata", "law": "The size of the data is subject to a theoretical limit of about 8 exabytes (1 EB = 10¹⁸ bytes; in practice, the limit should not be a factor)."}
+{"id": "/documentation/foundation/nsdata", "law": "Avoid using the method (and the related methods) when working inside a publicly accessible directory."}
+{"id": "/documentation/foundation/nsdata", "law": "Instead, use with an existing file descriptor to securely write the file."}
+{"id": "/documentation/foundation/filemanager", "law": "You use it to locate, create, copy, and move files and directories."}
+{"id": "/documentation/foundation/filemanager", "law": "You also use it to get information about a file or directory or change some of its attributes."}
+{"id": "/documentation/foundation/filemanager", "law": "When specifying the location of files, you can use either or objects."}
+{"id": "/documentation/foundation/filemanager", "law": "The use of the class is generally preferred for specifying file-system items because URLs can convert path information to a more efficient representation internally."}
+{"id": "/documentation/foundation/filemanager", "law": "If you are moving, copying, linking, or removing files or directories, you can use a delegate in conjunction with a file manager object to manage those operations."}
+{"id": "/documentation/foundation/filemanager", "law": "In macOS 10.7 and later, the delegate must conform to the protocol."}
+{"id": "/documentation/foundation/filemanager", "law": "Changes to an item in one location are propagated to all other locations to ensure the items stay in sync."}
+{"id": "/documentation/foundation/filemanager", "law": "Apps with documents that contain multiple files can use packages to manage contents like media assets."}
+{"id": "/documentation/foundation/filemanager", "law": "You can also use this pause and resume API on regular “flat” files."}
+{"id": "/documentation/foundation/filemanager", "law": "However, if you use a delegate to receive notifications about the status of move, copy, remove, and link operations, you should create a unique instance of the file manager object, assign your delegate to that object, and use that file manager to initiate your operations."}
+{"id": "/documentation/foundation/filemanager/url(for:in:appropriatefor:create:)", "law": "You typically use this method to locate one of the standard system directories, such as the , or directories."}
+{"id": "/documentation/foundation/filemanager/url(for:in:appropriatefor:create:)", "law": "You can use this method to create a new temporary directory."}
+{"id": "/documentation/foundation/filemanager/url(for:in:appropriatefor:create:)", "law": "For example, the following code results in a new temporary directory with a path in the form of : If you use this method to create a temporary directory, you should not rely on the existence of that temporary directory after the app is exited."}
+{"id": "/documentation/foundation/filemanager/url(for:in:appropriatefor:create:)", "law": "It is recommended that you remove any temporary directories that are created after they’re no longer needed."}
+{"id": "/documentation/foundation/nssearchpathfordirectoriesindomains(_:_:_:)", "law": "The list is in the order in which you should search the directories."}
+{"id": "/documentation/foundation/nssearchpathfordirectoriesindomains(_:_:_:)", "law": "You should consider using the methods and ."}
+{"id": "/documentation/foundation/nsstring", "law": "You can use this type in Swift when you need reference semantics or other Foundation-specific behavior."}
+{"id": "/documentation/foundation/nsstring", "law": "To create and manage an immutable string, use the class."}
+{"id": "/documentation/foundation/nsstring", "law": "To construct and manage a string that can be changed after it has been created, use ."}
+{"id": "/documentation/foundation/nsstring", "law": "Most use of strings, however, is at a higher level, with the strings being treated as single entities: You compare strings against one another, search them for substrings, combine them into new strings, and so on."}
+{"id": "/documentation/foundation/nsstring", "law": "If you need to access string objects character by character, you must understand the Unicode character encoding, specifically issues related to composed character sequences."}
+{"id": "/documentation/foundation/nsstring", "law": "When creating an object from an array of values, the returned string is always native-endian, since the array always contains UTF–16 code units in native byte order."}
+{"id": "/documentation/foundation/nsstring", "law": "It is possible to subclass (and ), but doing so requires providing storage facilities for the string (which is not inherited by subclasses) and implementing two primitive methods."}
+{"id": "/documentation/foundation/nsstring", "law": "Make sure your reasons for subclassing are valid."}
+{"id": "/documentation/foundation/nsstring", "law": "Instances of your subclass should represent a string and not something else."}
+{"id": "/documentation/foundation/nsstring", "law": "Thus the only attributes the subclass should have are the length of the character buffer it’s managing and access to individual characters in the buffer."}
+{"id": "/documentation/Foundation/NSData/compressed(using:)", "law": "Use this method to compress in-memory data when you want to reduce memory usage and can afford the time to compress and decompress it."}
+{"id": "/documentation/Foundation/NSData/compressed(using:)", "law": "To restore this data, use , and specify the algorithm originally used to compress the data."}
+{"id": "/documentation/Foundation/NSData/decompressed(using:)", "law": "Use this method to inflate in-memory data when you need uncompressed bytes."}
+{"id": "/documentation/Foundation/NSCopying", "law": "The exact meaning of “copy” can vary from class to class, but a copy must be a functionally independent object with values identical to the original at the time the copy was made."}
+{"id": "/documentation/Foundation/NSCopying", "law": "Your options for implementing this protocol are as follows: Implement using and in classes that don’t inherit ."}
+{"id": "/documentation/Foundation/NSCopying", "law": "If the superclass implementation might use the function, make explicit assignments to pointer instance variables for retained objects."}

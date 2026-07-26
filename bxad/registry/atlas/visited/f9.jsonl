@@ -33,3 +33,5 @@
 {"id": "/documentation/accelerate/bnnsdirectapplyactivationbatch(_:_:_:_:_:)", "sha": "c2cb172fd0a5de241ba7d7ded491a9ff6901a320fffcb139d5d29bd5f065f51d", "t": "BNNSDirectApplyActivationBatch(_:_:_:_:_:)", "n": 172, "laws": 0, "ts": "2026-07-26 06:09 UTC"}
 {"id": "/documentation/accelerate/bnnsfiltercreatelayerfullyconnected(_:_:)", "sha": "b14523a4ee2a15a4ebf269a46b619fe79ec5d356b3dd8eb470fd480151c298ca", "t": "BNNSFilterCreateLayerFullyConnected(_:_:)", "n": 822, "laws": 1, "ts": "2026-07-26 06:09 UTC"}
 {"id": "/documentation/coregraphics/cgimage/bitsperpixel", "sha": "8f2bdc8b30e6141f1a4fa1214a4fcdc1fbce28dbc097ed9da85cdfe3d8b63fd1", "t": "bitsPerPixel", "n": 74, "laws": 0, "ts": "2026-07-26 06:12 UTC"}
+{"id": "/documentation/avfoundation/avassetreadertrackoutput/audiotimepitchalgorithm", "sha": "5eccf4766da8bcc31b94e658b44c0828959642570fe047e002bd2eacd8289b1f", "t": "audioTimePitchAlgorithm", "n": 202, "laws": 1, "ts": "2026-07-26 12:03 UTC"}
+{"id": "/documentation/simd/simd_double-50rjx", "sha": "d89ae12c955d84da1a79679cb2813d7c0ab0938c587de51ac2dfc4bd98f65ac8", "t": "simd_double", "n": 82, "laws": 0, "ts": "2026-07-26 12:18 UTC"}

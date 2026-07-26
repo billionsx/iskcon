@@ -26,3 +26,9 @@
 {"id": "/documentation/coregraphics/cgpath/isempty", "sha": "fa04150976a5ba53592f94de855d89e138c0ecc76fb4b5fcc925985a8dca528c", "t": "isEmpty", "n": 100, "laws": 0, "ts": "2026-07-26 06:00 UTC"}
 {"id": "/documentation/coregraphics/cgimage/calculatedcontentheadroom", "sha": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855", "t": "calculatedContentHeadroom", "n": 0, "laws": 0, "ts": "2026-07-26 06:12 UTC"}
 {"id": "/documentation/accelerate/cblas_transpose", "sha": "65c8bb37a6f514ed21fdb3193f23c11a4044458cdd798a426aaa464c8b79e5e5", "t": "CBLAS_TRANSPOSE", "n": 723, "laws": 1, "ts": "2026-07-26 06:16 UTC"}
+{"id": "/documentation/accelerate/vdsp/floattodouble(_:)", "sha": "b30802dd2d1daa6cc568a0e0cb0706302172163eafcb8d9d8b9ac5bc76954d7e", "t": "floatToDouble(_:)", "n": 73, "laws": 0, "ts": "2026-07-26 11:57 UTC"}
+{"id": "/documentation/accelerate/vdsp/formramp(withinitialvalue:multiplyingby:increment:result:)-p7s4", "sha": "4ade7732480104d2f4166639ac043548193d2a0318c62501b1cff5a6f56a11a3", "t": "formRamp(withInitialValue:multiplyingBy:increment:result:)", "n": 486, "laws": 1, "ts": "2026-07-26 11:58 UTC"}
+{"id": "/documentation/accelerate/vforce/nearestinteger(_:)-5mppu", "sha": "5c5e2cac254bc0932d9ae9d1dbcb10e2a8a3efa81d35bbe3fb649ac759dc8c89", "t": "nearestInteger(_:)", "n": 83, "laws": 0, "ts": "2026-07-26 12:13 UTC"}
+{"id": "/documentation/accelerate/vvatanh(_:_:_:)", "sha": "00169b42e92d6c0fd65a65effc9f7115c006661fd8c45786ad3425f30078b9cc", "t": "vvatanh(_:_:_:)", "n": 218, "laws": 0, "ts": "2026-07-26 12:14 UTC"}
+{"id": "/documentation/simd/fdim", "sha": "b6195e0abd726200ec9e33f7763331418458f1fdc598ca6cf6020202fc3e1b97", "t": "fdim", "n": 78, "laws": 0, "ts": "2026-07-26 12:17 UTC"}
+{"id": "/documentation/simd/simd_fast_recip(_:)-ogui", "sha": "934d063d3f1a6a81fbfce94e12394e8fcecd12858573b6099a9637cf1b93b71a", "t": "simd_fast_recip(_:)", "n": 56, "laws": 0, "ts": "2026-07-26 12:18 UTC"}

@@ -3,3 +3,4 @@
 {"id": "/documentation/ObjectiveC/NSObject-swift.class/accessibilityIncrement()", "law": "If your element has the trait, you must implement this method."}
 {"id": "/documentation/ObjectiveC/NSObject-swift.class/accessibilityIncrement()", "law": "Use this method to increment the value of the element."}
 {"id": "/documentation/ObjectiveC/NSObject-swift.class/validateMenuItem:", "law": "The object implementing this method must be the target of ."}
+{"id": "/documentation/ObjectiveC/NSObject-swift.class", "law": "Avoid using deprecated classes and protocols in your apps."}

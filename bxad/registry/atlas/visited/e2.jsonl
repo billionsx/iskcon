@@ -36,3 +36,7 @@
 {"id": "/documentation/accelerate/bnnsgetpointer(_:_:)", "sha": "fe04b0e5d5df721b549f53cc4c9a449529ca8a9d291f503417afecd031b64f85", "t": "BNNSGetPointer(_:_:)", "n": 92, "laws": 0, "ts": "2026-07-26 06:10 UTC"}
 {"id": "/documentation/accelerate/bnnspoolingfilterapplybatchex(_:_:_:_:_:_:_:_:_:)", "sha": "009ec57b02152c995d2446dccfa581b307e819d68a2c78455485489d5c9ee685", "t": "BNNSPoolingFilterApplyBatchEx(_:_:_:_:_:_:_:_:_:)", "n": 232, "laws": 0, "ts": "2026-07-26 06:11 UTC"}
 {"id": "/documentation/accelerate/blas", "sha": "a2d357fb4e389d341ce5f17b57e8211700a2e11a2a04db27025816914c3000a3", "t": "BLAS", "n": 335, "laws": 0, "ts": "2026-07-26 06:14 UTC"}
+{"id": "/documentation/accelerate/vdsp/limit(_:limit:withoutputconstant:)-8bj65", "sha": "cf213cf4e32227f0464f69378c89bdbfd3ca578e46296747927f2f78f6c521e6", "t": "limit(_:limit:withOutputConstant:)", "n": 47, "laws": 0, "ts": "2026-07-26 11:58 UTC"}
+{"id": "/documentation/corevideo/cvdisplaylinkgetcurrenttime(_:_:)", "sha": "46f75794fd2d909b279fd241f961317f6f06c7bd45ad28c276b1a2d1f37e2d78", "t": "CVDisplayLinkGetCurrentTime(_:_:)", "n": 230, "laws": 1, "ts": "2026-07-26 12:10 UTC"}
+{"id": "/documentation/simd/exp10", "sha": "d0b15f65888f054992c5882792d88a08f870d1c857393203afe360ae522308bf", "t": "exp10", "n": 59, "laws": 0, "ts": "2026-07-26 12:17 UTC"}
+{"id": "/documentation/simd/simd_normalize-9c477", "sha": "e1113cbdd142181f4facac10f713c3daad26aceaa0eb5082d5be2574198acea9", "t": "simd_normalize", "n": 307, "laws": 0, "ts": "2026-07-26 12:19 UTC"}

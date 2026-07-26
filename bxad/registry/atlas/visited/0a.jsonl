@@ -27,3 +27,6 @@
 {"id": "/documentation/accelerate/bnnslayerparametersdropout", "sha": "90573a85918c79f531c87518fda2422e551afd545e566f2eef1fb915ac00d9f8", "t": "BNNSLayerParametersDropout", "n": 184, "laws": 0, "ts": "2026-07-26 06:10 UTC"}
 {"id": "/documentation/accelerate/bnnslayerparametersnormalization", "sha": "77e70bd8494e7d3bda1c0751bdd9b9095478d7d5345a6ef6475c9321a3627645", "t": "BNNSLayerParametersNormalization", "n": 394, "laws": 0, "ts": "2026-07-26 06:10 UTC"}
 {"id": "/documentation/accelerate/cblas_side", "sha": "ddf13ecf20b41d661242adfe9fad326be59213b5b311192a29ac34abaff00111", "t": "CBLAS_SIDE", "n": 717, "laws": 1, "ts": "2026-07-26 06:16 UTC"}
+{"id": "/documentation/foundation/filehandle/init(forupdating:)", "sha": "db0bac9bc6659b725a2d2d63782ee9a7729b1008fd5a95440cea6ae53cff8410", "t": "init(forUpdating:)", "n": 459, "laws": 0, "ts": "2026-07-26 11:51 UTC"}
+{"id": "/documentation/accelerate/vdsp/add(multiplication:multiplication:)-xxxa", "sha": "3dcf925482d9a81810139d4d07c16733868776f86d37280a1ec87fb9fbd196c8", "t": "add(multiplication:multiplication:)", "n": 127, "laws": 0, "ts": "2026-07-26 11:55 UTC"}
+{"id": "/documentation/accelerate/vdsp_biquadm_setcoefficientsdouble", "sha": "594c2a5350e409e9937d3d05ea640a5a69edc7535803fdd3744a4a98d3ba5a50", "t": "vDSP_biquadm_SetCoefficientsDouble", "n": 390, "laws": 2, "ts": "2026-07-26 12:03 UTC"}

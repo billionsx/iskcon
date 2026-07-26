@@ -34,3 +34,9 @@
 {"id": "/documentation/accelerate/bnnscomputenorm(_:_:_:_:)", "sha": "6697397c6f151a96003be0561472b6d0d85ae461f1f50965a4db3759df62517e", "t": "BNNSComputeNorm(_:_:_:_:)", "n": 1261, "laws": 2, "ts": "2026-07-26 06:09 UTC"}
 {"id": "/documentation/coregraphics/cgimage/contentaveragelightlevel", "sha": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855", "t": "contentAverageLightLevel", "n": 0, "laws": 0, "ts": "2026-07-26 06:12 UTC"}
 {"id": "/documentation/accelerate/cblas_zher(_:_:_:_:_:_:_:_:)", "sha": "bca7a650b8d70f3a31c942a58b7b49e3dbc9d15781f4941dece50555ad3ccc0f", "t": "cblas_zher(_:_:_:_:_:_:_:_:)", "n": 696, "laws": 1, "ts": "2026-07-26 06:17 UTC"}
+{"id": "/documentation/accelerate/vdsp/clip(_:to:)-20gz4", "sha": "ce6417dbff47f9eb59670e0cfe8acf9f3d354d5d1106809bbe669a7371f97c39", "t": "clip(_:to:)", "n": 81, "laws": 0, "ts": "2026-07-26 11:55 UTC"}
+{"id": "/documentation/accelerate/vdsp/meansquare(_:)-1gh6k", "sha": "86c84001af3f16dc589786eb7c43d4652a6aecf579461a5f19e73f00eb10fb50", "t": "meanSquare(_:)", "n": 185, "laws": 0, "ts": "2026-07-26 11:59 UTC"}
+{"id": "/documentation/accelerate/single-precision-floating-point-vectors", "sha": "3596b5f525443bcfacd25f53a4b261af1f06c70af4d3bf28a6c53be478fd7ef3", "t": "Single-precision floating-point vectors", "n": 924, "laws": 0, "ts": "2026-07-26 12:11 UTC"}
+{"id": "/documentation/accelerate/vvlog2f(_:_:_:)", "sha": "7de48e6af7fdc3884d15ed36f619b2e527920acf666cf14c0746137fb3508be3", "t": "vvlog2f(_:_:_:)", "n": 102, "laws": 0, "ts": "2026-07-26 12:15 UTC"}
+{"id": "/documentation/accelerate/vvsinpi(_:_:_:)", "sha": "1192980b992c33be3739b7587dfd6c9b0a7fb5cd11a93ab98c700a0a1947e1af", "t": "vvsinpi(_:_:_:)", "n": 169, "laws": 0, "ts": "2026-07-26 12:16 UTC"}
+{"id": "/documentation/simd/simd_precise_distance-274w4", "sha": "380e3c242abefbd2e0eef6f6dd7d2936e0b9f71b3be6ac959fc8fd4b66af7092", "t": "simd_precise_distance", "n": 49, "laws": 0, "ts": "2026-07-26 12:19 UTC"}

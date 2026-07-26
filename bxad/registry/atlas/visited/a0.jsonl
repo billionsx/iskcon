@@ -34,3 +34,6 @@
 {"id": "/documentation/Xcode/understanding-hangs-in-your-app", "sha": "5e79885dc00f285143d64248d99080eed94f8e481985f1500badf0b5706462b2", "t": "Understanding hangs in your app", "n": 12447, "laws": 7, "ts": "2026-07-26 05:50 UTC"}
 {"id": "/documentation/accelerate/bnnsdatatype", "sha": "0d192a2b54d81ebf32e8ee838a37c8d735b80120f4f3535d6c42d8e10cfe634a", "t": "BNNSDataType", "n": 516, "laws": 0, "ts": "2026-07-26 06:05 UTC"}
 {"id": "/documentation/coregraphics/cgimage/bitspercomponent", "sha": "002e674bd8860fed73c4fa26311cb89bd42a86cc1050e32cb44b5fcd9a5ba757", "t": "bitsPerComponent", "n": 244, "laws": 0, "ts": "2026-07-26 06:12 UTC"}
+{"id": "/documentation/accelerate/vdsp/multiply(addition:subtraction:)-7qfik", "sha": "8d4e92a52277c8eed94df96d3f4d477bf1b4924f7ff390df29be509ed05a1e70", "t": "multiply(addition:subtraction:)", "n": 351, "laws": 0, "ts": "2026-07-26 12:00 UTC"}
+{"id": "/documentation/accelerate/vdsp_svesq", "sha": "a1867a4ec23080cd4aa7d6346652e1be25976193c22cb508313e152c219fe335", "t": "vDSP_svesq", "n": 238, "laws": 0, "ts": "2026-07-26 12:02 UTC"}
+{"id": "/documentation/avfoundation/avcapturephotooutput/isfastcaptureprioritizationenabled", "sha": "8a07af59edb6f8d31bb1658ea0bfcc2ae1f714df0f9bd88ae214876d805ba1f5", "t": "isFastCapturePrioritizationEnabled", "n": 86, "laws": 0, "ts": "2026-07-26 12:06 UTC"}

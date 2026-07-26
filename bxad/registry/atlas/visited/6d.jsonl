@@ -30,3 +30,6 @@
 {"id": "/documentation/accelerate/vimagelookuptable_planar8toplanar24(_:_:_:_:)", "sha": "33e611c419550b556c00eb9a9553f01f7df4fc7e79337b2a9e25e459f059c9f3", "t": "vImageLookupTable_Planar8toPlanar24(_:_:_:_:)", "n": 490, "laws": 0, "ts": "2026-07-26 06:01 UTC"}
 {"id": "/documentation/accelerate/bnns_graph_shape_t", "sha": "6b5274f73ee272e9f0a226356f38b489e47a238b115e8d0b3a1dadb81a2604f2", "t": "bnns_graph_shape_t", "n": 239, "laws": 1, "ts": "2026-07-26 06:05 UTC"}
 {"id": "/documentation/accelerate/bnnsgraphgetargumentnames(_:_:_:_:)", "sha": "b3cb8423dbe22ddd37ae5a63062d1d6da1c23bafc6c1cb2771ba813da4e269a1", "t": "BNNSGraphGetArgumentNames(_:_:_:_:)", "n": 188, "laws": 0, "ts": "2026-07-26 06:05 UTC"}
+{"id": "/documentation/swiftui/slider", "sha": "2645b2b314631966b6847fcba14601f9e54899525d2f0c2857b048eca826d55d", "t": "Slider", "n": 2197, "laws": 3, "ts": "2026-07-26 11:54 UTC"}
+{"id": "/documentation/accelerate/in-place-functions-for-2d-complex-fft", "sha": "a46a93e0631d7f8bd78569e70b04b36cd95e9cb4c36dc6ba6d54e819fcca9e1c", "t": "In-Place Functions for 2D Complex FFT", "n": 274, "laws": 1, "ts": "2026-07-26 12:08 UTC"}
+{"id": "/documentation/simd/simd_double2", "sha": "7bff35ee462383e987f53ab847a41dd0cab190ae64ce042b41aad9de7dc588e0", "t": "simd_double2", "n": 2159, "laws": 0, "ts": "2026-07-26 12:18 UTC"}

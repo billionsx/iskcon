@@ -39,3 +39,8 @@
 {"id": "/documentation/accelerate/cblas_ctrmv(_:_:_:_:_:_:_:_:_:)", "sha": "2e26c9227f984a2eb090da0e00e827c3b25bda5c52762ed45eb4385b25e56f81", "t": "cblas_ctrmv(_:_:_:_:_:_:_:_:_:)", "n": 683, "laws": 1, "ts": "2026-07-26 06:15 UTC"}
 {"id": "/documentation/accelerate/cblas_dtbmv(_:_:_:_:_:_:_:_:_:_:)", "sha": "f8f496e7666eb64f9040c69b72189d8f3363d94377b670f52a7c53bd61029375", "t": "cblas_dtbmv(_:_:_:_:_:_:_:_:_:_:)", "n": 713, "laws": 1, "ts": "2026-07-26 06:15 UTC"}
 {"id": "/documentation/accelerate/cblas_uplo", "sha": "9d876c062440b7dd49dafdb8c88aa4ab92b67c556d1ce94e4d0387a57c9edf3d", "t": "CBLAS_UPLO", "n": 75, "laws": 0, "ts": "2026-07-26 06:16 UTC"}
+{"id": "/documentation/accelerate/vdsp/clip(_:to:)-8jsic", "sha": "e664fbc9dc901e7f2a240190711abe5714126989574502ee3b85e26cbea108d4", "t": "clip(_:to:)", "n": 81, "laws": 0, "ts": "2026-07-26 11:55 UTC"}
+{"id": "/documentation/avfoundation/avcapturephotooutput/isautoredeyereductionsupported", "sha": "ffccab850bf786f6e02daf27e69c91bab952dc7f349cf3579426d6402ba9daa2", "t": "isAutoRedEyeReductionSupported", "n": 591, "laws": 0, "ts": "2026-07-26 12:05 UTC"}
+{"id": "/documentation/accelerate/fft_forward", "sha": "6d13d6326a31317816689e910f1dbd6c2fccab5c29c6a16753b537471de65d13", "t": "FFT_FORWARD", "n": 12, "laws": 0, "ts": "2026-07-26 12:08 UTC"}
+{"id": "/documentation/accelerate/vvatan(_:_:_:)", "sha": "87eecf3d01bff05250dbdca0454713182b39a749c76aaa7b3e7b66e35a77c684", "t": "vvatan(_:_:_:)", "n": 222, "laws": 0, "ts": "2026-07-26 12:14 UTC"}
+{"id": "/documentation/simd/simd_max(_:_:)-6ykq4", "sha": "a557bd321d4a3b01afc56f4a9bd6cb051078303b50ef555bd5a85c69747cc5af", "t": "simd_max(_:_:)", "n": 54, "laws": 1, "ts": "2026-07-26 12:19 UTC"}

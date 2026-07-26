@@ -21,3 +21,5 @@
 {"id": "/documentation/accelerate/bnnsscatter(_:_:_:_:_:_:)", "sha": "0fce43e0d62b558ed80c6a63b8c4897a4d806ea26239b9385f9607663ccff4d8", "t": "BNNSScatter(_:_:_:_:_:_:)", "n": 1639, "laws": 3, "ts": "2026-07-26 06:06 UTC"}
 {"id": "/documentation/accelerate/creating-and-populating-buffers-from-core-graphics-images", "sha": "44cbc12e699b7c335617293b7cd1ac0db4c013ee6639fd4bff54ee3274162fe0", "t": "Creating and Populating Buffers from Core Graphics Images", "n": 1384, "laws": 2, "ts": "2026-07-26 06:12 UTC"}
 {"id": "/documentation/accelerate/cblas_icamax(_:_:_:)", "sha": "fcb7a4ff4960f2f5d0f2d41db313833b50a4e342374db93ee1c3f30cad2c68a8", "t": "cblas_icamax(_:_:_:)", "n": 817, "laws": 1, "ts": "2026-07-26 06:16 UTC"}
+{"id": "/documentation/accelerate/vdsp_biquadm_resetstated", "sha": "6e777ef2e456e514c90430eee150df54bded58fda2f51e55824be00ca88f92de", "t": "vDSP_biquadm_ResetStateD", "n": 167, "laws": 0, "ts": "2026-07-26 12:03 UTC"}
+{"id": "/documentation/accelerate/vforce/floor(_:result:)-4mf4q", "sha": "491c86a4fd9e81658db0772e29698495d4e276dbfe77ce1dc20ffccabe75123f", "t": "floor(_:result:)", "n": 76, "laws": 0, "ts": "2026-07-26 12:13 UTC"}

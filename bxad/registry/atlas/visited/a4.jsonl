@@ -25,3 +25,10 @@
 {"id": "/documentation/UIKit/drawing", "sha": "cbad61fb38c7cc42c1ef7fd8128c64960d54e7a1aaae9965eeb192b0de97f500", "t": "Drawing", "n": 1194, "laws": 1, "ts": "2026-07-26 05:49 UTC"}
 {"id": "/documentation/accelerate/vector-scalar-real-arithmetic-functions", "sha": "f57360310239b13fab51e409eb47e21ec187716fa6d48a7f66fab22c68e44d39", "t": "Vector-scalar real arithmetic functions", "n": 1979, "laws": 0, "ts": "2026-07-26 05:59 UTC"}
 {"id": "/documentation/accelerate/bnnstensor", "sha": "e8b1be4ddbb841c16915498e0020715400dc29b6de30cb3f9fb7633dde27c190", "t": "BNNSTensor", "n": 740, "laws": 0, "ts": "2026-07-26 06:06 UTC"}
+{"id": "/documentation/foundation/filehandle/readdata(oflength:)", "sha": "06fa89b511bd3e7b93deb5d663ab1e4fa4285b79e2e6421ef845ef92a2cb7764", "t": "readData(ofLength:)", "n": 825, "laws": 1, "ts": "2026-07-26 11:52 UTC"}
+{"id": "/documentation/accelerate/vdsp/standarddeviation(_:)-2e9i1", "sha": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855", "t": "standardDeviation(_:)", "n": 0, "laws": 0, "ts": "2026-07-26 12:01 UTC"}
+{"id": "/documentation/avfoundation/avassetreader/canadd(_:)", "sha": "26453856705d80945c77a14b703c9f4bbd26cba5082344912df5606bfac5e18e", "t": "canAdd(_:)", "n": 239, "laws": 0, "ts": "2026-07-26 12:02 UTC"}
+{"id": "/documentation/CoreMedia/CMTimeScale", "sha": "1bb5f57efcd0cfe529059a5d98e847da5214d87a5113ed335cd081bc8fce9de5", "t": "CMTimeScale", "n": 64, "laws": 1, "ts": "2026-07-26 12:03 UTC"}
+{"id": "/documentation/corevideo/cvdisplaylinkcreatewithcgdisplays(_:_:_:)", "sha": "e6b79c15e61065aa786ceee3d1fe1b7fab468f96a5b0c1314de062ebbd1fde4a", "t": "CVDisplayLinkCreateWithCGDisplays(_:_:_:)", "n": 294, "laws": 1, "ts": "2026-07-26 12:10 UTC"}
+{"id": "/documentation/corevideo/cvdisplaylinksetoutputhandler(_:_:)", "sha": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855", "t": "CVDisplayLinkSetOutputHandler(_:_:)", "n": 0, "laws": 0, "ts": "2026-07-26 12:11 UTC"}
+{"id": "/documentation/accelerate/vvsinh(_:_:_:)", "sha": "0840e1f8143538d1870dead4b45b28293e4c082960944b79653047e045328f8e", "t": "vvsinh(_:_:_:)", "n": 186, "laws": 0, "ts": "2026-07-26 12:16 UTC"}

@@ -21,3 +21,6 @@
 {"id": "/documentation/appkit/nstoolbaritemgroup/role-swift.enum", "sha": "40a74f2cd2429447230dae4ce26f6d1a355e6e6738aae849e7f66fc26b95bbfb", "t": "NSToolbarItemGroup.Role", "n": 158, "laws": 0, "ts": "2026-07-26 00:33 UTC"}
 {"id": "/documentation/AVFAudio/AVAudioPlayer", "sha": "cab02cd6f8caf432f654d548143da6b0a307ef094f6dfc0016c4c46938ecf83d", "t": "AVAudioPlayer", "n": 1385, "laws": 1, "ts": "2026-07-26 05:49 UTC"}
 {"id": "/documentation/accelerate/bnnsndarraydescriptor/init(data:shape:)", "sha": "0f0161bd598d21cfe8a5e4496279c312258eb56de115d72fd153e0cb11c4e9cd", "t": "init(data:shape:)", "n": 100, "laws": 0, "ts": "2026-07-26 06:07 UTC"}
+{"id": "/documentation/accelerate/vdsp/add(multiplication:_:)-4e3tj", "sha": "3c1493c67e1282474455509aaa05bb2783885eb0e7c906921c86607917fa5f70", "t": "add(multiplication:_:)", "n": 371, "laws": 0, "ts": "2026-07-26 11:55 UTC"}
+{"id": "/documentation/accelerate/vdsp/add(multiplication:_:result:)-48vyq", "sha": "56a0bc095aa7bbce0d8c10a571c22bfff5b2a5fd9b3152381b20383bf259caaa", "t": "add(multiplication:_:result:)", "n": 312, "laws": 0, "ts": "2026-07-26 11:55 UTC"}
+{"id": "/documentation/accelerate/vdsp/hypot(_:_:result:)-5d8pw", "sha": "d4cf0f5002832c057c850cd75aed5f5a6d6ecd13a60289af80501c91a976133f", "t": "hypot(_:_:result:)", "n": 388, "laws": 0, "ts": "2026-07-26 11:58 UTC"}

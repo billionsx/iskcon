@@ -26,3 +26,6 @@
 {"id": "/documentation/CoreHaptics/CHHapticPattern", "sha": "e468dc73f94c99c9d80ee25f0eb6c96f53690c62d34bae37411b5ec400a3bd6c", "t": "CHHapticPattern", "n": 2323, "laws": 3, "ts": "2026-07-26 00:31 UTC"}
 {"id": "/documentation/swiftui/pickerstyle", "sha": "f175be373af334dfef852f734d7583b25397799f7c3522f08bfc7464be3f906d", "t": "PickerStyle", "n": 460, "laws": 0, "ts": "2026-07-26 05:54 UTC"}
 {"id": "/documentation/swiftui/image/init(uiimage:)", "sha": "c4b792fb72ebc6a958242d73546c6714434eb9b98ec4eadc654feefbcb63dcab", "t": "init(uiImage:)", "n": 52, "laws": 0, "ts": "2026-07-26 05:57 UTC"}
+{"id": "/documentation/swiftui/slider/init(value:in:oneditingchanged:label:)", "sha": "1e3cdddb7b704d2d7e4b6782004d9899b7d134b2beeb53da93cd659c59e1a223", "t": "init(value:in:onEditingChanged:label:)", "n": 346, "laws": 0, "ts": "2026-07-26 11:54 UTC"}
+{"id": "/documentation/accelerate/vdsp_biquadm_setcoefficientsdoubled", "sha": "07d848931fb9650e73e055a3832993f640d7a18c99b30856dfd1e177f08388f0", "t": "vDSP_biquadm_SetCoefficientsDoubleD", "n": 390, "laws": 2, "ts": "2026-07-26 12:03 UTC"}
+{"id": "/documentation/accelerate/vvdiv(_:_:_:_:)", "sha": "24150e8040d3c8e8ece53edd7c7b70b387de8458caa5b946b40766dc26b0555f", "t": "vvdiv(_:_:_:_:)", "n": 182, "laws": 0, "ts": "2026-07-26 12:15 UTC"}

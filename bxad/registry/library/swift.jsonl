@@ -317,3 +317,39 @@
 {"id": "/documentation/swift/withunsafemutablepointer(to:_:)", "law": "Do not store or return the pointer for later use."}
 {"id": "/documentation/swift/withunsafepointer(to:_:)-35wrn", "law": "Do not store or return the pointer for later use."}
 {"id": "/documentation/swift/withunsafepointer(to:_:)-9fjn6", "law": "Do not store or return the pointer for later use."}
+{"id": "/documentation/Swift/Error", "law": "If there are additional details about the error that could be helpful for recovery, use associated values to include that information."}
+{"id": "/documentation/Swift/Error", "law": "When calling the new initializer within a statement, you can use pattern matching to match specific cases of your custom error type and access their associated values, as in the example below."}
+{"id": "/documentation/Swift/Error", "law": "When you do, use a structure to represent errors."}
+{"id": "/documentation/Swift/Error", "law": "The following example uses a structure to represent an error when parsing an XML document, including the line and column numbers where the error occurred: Once again, use pattern matching to conditionally catch errors."}
+{"id": "/documentation/swift/unsafemutablerawpointer", "law": "You are responsible for handling the life cycle of any memory you work with through unsafe pointers, to avoid leaks or undefined behavior."}
+{"id": "/documentation/swift/unsafemutablerawpointer", "law": "You use the type to access and manage raw bytes in memory, whether or not that memory has been bound to a specific type."}
+{"id": "/documentation/swift/unsafemutablerawpointer", "law": "Many pointer operations must only be applied to pointers with memory in a specific state—you must keep track of the state of the memory you are working with and understand the changes to that state that different operations perform."}
+{"id": "/documentation/swift/unsafemutablerawpointer", "law": "Uninitialized memory must be initialized with values of a type before it can be used with any typed operations."}
+{"id": "/documentation/swift/unsafemutablerawpointer", "law": "You can use methods like and to bind raw memory to a type and initialize it with a value or series of values."}
+{"id": "/documentation/swift/unsafemutablerawpointer", "law": "To bind uninitialized memory to a type without initializing it, use the method."}
+{"id": "/documentation/swift/unsafemutablerawpointer", "law": "Generally, native Swift types that do not contain strong or weak references or other forms of indirection are trivial, as are imported C structs and enumerations."}
+{"id": "/documentation/swift/unsafemutablerawpointer", "law": "When reading from or writing to memory as raw bytes when that memory is bound to a type, you must ensure that you satisfy any alignment requirements."}
+{"id": "/documentation/swift/unsafemutablerawpointer", "law": "Writing to typed memory as raw bytes must only be performed when the bound type is a trivial type."}
+{"id": "/documentation/swift/unsafemutablerawpointer", "law": "Always remember to deallocate any memory that you allocate yourself."}
+{"id": "/documentation/swift/unsafemutablerawpointer/copymemory(from:bytecount:)", "law": "If the bytes of memory referenced by this pointer are bound to a type , then must be a trivial type, this pointer and must be properly aligned for accessing , and must be a multiple of ."}
+{"id": "/documentation/swift/unsaferawpointer", "law": "You are responsible for handling the life cycle of any memory you work with through unsafe pointers, to avoid leaks or undefined behavior."}
+{"id": "/documentation/swift/unsaferawpointer", "law": "You use the type to access and manage raw bytes in memory, whether or not that memory has been bound to a specific type."}
+{"id": "/documentation/swift/unsaferawpointer", "law": "Many pointer operations must only be applied to pointers with memory in a specific state—you must keep track of the state of the memory you are working with and understand the changes to that state that different operations perform."}
+{"id": "/documentation/swift/unsaferawpointer", "law": "Uninitialized memory must be initialized with values of a type before it can be used with any typed operations."}
+{"id": "/documentation/swift/unsaferawpointer", "law": "To bind uninitialized memory to a type without initializing it, use the method."}
+{"id": "/documentation/swift/unsaferawpointer", "law": "Generally, native Swift types that do not contain strong or weak references or other forms of indirection are trivial, as are imported C structs and enumerations."}
+{"id": "/documentation/swift/unsaferawpointer", "law": "When reading from memory as raw bytes when that memory is bound to a type, you must ensure that you satisfy any alignment requirements."}
+{"id": "/documentation/swift/unsaferawpointer", "law": "Always remember to deallocate any memory that you allocate yourself."}
+{"id": "/documentation/swift/unsaferawpointer", "law": "When calling a function or method with an parameter, you can pass an instance of that specific pointer type, pass an instance of a compatible pointer type, or use Swift’s implicit bridging to pass a compatible pointer."}
+{"id": "/documentation/swift/unsaferawpointer", "law": "Alternatively, you can use Swift’s implicit bridging to pass a pointer to an instance or to the elements of an array."}
+{"id": "/documentation/Swift/ContiguousArray/withContiguousMutableStorageIfAvailable(_:)", "law": "Always perform any necessary cleanup in the closure, because the method makes no guarantees about the state of the collection if the closure throws an error."}
+{"id": "/documentation/Swift/ContiguousArray/withContiguousMutableStorageIfAvailable(_:)", "law": "Your closure must not replace ."}
+{"id": "/documentation/Swift/ContiguousArray/withContiguousMutableStorageIfAvailable(_:)", "law": "Don’t store outside of this method."}
+{"id": "/documentation/Swift/ContiguousArray/withContiguousMutableStorageIfAvailable(_:)", "law": "A that provides its own implementation of this method must provide contiguous storage to its elements in the same order as they appear in the collection."}
+{"id": "/documentation/Swift/ClosedRange", "law": "When a closed range uses integers as its lower and upper bounds, or any other type that conforms to the protocol with an integer stride, you can use that range in a - loop or with any sequence or collection method."}
+{"id": "/documentation/swift/unsafemutablerawpointer/allocate(bytecount:alignment:)", "law": "Be sure to deallocate any memory that you manually allocate."}
+{"id": "/documentation/swift/unsafemutablerawpointer/allocate(bytecount:alignment:)", "law": "The allocated memory is not bound to any specific type and must be bound before performing any typed operations."}
+{"id": "/documentation/Swift/Void", "law": "When declaring a function or method, you don’t need to specify a return type if no value will be returned."}
+{"id": "/documentation/Swift/Void", "law": "However, the type of a function, method, or closure always includes a return type, which is if otherwise unspecified."}
+{"id": "/documentation/Swift/Void", "law": "Use or an empty tuple as the return type when declaring a closure, function, or method that doesn’t return a value."}
+{"id": "/documentation/Swift/Void", "law": "The return type of functions that don’t explicitly specify a return type, that is, an empty tuple ."}

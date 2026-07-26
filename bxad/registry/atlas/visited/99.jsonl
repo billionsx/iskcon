@@ -29,3 +29,5 @@
 {"id": "/documentation/RealityKit/AudioFileGroupResource", "sha": "a538eebfe99d392a5c966fd3754c4e328255ca66c65853acdae0ba1d19f1c02d", "t": "AudioFileGroupResource", "n": 169, "laws": 0, "ts": "2026-07-26 00:30 UTC"}
 {"id": "/documentation/Metal/resource-loading", "sha": "115332f5afa06ca6c7a987c9df062c1510903bed93c44b0fe8c78f1c55461306", "t": "Resource loading", "n": 2451, "laws": 2, "ts": "2026-07-26 05:49 UTC"}
 {"id": "/documentation/coregraphics/cgcolorspace/linearitur_2020", "sha": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855", "t": "linearITUR_2020", "n": 0, "laws": 0, "ts": "2026-07-26 05:55 UTC"}
+{"id": "/documentation/swiftui/slider/init(value:in:step:oneditingchanged:)", "sha": "100e7baf52178633a4cbf27a12bd3b29ad6a45d45b0f7a9b218eddcc4420423f", "t": "init(value:in:step:onEditingChanged:)", "n": 340, "laws": 0, "ts": "2026-07-26 11:54 UTC"}
+{"id": "/documentation/accelerate/vdsp/formramp(withinitialvalue:increment:result:)-4ibjw", "sha": "092945cadfcc130e7ae8880bb8da2813b50369ebd44ead0f5019913d7b4568ac", "t": "formRamp(withInitialValue:increment:result:)", "n": 294, "laws": 1, "ts": "2026-07-26 11:58 UTC"}

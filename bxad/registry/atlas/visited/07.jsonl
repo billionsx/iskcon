@@ -28,3 +28,7 @@
 {"id": "/documentation/accelerate/vimageconstcvimageformat", "sha": "d1b5d7057890a7aedb28e2777fa5bd46409ec238fb7bdb512bea9915ee0d571d", "t": "vImageConstCVImageFormat", "n": 130, "laws": 1, "ts": "2026-07-26 06:04 UTC"}
 {"id": "/documentation/accelerate/bnnsndarraydescriptor/allocate(randomin:using:shape:batchsize:)-3w6ig", "sha": "21354c9b654523e16d6155aabfc36b07ed7ebf50b2e9d50cd5e5f7538b6f591f", "t": "allocate(randomIn:using:shape:batchSize:)", "n": 150, "laws": 0, "ts": "2026-07-26 06:07 UTC"}
 {"id": "/documentation/accelerate/bnns/error", "sha": "2642d25a1e3ba21064211f94e6fa8e3cc2aacfd74039f8e627ea8edea69273f5", "t": "BNNS.Error", "n": 148, "laws": 0, "ts": "2026-07-26 06:08 UTC"}
+{"id": "/documentation/accelerate/vdsp/fft2d", "sha": "c36f812e25394037c1b8f0e33a90afb1a398a29890e1e566735d82bef867485f", "t": "vDSP.FFT2D", "n": 157, "laws": 0, "ts": "2026-07-26 11:57 UTC"}
+{"id": "/documentation/Foundation/NSCopying", "sha": "b814b92e9abead1d7145f38f95733888a3c239afc48ba85d1099106354698501", "t": "NSCopying", "n": 1205, "laws": 3, "ts": "2026-07-26 12:04 UTC"}
+{"id": "/documentation/accelerate/vforce/acosh(_:result:)-2r23w", "sha": "494999e53c647bee599c372e6355dc95fc6aee794a96381897feb07593d2256e", "t": "acosh(_:result:)", "n": 96, "laws": 0, "ts": "2026-07-26 12:11 UTC"}
+{"id": "/documentation/simd/simd_make_double3_undef(_:)-38cg2", "sha": "7d5e9e2f668e05b2f715c28ed7a2c8de8c512b1f0938f33c79d579f3b94f69f4", "t": "simd_make_double3_undef(_:)", "n": 96, "laws": 0, "ts": "2026-07-26 12:19 UTC"}

@@ -60,3 +60,5 @@
 {"id": "/documentation/coregraphics/cgimage/init(width:height:bitspercomponent:bitsperpixel:bytesperrow:space:bitmapinfo:provider:decode:shouldinterpolate:intent:)", "law": "The data provider should provide raw data that matches the format specified by the other input parameters."}
 {"id": "/documentation/coregraphics/cgimage/init(width:height:bitspercomponent:bitsperpixel:bytesperrow:space:bitmapinfo:provider:decode:shouldinterpolate:intent:)", "law": "To use encoded data (for example, from a file specified by a URL-based data provider), see and ."}
 {"id": "/documentation/coregraphics/cgimagealphainfo", "law": "You should not premultiply any other color values specified in Core Graphics."}
+{"id": "/documentation/CoreGraphics/CGBitmapInfo", "law": "Applications that store pixel data in memory using ARGB format must take care in how they read data."}
+{"id": "/documentation/CoreGraphics/CGBitmapInfo", "law": "To specify byte ordering, use a bitwise OR operator to combine the appropriate constant with the parameter."}

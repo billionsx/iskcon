@@ -26,3 +26,5 @@
 {"id": "/documentation/accelerate/transposition-vdsp", "sha": "c1abc8290885a6527f9e775d211fe79e7a357c52be248d14939c01c560be8704", "t": "Transposition", "n": 42, "laws": 0, "ts": "2026-07-26 05:59 UTC"}
 {"id": "/documentation/coregraphics/cgpathelementtype", "sha": "db71335f8e0e1b2edffc03cece87f553186819a059ff87f6b5add5a6a7524adf", "t": "CGPathElementType", "n": 305, "laws": 0, "ts": "2026-07-26 06:00 UTC"}
 {"id": "/documentation/accelerate/vimagelookuptable_planar8toplanar48(_:_:_:_:)", "sha": "811122dfe83a1decd487a414ce4308b4c19c59731599b10144e534a51449257a", "t": "vImageLookupTable_Planar8toPlanar48(_:_:_:_:)", "n": 490, "laws": 0, "ts": "2026-07-26 06:01 UTC"}
+{"id": "/documentation/swiftui/progressview/init(value:total:label:currentvaluelabel:)", "sha": "37b97102590db047479ec6608e3b8066f3af0599b1434144fa9c28fe3fd3ce9b", "t": "init(value:total:label:currentValueLabel:)", "n": 328, "laws": 0, "ts": "2026-07-26 11:53 UTC"}
+{"id": "/documentation/accelerate/vforce/acosh(_:result:)-4cip0", "sha": "ff26aa8e6b98ffd8cc5f653289a68902b31cc5bb4b59f6ed1cf86c5cebe631dd", "t": "acosh(_:result:)", "n": 96, "laws": 0, "ts": "2026-07-26 12:11 UTC"}

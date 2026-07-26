@@ -20,3 +20,6 @@
 {"id": "/documentation/accelerate/vimage/options", "sha": "e56523301b3693dec067feccb6d44bbe1176f20bcdfd49dd9aa982a7bc990f02", "t": "vImage.Options", "n": 319, "laws": 0, "ts": "2026-07-26 06:02 UTC"}
 {"id": "/documentation/accelerate/bnnsgraphgetfunctioncount(_:)", "sha": "d6f0ce63388314b8b45d3379be546fb456f6d913baa97900c1fa6d90782f11fa", "t": "BNNSGraphGetFunctionCount(_:)", "n": 160, "laws": 0, "ts": "2026-07-26 06:05 UTC"}
 {"id": "/documentation/accelerate/catlas_saxpby(_:_:_:_:_:_:_:)", "sha": "d3450f956b0ea709a937bd9d6914b4b30fa2cc9bf83c051e244b9756e43027fd", "t": "catlas_saxpby(_:_:_:_:_:_:_:)", "n": 788, "laws": 1, "ts": "2026-07-26 06:14 UTC"}
+{"id": "/documentation/swiftui/defaultdateprogresslabel", "sha": "757fffcdbb68df8d176aa15f83ec35e6f08a0662e79a99149ae83822948b262c", "t": "DefaultDateProgressLabel", "n": 87, "laws": 0, "ts": "2026-07-26 11:53 UTC"}
+{"id": "/documentation/avfoundation/avcapturedevice/lensstabilizationstatus", "sha": "8a147aa15055c467922e98dc543d24038593eb998e8290608746c93a33ba1ec3", "t": "AVCaptureDevice.LensStabilizationStatus", "n": 421, "laws": 0, "ts": "2026-07-26 12:04 UTC"}
+{"id": "/documentation/accelerate/vforce/floor(_:)-64hyu", "sha": "972479993642a52c34eab3c4b2427a509e22956d00c7ca98998e8dee0c5b9cc7", "t": "floor(_:)", "n": 73, "laws": 0, "ts": "2026-07-26 12:13 UTC"}

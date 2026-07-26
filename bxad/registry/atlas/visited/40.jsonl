@@ -33,3 +33,6 @@
 {"id": "/documentation/accelerate/bnnsndarraydescriptor/data_type", "sha": "c324b2f65ba9d39c632b40cae8a0ddcc61c6e1b7516bb0fbd1e0dcdb556d647f", "t": "data_type", "n": 41, "laws": 0, "ts": "2026-07-26 06:07 UTC"}
 {"id": "/documentation/accelerate/bnns/activationlayer", "sha": "4f7f276bc1e5de22aa95c0b1b66ebf26edf0ab7aa2d7f54aab03b80cb0096306", "t": "BNNS.ActivationLayer", "n": 391, "laws": 0, "ts": "2026-07-26 06:07 UTC"}
 {"id": "/documentation/swift/comparable", "sha": "340b4a2a14118a0ed18e7ab8bfe0e71e1cef34ddc6a83e6bb2d51cfc56063b95", "t": "Comparable", "n": 3434, "laws": 3, "ts": "2026-07-26 06:13 UTC"}
+{"id": "/documentation/accelerate/vdsp/convolve(_:rowcount:columncount:with5x5kernel:result:)-g68r", "sha": "9081b3dfcbf035fc57ffeacb1a2ca6b917eed9202c3f427d0f76017c98eb4e96", "t": "convolve(_:rowCount:columnCount:with5x5Kernel:result:)", "n": 79, "laws": 1, "ts": "2026-07-26 11:56 UTC"}
+{"id": "/documentation/accelerate/vdsp_sve_svesqd", "sha": "7c4c677d68c8379b4f133d7e767beab4ce3c9c44c92e53adef35a503d4afc2da", "t": "vDSP_sve_svesqD", "n": 247, "laws": 0, "ts": "2026-07-26 12:02 UTC"}
+{"id": "/documentation/corevideo/kcvpixelformattype_2indexedgray_whiteiszero", "sha": "450045c78da29335d50c2853c27e15ea6610980c820fd2f747fe635a086321c2", "t": "kCVPixelFormatType_2IndexedGray_WhiteIsZero", "n": 34, "laws": 0, "ts": "2026-07-26 12:07 UTC"}

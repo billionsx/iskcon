@@ -24,3 +24,10 @@
 {"id": "/documentation/GameplayKit/GKARC4RandomSource", "sha": "90aead20124e1f50e994f2ec4ef9b557a4e36c5cdebe34a37fc1139b9598e281", "t": "GKARC4RandomSource", "n": 1286, "laws": 3, "ts": "2026-07-26 00:29 UTC"}
 {"id": "/documentation/RealityKit/SpatialTrackingSession", "sha": "af40f422110f0008ce5fab937d687f9b921cad7736ff0ad9cb9d6105364e7cd7", "t": "SpatialTrackingSession", "n": 3909, "laws": 9, "ts": "2026-07-26 00:30 UTC"}
 {"id": "/documentation/RealityKit/Transform", "sha": "68c8631891df303703f44f4dca31216cc89084dcd7db24532f91dc9c326b6193", "t": "Transform", "n": 661, "laws": 0, "ts": "2026-07-26 00:31 UTC"}
+{"id": "/documentation/compression/algorithm/lzfse", "sha": "24e6ad765db4c12f40dc683c57cf6fe13ec30e516b58dfc04596b5aab99d2e0b", "t": "Algorithm.lzfse", "n": 487, "laws": 4, "ts": "2026-07-26 11:50 UTC"}
+{"id": "/documentation/corevideo/kcvpixelformattype_16be565", "sha": "185a6656af8f7fe160199f1d952d7c6726a8737a9f2781663047a536dfeb135f", "t": "kCVPixelFormatType_16BE565", "n": 18, "laws": 0, "ts": "2026-07-26 12:06 UTC"}
+{"id": "/documentation/kernel/1579975-vdsp_ctoz", "sha": "024a1ba06f76a61704528becdd4e83ae3a6de88a5e0b7179574955cf82ed7df5", "t": "vDSP_ctoz", "n": 243, "laws": 1, "ts": "2026-07-26 12:09 UTC"}
+{"id": "/documentation/coreimage/ciformat/rg16", "sha": "ea2454281a048f27ffc2b7fb15a0936a64418560e8f07385f918d352189b74ae", "t": "RG16", "n": 86, "laws": 0, "ts": "2026-07-26 12:09 UTC"}
+{"id": "/documentation/coreimage/ciimage", "sha": "fa3c1eeddf9cc2c7b13d002be812f94b6eba84b880224f74cf4acbef8fc39ed0", "t": "CIImage", "n": 5140, "laws": 4, "ts": "2026-07-26 12:09 UTC"}
+{"id": "/documentation/accelerate/double_complex", "sha": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855", "t": "DOUBLE_COMPLEX", "n": 0, "laws": 0, "ts": "2026-07-26 12:11 UTC"}
+{"id": "/documentation/accelerate/vforce/exp2(_:)-2m5q", "sha": "f345c655d4c72f2957675b7d034f87ce4cde80686d6472b6685a8df3bf1e910b", "t": "exp2(_:)", "n": 90, "laws": 0, "ts": "2026-07-26 12:12 UTC"}

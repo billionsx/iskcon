@@ -28,3 +28,7 @@
 {"id": "/documentation/swiftui/image/init(_:variablevalue:bundle:)", "sha": "37a3844fcc0222be297abbbfc126b32928bd2c9169ebe1f26194b9fb22552782", "t": "init(_:variableValue:bundle:)", "n": 352, "laws": 1, "ts": "2026-07-26 05:56 UTC"}
 {"id": "/documentation/accelerate/vector-extrema-calculation", "sha": "edea707504783dcbac39d46ba14dbce9d489a385853afc98f1f519a488a9ddc8", "t": "Vector extrema calculation", "n": 493, "laws": 1, "ts": "2026-07-26 05:59 UTC"}
 {"id": "/documentation/accelerate/bnns/reductionfunction/all", "sha": "341b87e898fcd8391483ed32b65f909b08d1aa5182b8c697348f0323f9f15eaf", "t": "BNNS.ReductionFunction.all", "n": 47, "laws": 0, "ts": "2026-07-26 06:06 UTC"}
+{"id": "/documentation/foundation/filehandle/readcompletionmessage", "sha": "8a70d8e821359f2105e7c8904dd2b9b720cadee3cf34d6c1e9b9e8dc9dd5ef24", "t": "FileHandle.ReadCompletionMessage", "n": 630, "laws": 0, "ts": "2026-07-26 11:52 UTC"}
+{"id": "/documentation/accelerate/vdsp/hypot(_:_:)-7ku7m", "sha": "32afa2b8a65ba13031cc4d52acd7ee55ebe1c40a82d9880b8632dba254883785", "t": "hypot(_:_:)", "n": 382, "laws": 0, "ts": "2026-07-26 11:58 UTC"}
+{"id": "/documentation/accelerate/vdsp/windowsequence", "sha": "4cbd0f9c6e24a088d5557c0d1b29c4f8645b0c6bdfcce0e42915532fa757142d", "t": "vDSP.WindowSequence", "n": 209, "laws": 0, "ts": "2026-07-26 12:02 UTC"}
+{"id": "/documentation/accelerate/vdsp_dft_zop_createsetup", "sha": "073ab3fd536a18d97079f1420e18e0e818d2adca44485d914950c25aac246970", "t": "vDSP_DFT_zop_CreateSetup", "n": 980, "laws": 3, "ts": "2026-07-26 12:03 UTC"}

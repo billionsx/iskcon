@@ -29,3 +29,7 @@
 {"id": "/documentation/accelerate/bnnssparsitytype", "sha": "9d876c062440b7dd49dafdb8c88aa4ab92b67c556d1ce94e4d0387a57c9edf3d", "t": "BNNSSparsityType", "n": 75, "laws": 0, "ts": "2026-07-26 06:06 UTC"}
 {"id": "/documentation/accelerate/cblas_crotg(_:_:_:_:)", "sha": "1deb97bd94cd27f91c50ad59854696765b4ec056681348b171864b309162ea33", "t": "cblas_crotg(_:_:_:_:)", "n": 805, "laws": 1, "ts": "2026-07-26 06:14 UTC"}
 {"id": "/documentation/accelerate/cblas_strsm(_:_:_:_:_:_:_:_:_:_:_:_:)", "sha": "37d9b84425f3de765a8cf09460e55150a0d003ba331dcedbb7ad8f231b85686a", "t": "cblas_strsm(_:_:_:_:_:_:_:_:_:_:_:_:)", "n": 810, "laws": 1, "ts": "2026-07-26 06:16 UTC"}
+{"id": "/documentation/foundation/filehandle/seek(tooffset:)", "sha": "1333bef9b24a99724f3a2128082f010ccb627f0605b779cb4134edc63b149dad", "t": "seek(toOffset:)", "n": 229, "laws": 0, "ts": "2026-07-26 11:52 UTC"}
+{"id": "/documentation/accelerate/vdsp/downsample(_:decimationfactor:filter:)-40d8o", "sha": "3b36934bc1889a232c9785106c5463d5c885bd36275d669dd60aff69dbd8ad56", "t": "downsample(_:decimationFactor:filter:)", "n": 48, "laws": 0, "ts": "2026-07-26 11:57 UTC"}
+{"id": "/documentation/accelerate/vforce/nearestinteger(_:result:)-1izut", "sha": "fb547ef92705d7a1b2dfcac6d8ce3ec03efea3744b53b4577c38f48ab82b9d90", "t": "nearestInteger(_:result:)", "n": 86, "laws": 0, "ts": "2026-07-26 12:13 UTC"}
+{"id": "/documentation/simd/simd_norm_inf-94bsb", "sha": "0ea37d830c5245a22c9694412ee4a2ec5d8d8d1f000763bd23a89f7ee57e7931", "t": "simd_norm_inf", "n": 47, "laws": 1, "ts": "2026-07-26 12:19 UTC"}

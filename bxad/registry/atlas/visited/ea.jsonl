@@ -26,3 +26,8 @@
 {"id": "/documentation/accelerate/multiplication", "sha": "e0495584fa7db7e03cce0ce2b2c5fb270975b1b961544dd92670ef208ac3a7a3", "t": "Multiplication", "n": 53, "laws": 0, "ts": "2026-07-26 05:59 UTC"}
 {"id": "/documentation/coregraphics/cgpath/copy(using:)", "sha": "2bbc51e0cff29c86800dfa4ca7a3b6551d78bf16d08970653fb97c48abb64706", "t": "copy(using:)", "n": 182, "laws": 0, "ts": "2026-07-26 06:00 UTC"}
 {"id": "/documentation/accelerate/kvimagehalfinterpolation", "sha": "61b35023512f3ef48f25cdb4fac337743be79043554a1cfa597a3e39e2c1033b", "t": "kvImageHalfInterpolation", "n": 29, "laws": 0, "ts": "2026-07-26 06:02 UTC"}
+{"id": "/documentation/compression", "sha": "533da1cdc635fad9ea3499e149067b64d15b7ff499ddd2681494a66ceb0a680a", "t": "Compression", "n": 2447, "laws": 3, "ts": "2026-07-26 11:50 UTC"}
+{"id": "/documentation/accelerate/vdsp/mean(_:)-60g3p", "sha": "147777b7ecf1c83cf4bb53189d4a80dca6f2f15a4ae573068dcd044c0971c2c2", "t": "mean(_:)", "n": 179, "laws": 0, "ts": "2026-07-26 11:59 UTC"}
+{"id": "/documentation/avfoundation/avcapturephoto/metadata", "sha": "901afe0c2d8b164d4de7ee4035b155ebfef2b49ba976fb4b6db69ba0b06139ec", "t": "metadata", "n": 214, "laws": 0, "ts": "2026-07-26 12:04 UTC"}
+{"id": "/documentation/accelerate/vdsp_dft_interleaved_executed(_:_:_:)", "sha": "1e147897fabd70315dee4bd78219c891544c0744f5f08e813bedc8129fafe4bb", "t": "vDSP_DFT_Interleaved_ExecuteD(_:_:_:)", "n": 404, "laws": 2, "ts": "2026-07-26 12:08 UTC"}
+{"id": "/documentation/coreimage/ciformat/a16", "sha": "5f72825c78333af3874beeeb83377322d96a453a167291c8ecb4379f6fc792a7", "t": "A16", "n": 82, "laws": 0, "ts": "2026-07-26 12:09 UTC"}

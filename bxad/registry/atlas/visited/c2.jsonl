@@ -28,3 +28,6 @@
 {"id": "/documentation/accelerate/bnnsfree", "sha": "cd222f8b89d915b2b529648e5bb9a1fd786ddf5aa6a2612523069df085d9b45d", "t": "BNNSFree", "n": 62, "laws": 0, "ts": "2026-07-26 06:10 UTC"}
 {"id": "/documentation/swift/unsafepointer/pointee", "sha": "e1c5a5e32e862a32a8ae3c208f74c49ee44d298f25a2a7f6d53b01c9bfa7ef81", "t": "pointee", "n": 164, "laws": 1, "ts": "2026-07-26 06:13 UTC"}
 {"id": "/documentation/swift/error", "sha": "d9caff57418ef4f259c6c70d4d6e92f4e98465be5fe877c3e8a446547020cb49", "t": "Error", "n": 1900, "laws": 4, "ts": "2026-07-26 06:13 UTC"}
+{"id": "/documentation/compression/compression_status_error", "sha": "e2fa8dcf3fda3d9bc4f42fb35b8de756704596896157ce19583f87cc28c70646", "t": "COMPRESSION_STATUS_ERROR", "n": 175, "laws": 0, "ts": "2026-07-26 11:51 UTC"}
+{"id": "/documentation/accelerate/vdsp/convertelements(of:to:rounding:)-2ig4y", "sha": "c4167d374845880b38649bbc188d16f5c197f989b5bc015728944f61eb79cdd5", "t": "convertElements(of:to:rounding:)", "n": 58, "laws": 0, "ts": "2026-07-26 11:56 UTC"}
+{"id": "/documentation/accelerate/vdsp/divide(_:_:result:)-3emlk", "sha": "f906b39f774e085eb51f4e034aaa1663beb7a2b0c244be7322b2512a9aea6f34", "t": "divide(_:_:result:)", "n": 273, "laws": 0, "ts": "2026-07-26 11:57 UTC"}

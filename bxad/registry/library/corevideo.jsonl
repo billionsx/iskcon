@@ -14,3 +14,11 @@
 {"id": "/documentation/corevideo/cvpixelbufferunlockbaseaddress(_:_:)", "law": "You must call the function before accessing pixel data with the CPU, and call the function afterward."}
 {"id": "/documentation/corevideo/cvpixelbufferunlockbaseaddress(_:_:)", "law": "If you include the value in the parameter when locking the buffer, you must also include it when unlocking the buffer."}
 {"id": "/documentation/corevideo/cvplanarcomponentinfo", "law": "For this reason, you should use and to get information about a planar pixel buffer."}
+{"id": "/documentation/corevideo/cvpixelbufferlockflags/readonly", "law": "Set this flag if you don’t plan to modify buffer data while holding the lock."}
+{"id": "/documentation/corevideo/cvpixelbufferlockflags/readonly", "law": "If you pass this flag to the function, you must also pass it to the function."}
+{"id": "/documentation/corevideo/cvdisplaylinkcreatewithcgdisplay(_:_:)", "law": "Use this call to create a display link for a single display."}
+{"id": "/documentation/corevideo/cvdisplaylinkcreatewithcgdisplays(_:_:_:)", "law": "Use this call to create a display link for a set of displays identified by the Core Graphics display IDs."}
+{"id": "/documentation/corevideo/cvdisplaylinkgetcurrenttime(_:_:)", "law": "You use this call to obtain the timestamp of the frame that is currently being displayed."}
+{"id": "/documentation/corevideo/cvdisplaylinkoutputcallback", "law": "Your app must register a callback function for the system to invoke with the data necessary to process and output a frame of video."}
+{"id": "/documentation/corevideo/cvdisplaylinkoutputcallback", "law": "Your callback must retrieve the frame with the timestamp that the parameter specifies, manipulate it if you require (for example, apply color correction or map onto a surface), and output it to the display."}
+{"id": "/documentation/corevideo/cvtime-q1e", "law": "You use them to interact with the Core Video display link."}

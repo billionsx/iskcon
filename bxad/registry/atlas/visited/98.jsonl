@@ -35,3 +35,10 @@
 {"id": "/documentation/accelerate/bnnslossfunction", "sha": "5eff2063b79d48b171159d91bc6bd46584c055e27bb6eaa0039bad792ba4d7da", "t": "BNNSLossFunction", "n": 398, "laws": 0, "ts": "2026-07-26 06:10 UTC"}
 {"id": "/documentation/accelerate/cblas_strmv(_:_:_:_:_:_:_:_:_:)", "sha": "2e26c9227f984a2eb090da0e00e827c3b25bda5c52762ed45eb4385b25e56f81", "t": "cblas_strmv(_:_:_:_:_:_:_:_:_:)", "n": 683, "laws": 1, "ts": "2026-07-26 06:16 UTC"}
 {"id": "/documentation/accelerate/cblas_zaxpy(_:_:_:_:_:_:)", "sha": "5df53649e0611d626743f0ac10a4d4153a7ce630ef935381203f4fa8f7c6827e", "t": "cblas_zaxpy(_:_:_:_:_:_:)", "n": 762, "laws": 1, "ts": "2026-07-26 06:16 UTC"}
+{"id": "/documentation/foundation/filehandle/nulldevice", "sha": "0db2467f1c4979abf131ce003ede13f8b26e1ea9e260b015e279f5ace525e3a8", "t": "nullDevice", "n": 718, "laws": 1, "ts": "2026-07-26 11:51 UTC"}
+{"id": "/documentation/accelerate/vdsp/add(multiplication:_:)-1bsuq", "sha": "36153f3121c5e7a8e80502335bd846fbfdd5fa9c7a0dd13e40eef9b686b5db4f", "t": "add(multiplication:_:)", "n": 365, "laws": 0, "ts": "2026-07-26 11:55 UTC"}
+{"id": "/documentation/accelerate/vdsp/taperedmerge(_:_:)-9s9j5", "sha": "1bf84c424ad7c898ceea5dfaf4db44d0b66868ff7bf373d1855ce6ee7cba8daf", "t": "taperedMerge(_:_:)", "n": 327, "laws": 0, "ts": "2026-07-26 12:02 UTC"}
+{"id": "/documentation/accelerate/vdsp_svs", "sha": "35ca5673cb4990d2ebaf313643474dacd6c6e22b017beb866bc537f7b919023c", "t": "vDSP_svs", "n": 252, "laws": 0, "ts": "2026-07-26 12:02 UTC"}
+{"id": "/documentation/ObjectiveC/BOOL", "sha": "7e23bdc7c48b16d379236cd6d1344223eb09e17ca50787a06792c44a09975be2", "t": "BOOL", "n": 437, "laws": 0, "ts": "2026-07-26 12:10 UTC"}
+{"id": "/documentation/simd/simd_fract(_:)-47n4w", "sha": "1291f9047107bd9ea30b198815bce564316fa09a8abba7ced6f31e84df1f37db", "t": "simd_fract(_:)", "n": 56, "laws": 0, "ts": "2026-07-26 12:19 UTC"}
+{"id": "/documentation/simd/simd_sign(_:)-6goju", "sha": "3faa8466cf1425f73a03149d5e0c3adbbad6cff90419f6ebd7a6db3a48c65914", "t": "simd_sign(_:)", "n": 45, "laws": 0, "ts": "2026-07-26 12:19 UTC"}

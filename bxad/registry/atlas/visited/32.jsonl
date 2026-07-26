@@ -26,3 +26,8 @@
 {"id": "/documentation/accelerate/bnnsdatatypefloat16", "sha": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855", "t": "BNNSDataTypeFloat16", "n": 0, "laws": 0, "ts": "2026-07-26 06:09 UTC"}
 {"id": "/documentation/accelerate/bnnsnearestneighborsload(_:_:_:)", "sha": "28abd3a783c1236c4e9cabb451c88e5fe1a95aae84a14b331605dc7169a794ac", "t": "BNNSNearestNeighborsLoad(_:_:_:)", "n": 499, "laws": 0, "ts": "2026-07-26 06:11 UTC"}
 {"id": "/documentation/coregraphics/cgimage/copy()", "sha": "14119a66e3fdd388ca2271c39d4565676a348557c43701601f8535e6b407ab87", "t": "copy()", "n": 71, "laws": 0, "ts": "2026-07-26 06:12 UTC"}
+{"id": "/documentation/accelerate/cblas_ztrmm(_:_:_:_:_:_:_:_:_:_:_:_:)", "sha": "84da758db1c0e9d1eb778af47fc5cd2cca2dda765764e3fb1e4d48885995c0d5", "t": "cblas_ztrmm(_:_:_:_:_:_:_:_:_:_:_:_:)", "n": 782, "laws": 1, "ts": "2026-07-26 11:49 UTC"}
+{"id": "/documentation/accelerate/sparse_matrix_float_complex", "sha": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855", "t": "sparse_matrix_float_complex", "n": 0, "laws": 0, "ts": "2026-07-26 11:50 UTC"}
+{"id": "/documentation/accelerate/vdsp/reverse(_:)-3aq38", "sha": "b1eb8996df997c5ed1e0f068e09a5ef984eea28c3daf852acadcb607ff2f315e", "t": "reverse(_:)", "n": 201, "laws": 0, "ts": "2026-07-26 12:00 UTC"}
+{"id": "/documentation/accelerate/vforce/tan(_:result:)-4wevz", "sha": "718f9b49fd9085763bb7d95a95a19b271ca09f1bc19c36226e782d3ca7ce421d", "t": "tan(_:result:)", "n": 78, "laws": 0, "ts": "2026-07-26 12:14 UTC"}
+{"id": "/documentation/simd/reduce_add(_:)-3112d", "sha": "f94dcefc8d98d1ce4d5b6396c2a6ef37b18fe3070d14955a6ceac765e30c2471", "t": "reduce_add(_:)", "n": 44, "laws": 0, "ts": "2026-07-26 12:18 UTC"}

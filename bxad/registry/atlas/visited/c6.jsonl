@@ -32,3 +32,9 @@
 {"id": "/documentation/accelerate/bnnscomparetensor(_:_:_:_:)", "sha": "878989b18f1ccc335114664b524b0f2e7f740a97aacec5c15f3228db1b562289", "t": "BNNSCompareTensor(_:_:_:_:)", "n": 526, "laws": 2, "ts": "2026-07-26 06:09 UTC"}
 {"id": "/documentation/accelerate/bnnsmatmul(_:_:_:_:_:_:_:_:)", "sha": "a0e53d54352ce6166b1050b8668356c5fd6a3d83bf0eeca0a9284a2a80d9378e", "t": "BNNSMatMul(_:_:_:_:_:_:_:_:)", "n": 936, "laws": 4, "ts": "2026-07-26 06:10 UTC"}
 {"id": "/documentation/coregraphics/cgimage/dataprovider", "sha": "70b8609c71e2e73527b08863a3c9c56d9e661415ac7464649d356372c7065365", "t": "dataProvider", "n": 59, "laws": 0, "ts": "2026-07-26 06:12 UTC"}
+{"id": "/documentation/foundation/filemanager/homedirectory(foruser:)", "sha": "c5be2765afcad603277e63ea3ace26150dc036636c9c902d90b2398967c8e3f5", "t": "homeDirectory(forUser:)", "n": 216, "laws": 0, "ts": "2026-07-26 11:52 UTC"}
+{"id": "/documentation/accelerate/vdsp_splitcomplexfloat", "sha": "deabf850304c41a70bdda1049428d47f848880be69e8445eb83d0e488b00d450", "t": "vDSP_SplitComplexFloat", "n": 184, "laws": 0, "ts": "2026-07-26 12:02 UTC"}
+{"id": "/documentation/swift/unsaferawpointer", "sha": "9d540e689769dc8f7792f0e4f88daf00d58be029f712b26b929a5f63e20d20bb", "t": "UnsafeRawPointer", "n": 5292, "laws": 10, "ts": "2026-07-26 12:07 UTC"}
+{"id": "/documentation/accelerate/vforce/cospi(_:)-8ouii", "sha": "a8f18025ae45a9c2d44d3ecdc26b1107f232885c9249c1931588c5a9997993e8", "t": "cosPi(_:)", "n": 92, "laws": 0, "ts": "2026-07-26 12:12 UTC"}
+{"id": "/documentation/accelerate/vvlog1p(_:_:_:)", "sha": "1423431595c58f973113d8bc6ec535030703a5d391058a0d410657ebb8ba5c2f", "t": "vvlog1p(_:_:_:)", "n": 310, "laws": 0, "ts": "2026-07-26 12:15 UTC"}
+{"id": "/documentation/simd/asinh", "sha": "f1e2cc417293e1b5385a470a689eea2c1eefdfb2835374e33a0214e29e994d32", "t": "asinh", "n": 64, "laws": 0, "ts": "2026-07-26 12:16 UTC"}
