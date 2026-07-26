@@ -1,0 +1,26 @@
+name: bxad-review
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+    paths:
+      - "apps/web/**"
+permissions:
+  contents: read
+  pull-requests: write
+concurrency:
+  group: bxad-review-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+jobs:
+  review:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+      - name: "BXAD · ревью PR по измеренным законам (ст. 56 · M1)"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          PROJECT_ROOT: .
+        run: python3 bxad/bin/review.py

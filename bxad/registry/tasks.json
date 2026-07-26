@@ -190,5 +190,70 @@
    "status": "active",
    "organ": "ПКЛ-конвейер"
   }
+ ],
+ "service": [
+  {
+   "id": "M1",
+   "task": "PR-гейт: ревью каждого pull request числами законов, построчно",
+   "status": "active",
+   "organ": "bin/review.py + bxad-review.yml (внутренняя версия); мульти-тенант — M7",
+   "article": "ст. 56"
+  },
+  {
+   "id": "M2",
+   "task": "Монитор прода 24/7: живой взгляд после каждого деплоя + алерт в Slack",
+   "status": "queued",
+   "organ": "liveview по deploy-hook + Slack webhook",
+   "article": "ст. 56"
+  },
+  {
+   "id": "M3",
+   "task": "Пиксель-сертификация: ежемесячный PDF-отчёт соответствия с адресами + бейдж",
+   "status": "queued",
+   "organ": "verify+lint → PDF (Browser Rendering)",
+   "article": "ст. 56"
+  },
+  {
+   "id": "M4",
+   "task": "Генерация по канону: скрин/Figma → компонент, прошедший суд; персональный tokens.json клиента",
+   "status": "queued",
+   "organ": "мок-конвейер + адаптеры",
+   "article": "ст. 56"
+  },
+  {
+   "id": "M5",
+   "task": "Страж App Store: прогон по живым App Review Guidelines до сабмита",
+   "status": "queued",
+   "organ": "знание appstore-кодекса + чек-лист",
+   "article": "ст. 56"
+  },
+  {
+   "id": "M6",
+   "task": "Big7-бриф: еженедельные тезисы семёрки, применённые к продукту клиента",
+   "status": "queued",
+   "organ": "consult → digest→бриф",
+   "article": "ст. 56"
+  },
+  {
+   "id": "M7",
+   "task": "GitHub App мульти-тенант (кнопки владельца: регистрация приложения)",
+   "status": "queued",
+   "organ": "BUSINESS/APP-SETUP.md",
+   "article": "ст. 56"
+  },
+  {
+   "id": "M8",
+   "task": "Stripe + тарифы Solo 99 / Team 499 / Studio 1000",
+   "status": "queued",
+   "organ": "после M7",
+   "article": "ст. 56"
+  },
+  {
+   "id": "M9",
+   "task": "Лендинг службы, собранный китом лендингов Apple",
+   "status": "queued",
+   "organ": "WEBLAB-кит → страница",
+   "article": "ст. 56"
+  }
  ]
 }

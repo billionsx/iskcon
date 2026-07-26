@@ -93,9 +93,10 @@ def render(d: dict):
           f"| Храповик | долг по проектам: " + (" · ".join(f"{k}:{v}" for k, v in d['ratchet'].items()) or "—") + " |",
           "", "## Поручения основателя",
           f"- BXAD: {trow('bxad')}",
-          f"- Продукт ISKCON: {trow('iskcon_product')}", "",
+          f"- Продукт ISKCON: {trow('iskcon_product')}",
+          f"- Служба (трек M): {trow('service')}", "",
           "| ID | Поручение | Статус | Орган |", "|---|---|---|---|"]
-    for grp in ("bxad", "iskcon_product"):
+    for grp in ("bxad", "service", "iskcon_product"):
         for x in d["tasks_list"].get(grp, []):
             md.append(f"| {x['id']} | {x['task']} | **{x['status']}** | {x['organ']} |")
     (out / "DASHBOARD.md").write_text("\n".join(md) + "\n", encoding="utf-8")

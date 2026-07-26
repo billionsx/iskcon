@@ -72,6 +72,7 @@ FOUNDER_MANDATE = {
     "реестр поручений основателя": "Статья 53 · Реестр поручений",
     "дашборд в прямом эфире": "Статья 54 · Эфир",
     "большая семёрка консалтинга (аналитика·продукт·бизнес-логика)": "Статья 55 · Большая семёрка",
+    "служба по подписке (PR-гейт·монитор·сертификация)": "Статья 56 · Служба",
     "динамика": "Статья 21.1 · Динамика", "эффекты": "Статья 22.1 · Эффекты",
 }
 
@@ -615,6 +616,15 @@ def cmd_selftest(root: Path) -> int:
         check("семёрка идемпотентна: повтор не плодит положений", rc2["laws_new"] == 0)
     finally:
         shutil.rmtree(tmpc, ignore_errors=True)
+
+    print("SELFTEST · служба M1 (парсер диффа)")
+    import review as review_mod
+    patch = "@@ -1,2 +1,4 @@\n context\n+.bad { color: #8E8E8E; }\n+.ok { color: var(--x); }\n-old line\n context2\n@@ -10 +12,2 @@\n+.later { box-shadow: 0 10px 30px rgba(0,0,0,.5); }"
+    added = review_mod.parse_added(patch)
+    check("дифф разобран: номера НОВЫХ строк точны, удалённые не мешают",
+          added == {2: ".bad { color: #8E8E8E; }", 3: ".ok { color: var(--x); }",
+                    12: ".later { box-shadow: 0 10px 30px rgba(0,0,0,.5); }"})
+    check("пустой патч → пусто", review_mod.parse_added("") == {})
 
     print("SELFTEST · конституция (ст. 45: полнота мандата машиной)")
     const_t = (root / "CONSTITUTION.md").read_text(encoding="utf-8")
