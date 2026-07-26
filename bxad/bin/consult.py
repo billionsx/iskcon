@@ -117,13 +117,15 @@ def run(root: Path, budget: int = None, fixtures: Path = None) -> dict:
         st["firms"][f2]["frontier"] = seeds + [u for u in st["firms"][f2]["frontier"] if u not in seeds]
         st["firms"][f2]["_seeds"] = seeds
     per = max(1, budget // max(1, len(firms)))
+    per_render = min(per, 8)  # браузерные фирмы: жёсткий кап времени шага
     new_laws = pages = 0
     pw = br = pg = None
     for firm in firms:
         fs = st["firms"][firm]
         vis = set(fs["visited"])
         steps = 0
-        while fs["frontier"] and steps < per:
+        cap = per_render if firm in RENDER_FIRMS else per
+        while fs["frontier"] and steps < cap:
             url = fs["frontier"].pop(0)
             if url in vis and url not in fs.get("_seeds", []):
                 continue
@@ -142,7 +144,8 @@ def run(root: Path, budget: int = None, fixtures: Path = None) -> dict:
                     if pg is None:
                         continue
                     try:
-                        pg.goto(url, wait_until="networkidle", timeout=40000)
+                        pg.goto(url, wait_until="domcontentloaded", timeout=15000)
+                        pg.wait_for_timeout(2200)
                         html = pg.content()
                     except Exception:
                         continue

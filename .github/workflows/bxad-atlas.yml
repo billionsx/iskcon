@@ -28,6 +28,8 @@ jobs:
       - name: "Веб-атлас — кит лендингов Apple (ст. 36.3)"
         run: python3 bxad/bin/bxad.py weblab || true
       - name: "Большая семёрка — познание бизнес-логики (ст. 55)"
+        timeout-minutes: 12
+        continue-on-error: true
         run: python3 bxad/bin/bxad.py consult || true
 
       - name: "Кит — величины официальных китов (ст. 36.1)"
@@ -36,6 +38,8 @@ jobs:
           FIGMA_KIT_KEY: ${{ secrets.FIGMA_KIT_KEY }}
         run: python3 bxad/bin/bxad.py kit || true
       - name: "Живой взгляд — DOM и computed-styles приложения (ст. 37.3)"
+        timeout-minutes: 10
+        continue-on-error: true
         run: |
           python3 bxad/bin/liveview.py --live || echo "живой взгляд: см. registry/live"
       - name: "Эфир — пересборка дашборда (ст. 54)"
