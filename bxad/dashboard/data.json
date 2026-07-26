@@ -1,5 +1,5 @@
 {
- "ts": "2026-07-26 06:26 UTC",
+ "ts": "2026-07-26 11:48 UTC",
  "atlas": {
   "visited": 8200,
   "frontier": 48728,
@@ -165,7 +165,7 @@
     "id": "T16",
     "task": "Перенос BXAD: отдельный GitHub + домен + Cloudflare, подключаем к любому проекту",
     "status": "queued",
-    "organ": "MIGRATION-STANDALONE.md — пошаговая инструкция готова; исполнение — кнопками владельца аккаунтов",
+    "organ": "MIGRATION-STANDALONE.md; факт: Тильда даёт только TXT/MX (CNAME нет) — пути В1 pages.dev · В2 свой домен CF (рекомендация) · В3 NS-перенос зоны",
     "article": "ст. 46–47"
    },
    {

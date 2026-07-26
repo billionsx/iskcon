@@ -88,8 +88,7 @@ def _report(root: Path, results: dict):
     for slug, r in results.items():
         md.append(f"## {r['url']}")
         md.append(f"элементов снято: {r['elements']} · находок: {len(r['findings'])}")
-        if r.get("diag"):
-            md.append(f"диагностика пустоты: {json.dumps(r['diag'], ensure_ascii=False)}")
+        md.append(f"диагностика: {json.dumps(r.get('diag'), ensure_ascii=False)}")
         by = {}
         for rule, sel, why in r["findings"]:
             by.setdefault(rule, []).append((sel, why))
@@ -124,9 +123,7 @@ def run_live(root: Path) -> dict:
             except Exception as e:
                 results[slug] = {"url": url, "elements": 0, "findings": [], "note": f"{type(e).__name__}"}
                 continue
-            diag = None
-            if not els:
-                diag = pg.evaluate("() => ({url: location.href, title: document.title,"
+            diag = pg.evaluate("() => ({url: location.href, title: document.title,"
                                    " ready: document.readyState, htmlLen: document.documentElement.outerHTML.length,"
                                    " bodyChildren: document.body ? document.body.childElementCount : -1})")
             finds = check_dump(els, tokens)

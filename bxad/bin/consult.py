@@ -38,6 +38,7 @@ def strip_html(raw: str) -> str:
     return re.sub(r"\s+", " ", _html.unescape(raw)).strip()
 
 DELAY = 1.0
+RENDER_FIRMS = {"mckinsey", "bain"}  # их хабы собираются скриптом — берём браузером
 LINK = re.compile(r'href="([^"#]+)"', re.I)
 IMP = re.compile(r"\b(should|must|need(?:s)? to|it is essential|imperative|"
                  r"companies that [^.]{10,80} outperform|leaders (?:should|must|need))\b", re.I)
@@ -79,6 +80,17 @@ def mine(text: str, url: str):
     return laws, frames
 
 
+def _renderer():
+    try:
+        from playwright.sync_api import sync_playwright
+    except Exception:
+        return None, None, None
+    pw = sync_playwright().start()
+    b = pw.chromium.launch()
+    pg = b.new_page(user_agent=UA)
+    return pw, b, pg
+
+
 def run(root: Path, budget: int = None, fixtures: Path = None) -> dict:
     reg = root / "registry"
     cfg = json.loads((reg / "big7-sources.json").read_text(encoding="utf-8"))
@@ -102,6 +114,7 @@ def run(root: Path, budget: int = None, fixtures: Path = None) -> dict:
     firms = list(st["firms"].keys())
     per = max(1, budget // max(1, len(firms)))
     new_laws = pages = 0
+    pw = br = pg = None
     for firm in firms:
         fs = st["firms"][firm]
         vis = set(fs["visited"])
@@ -119,10 +132,21 @@ def run(root: Path, budget: int = None, fixtures: Path = None) -> dict:
             else:
                 if not _robots_ok(url):
                     continue
-                try:
-                    html = _get(url)
-                except Exception:
-                    continue
+                if firm in RENDER_FIRMS:
+                    if pg is None:
+                        pw, br, pg = _renderer()
+                    if pg is None:
+                        continue
+                    try:
+                        pg.goto(url, wait_until="networkidle", timeout=40000)
+                        html = pg.content()
+                    except Exception:
+                        continue
+                else:
+                    try:
+                        html = _get(url)
+                    except Exception:
+                        continue
                 time.sleep(DELAY)
             steps += 1
             pages += 1
@@ -146,6 +170,8 @@ def run(root: Path, budget: int = None, fixtures: Path = None) -> dict:
                         and len(fs["frontier"]) < 4000 and not re.search(r"\.(pdf|jpg|png|zip|mp4)$", u, re.I):
                     fs["frontier"].append(u)
         fs["visited"] = sorted(vis)
+    if br is not None:
+        br.close(); pw.stop()
     st["frames"] = dict(frames_c)
     stf.write_text(json.dumps(st, ensure_ascii=False), encoding="utf-8")
     md = ["# БОЛЬШАЯ СЕМЁРКА · познание логики консалтинга (ст. 55)",
