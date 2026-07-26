@@ -1,5 +1,5 @@
 {
- "ts": "2026-07-25 23:42 UTC",
+ "ts": "2026-07-26 00:02 UTC",
  "atlas": {
   "visited": 5200,
   "frontier": 35004,
@@ -31,11 +31,16 @@
  "ratchet": {
   "iskcon": 327
  },
+ "big7": {
+  "pages": 0,
+  "laws": 0,
+  "frames": 0
+ },
  "base": "ios26.5-dark",
  "tasks": {
   "bxad": {
    "done": 10,
-   "active": 6,
+   "active": 7,
    "queued": 1,
    "blocked": 0,
    "partial": 1
@@ -176,6 +181,13 @@
     "status": "done",
     "organ": "bxad-macos.yml: Xcode 15.4 (+8 версий) · SF Symbols установлен · опись 9184 символа",
     "article": "ст. 49.1"
+   },
+   {
+    "id": "T19",
+    "task": "Большая семёрка (Deloitte·PwC·EY·KPMG + McKinsey·BCG·Bain): ежедневное системное познание логики — аналитика · продукт · бизнес-логика",
+    "status": "active",
+    "organ": "bin/consult.py · шаг урожая ежедневно · library/big7 + карта фреймворков",
+    "article": "ст. 55"
    }
   ],
   "iskcon_product": [
@@ -235,5 +247,5 @@
    }
   ]
  },
- "articles": 64
+ "articles": 65
 }

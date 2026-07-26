@@ -26,6 +26,9 @@ jobs:
         run: python3 bxad/bin/bxad.py atlas --budget 1500
       - name: "Веб-атлас — кит лендингов Apple (ст. 36.3)"
         run: python3 bxad/bin/bxad.py weblab || true
+      - name: "Большая семёрка — познание бизнес-логики (ст. 55)"
+        run: python3 bxad/bin/bxad.py consult || true
+
       - name: "Кит — величины официальных китов (ст. 36.1)"
         env:
           FIGMA_TOKEN: ${{ secrets.FIGMA_TOKEN }}

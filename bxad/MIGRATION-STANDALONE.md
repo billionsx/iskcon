@@ -42,6 +42,17 @@ GITHUB_TOKEN даётся Actions автоматически — ничего в
 Вариант А (домен уже на Cloudflare): в проекте Pages → **Custom domains** →
 **Set up a custom domain** → введи, например, `bxad.billionsx.com` →
 Cloudflare сам создаст CNAME → Activate.
+Вариант В (billionsx.com на Тильде — DNS менять нельзя, записи добавлять
+можно): апекс не трогаем, эфир живёт на поддомене.
+1. В Pages-проекте: **Custom domains → Set up a custom domain** → введи
+   `bxad.billionsx.com`. Cloudflare покажет, какую запись создать (CNAME;
+   иногда плюс TXT-подтверждение) — оставь вкладку открытой.
+2. Там, где сейчас добавляются записи для billionsx.com (панель регистратора
+   домена или Tilda → Настройки сайта → Домен → DNS-записи), добавь:
+   Тип **CNAME** · Имя/Host **bxad** · Значение **bxad.pages.dev** · TTL авто.
+   Если Cloudflare попросил TXT — добавь и её тем же способом.
+3. Вернись в Cloudflare → кнопка **Check DNS / Activate** (проверка до
+   10–30 мин). Тильда и главный сайт не затрагиваются вообще.
 Вариант Б (домена нет): dash.cloudflare.com → **Domain Registration** →
 **Register domain** → купи (например `bxad.dev`) → затем Вариант А.
 

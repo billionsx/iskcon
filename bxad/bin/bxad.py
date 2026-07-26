@@ -33,6 +33,7 @@ import atlas as atlas_mod  # noqa: E402
 import figkit as figkit_mod  # noqa: E402
 import study as study_mod  # noqa: E402
 import weblab as weblab_mod  # noqa: E402
+import consult as consult_mod  # noqa: E402
 import verify as verify_mod  # noqa: E402
 import lint as lint_mod  # noqa: E402
 
@@ -70,6 +71,7 @@ FOUNDER_MANDATE = {
     "Программа-95": "Статья 52 · Программа-95",
     "реестр поручений основателя": "Статья 53 · Реестр поручений",
     "дашборд в прямом эфире": "Статья 54 · Эфир",
+    "большая семёрка консалтинга (аналитика·продукт·бизнес-логика)": "Статья 55 · Большая семёрка",
     "динамика": "Статья 21.1 · Динамика", "эффекты": "Статья 22.1 · Эффекты",
 }
 
@@ -582,6 +584,31 @@ def cmd_selftest(root: Path) -> int:
     ids2 = [t["id"] for g, its in baddup.items() if not g.startswith("_") for t in its]
     check("подделка (дубль id поручения) ловится", len(ids2) != len(set(ids2)))
 
+    print("SELFTEST · большая семёрка (фикстуры: обе стороны)")
+    tmpc = Path(tempfile.mkdtemp(prefix="bxad-c-"))
+    try:
+        (tmpc / "registry" / "state").mkdir(parents=True)
+        (tmpc / "registry" / "state" / "CHANGELOG.md").write_text("", encoding="utf-8")
+        (tmpc / "registry" / "big7-sources.json").write_text(json.dumps(
+            {"firms": {"bain": ["https://fixture.big7/insights"]}, "budget_per_day": 5}), encoding="utf-8")
+        fxc = tmpc / "fxc"; fxc.mkdir()
+        (fxc / "https-fixture-big7-insights"[:80].replace("/", "-").replace(":", "-").replace(".", "-").lstrip("-")).with_suffix(".html")
+        import re as _re
+        name = _re.sub(r"[^a-z0-9]+", "-", "https://fixture.big7/insights".lower()).strip("-")[:80] + ".html"
+        (fxc / name).write_text("<p>Companies must adopt zero-based budgeting to fund growth. "
+                                "We apply the pyramid principle and net promoter score in reviews.</p>"
+                                "<p>The weather is nice today in the office lobby garden area, isn't it, dear colleagues of ours.</p>", encoding="utf-8")
+        rc1 = consult_mod.run(tmpc, fixtures=fxc)
+        lib7 = (tmpc / "registry" / "library" / "big7.jsonl").read_text(encoding="utf-8")
+        big = json.loads((tmpc / "registry" / "bizlab" / "state.json").read_text(encoding="utf-8"))
+        check("семёрка: императив пойман положением с адресом page:, рамки ZBB/Минто/NPS в карте",
+              rc1["laws_new"] == 1 and '"at": "page:https://fixture.big7/insights"' in lib7
+              and {"ZBB", "Пирамида Минто", "NPS"} <= set(big["frames"]))
+        rc2 = consult_mod.run(tmpc, fixtures=fxc)
+        check("семёрка идемпотентна: повтор не плодит положений", rc2["laws_new"] == 0)
+    finally:
+        shutil.rmtree(tmpc, ignore_errors=True)
+
     print("SELFTEST · конституция (ст. 45: полнота мандата машиной)")
     const_t = (root / "CONSTITUTION.md").read_text(encoding="utf-8")
     missing = [d for d, anchor in FOUNDER_MANDATE.items() if anchor not in const_t]
@@ -670,6 +697,7 @@ def main() -> int:
     sub.add_parser("verify")
     sub.add_parser("study")
     sub.add_parser("weblab")
+    sub.add_parser("consult")
     at = sub.add_parser("atlas")
     at.add_argument("--budget", type=int, default=700)
     kt = sub.add_parser("kit")
@@ -719,6 +747,10 @@ def main() -> int:
     if a.cmd == "weblab":
         r = weblab_mod.run(ROOT)
         print(f"веб-атлас: страниц {r['pages']} · видов секций {r['sections_kinds']} · новых типографических законов {r['typo_laws_new']}")
+        return 0
+    if a.cmd == "consult":
+        r = consult_mod.run(ROOT)
+        print(f"семёрка: страниц {r['pages']} · новых положений {r['laws_new']} · рамок {r['frames']}")
         return 0
     if a.cmd == "atlas":
         r = atlas_mod.step(ROOT, budget=a.budget)

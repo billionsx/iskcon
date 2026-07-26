@@ -51,6 +51,10 @@ def collect() -> dict:
     d["live"] = {"pages": lv.read_text(encoding="utf-8").count("## ") if lv.exists() else 0}
     base = _j(R / "state" / "ae-baseline.json", {})
     d["ratchet"] = {k: sum(v.values()) for k, v in base.items()} if base else {}
+    b7 = _j(R / "bizlab" / "state.json", {})
+    d["big7"] = {"pages": sum(len(f.get("visited", [])) for f in b7.get("firms", {}).values()),
+                 "laws": sum(f.get("laws", 0) for f in b7.get("firms", {}).values()),
+                 "frames": len(b7.get("frames", {}))}
     tk = _j(R / "standards" / "tokens.json", {})
     d["base"] = tk.get("base", "?")
     tasks = _j(R / "tasks.json", {})
@@ -85,6 +89,7 @@ def render(d: dict):
           f"| SF Symbols | **{d['symbols']}** символов (macOS-плечо) |",
           f"| Кадротека | {d['screens']['frames']} кадров · {d['screens']['apps']} приложений |",
           f"| Живой взгляд | страниц в эфире: {d['live']['pages']} |",
+          f"| Большая семёрка | страниц {d['big7']['pages']} · положений {d['big7']['laws']} · рамок в карте {d['big7']['frames']} |",
           f"| Храповик | долг по проектам: " + (" · ".join(f"{k}:{v}" for k, v in d['ratchet'].items()) or "—") + " |",
           "", "## Поручения основателя",
           f"- BXAD: {trow('bxad')}",
