@@ -202,8 +202,8 @@
   {
    "id": "M2",
    "task": "Монитор прода 24/7: живой взгляд после каждого деплоя + алерт в Slack",
-   "status": "queued",
-   "organ": "liveview по deploy-hook + Slack webhook",
+   "status": "active",
+   "organ": "bin/monitor.py + bxad-monitor.yml (workflow_run: deploy-web); Slack при секрете SLACK_WEBHOOK_URL, иначе комментарий к коммиту деплоя",
    "article": "ст. 56"
   },
   {

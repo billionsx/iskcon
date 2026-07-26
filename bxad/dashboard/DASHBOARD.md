@@ -1,4 +1,4 @@
-# BXAD · ЭФИР — 2026-07-26 19:37 UTC
+# BXAD · ЭФИР — 2026-07-26 20:09 UTC
 Живые числа реестров департамента Billions X Apple Developer; лист пересобирается каждым прогоном.
 
 | Орган | Состояние |
@@ -12,13 +12,14 @@
 | SF Symbols | **9184** символов (macOS-плечо) |
 | Кадротека | 195 кадров · 10 приложений |
 | Живой взгляд | страниц в эфире: 3 |
+| Монитор прода | первого снятия не было |
 | Большая семёрка | страниц 161 · положений 252 · рамок в карте 7 |
 | Храповик | долг по проектам: iskcon:327 |
 
 ## Поручения основателя
 - BXAD: done 10 · active 7 · queued 1 · partial 1 · blocked 0
 - Продукт ISKCON: done 2 · active 1 · queued 6 · partial 0 · blocked 0
-- Служба (трек M): done 0 · active 1 · queued 8 · partial 0 · blocked 0
+- Служба (трек M): done 0 · active 2 · queued 7 · partial 0 · blocked 0
 
 | ID | Поручение | Статус | Орган |
 |---|---|---|---|
@@ -42,7 +43,7 @@
 | T18 | Установка приложений Apple для разработчиков | **done** | bxad-macos.yml: Xcode 15.4 (+8 версий) · SF Symbols установлен · опись 9184 символа |
 | T19 | Большая семёрка (Deloitte·PwC·EY·KPMG + McKinsey·BCG·Bain): ежедневное системное познание логики — аналитика · продукт · бизнес-логика | **active** | bin/consult.py · шаг урожая ежедневно · library/big7 + карта фреймворков |
 | M1 | PR-гейт: ревью каждого pull request числами законов, построчно | **active** | bin/review.py + bxad-review.yml (внутренняя версия); мульти-тенант — M7 |
-| M2 | Монитор прода 24/7: живой взгляд после каждого деплоя + алерт в Slack | **queued** | liveview по deploy-hook + Slack webhook |
+| M2 | Монитор прода 24/7: живой взгляд после каждого деплоя + алерт в Slack | **active** | bin/monitor.py + bxad-monitor.yml (workflow_run: deploy-web); Slack при секрете SLACK_WEBHOOK_URL, иначе комментарий к коммиту деплоя |
 | M3 | Пиксель-сертификация: ежемесячный PDF-отчёт соответствия с адресами + бейдж | **queued** | verify+lint → PDF (Browser Rendering) |
 | M4 | Генерация по канону: скрин/Figma → компонент, прошедший суд; персональный tokens.json клиента | **queued** | мок-конвейер + адаптеры |
 | M5 | Страж App Store: прогон по живым App Review Guidelines до сабмита | **queued** | знание appstore-кодекса + чек-лист |

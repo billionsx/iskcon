@@ -1,5 +1,5 @@
 {
- "ts": "2026-07-26 19:37 UTC",
+ "ts": "2026-07-26 20:09 UTC",
  "atlas": {
   "visited": 11200,
   "frontier": 54861,
@@ -25,6 +25,7 @@
   "frames": 195,
   "apps": 10
  },
+ "monitor": {},
  "live": {
   "pages": 3
  },
@@ -54,8 +55,8 @@
   },
   "service": {
    "done": 0,
-   "active": 1,
-   "queued": 8,
+   "active": 2,
+   "queued": 7,
    "blocked": 0,
    "partial": 0
   }
@@ -264,8 +265,8 @@
    {
     "id": "M2",
     "task": "Монитор прода 24/7: живой взгляд после каждого деплоя + алерт в Slack",
-    "status": "queued",
-    "organ": "liveview по deploy-hook + Slack webhook",
+    "status": "active",
+    "organ": "bin/monitor.py + bxad-monitor.yml (workflow_run: deploy-web); Slack при секрете SLACK_WEBHOOK_URL, иначе комментарий к коммиту деплоя",
     "article": "ст. 56"
    },
    {

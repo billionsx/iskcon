@@ -626,6 +626,16 @@ def cmd_selftest(root: Path) -> int:
                     12: ".later { box-shadow: 0 10px 30px rgba(0,0,0,.5); }"})
     check("пустой патч → пусто", review_mod.parse_added("") == {})
 
+    print("SELFTEST · служба M2 (дифф базовой линии)")
+    import monitor as mon
+    oldf = [["brajs-com:AE10", "button", "Arial"], ["brajs-com:AE2", "div.gtab-bg", "чёрный drop"]]
+    newf = [["brajs-com:AE2", "div.gtab-bg", "чёрный drop"], ["brajs-com:AE1", "div.x", "фон вне лестницы"]]
+    dd2 = mon.diff_findings(oldf, newf)
+    check("монитор: регресс пойман, починка подтверждена, неизменное молчит",
+          [f[0] for f in dd2["new"]] == ["brajs-com:AE1"] and [f[0] for f in dd2["gone"]] == ["brajs-com:AE10"])
+    check("монитор: идентичные снятия → тишина",
+          mon.diff_findings(newf, newf) == {"new": [], "gone": []})
+
     print("SELFTEST · конституция (ст. 45: полнота мандата машиной)")
     const_t = (root / "CONSTITUTION.md").read_text(encoding="utf-8")
     missing = [d for d, anchor in FOUNDER_MANDATE.items() if anchor not in const_t]
