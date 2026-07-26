@@ -112,6 +112,10 @@ def run(root: Path, budget: int = None, fixtures: Path = None) -> dict:
                 pass
     frames_c = Counter(st.get("frames", {}))
     firms = list(st["firms"].keys())
+    for f2 in firms:  # хабы дышат ежедневно: сиды всегда в голове фронтира
+        seeds = list(cfg["firms"].get(f2, []))
+        st["firms"][f2]["frontier"] = seeds + [u for u in st["firms"][f2]["frontier"] if u not in seeds]
+        st["firms"][f2]["_seeds"] = seeds
     per = max(1, budget // max(1, len(firms)))
     new_laws = pages = 0
     pw = br = pg = None
@@ -121,7 +125,7 @@ def run(root: Path, budget: int = None, fixtures: Path = None) -> dict:
         steps = 0
         while fs["frontier"] and steps < per:
             url = fs["frontier"].pop(0)
-            if url in vis:
+            if url in vis and url not in fs.get("_seeds", []):
                 continue
             vis.add(url)
             if fixtures is not None:
@@ -169,6 +173,7 @@ def run(root: Path, budget: int = None, fixtures: Path = None) -> dict:
                 if pu.netloc == host and pu.scheme.startswith("http") and u not in vis \
                         and len(fs["frontier"]) < 4000 and not re.search(r"\.(pdf|jpg|png|zip|mp4)$", u, re.I):
                     fs["frontier"].append(u)
+        fs.pop("_seeds", None)
         fs["visited"] = sorted(vis)
     if br is not None:
         br.close(); pw.stop()

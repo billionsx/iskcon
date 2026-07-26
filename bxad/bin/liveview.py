@@ -88,6 +88,8 @@ def _report(root: Path, results: dict):
     for slug, r in results.items():
         md.append(f"## {r['url']}")
         md.append(f"элементов снято: {r['elements']} · находок: {len(r['findings'])}")
+        if r.get("note"):
+            md.append(f"сбой: {r['note']}")
         md.append(f"диагностика: {json.dumps(r.get('diag'), ensure_ascii=False)}")
         by = {}
         for rule, sel, why in r["findings"]:
@@ -114,14 +116,14 @@ def run_live(root: Path) -> dict:
         for url in cfg["pages"]:
             slug = re.sub(r"[^a-z0-9]+", "-", re.sub(r"https?://", "", url).strip("/").lower()) or "root"
             try:
-                pg.goto(url, wait_until="networkidle", timeout=45000)
+                pg.goto(url, wait_until="domcontentloaded", timeout=60000)
                 try:  # SPA: ждём реального монтирования дерева
                     pg.wait_for_function("document.querySelectorAll('body *').length > 50", timeout=20000)
                 except Exception:
                     pg.wait_for_timeout(4000)
                 els = pg.evaluate(js)
             except Exception as e:
-                results[slug] = {"url": url, "elements": 0, "findings": [], "note": f"{type(e).__name__}"}
+                results[slug] = {"url": url, "elements": 0, "findings": [], "note": f"{type(e).__name__}: {str(e)[:160]}"}
                 continue
             diag = pg.evaluate("() => ({url: location.href, title: document.title,"
                                    " ready: document.readyState, htmlLen: document.documentElement.outerHTML.length,"
