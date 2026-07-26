@@ -47,6 +47,8 @@ def collect() -> dict:
     sc = R / "state" / "SCREENS.md"
     ms = re.search(r"Итого кадров: (\d+) · приложений: (\d+)", sc.read_text(encoding="utf-8")) if sc.exists() else None
     d["screens"] = {"frames": int(ms.group(1)) if ms else 0, "apps": int(ms.group(2)) if ms else 0}
+    bd = _j(ROOT / "certificates" / "iskcon" / "badge.json", {})
+    d["certificate"] = bd.get("message", "")
     ms = _j(R / "live" / "monitor-state.json", {})
     d["monitor"] = ms
     lv = R / "live" / "REPORT.md"
@@ -91,6 +93,7 @@ def render(d: dict):
           f"| SF Symbols | **{d['symbols']}** символов (macOS-плечо) |",
           f"| Кадротека | {d['screens']['frames']} кадров · {d['screens']['apps']} приложений |",
           f"| Живой взгляд | страниц в эфире: {d['live']['pages']} |",
+          f"| Сертификат (M3) | {d['certificate'] or 'не выдан'} |",
           f"| Монитор прода | {('деплой ' + d['monitor'].get('sha','')[:9] + ' · сейчас ' + str(d['monitor'].get('now')) + ' · новых ' + str(d['monitor'].get('new')) + ' · закрыто ' + str(d['monitor'].get('gone'))) if d.get('monitor') else 'первого снятия не было'} |",
           f"| Большая семёрка | страниц {d['big7']['pages']} · положений {d['big7']['laws']} · рамок в карте {d['big7']['frames']} |",
           f"| Храповик | долг по проектам: " + (" · ".join(f"{k}:{v}" for k, v in d['ratchet'].items()) or "—") + " |",

@@ -209,8 +209,8 @@
   {
    "id": "M3",
    "task": "Пиксель-сертификация: ежемесячный PDF-отчёт соответствия с адресами + бейдж",
-   "status": "queued",
-   "organ": "verify+lint → PDF (Browser Rendering)",
+   "status": "active",
+   "organ": "bin/certify.py + bxad-certify.yml (1-е число + dispatch): HTML+PDF+badge.json, формула объявлена в сертификате",
    "article": "ст. 56"
   },
   {
@@ -237,8 +237,8 @@
   {
    "id": "M7",
    "task": "GitHub App мульти-тенант (кнопки владельца: регистрация приложения)",
-   "status": "queued",
-   "organ": "BUSINESS/APP-SETUP.md",
+   "status": "partial",
+   "organ": "путь А ГОТОВ: reusable workflow bxad-review-reusable.yml (клиент подключается 8-строчным yml без App); путь Б: BUSINESS/APP-SETUP.md — регистрация GitHub App кнопками владельца",
    "article": "ст. 56"
   },
   {

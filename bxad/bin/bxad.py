@@ -636,6 +636,14 @@ def cmd_selftest(root: Path) -> int:
     check("монитор: идентичные снятия → тишина",
           mon.diff_findings(newf, newf) == {"new": [], "gone": []})
 
+    print("SELFTEST · служба M3 (формула объявлена и детерминирована)")
+    import certify as cert
+    c0 = {"strict": 2, "report": 400, "live": 9, "verify_diverg": 1}
+    check("скор по формуле: 100−4−5−13.5−5 = 72.5 · C",
+          cert.score_of(c0) == 72.5 and cert.grade(72.5) == "C")
+    check("чистый проект → 100 · A+", cert.score_of({"strict": 0, "report": 0, "live": 0, "verify_diverg": 0}) == 100.0
+          and cert.grade(100.0) == "A+")
+
     print("SELFTEST · конституция (ст. 45: полнота мандата машиной)")
     const_t = (root / "CONSTITUTION.md").read_text(encoding="utf-8")
     missing = [d for d, anchor in FOUNDER_MANDATE.items() if anchor not in const_t]
