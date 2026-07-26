@@ -35,3 +35,5 @@
 {"id": "/documentation/Foundation/Locale/Language-swift.struct", "sha": "3d00b82c47a0767bc65865950126e05eee2e5842c46c41296bc4281ee0b65e4f", "t": "Locale.Language", "n": 551, "laws": 0, "ts": "2026-07-26 00:20 UTC"}
 {"id": "/documentation/swift/array", "sha": "321dd98de39292e5327712499c9b7e856846d07ea3fe437ab94c9c504ca4bbe0", "t": "Array", "n": 11703, "laws": 10, "ts": "2026-07-26 00:24 UTC"}
 {"id": "/documentation/Speech/SpeechAnalyzer", "sha": "3ffc927b28f7f9ac0a9bbd6e808aad76cfb5d5eacee52986339ba677b17181c7", "t": "SpeechAnalyzer", "n": 8341, "laws": 10, "ts": "2026-07-26 00:32 UTC"}
+{"id": "/documentation/coregraphics/cgcolorspace/init(iccprofiledata:)", "sha": "2694fcd185811b590cff98f130e4eb4036b06c3f4116e6bfad4c20cb151831b7", "t": "init(iccProfileData:)", "n": 153, "laws": 0, "ts": "2026-07-26 05:55 UTC"}
+{"id": "/documentation/accelerate/kvimagegettempbuffersize", "sha": "ed9966b6a29f25f3aeb20b732903358591bc407939f9b05b64252a0dbb59c4e4", "t": "kvImageGetTempBufferSize", "n": 364, "laws": 2, "ts": "2026-07-26 06:02 UTC"}

@@ -25,3 +25,8 @@
 {"id": "/documentation/uikit/uifont/textstyle/body", "sha": "1246ee8d25d18693f5e0c2e4db5dc32c8c50760bf58aa67f90c8751e85175245", "t": "body", "n": 23, "laws": 0, "ts": "2026-07-26 00:10 UTC"}
 {"id": "/documentation/realitykit/custommaterial/custom-swift.struct/texture", "sha": "bba2cbbb25427ceb0a92d3b0d2cc3c69f2bf0ff8a6a7a235a4a6fd22fb402c1b", "t": "texture", "n": 93, "laws": 0, "ts": "2026-07-26 00:23 UTC"}
 {"id": "/documentation/appkit/nsspellchecker/optionkey/waitforallgrammarcheckingresultskey", "sha": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855", "t": "waitForAllGrammarCheckingResultsKey", "n": 0, "laws": 0, "ts": "2026-07-26 00:33 UTC"}
+{"id": "/documentation/AppKit/NSTouchBar", "sha": "13df5e594ede3a4c1e129132d6916aba7b6604070865e9ab1ab4045aa7e11399", "t": "NSTouchBar", "n": 24661, "laws": 10, "ts": "2026-07-26 05:47 UTC"}
+{"id": "/documentation/accelerate/pixel_f", "sha": "1ae3de376b9f8743570ccf89365c71d48df691ae9eaa51b02f8d0904c4c44da1", "t": "Pixel_F", "n": 63, "laws": 0, "ts": "2026-07-26 05:54 UTC"}
+{"id": "/documentation/coregraphics/cgcolorspace/displayp3", "sha": "f2280592be075b9cd112506eaf603be28de1c8fb3f95454de0badabe7a5f7036", "t": "displayP3", "n": 154, "laws": 0, "ts": "2026-07-26 05:54 UTC"}
+{"id": "/documentation/accelerate/vector-vector-real-arithmetic-functions", "sha": "85e2587b936628e25ee200129ae29a6d65e38d8374214d565fcb0522a0e3066b", "t": "Vector-vector real arithmetic functions", "n": 2281, "laws": 0, "ts": "2026-07-26 06:00 UTC"}
+{"id": "/documentation/accelerate/vimagelookuptable_planarftoplanar8(_:_:_:_:)", "sha": "9a94cb5865cfc7b3b93b3d63d79b4e53c2de051f4f9734edf4e2dbff00c90b84", "t": "vImageLookupTable_PlanarFtoPlanar8(_:_:_:_:)", "n": 542, "laws": 2, "ts": "2026-07-26 06:01 UTC"}

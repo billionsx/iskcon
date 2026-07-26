@@ -687,3 +687,27 @@
 {"id": "/documentation/Metal/rendering-at-different-rasterization-rates", "law": "Use VRR when: You want to render different parts of your render target at different quality levels."}
 {"id": "/documentation/Metal/rendering-at-different-rasterization-rates", "law": "To use VRR, you create a rasterization map to divide the render target into zones and specify a horizontal and vertical rasterization rate for each zone."}
 {"id": "/documentation/Metal/rendering-at-different-rasterization-rates", "law": "Before attempting to use it, check for support on the device object: Configure a rasterization rate map to vary rasterization rates depending on the amount of detail needed."}
+{"id": "/documentation/Metal/compute-passes", "law": "Visible functions allow you to use function pointers in kernels, letting you use function stitching and link against Metal dynamic libraries at runtime."}
+{"id": "/documentation/Metal/compute-passes", "law": "Ray tracers use intersection functions on instances to perform quick intersection checks."}
+{"id": "/documentation/Metal/compute-passes", "law": "Using a resource in an argument buffer requires that it’s resident in GPU memory for the duration of the pass."}
+{"id": "/documentation/Metal/compute-passes", "law": "For the duration of your compute pass, don’t access any resident resources on the CPU."}
+{"id": "/documentation/Metal/compute-passes", "law": "When using resident resources, avoid data corruption by using an appropriate or by manually managing memory barriers and fences for untracked resources with the methods in Synchronizing Across Command Execution."}
+{"id": "/documentation/Metal/compute-passes", "law": "Use the methods in Encoding Tile Memory Usage to prepare the appropriate block of memory for your kernel."}
+{"id": "/documentation/Metal/resource-loading", "law": "You can also start multiple input/output command buffers to load different asset batches and later cancel the ones you don’t need."}
+{"id": "/documentation/Metal/resource-loading", "law": "Ensure that time-sensitive assets, such as sound effects, load with lower latency by running those command buffers on higher-priority queues that you create."}
+{"id": "/documentation/Metal/setting-up-a-command-structure", "law": "A command performs the drawing, parallel computation, and resource management work your app requires."}
+{"id": "/documentation/Metal/setting-up-a-command-structure", "law": "Some objects you create once and use throughout your app, and others you create specifically to execute a set of commands."}
+{"id": "/documentation/Metal/setting-up-a-command-structure", "law": "Then use the same command queue throughout your app to hold command buffers."}
+{"id": "/documentation/Metal/setting-up-a-command-structure", "law": "To use a pipeline in your Metal workflow, follow these steps: Write Metal shader functions that process your data."}
+{"id": "/documentation/Metal/setting-up-a-command-structure", "law": "Instead, you use an encoder object to insert commands that encapsulate those calls into your command buffer."}
+{"id": "/documentation/Metal/setting-up-a-command-structure", "law": "For example, use to issue render commands, and to issue parallel computation commands."}
+{"id": "/documentation/Metal/setting-up-a-command-structure", "law": "If you don’t explicitly enqueue a command buffer, Metal does that for you when you commit the buffer."}
+{"id": "/documentation/Metal/setting-up-a-command-structure", "law": "To receive callbacks during this process, use the and methods."}
+{"id": "/documentation/Metal/tailor-your-apps-for-apple-gpus-and-tile-based-deferred-rendering", "law": "The GPU can use more hardware blocks at the same time by running both stages in parallel because they tend to use different compute and memory components."}
+{"id": "/documentation/Metal/tailor-your-apps-for-apple-gpus-and-tile-based-deferred-rendering", "law": "Metal has always rendered to imageblocks on devices with Apple silicon, but starting with the A11 GPU, Metal gives you complete control over data structures in imageblocks."}
+{"id": "/documentation/Metal/tailor-your-apps-for-apple-gpus-and-tile-based-deferred-rendering", "law": "However, if you’re using explicit imageblocks, use a compute function to explicitly read and write to device memory."}
+{"id": "/documentation/Metal/tailor-your-apps-for-apple-gpus-and-tile-based-deferred-rendering", "law": "Many rendering techniques require a mixture of drawing and compute commands."}
+{"id": "/documentation/Metal/tailor-your-apps-for-apple-gpus-and-tile-based-deferred-rendering", "law": "Apps that use tiles shaders can avoid storing intermediate results out to device memory and save time by storing data in faster tile memory."}
+{"id": "/documentation/Metal/tailor-your-apps-for-apple-gpus-and-tile-based-deferred-rendering", "law": "Traditionally, deferred shading requires two phases: Fill a geometry buffer (or g-buffer ) and produce multiple textures."}
+{"id": "/documentation/Metal/tailor-your-apps-for-apple-gpus-and-tile-based-deferred-rendering", "law": "This wait forces the threads to run serially, even if the memory operations don’t conflict with each other."}
+{"id": "/documentation/Metal/tailor-your-apps-for-apple-gpus-and-tile-based-deferred-rendering", "law": "However, 4x MSAA smooths the appearance of the jagged edges by sampling each pixel at four different positions."}

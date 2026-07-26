@@ -29,3 +29,8 @@
 {"id": "/documentation/uikit/uikey", "sha": "a5a28e2be00237800362265ebf6860e739cd57f6c6864fd9901c367c9e082ebf", "t": "UIKey", "n": 365, "laws": 0, "ts": "2026-07-26 00:07 UTC"}
 {"id": "/documentation/Foundation/NSItemProviderWriting", "sha": "a8bf3765c46794411da463bae63c1b7308f349dd2425a342d140bef70ee54b7f", "t": "NSItemProviderWriting", "n": 733, "laws": 0, "ts": "2026-07-26 00:07 UTC"}
 {"id": "/documentation/RealityKit/ModelSortGroupComponent", "sha": "60b88635cf83dba56efcf1eb04d8814d69cfaa615901896ea4027ec950c76b2e", "t": "ModelSortGroupComponent", "n": 2590, "laws": 0, "ts": "2026-07-26 00:30 UTC"}
+{"id": "/documentation/uikit/optimizing-your-ipad-app-for-mac", "sha": "0b57f2c7528719fb6ddad40857819718b108967cae0d129963f798482eabaa41", "t": "Optimizing your iPad app for Mac", "n": 2151, "laws": 3, "ts": "2026-07-26 05:47 UTC"}
+{"id": "/documentation/accelerate/interleaving-and-deinterleaving-pixel-buffers", "sha": "0d84c379a37c7230236280f2f2e2a5d8fbb9feaf46d35de320764cb2317bedf3", "t": "Interleaving and deinterleaving pixel buffers", "n": 1180, "laws": 0, "ts": "2026-07-26 05:52 UTC"}
+{"id": "/documentation/accelerate/kvimagedonottile", "sha": "9fdf4816ebe09687f0ae6a09345e14a3cb9ea674f2a2b302a0742246bec574c5", "t": "kvImageDoNotTile", "n": 257, "laws": 1, "ts": "2026-07-26 05:53 UTC"}
+{"id": "/documentation/coregraphics/cgcolorspace/acescglinear", "sha": "2dd71d868f643e289ffd8d3d2ae319946e5e5af79e7899a9d64b3f47a21b28c2", "t": "acescgLinear", "n": 184, "laws": 0, "ts": "2026-07-26 05:54 UTC"}
+{"id": "/documentation/accelerate/cblas_dsymm(_:_:_:_:_:_:_:_:_:_:_:_:_:)", "sha": "4b61beeaf146506775af6d3a89688baeedd05314574276e06a1249379447e834", "t": "cblas_dsymm(_:_:_:_:_:_:_:_:_:_:_:_:_:)", "n": 877, "laws": 1, "ts": "2026-07-26 06:15 UTC"}

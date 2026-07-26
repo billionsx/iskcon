@@ -352,3 +352,561 @@
 {"id": "/documentation/accelerate/vimage/pixelbuffer/colorthreshold(_:destination:)", "law": "Use this function to binarize an image."}
 {"id": "/documentation/accelerate/vimage/pixelbuffer/withunsafemutablebufferpointer(_:)", "law": "You can use this function to simplify interoperation with other libraries and frameworks."}
 {"id": "/documentation/accelerate/vdsp_vgen", "law": "Use this function to generate and return a vector populated with ramped values."}
+{"id": "/documentation/accelerate/vimagecreategammafunction(_:_:_:)", "law": "Use this function to create a gamma function object that you pass to , , or ."}
+{"id": "/documentation/accelerate/vimagecreategammafunction(_:_:_:)", "law": "Use a half-precision gamma type when creating a gamma function for image data that’s intended for conversion to 8-bit."}
+{"id": "/documentation/accelerate/vimagecreategammafunction(_:_:_:)", "law": "The gamma correction functions that use a object are symmetric around zero."}
+{"id": "/documentation/accelerate/vimagematrixmultiply_argb8888(_:_:_:_:_:_:_:)", "law": "The operation multiplies each source pixel by the 4 x 4 matrix to produce the destination pixel."}
+{"id": "/documentation/accelerate/vimagematrixmultiply_argbffff(_:_:_:_:_:_:)", "law": "The operation multiplies each source pixel by the 4 x 4 matrix to produce the destination pixel."}
+{"id": "/documentation/accelerate/vimagematrixmultiply_planar16s(_:_:_:_:_:_:_:_:_:)", "law": "Therefore, the multiplication requires an matrix, that is, a matrix with rows and columns."}
+{"id": "/documentation/accelerate/vimagematrixmultiply_planar8(_:_:_:_:_:_:_:_:_:)", "law": "Therefore, the multiplication requires an matrix, that is, a matrix with rows and columns."}
+{"id": "/documentation/accelerate/vimagematrixmultiply_planarf(_:_:_:_:_:_:_:_:)", "law": "Therefore, the multiplication requires an matrix, that is, a matrix with rows and columns."}
+{"id": "/documentation/accelerate/reducing-artifacts-with-custom-resampling-filters", "law": "Most vImage geometry operations, such as scale and rotate, use a process known as resampling to prevent image artifacts."}
+{"id": "/documentation/accelerate/reducing-artifacts-with-custom-resampling-filters", "law": "Because resampling involves evaluating the kernel at fractional pixel locations, the process relies on a family of kernel matrices for use at different fractional distances through a given pixel."}
+{"id": "/documentation/accelerate/reducing-artifacts-with-custom-resampling-filters", "law": "Because these functions don’t work in place – that is, they require separate input and output buffers – the code uses an intermediate buffer to pass data from the vertical shear to the horizontal shear."}
+{"id": "/documentation/accelerate/reducing-artifacts-with-custom-resampling-filters", "law": "However, unlike the kernels used for convolution, the resampling kernel is suitable for use with fractional pixel positions."}
+{"id": "/documentation/accelerate/reducing-artifacts-with-custom-resampling-filters", "law": "The resampling function, the scale factor, and the kernel width combine to determine the memory that the resampling function requires."}
+{"id": "/documentation/accelerate/vimageconvolve_argbffff(_:_:_:_:_:_:_:_:_:_:)", "law": "; otherwise, a negative value indicates one of the error codes that describes, and a positive value indicates the required size for the temporary buffer."}
+{"id": "/documentation/accelerate/vimageconvolve_argbffff(_:_:_:_:_:_:_:_:_:_:)", "law": "In some cases, the destination buffer may not be large enough to store that intermediate data, so the operation requires additional storage."}
+{"id": "/documentation/accelerate/vimageconvolve_argbffff(_:_:_:_:_:_:_:_:_:_:)", "law": "To use your own temporary buffer, first call the function with the same values for all other parameters that you intend to use for subsequent calls."}
+{"id": "/documentation/accelerate/vimageconvolve_argbffff(_:_:_:_:_:_:_:_:_:_:)", "law": "The instructs the function not to perform any processing, and to return a positive value that represents the minimum size, in bytes, of the temporary buffer."}
+{"id": "/documentation/accelerate/vimageconvolve_argbffff(_:_:_:_:_:_:_:_:_:_:)", "law": "After you allocate the memory for the temporary buffer, pass that to the parameter for subsequent calls to the function, and don’t pass the flag."}
+{"id": "/documentation/accelerate/vimageconvolve_argbffff(_:_:_:_:_:_:_:_:_:_:)", "law": "You can use the same workspace memory for a group of images that are different sizes."}
+{"id": "/documentation/accelerate/vimageconvolve_argbffff(_:_:_:_:_:_:_:_:_:_:)", "law": "To do this, create a vImage buffer structure with a size that shares the maximum width and maximum height of the images that you’re working with."}
+{"id": "/documentation/accelerate/vimageconvolve_planar8(_:_:_:_:_:_:_:_:_:_:_:)", "law": "; otherwise, a negative value indicates one of the error codes that describes, and a positive value indicates the required size for the temporary buffer."}
+{"id": "/documentation/accelerate/vimageconvolve_planar8(_:_:_:_:_:_:_:_:_:_:_:)", "law": "In some cases, the destination buffer may not be large enough to store that intermediate data, so the operation requires additional storage."}
+{"id": "/documentation/accelerate/vimageconvolve_planar8(_:_:_:_:_:_:_:_:_:_:_:)", "law": "To use your own temporary buffer, first call the function with the same values for all other parameters that you intend to use for subsequent calls."}
+{"id": "/documentation/accelerate/vimageconvolve_planar8(_:_:_:_:_:_:_:_:_:_:_:)", "law": "The instructs the function not to perform any processing, and to return a positive value that represents the minimum size, in bytes, of the temporary buffer."}
+{"id": "/documentation/accelerate/vimageconvolve_planar8(_:_:_:_:_:_:_:_:_:_:_:)", "law": "After you allocate the memory for the temporary buffer, pass that to the parameter for subsequent calls to the function, and don’t pass the flag."}
+{"id": "/documentation/accelerate/vimageconvolve_planar8(_:_:_:_:_:_:_:_:_:_:_:)", "law": "You can use the same workspace memory for a group of images that are different sizes."}
+{"id": "/documentation/accelerate/vimageconvolve_planar8(_:_:_:_:_:_:_:_:_:_:_:)", "law": "To do this, create a vImage buffer structure with a size that shares the maximum width and maximum height of the images that you’re working with."}
+{"id": "/documentation/accelerate/applying-vimage-operations-to-regions-of-interest", "law": "The following image is an example of the effects possible when you use the techniques in this article."}
+{"id": "/documentation/accelerate/applying-vimage-operations-to-regions-of-interest", "law": "For vImage routines that don’t operate in-place, create a non-mutating function that applies that routine to an ROI and returns a new structure that contains the result."}
+{"id": "/documentation/accelerate/converting-bitmap-data-between-core-graphics-images-and-vimage-buffers", "law": "Conversions between Core Graphics-backed images and vImage buffers require a format structure."}
+{"id": "/documentation/accelerate/converting-bitmap-data-between-core-graphics-images-and-vimage-buffers", "law": "You can use the initializer to convert an image’s color model and bit depth."}
+{"id": "/documentation/accelerate/converting-chroma-subsampled-images", "law": "Alternatively, other image transformations, such as adjusting saturation, require that you convert an RGB image to YCbCr."}
+{"id": "/documentation/accelerate/converting-chroma-subsampled-images", "law": "For example, 4:2:0 subsampling represents a 4 x 2 image with a 4 x 2 luminance channel and two 2 x 1 chrominance channels: The images below show the 4:2:0 subsampling scheme applied to a photograph."}
+{"id": "/documentation/accelerate/converting-chroma-subsampled-images", "law": "For each 2 x 2 square of pixels in the luminance channel, the chrominance channels only contain a single pixel."}
+{"id": "/documentation/accelerate/converting-chroma-subsampled-images", "law": "Use the Core Video and Core Graphics image format descriptions to create an any-to-any instance that converts from Core Graphics to Core Video image format."}
+{"id": "/documentation/accelerate/converting-chroma-subsampled-images", "law": "The converter provides the property that you use to generate the correct number of destination buffers."}
+{"id": "/documentation/accelerate/converting-chroma-subsampled-images", "law": "The source and destination vlmage buffers that you pass to an any-to-any conversion must all share the same dimensions."}
+{"id": "/documentation/accelerate/converting-chroma-subsampled-images", "law": "If you’re applying an image-processing operation to the Cb and Cr channels, use the method."}
+{"id": "/documentation/accelerate/vimage/pixelbuffer/applymorphology(operation:destination:)-5al25", "law": "Source and destination buffer must be the same size."}
+{"id": "/documentation/accelerate/vimage/pixelbuffer/applymorphology(operation:destination:)-5al25", "law": "The kernel size width and height must be positive, odd integers in the range and user defined kernels must contain elements."}
+{"id": "/documentation/accelerate/vimage/pixelbuffer/applymorphology(operation:destination:)-5al25", "law": "Source and destination buffers must point to different underlying memory."}
+{"id": "/documentation/accelerate/vimage/pixelbuffer/copy(to:cvimageformat:cgimageformat:)", "law": "The destination Core Video pixel buffer must be nonplanar and be the same size as the source buffer."}
+{"id": "/documentation/accelerate/vimage/pixelbuffer/withbnnstensor(_:)", "law": "Use this function to pass image data to a ."}
+{"id": "/documentation/accelerate/vimage/pixelbuffer/withbnnstensor(_:)", "law": "Use to pass source and destination pixel buffers to the context: On return, contains the thresholded image data."}
+{"id": "/documentation/accelerate/vimage/pixelbuffer/withcvpixelbuffer(readonly:body:)", "law": "Use this function to pass a vImage pixel buffer to other frameworks."}
+{"id": "/documentation/accelerate/vimage/pixelbuffer/applygamma(_:intermediatebuffer:destination:)-1fif9", "law": "Therefore, it requires an intermediate buffer."}
+{"id": "/documentation/accelerate/vimage/pixelbuffer/applygamma(_:intermediatebuffer:destination:)-390k5", "law": "Therefore, it requires an intermediate buffer."}
+{"id": "/documentation/accelerate/vimage/pixelbuffer/applygamma(_:intermediatebuffer:destination:)-3yu0w", "law": "Therefore, it requires an intermediate buffer."}
+{"id": "/documentation/accelerate/vimage/pixelbuffer/applygamma(_:intermediatebuffer:destination:)-wsww", "law": "Therefore, it requires an intermediate buffer."}
+{"id": "/documentation/accelerate/vimage_argbtoypcbcrmatrix", "law": "The vImage library uses this matrix to convert from RGB to YpCbCr using the following multiplication: The 3 x 3 matrix that the vImage library uses to convert from RGB to YpCbCr."}
+{"id": "/documentation/accelerate/vimage_ypcbcrpixelrange/cbcrmax", "law": "The encoding of the maximum allowed value."}
+{"id": "/documentation/accelerate/vimage_ypcbcrpixelrange/cbcrmin", "law": "The encoding of the minimum allowed value."}
+{"id": "/documentation/accelerate/vimage_ypcbcrpixelrange/cbcrrangemax", "law": "), if not the maximum encodable value (e.g."}
+{"id": "/documentation/accelerate/vimage_ypcbcrpixelrange/ypmax", "law": "The encoding for the maximum allowed Y’ value."}
+{"id": "/documentation/accelerate/vimage_ypcbcrpixelrange/ypmin", "law": "The encoding of the minimum allowed Y’ value."}
+{"id": "/documentation/accelerate/vimage_ypcbcrpixelrange/yprangemax", "law": "This value is typically less than the maximum representable value for video range."}
+{"id": "/documentation/accelerate/kvimagedonottile", "law": "Set this flag if you want to perform your own tiling or your own multithreading, or to use the minimum or maximum filters in place."}
+{"id": "/documentation/accelerate/vimage_buffer/rowbytes", "law": "The value must be at least the multiplied by the pixel size, where the pixel size depends on the image format."}
+{"id": "/documentation/accelerate/vimage_error", "law": "describes the constants that use this type."}
+{"id": "/documentation/accelerate/vimage_flags", "law": "describes the constants that use this type."}
+{"id": "/documentation/accelerate/vimage_ypcbcrtoargbmatrix", "law": "The vImage library uses this matrix to convert from YpCbCr to RGB using the following multiplication: The 3 x 3 matrix that the vImage library uses to convert from YpCbCr to RGB."}
+{"id": "/documentation/accelerate/pixel_32u", "law": "A type you use for the XRGB2101010 format."}
+{"id": "/documentation/accelerate/applying-flood-fills-to-an-image", "law": "Use losslessly compressed or uncompressed images, such as PNGs, to achieve the best flood-fill results."}
+{"id": "/documentation/accelerate/applying-flood-fills-to-an-image", "law": "Use the 32-bit planar buffer to create a four-channel, 8-bit-per-pixel buffer."}
+{"id": "/documentation/accelerate/vimagealphablend_argb8888(_:_:_:_:)", "law": "The options to use when performing the operation."}
+{"id": "/documentation/accelerate/vimageconvert_anytoany(_:_:_:_:_:)", "law": "; otherwise, a negative value indicates one of the error codes that describes, and a positive value indicates the required size for the temporary buffer."}
+{"id": "/documentation/accelerate/vimageconvert_anytoany(_:_:_:_:_:)", "law": "Use to determine whether a particular conversion can operate in place."}
+{"id": "/documentation/accelerate/vimageconvert_anytoany(_:_:_:_:_:)", "law": "For an in-place conversion to work, you must ensure that and ."}
+{"id": "/documentation/accelerate/vimageconvert_anytoany(_:_:_:_:_:)", "law": "All scanlines must start at a byte-aligned address."}
+{"id": "/documentation/accelerate/vimageconvert_anytoany(_:_:_:_:_:)", "law": "This means that some part of the chunk on the rightmost edge of the scanline must refer to a nonexistent pixel."}
+{"id": "/documentation/accelerate/vimageconvert_anytoany(_:_:_:_:_:)", "law": "Conventions vary among chunk-using imaging pipelines, and this conservative approach should interoperate with most."}
+{"id": "/documentation/accelerate/vimageconvert_anytoany(_:_:_:_:_:)", "law": "However, be careful when writing to chunk-based formats (not to be confused with chunky formats, which merely have several channels interleaved) to make sure that the buffer is large enough to tolerate the write policy."}
+{"id": "/documentation/accelerate/vimageconvert_anytoany(_:_:_:_:_:)", "law": "In some cases, the destination buffer may not be large enough to store that intermediate data, so the operation requires additional storage."}
+{"id": "/documentation/accelerate/vimageconvert_anytoany(_:_:_:_:_:)", "law": "To use your own temporary buffer, first call the function with the same values for all other parameters that you intend to use for subsequent calls."}
+{"id": "/documentation/accelerate/vimageconvert_anytoany(_:_:_:_:_:)", "law": "The instructs the function not to perform any processing, and to return a positive value that represents the minimum size, in bytes, of the temporary buffer."}
+{"id": "/documentation/accelerate/vimage/pixelbuffer/deinterleave(destination:)-4bj4f", "law": "Use this function to deinterleave a buffer and overwrite a multiple-plane pixel buffer with copies of each source channel."}
+{"id": "/documentation/accelerate/vimage/pixelbuffer/deinterleave(destination:)-7hep3", "law": "Use this function to deinterleave a buffer and overwrite a multiple-plane pixel buffer with copies of each source channel."}
+{"id": "/documentation/accelerate/vimage/pixelbuffer/deinterleave(destination:)-9gkke", "law": "Use this function to deinterleave a buffer and overwrite a multiple-plane pixel buffer with copies of each source channel."}
+{"id": "/documentation/accelerate/vimage/pixelbuffer/deinterleave(planardestinationbuffers:)-2gt2g", "law": "Use this function to deinterleave a buffer and overwrite planar buffers with copies of each source channel."}
+{"id": "/documentation/accelerate/vimage/pixelbuffer/deinterleave(planardestinationbuffers:)-3irjf", "law": "Use this function to deinterleave a buffer and overwrite planar buffers with copies of each source channel."}
+{"id": "/documentation/accelerate/vimage/pixelbuffer/deinterleave(planardestinationbuffers:)-3u4kn", "law": "Use this function to deinterleave a buffer and overwrite planar buffers with copies of each source channel."}
+{"id": "/documentation/accelerate/vimage/pixelbuffer/deinterleave(planardestinationbuffers:)-72108", "law": "Use this function to deinterleave a buffer and overwrite planar buffers with copies of each source channel."}
+{"id": "/documentation/accelerate/vimage/pixelbuffer/deinterleave(planardestinationbuffers:)-75uki", "law": "Use this function to deinterleave a buffer and overwrite planar buffers with copies of each source channel."}
+{"id": "/documentation/accelerate/vimage/pixelbuffer/deinterleave(planardestinationbuffers:)-iag8", "law": "Use this function to deinterleave a buffer and overwrite planar buffers with copies of each source channel."}
+{"id": "/documentation/accelerate/vimage/pixelbuffer/makepixelbufferandcgimageformat(cgimage:pixelformat:)", "law": "Use this function where you know the bits per component and bits per pixel of the instance."}
+{"id": "/documentation/accelerate/vimage/pixelbuffer/makepixelbufferandcgimageformat(cgimage:pixelformat:)", "law": "These must match those of the buffer’s , otherwise this function returns ."}
+{"id": "/documentation/accelerate/multipleplanepixelformat", "law": "Use multiple-plane pixel buffers to store image data as discrete planar buffers that represent individual channels."}
+{"id": "/documentation/accelerate/transforming-an-image-in-three-dimensions", "law": "Use separate buffers to store the background and foreground images."}
+{"id": "/documentation/accelerate/transforming-an-image-in-three-dimensions", "law": "Use the values in the Vision instance to create a set of points for the vImage warp function."}
+{"id": "/documentation/accelerate/transforming-an-image-in-three-dimensions", "law": "The vImage warp function requires coordinates that represent pixel values with at the top-left of the image."}
+{"id": "/documentation/accelerate/transforming-an-image-in-three-dimensions", "law": "Create and use a projective transformation to apply a perspective warp to an image."}
+{"id": "/documentation/accelerate/vimageconverter_createwithcgcolorconversioninfo(_:_:_:_:_:_:)", "law": "Use to create a converter suitable for use with , which uses for color conversion."}
+{"id": "/documentation/accelerate/vimageconverter_createwithcgcolorconversioninfo(_:_:_:_:_:_:)", "law": "You can use to convert an image with a linear response curve to sRGB."}
+{"id": "/documentation/accelerate/vimageconverter_createwithcolorsynccodefragment(_:_:_:_:_:_:)", "law": "In this case, behavior is undefined if the colorspaces don’t have the same channel order, if they have a different number of channels, or if the colorspaces aren’t from the same family."}
+{"id": "/documentation/accelerate/vimageconverter_createwithcolorsynccodefragment(_:_:_:_:_:_:)", "law": "is required for black point compensation."}
+{"id": "/documentation/accelerate/vimageconverter_createwithcolorsynccodefragment(_:_:_:_:_:_:)", "law": "Nor does it attempt to append additional color space transformation steps to make sure the code fragment is appropriate to the images provided."}
+{"id": "/documentation/accelerate/vimageconverter_createwithcolorsynccodefragment(_:_:_:_:_:_:)", "law": "If the colorspace of the source and destination formats don’t correspond to the objects used to create the ColorSync transform in the colorspace model, the behavior is undefined."}
+{"id": "/documentation/accelerate/rotating-a-cube-by-transforming-its-vertices", "law": "You can also use the technique that the sample code uses to rotate geometry in other technologies such as ."}
+{"id": "/documentation/accelerate/rotating-a-cube-by-transforming-its-vertices", "law": "As discussed in , spline interpolation requires a quaternion before the current value and a quaternion after the next value to compute the interpolated value."}
+{"id": "/documentation/accelerate/vdsp_dct_createsetup", "law": "To prevent potential memory leaks, if the parameter is not , the return value and the value must be different variables."}
+{"id": "/documentation/accelerate/vdsp_dct_createsetup", "law": "Use this function to create a new setup structure."}
+{"id": "/documentation/accelerate/vdsp_dct_createsetup", "law": "Don’t use the return value to reconfigure an existing setup structure passed to this function as the parameter."}
+{"id": "/documentation/accelerate/vdsp_dct_createsetup", "law": "Note that you must call for both setup structures."}
+{"id": "/documentation/accelerate/vdsp_dct_createsetup", "law": "You should only use the returned setup structure with using an input vector that contains elements."}
+{"id": "/documentation/accelerate/creating-an-audio-unit-extension-using-the-vdsp-library", "law": "You can use the code in this project as the basis for writing audio units that use the library."}
+{"id": "/documentation/accelerate/creating-an-audio-unit-extension-using-the-vdsp-library", "law": "The peaking EQ filter requires three parameters: the center frequency, the Q value (which controls the shape of the response curve), and the decibel gain."}
+{"id": "/documentation/accelerate/creating-an-audio-unit-extension-using-the-vdsp-library", "law": "The class provides the plug-in’s DSP logic, and is written in C++ to ensure real-time safety."}
+{"id": "/documentation/accelerate/vdsp_biquad_createsetupd", "law": "The following code shows an example of creating a biquad setup object that contains two sections: This function allocates memory for its own use."}
+{"id": "/documentation/accelerate/vdsp_biquad_createsetupd", "law": "You must call the function to free the allocated memory."}
+{"id": "/documentation/accelerate/vdsp_biquad_createsetupd", "law": "Builds a data structure that contains precalculated data for use by a double-precision cascaded biquadratic filter function."}
+{"id": "/documentation/accelerate/vdsp_biquad_setcoefficientsdouble", "law": "Use this function to update sections of coefficient values of a biquad setup structure."}
+{"id": "/documentation/accelerate/vdsp_biquad_setcoefficientsdouble", "law": "The range that you specify using and must be within the number of sections that you define in the create setup function."}
+{"id": "/documentation/accelerate/vdsp_biquad_setupd", "law": "A data structure that contains precalculated data for use by the double-precision cascaded biquadratic IIR filter function."}
+{"id": "/documentation/accelerate/1d-correlation-and-convolution", "law": "Use correlation to compare and convolution to combine vectors of real or complex data."}
+{"id": "/documentation/accelerate/2d-convolution", "law": "Use the functions in this group to apply a convolution kernel to a 2D matrix."}
+{"id": "/documentation/accelerate/2d-convolution", "law": "The functions in this group don’t support in-place operation."}
+{"id": "/documentation/accelerate/compression-and-gathering-functions", "law": "The functions in this group use indices or pointers stored in a source vector to generate a new vector with elements from a second source vector or memory."}
+{"id": "/documentation/accelerate/controlling-vdsp-operations-with-stride", "law": "For example, if you want to access consecutive elements, use a stride of (referred to as a unit stride )."}
+{"id": "/documentation/accelerate/controlling-vdsp-operations-with-stride", "law": "If you want to access every third element, for example to work with the red channel in interleaved RGB data, use a stride of ."}
+{"id": "/documentation/accelerate/controlling-vdsp-operations-with-stride", "law": "If you want to access every second element, for example to work with a single audio channel in interleaved stereo audio data, use a stride of ."}
+{"id": "/documentation/accelerate/controlling-vdsp-operations-with-stride", "law": "Typically, you use a unit stride."}
+{"id": "/documentation/accelerate/controlling-vdsp-operations-with-stride", "law": "Use other strides to, for example, operate along a column of a matrix, where the stride is the number of elements per row."}
+{"id": "/documentation/accelerate/controlling-vdsp-operations-with-stride", "law": "Any other stride value generally prevents the use of vectorized code, and reduces both performance and energy efficiency."}
+{"id": "/documentation/accelerate/controlling-vdsp-operations-with-stride", "law": "The major exception to this limitation is in functions that support the use of interleaved complex data, such as and ."}
+{"id": "/documentation/accelerate/controlling-vdsp-operations-with-stride", "law": "In these cases, use a stride of ."}
+{"id": "/documentation/accelerate/controlling-vdsp-operations-with-stride", "law": "Note that vDSP operations always read elements."}
+{"id": "/documentation/accelerate/controlling-vdsp-operations-with-stride", "law": "Therefore, your collections require at least elements."}
+{"id": "/documentation/accelerate/dspcomplex", "law": "Because they are stored as ordered pairs, complex vectors require address strides that are multiples of two."}
+{"id": "/documentation/accelerate/dspdoublecomplex", "law": "Because they are stored as ordered pairs, complex vectors require address strides that are multiples of two."}
+{"id": "/documentation/accelerate/sliding-window-reduction-functions", "law": "Calculate maximum values and sums of values in a sliding window."}
+{"id": "/documentation/accelerate/using-linear-interpolation-to-construct-new-data-points", "law": "You use linear interpolation to, for example, draw graphs or animate between keyframes."}
+{"id": "/documentation/accelerate/using-linear-interpolation-to-construct-new-data-points", "law": "The function requires a control vector array that includes fractional parts."}
+{"id": "/documentation/accelerate/using-linear-interpolation-to-construct-new-data-points", "law": "Use to generate a linear ramp from to the number of elements in , minus ."}
+{"id": "/documentation/accelerate/vector-extrema-calculation", "law": "Calculate the minimum and maximum values in a vector."}
+{"id": "/documentation/accelerate/vector-to-vector-minima-and-maxima", "law": "Compute the element-wise minimum or maximum values or magnitudes in a vector."}
+{"id": "/documentation/Accelerate/finding-an-interpolating-polynomial-using-the-vandermonde-method", "law": "You’ll use LAPACK to solve Ax=b ."}
+{"id": "/documentation/Accelerate/finding-an-interpolating-polynomial-using-the-vandermonde-method", "law": "Use the LAPACK routine to perform the solve."}
+{"id": "/documentation/accelerate/vdsp/ramp(in:count:)-744b4", "law": "Use this function to generate and return a vector populated with ramped values."}
+{"id": "/documentation/accelerate/vimage/pixelbuffer/interleave(destination:)-5ewup", "law": "Use this function to interleave a buffer and overwrite an interleaved buffer with a copy of the source channels."}
+{"id": "/documentation/accelerate/vimage/pixelbuffer/interleave(destination:)-6ib0t", "law": "Use this function to interleave a buffer and overwrite an interleaved buffer with a copy of the source channels."}
+{"id": "/documentation/accelerate/vimage/pixelbuffer/interleave(destination:)-6r7se", "law": "Use this function to interleave a buffer and overwrite an interleaved buffer with a copy of the source channels."}
+{"id": "/documentation/accelerate/vimage/pixelbuffer/interleave(planarsourcebuffers:)-10yj5", "law": "Use this function to interleave a collection of planar buffers and overwrite an interleaved buffer with a copy of the source channels."}
+{"id": "/documentation/accelerate/vimage/pixelbuffer/interleave(planarsourcebuffers:)-1i8we", "law": "Use this function to interleave a collection of planar buffers and overwrite an interleaved buffer with a copy of the source channels."}
+{"id": "/documentation/accelerate/vimage/pixelbuffer/interleave(planarsourcebuffers:)-4qotd", "law": "Use this function to interleave a collection of planar buffers and overwrite an interleaved buffer with a copy of the source channels."}
+{"id": "/documentation/accelerate/vimage/pixelbuffer/interleave(planarsourcebuffers:)-67l5", "law": "Use this function to interleave a collection of planar buffers and overwrite an interleaved buffer with a copy of the source channels."}
+{"id": "/documentation/accelerate/vimage/pixelbuffer/interleave(planarsourcebuffers:)-7e6cy", "law": "Use this function to interleave a collection of planar buffers and overwrite an interleaved buffer with a copy of the source channels."}
+{"id": "/documentation/accelerate/vimage/pixelbuffer/interleave(planarsourcebuffers:)-7qcri", "law": "Use this function to interleave a collection of planar buffers and overwrite an interleaved buffer with a copy of the source channels."}
+{"id": "/documentation/Accelerate/optimizing-image-processing-performance", "law": "Typically, your source imagery is in interleaved format, and your default option will be to use the interleaved variant of a vImage function."}
+{"id": "/documentation/Accelerate/optimizing-image-processing-performance", "law": "You can use to measure the execution time."}
+{"id": "/documentation/Accelerate/optimizing-image-processing-performance", "law": "Use the function to start a new scope that contains the three planar scale operations."}
+{"id": "/documentation/accelerate/vimageinterpolatedlookuptable_planarf(_:_:_:_:_:_:_:)", "law": "Provide this function with a lookup table with any number of values, but with a minimum value of and a maximum value of ."}
+{"id": "/documentation/accelerate/vimagelookuptable_8to64u(_:_:_:_:)", "law": "The per-pixel conversion calculation is equivalent to the following: You can use this function with multichannel data by scaling the width of the image to compensate for the additional channels."}
+{"id": "/documentation/accelerate/vimagelookuptable_8to64u(_:_:_:_:)", "law": "In this case, all channels use the same lookup table."}
+{"id": "/documentation/accelerate/vimagelookuptable_planar16(_:_:_:_:)", "law": "The per-pixel conversion calculation is equivalent to the following: You can use this function with multichannel data by scaling the width of the image to compensate for the additional channels."}
+{"id": "/documentation/accelerate/vimagelookuptable_planar16(_:_:_:_:)", "law": "In this case, all channels use the same lookup table."}
+{"id": "/documentation/accelerate/vimagelookuptable_planar8toplanar16(_:_:_:_:)", "law": "The per-pixel conversion calculation is equivalent to the following: You can use this function with multichannel data by scaling the width of the image to compensate for the additional channels."}
+{"id": "/documentation/accelerate/vimagelookuptable_planar8toplanar16(_:_:_:_:)", "law": "In this case, all channels use the same lookup table."}
+{"id": "/documentation/accelerate/vimagelookuptable_planar8toplanarf(_:_:_:_:)", "law": "The per-pixel conversion calculation is equivalent to the following: You can use this function with multichannel data by scaling the width of the image to compensate for the additional channels."}
+{"id": "/documentation/accelerate/vimagelookuptable_planar8toplanarf(_:_:_:_:)", "law": "In this case, all channels use the same lookup table."}
+{"id": "/documentation/accelerate/vimagelookuptable_planarftoplanar8(_:_:_:_:)", "law": "The per-pixel conversion calculation is equivalent to the following: You can use this function with multichannel data by scaling the width of the image to compensate for the additional channels."}
+{"id": "/documentation/accelerate/vimagelookuptable_planarftoplanar8(_:_:_:_:)", "law": "In this case, all channels use the same lookup table."}
+{"id": "/documentation/accelerate/vimagetablelookup_planar8(_:_:_:_:)", "law": "The per-pixel conversion calculation is equivalent to the following: You can use this function with multichannel data by scaling the width of the image to compensate for the additional channels."}
+{"id": "/documentation/accelerate/vimagetablelookup_planar8(_:_:_:_:)", "law": "In this case, all channels use the same lookup table."}
+{"id": "/documentation/accelerate/vimage/pixelbuffer/planarbuffers()-462ja", "law": "Use this function to deinterleave a buffer and create two new planar buffers that contain copies of each source channel."}
+{"id": "/documentation/accelerate/vimage/pixelbuffer/planarbuffers()-462ja", "law": "For example, the following code generates two 1 x 1 planar buffers from an pixel buffer: Returns two 8-bit planar pixel buffers that contain the deinterleaved channels of the buffer."}
+{"id": "/documentation/accelerate/kvimagegettempbuffersize", "law": "When you set this flag, the function returns the number of bytes required for the temporary buffer instead of performing the operation."}
+{"id": "/documentation/accelerate/kvimagegettempbuffersize", "law": "A flag that returns the minimum temporary buffer size for the operation, given the parameters provided."}
+{"id": "/documentation/accelerate/vimagebuffer_copytocvpixelbuffer(_:_:_:_:_:_:)", "law": "You can manually set the transfer function using and to avoid this substitution."}
+{"id": "/documentation/accelerate/vimagebuffer_initforcopyfromcvpixelbuffer(_:_:_:_:)", "law": "Use this function to initialize the vImage buffers that you pass as the sources to a Core-Video-to-Core-Graphics instance."}
+{"id": "/documentation/accelerate/vimagebuffer_initforcopyfromcvpixelbuffer(_:_:_:_:)", "law": "The following shows the code for creating the three source buffers required to represent a pixel buffer."}
+{"id": "/documentation/accelerate/vimagebuffer_initforcopytocvpixelbuffer(_:_:_:_:)", "law": "Use this function to initialize the vImage buffers that you pass as the destinations to a Core-Video-to-Core-Graphics instance."}
+{"id": "/documentation/accelerate/vimagebuffer_initforcopytocvpixelbuffer(_:_:_:_:)", "law": "The following shows the code for creating the three destination buffers required to represent a pixel buffer."}
+{"id": "/documentation/accelerate/vimagebuffer_initwithcvpixelbuffer(_:_:_:_:_:_:)", "law": "You can manually set the transfer function using and to avoid this substitution."}
+{"id": "/documentation/accelerate/kvimagecvimageformat_conversionmatrix", "law": "An error code that indicates the required conversion matrix is absent."}
+{"id": "/documentation/accelerate/vimageconstcvimageformat", "law": "Use to create a mutable copy of a instance."}
+{"id": "/documentation/accelerate/vimagecvimageformat/channeldescription(buffertype:)", "law": "Use this function to return the description for a specified channel in a Core Video format."}
+{"id": "/documentation/accelerate/vimagecvimageformat/make(format:matrix:chromasiting:colorspace:alphaisopaquehint:)", "law": "This function derives values that parameters from the image format type don’t specify, such as the number of channels, channel names, and channel descriptions."}
+{"id": "/documentation/accelerate/vimagecvimageformat_create(_:_:_:_:_:)", "law": "This function derives values that parameters from the image format type don’t specify, such as the number of channels, channel names, and channel descriptions."}
+{"id": "/documentation/accelerate/vimagecvimageformat_setchromasiting(_:_:)", "law": "4:2:0 and 4:2:0 YpCbCr image formats that have subsampled chrominance require the position of the chrominance samples relative to the luminance samples."}
+{"id": "/documentation/accelerate/bnns_graph_argument_t", "law": "Exactly one of descriptor or data_ptr should be set based on the configuration specified with Describes data associated with an input or output argument"}
+{"id": "/documentation/accelerate/bnns_graph_context_t", "law": "BNNS requires mutability to support dynamic shapes and other execution objects."}
+{"id": "/documentation/accelerate/bnns_graph_context_t", "law": "You must ensure that the underlying instance remains valid throughout the lifetime of the context."}
+{"id": "/documentation/accelerate/bnns_graph_free_all_fn_t", "law": "BNNS calls this function on the destruction of a graph context and should free all memory associated to the ."}
+{"id": "/documentation/accelerate/bnns_graph_realloc_fn_t", "law": "An optimized implementation should track sizes and avoid reallocating if the size is the same or smaller."}
+{"id": "/documentation/accelerate/bnns_graph_shape_t", "law": "Use a structure to pass the rank and dimensions of tensors to the function."}
+{"id": "/documentation/accelerate/bnnsgraph/context", "law": "Because this class manages its own memory, you don’t need to call to deallocate its resources."}
+{"id": "/documentation/accelerate/bnnsgraph/context", "law": "A wrapper around a compiled graph object that adds a required modifiable context to support dynamically sized models and set execute-time options."}
+{"id": "/documentation/accelerate/bnnsgraphcompileoptionssetmessagelogcallback(_:_:_:)", "law": "If you don’t specify this callback, default callback functions log messages to ."}
+{"id": "/documentation/accelerate/bnnsgraphcompileoptionssetoutputfd(_:_:)", "law": "Use this option to specify that the graph returns is a read-only memory-mapped file."}
+{"id": "/documentation/accelerate/bnnsgraphcompileoptionssetoutputfd(_:_:)", "law": "The option reduces the memory that compilation requires because BNNS doesn’t require the full set of graph weights to be memory resident."}
+{"id": "/documentation/accelerate/bnnsgraphcompileoptionssetoutputpath(_:_:)", "law": "Use this option to specify that the graph returns is a read-only memory-mapped file."}
+{"id": "/documentation/accelerate/bnnsgraphcompileoptionssetoutputpath(_:_:)", "law": "The option reduces the memory that compilation requires because BNNS doesn’t require the full set of graph weights to be memory resident."}
+{"id": "/documentation/accelerate/bnnsgraphcontextenablenanandinfchecks(_:_:)", "law": "Don’t enable this option for production code."}
+{"id": "/documentation/accelerate/bnnsgraphcontextexecute(_:_:_:_:_:_:)", "law": "If the underlying model contains dynamic shaped inputs or outputs, you must set these prior to calling this routine with either or ."}
+{"id": "/documentation/accelerate/bnnsgraphcontextexecute(_:_:_:_:_:_:)", "law": "Don’t modify these shapes during execution."}
+{"id": "/documentation/accelerate/bnnsgraphcontextgetworkspacesize(_:_:)", "law": "The minimum size, in bytes, for the workspace, or if the query fails."}
+{"id": "/documentation/accelerate/bnnsgraphcontextgetworkspacesize(_:_:)", "law": "Call this function to obtain the minimum size of the workspace that the BNNSGraphContextExecute function requires."}
+{"id": "/documentation/accelerate/bnnsgraphcontextgetworkspacesize(_:_:)", "law": "That is, smaller input and output tensors may require a larger workspace."}
+{"id": "/documentation/accelerate/bnnsgraphcontextgetworkspacesize(_:_:)", "law": "Returns the minimum size, in bytes, of the workspace that graph context execution requires."}
+{"id": "/documentation/accelerate/bnnsgraphcontextmakestreaming(_:_:_:_:)", "law": "In this case, BNNS stores information that the model needs from a previous frame in the state that dilations on convolution layers may require."}
+{"id": "/documentation/accelerate/bnnsgraphcontextmakestreaming(_:_:_:_:)", "law": "If your model uses the pattern below, use this function to specify that BNNS uses an optimized mode that allocates and manages ring buffers for states."}
+{"id": "/documentation/accelerate/bnnsgraphcontextmakestreaming(_:_:_:_:)", "law": "To use a context with streaming support, your function must include an attribute dictionary named that includes the entry ."}
+{"id": "/documentation/accelerate/bnnsgraphcontextmakestreaming(_:_:_:_:)", "law": "Calls to that use contexts this function creates ignore any user-provided pointers for input and output arguments."}
+{"id": "/documentation/accelerate/bnnsgraphcontextmakestreaming(_:_:_:_:)", "law": "On return, an analysis of the compiled program for use in the next frame determines the distance by which the operation advances the ring buffer."}
+{"id": "/documentation/accelerate/bnnsgraphcontextsetargumenttype(_:_:)", "law": "Some arguments require dynamic strides."}
+{"id": "/documentation/accelerate/bnnsgraphcontextsetbatchsize(_:_:_:)", "law": "If your graph contains other dynamic strides, use instead."}
+{"id": "/documentation/accelerate/bnnsgraphcontextsetbatchsize(_:_:_:)", "law": "Don’t call this function while existing calls to are running."}
+{"id": "/documentation/accelerate/bnnsgraphcontextsetdynamicshapes(_:_:_:_:)", "law": "Don’t call this function while existing calls to are running."}
+{"id": "/documentation/accelerate/bnnsgraphcontextsetdynamicshapes(_:_:_:_:)", "law": "For example, the following code sets the dynamic shapes for an example graph context, specifies the output shape, and updates the context’s required workspace size."}
+{"id": "/documentation/accelerate/bnnsgraphcontextsetoutputallocationcallback(_:_:_:_:_:)", "law": "If BNNS can’t bound the required output size prior to execution — for example, if the tensor sizes depend on input data — it allocates outputs during execution."}
+{"id": "/documentation/accelerate/bnnsgraphcontextsetoutputallocationcallback(_:_:_:_:_:)", "law": "Use this function to override the default memory allocation mechanisms."}
+{"id": "/documentation/accelerate/bnnsgraphcontextsetstreamingadvancecount(_:_:)", "law": "BNNS can’t unambiguously determine the streaming advancement size for models you compile with the attribute in an enabled state, where operations use an update parameter of dynamic shape."}
+{"id": "/documentation/accelerate/bnnsgraphcontextsetstreamingadvancecount(_:_:)", "law": "The BNNS streaming APIs do not support models that require different advancement amounts for different states."}
+{"id": "/documentation/accelerate/bnnsgraphcontextsetworkspaceallocationcallback(_:_:_:_:_:)", "law": "If BNNS can’t bound the required workspace size prior to execution — for example, if the tensor sizes depend on input data — it allocates workspace during execution."}
+{"id": "/documentation/accelerate/bnnsgraphcontextsetworkspaceallocationcallback(_:_:_:_:_:)", "law": "Use this function to override the default memory allocation mechanisms."}
+{"id": "/documentation/accelerate/bnnsgraphcontextsetworkspaceallocationcallback(_:_:_:_:_:)", "law": "Note that BNNS typically calls the function when it destroys the context, but it only requires the workspace during execution."}
+{"id": "/documentation/accelerate/bnnsgraphtensorfillstrides(_:_:_:_:)", "law": "This function requires that you specify the tensor’s sizes."}
+{"id": "/documentation/accelerate/bnnsimagestackdescriptor", "law": "Image stack descriptor (DEPRECATED, Use BNNSNDArrayDescriptor) An image stack is a sequence of images with the same width and height."}
+{"id": "/documentation/accelerate/bnnssparsityparameters", "law": "Parameters to describe sparsity attributes use this data structure as hint for BNNSNDArrayFullyConnectedSparsify for BNNSSparsityTypeUnstructured, sparsity_ratio is numerator / denominator"}
+{"id": "/documentation/accelerate/bnnstensorgetallocationsize(_:)", "law": "The minimum allocation size, in bytes, of the specified tensor."}
+{"id": "/documentation/accelerate/bnnstensorgetallocationsize(_:)", "law": "Returns the minimum allocation size, in bytes, of the specified tensor."}
+{"id": "/documentation/accelerate/bnnsvectordescriptor", "law": "Vector format descriptor (DEPRECATED, Use BNNSNDArrayDescriptor) Represents a vector of dimension size ."}
+{"id": "/documentation/accelerate/training-a-neural-network-to-recognize-digits", "law": "A 6 x 6 matrix represents each digit."}
+{"id": "/documentation/accelerate/training-a-neural-network-to-recognize-digits", "law": "This flag instructs the layers to keep the provided pointers at creation time, and to work directly from that data rather than use internal copies of the data."}
+{"id": "/documentation/accelerate/training-a-neural-network-to-recognize-digits", "law": "Pooling layers downscale their input while preserving the most important information and produce an output that, in the case of this sample code project, consists of the maximum value in each input pixel’s local neighborhood."}
+{"id": "/documentation/accelerate/training-a-neural-network-to-recognize-digits", "law": "The sample places digits randomly in a 20 x 20 matrix, so a might appear in the matrix as the image below."}
+{"id": "/documentation/accelerate/training-a-neural-network-to-recognize-digits", "law": "The sample code project uses a batch size of 32, so each iteration generates 32 random digits in random positions in the 20 x 20 grid."}
+{"id": "/documentation/accelerate/training-a-neural-network-to-recognize-digits", "law": "The following graph shows the loss, as a solid stroke, decreasing during training: The code in the sample defines a maximum number of iterations."}
+{"id": "/documentation/accelerate/bnns/reductionfunction/argmax", "law": "A reduction function that computes the index of the maximum value."}
+{"id": "/documentation/accelerate/bnns/reductionfunction/max", "law": "A reduction function that computes the maximum value."}
+{"id": "/documentation/accelerate/bnns/reductionfunction/min", "law": "A reduction function that computes the minimum value."}
+{"id": "/documentation/accelerate/bnns/reductionlayer/init(function:input:output:weights:filterparameters:)", "law": "The number of input dimensions must be equal to number of output dimensions, and equal to the number of weights dimensions."}
+{"id": "/documentation/accelerate/bnnsfiltercreatelayerreduction(_:_:)", "law": "Use a reduction layer to reduce an axis or axes of a tensor to a scalar value."}
+{"id": "/documentation/accelerate/bnnsfiltercreatelayerreduction(_:_:)", "law": "For example, given the following source data and n-dimensional array descriptors: Use the following code to compute the sums of elements of each row: On return, destination data contains ."}
+{"id": "/documentation/accelerate/bnnsfiltercreatelayerreduction(_:_:)", "law": "Use the following code to compute the sums of elements of each column: On return, destination data contains ."}
+{"id": "/documentation/accelerate/bnnsfiltercreatelayerreduction(_:_:)", "law": "Use the following code to compute the sum of all elements: On return, destination data contains ."}
+{"id": "/documentation/accelerate/bnnsgather(_:_:_:_:_:)", "law": "Use to gather elements — that you specify by index — into an output tensor."}
+{"id": "/documentation/accelerate/bnnsgather(_:_:_:_:_:)", "law": "In the simplest case, use to gather elements from a 1D vector with indices defined as a 1D vector."}
+{"id": "/documentation/accelerate/bnnsgather(_:_:_:_:_:)", "law": "In this case, the indices correspond to the values along an entire axis and the input and output shapes must match."}
+{"id": "/documentation/accelerate/bnnsgather(_:_:_:_:_:)", "law": "The following code generates a 3 x 4 matrix from the rows of a 3 x 3 matrix: On return, contains the following values: The function returns an error if any of the indices are out of range."}
+{"id": "/documentation/accelerate/bnnsgathernd(_:_:_:_:)", "law": "Use to gather slices — that you specify by index — into an output tensor."}
+{"id": "/documentation/accelerate/bnnsgathernd(_:_:_:_:)", "law": "The function interprets the indices array as a dimensional set of lookup vectors, therefore, the indices tensor must have or dimensions."}
+{"id": "/documentation/accelerate/bnnsgathernd(_:_:_:_:)", "law": "If the lookup vectors don’t define a full set of indices, the function treats the undefined indices as a slice."}
+{"id": "/documentation/accelerate/bnnsscatter(_:_:_:_:_:_:)", "law": "Use to scatter elements — that you specify by index — into an output tensor."}
+{"id": "/documentation/accelerate/bnnsscatter(_:_:_:_:_:_:)", "law": "In the simplest case, use to gather elements from a 1D vector with indices defined as a 1D vector."}
+{"id": "/documentation/accelerate/bnnsscatter(_:_:_:_:_:_:)", "law": "In this case, the indices correspond to the values along an entire axis and the input and output shapes must match."}
+{"id": "/documentation/accelerate/bnnsscatternd(_:_:_:_:_:)", "law": "Use to scatter slices — that you specify by index — into an output tensor."}
+{"id": "/documentation/accelerate/bnnsscatternd(_:_:_:_:_:)", "law": "The function interprets the indices array as a dimensional set of lookup vectors, therefore, the indices tensor must have or dimensions."}
+{"id": "/documentation/accelerate/bnnsscatternd(_:_:_:_:_:)", "law": "If the lookup vectors don’t define a full set of indices, the function treats the undefined indices as a slice."}
+{"id": "/documentation/accelerate/bnnsndarraydescriptor/allocate(randomuniformusing:range:shape:batchsize:)-2rorb", "law": "Use this function to create a new array descriptor that’s initialized with random values generates."}
+{"id": "/documentation/accelerate/bnnsndarraydescriptor/allocate(randomuniformusing:range:shape:batchsize:)-2rorb", "law": "If you use the same generator on multiple threads, note that this function serializes the generator through an internal lock."}
+{"id": "/documentation/accelerate/bnnsndarraydescriptor/allocate(randomuniformusing:range:shape:batchsize:)-2rorb", "law": "To eliminate this contention, use different generators for each thread."}
+{"id": "/documentation/accelerate/bnnsndarraydescriptor/allocate(randomuniformusing:range:shape:batchsize:)-761hg", "law": "Use this function to create a new array descriptor that’s initialized with random values generates."}
+{"id": "/documentation/accelerate/bnnsndarraydescriptor/allocate(randomuniformusing:range:shape:batchsize:)-761hg", "law": "If you use the same generator on multiple threads, note that this function serializes the generator through an internal lock."}
+{"id": "/documentation/accelerate/bnnsndarraydescriptor/allocate(randomuniformusing:range:shape:batchsize:)-761hg", "law": "To eliminate this contention, use different generators for each thread."}
+{"id": "/documentation/accelerate/bnnsndarraydescriptor/data_bias", "law": "The bias you use to convert integer and unsigned integer data to floating point."}
+{"id": "/documentation/accelerate/bnnsndarraydescriptor/data_scale", "law": "The scale you use to convert integer and unsigned integer data to floating point."}
+{"id": "/documentation/accelerate/bnns/applyintopk(k:input:testindices:output:axis:batchsize:filterparameters:)", "law": "The input data type must be , the test indices data type must be , and the output data type must be ."}
+{"id": "/documentation/accelerate/bnns/applytopk(k:input:bestvalues:bestindices:axis:batchsize:filterparameters:)", "law": "The input data type and best values data type must be , and the best indices data type must be ."}
+{"id": "/documentation/accelerate/bnns/clip(to:input:output:)", "law": "Use this function to clip the values in an input tensor to a range."}
+{"id": "/documentation/accelerate/bnns/clip(to:input:output:)", "law": "The function sets values below the minimum to the minimum and values above the maximum to the maximum."}
+{"id": "/documentation/accelerate/bnns/clipbyglobalnorm(threshold:inputs:outputs:globalnorm:)", "law": "Use this function to clip the values in an array of input tensors to a maximum global Euclidean norm."}
+{"id": "/documentation/accelerate/bnns/clipbynorm(threshold:input:output:axes:)", "law": "Use this function to clip the values in an input tensor to a maximum Euclidean norm."}
+{"id": "/documentation/accelerate/bnns/computenorm(input:output:axes:)", "law": "Use this function to compute the norm of either an entire tensor or an axis or axes of a tensor."}
+{"id": "/documentation/accelerate/bnns/computenorm(input:output:axes:)", "law": "In this case, the norm is a scalar value, and the destination’s data layout must be a with a size of ."}
+{"id": "/documentation/accelerate/bnns/embeddinglayer", "law": "Use an embedding layer to access dictionary items based on the integer indices that the input tensor defines."}
+{"id": "/documentation/accelerate/bnns/embeddinglayer", "law": "The embedding layer supports clipping to a maximum norm."}
+{"id": "/documentation/accelerate/bnns/embeddinglayer", "law": "The following code accesses the second and third items from a dictionary that contains three 2 x 3 matrices."}
+{"id": "/documentation/accelerate/bnns/embeddinglayer", "law": "The code initializes the embedding layer with a maximum norm that is the infinity-norm of the first dictionary item."}
+{"id": "/documentation/accelerate/bnns/matrixmultiplicationworkspacesize(inputa:transposed:inputb:transposed:output:alpha:filterparameters:)", "law": "Returns the workspace size that a matrix multiply operation requires."}
+{"id": "/documentation/accelerate/bnnsarithmeticbinary", "law": "Use a structure to pass the descriptions and types of the inputs and output of a binary arithmetic operation to ."}
+{"id": "/documentation/accelerate/bnnsarithmeticternary", "law": "Use a structure to pass the descriptions and types of the inputs and output of a binary arithmetic operation to ."}
+{"id": "/documentation/accelerate/bnnsarithmeticunary", "law": "Use a structure to pass the descriptions and types of the input and output of a unary arithmetic operation to ."}
+{"id": "/documentation/accelerate/bnnsbandpart(_:_:_:_:_:)", "law": "Use to copy a tensor’s main diagonal and zero or more upper and lower bands."}
+{"id": "/documentation/accelerate/bnnsclipbyglobalnorm(_:_:_:_:_:)", "law": "Use this function to clip the values in an array of input tensors to a maximum Euclidean norm."}
+{"id": "/documentation/accelerate/bnnsclipbyglobalnorm(_:_:_:_:_:)", "law": "Clips a tensor’s values to a maximum global Euclidean norm."}
+{"id": "/documentation/accelerate/bnnsclipbynorm(_:_:_:_:)", "law": "Use this function to clip the values in an input tensor to a maximum Euclidean norm."}
+{"id": "/documentation/accelerate/bnnsclipbynorm(_:_:_:_:)", "law": "Clips a tensor’s values to a maximum Euclidean norm."}
+{"id": "/documentation/accelerate/bnnsclipbyvalue(_:_:_:_:)", "law": "Use this function to clip the values in an input tensor to the range you specify."}
+{"id": "/documentation/accelerate/bnnsclipbyvalue(_:_:_:_:)", "law": "The function sets values below the minimum to the minimum, and values above the maximum to the maximum."}
+{"id": "/documentation/accelerate/bnnsclipbyvalue(_:_:_:_:)", "law": "The following code clips the values of the input tensor to the range : Clips a tensor’s values to the specified minimum and maximum values."}
+{"id": "/documentation/accelerate/bnnscomparetensor(_:_:_:_:)", "law": "Use relational operators, for example and , to compare floating-point elements."}
+{"id": "/documentation/accelerate/bnnscomparetensor(_:_:_:_:)", "law": "Use logical operators, for example and , to compare Boolean elements."}
+{"id": "/documentation/accelerate/bnnscomputelstmtrainingcachecapacity(_:)", "law": "Returns the minimum bytes capacity of the training cache buffer a long short-term memory (LSTM) layer uses when it’s applied."}
+{"id": "/documentation/accelerate/bnnscomputenorm(_:_:_:_:)", "law": "Use this function to compute the norm of either an entire tensor or the axis or axes of a tensor."}
+{"id": "/documentation/accelerate/bnnscomputenorm(_:_:_:_:)", "law": "In this case, the norm is a scalar value, and the destination’s data layout must be a with a size of ."}
+{"id": "/documentation/accelerate/bnnscropresize(_:_:_:_:_:)", "law": "Use this function to resize the spatial dimensions (two dimensions with the smallest strides) of the first input according to the bounding boxes and box indices specified in the second input."}
+{"id": "/documentation/accelerate/bnnsdirectapplyintopk(_:_:_:_:_:_:_:_:_:_:)", "law": "Use to test whether elements in a tensor are in the top k entries."}
+{"id": "/documentation/accelerate/bnnsdirectapplyintopk(_:_:_:_:_:_:_:_:_:_:)", "law": "The input data type must be , the test indices data type must be , and the output data type must be ."}
+{"id": "/documentation/accelerate/bnnsdirectapplyintopk(_:_:_:_:_:_:_:_:_:_:)", "law": "For example, given the following 4 x 4 row-major matrix and vector of test indices: The following code checks the values in source are in the top k entries for each successive row: On return, the output contains ."}
+{"id": "/documentation/accelerate/bnnsdirectapplyquantizer(_:_:_:_:_:)", "law": "Use this function, in conjunction with a , to convert tensors to different precisions."}
+{"id": "/documentation/accelerate/bnnsdirectapplyquantizer(_:_:_:_:_:)", "law": "If you supply scale and bias descriptors, they must have a vector layout and a size that matches the size of the axis that you specify."}
+{"id": "/documentation/accelerate/bnnsdirectapplyquantizer(_:_:_:_:_:)", "law": "If you’re applying scale and bias to the entire tensor, scale and bias descriptors must have a size of 1."}
+{"id": "/documentation/accelerate/bnnsdirectapplytopk(_:_:_:_:_:_:_:_:_:_:)", "law": "In Swift, the input data type and best values data type must be , and the best indices data type must be ."}
+{"id": "/documentation/accelerate/bnnsdirectapplytopk(_:_:_:_:_:_:_:_:_:_:)", "law": "Use this function to find the maximum values and corresponding indices of a tensor along a specified axis."}
+{"id": "/documentation/accelerate/bnnsdirectapplytopk(_:_:_:_:_:_:_:_:_:_:)", "law": "For example, given the following 4 x 4 row-major matrix: The following code computes the top 2 elements of each column: On return, and contain the following values, where 9 is the top value in the first column at index 2: Applies a top-k filter directly to an input."}
+{"id": "/documentation/accelerate/bnnsfiltercreatefusedlayer(_:_:_:_:)", "law": "Use this function to create an layer fused filter that processes input as: … ."}
+{"id": "/documentation/accelerate/bnnsfiltercreatefusedlayer(_:_:_:_:)", "law": "The first filters must have activation function."}
+{"id": "/documentation/accelerate/bnnsfiltercreatefusedlayer(_:_:_:_:)", "law": "For the first filters, each filter’s output descriptor and its subsequent filter’s input descriptor must have the same size, stride, and data type."}
+{"id": "/documentation/accelerate/bnnsfiltercreatefusedlayer(_:_:_:_:)", "law": "The first filter must be either or ."}
+{"id": "/documentation/accelerate/bnnsfiltercreatefusedlayer(_:_:_:_:)", "law": "The second filter must be one of , , , or ."}
+{"id": "/documentation/accelerate/bnnsfiltercreatelayerbroadcastmatmul(_:_:)", "law": "Use broadcast matrix to perform matrix multiplication on the last two indices of two tensors."}
+{"id": "/documentation/accelerate/bnnsfiltercreatelayerbroadcastmatmul(_:_:)", "law": "This means that the filter stores the data pointer to , and you don’t need to pass the weights data to the apply call."}
+{"id": "/documentation/accelerate/bnnsfiltercreatelayerconvolution(_:_:)", "law": "Use convolution to convolve an input image over all dimensions."}
+{"id": "/documentation/accelerate/bnnsfiltercreatelayerdropout(_:_:)", "law": "Use a dropout layer to randomly set the elements—or entire dimensions—of a tensor to 0."}
+{"id": "/documentation/accelerate/bnnsfiltercreatelayerdropout(_:_:)", "law": "The following code randomly drops half the elements from a 4 x 4 matrix: On return, output contains the following values: Use the parameter to dropout entire dimensions."}
+{"id": "/documentation/accelerate/bnnsfiltercreatelayerembedding(_:_:)", "law": "Use this function in conjunction with to create an embedding layer that accesses dictionary items based on the integer indices that the input tensor defines."}
+{"id": "/documentation/accelerate/bnnsfiltercreatelayerembedding(_:_:)", "law": "The embedding layer supports clipping to a maximum norm."}
+{"id": "/documentation/accelerate/bnnsfiltercreatelayerembedding(_:_:)", "law": "The following code accesses the second and third items from a dictionary that contains three 2 x 3 matrices."}
+{"id": "/documentation/accelerate/bnnsfiltercreatelayerembedding(_:_:)", "law": "The code initializes the embedding layer with a maximum norm that is the infinity-norm of the first dictionary item."}
+{"id": "/documentation/accelerate/bnnsfiltercreatelayerfullyconnected(_:_:)", "law": "Use a fully connected layer to construct each output feature from a linear combination of all input features."}
+{"id": "/documentation/accelerate/bnnsfiltercreatelayergram(_:_:)", "law": "You use this layer to perform the Gram matrix calculation: Returns a new Gram matrix layer."}
+{"id": "/documentation/accelerate/bnnsfiltercreatelayerloss(_:_:)", "law": "You use a loss layer to compute forward and backward loss."}
+{"id": "/documentation/accelerate/bnnsfiltercreatelayernormalization(_:_:_:)", "law": "Use a normalization loss layer to normalize tensor values, that is, calculate new elements to have a zero mean and a unit standard deviation."}
+{"id": "/documentation/accelerate/bnnsfiltercreatelayerpadding(_:_:)", "law": "Use a padding layer to add elements to an n-dimensional array before and after existing data."}
+{"id": "/documentation/accelerate/bnnsfiltercreatelayerpermute(_:_:)", "law": "Use a permute layer to copy one tensor to another while permuting the order of the axes."}
+{"id": "/documentation/accelerate/bnnsfiltercreatelayerpooling(_:_:)", "law": "Use a pooling layer to downsample an input, selecting, for example, the average or the maximum value in a specified kernel size."}
+{"id": "/documentation/accelerate/bnnsfiltercreatelayerpooling(_:_:)", "law": "The following figure illustrates how a 2 x 2 maximum pooling kernel samples each 2 x 2 block of values of 4 x 4 source."}
+{"id": "/documentation/accelerate/bnnsfiltercreatelayerpooling(_:_:)", "law": "The highlighted block contains the values , so the maximum value passed to the destination element in is ."}
+{"id": "/documentation/accelerate/bnnsfiltercreatelayerpooling(_:_:)", "law": "Note that the input is a 2 x 2 x 1 tensor."}
+{"id": "/documentation/accelerate/bnnsfiltercreatelayerpooling(_:_:)", "law": "Use in conjunction with the indices generated by to partially recreate the original data of a maximum pooling operation."}
+{"id": "/documentation/accelerate/bnnsfiltercreatelayerpooling(_:_:)", "law": "UnMax pooling is a partial inverse of maximum pooling that sets all non-maximal values to zero."}
+{"id": "/documentation/accelerate/bnnsfiltercreatelayerresize(_:_:)", "law": "Use a resize layer to copy data between two differently sized tensors using a specified interpolation method."}
+{"id": "/documentation/accelerate/bnnsfiltercreatelayerresize(_:_:)", "law": "Resized dimensions must all either upsample or downsample; the resize layer doesn’t support combining both directions in a single operation."}
+{"id": "/documentation/accelerate/bnnsfiltercreatelayerresize(_:_:)", "law": "For example, to resize the following source data to the specified destination dimensions: Use the following code: On return, contains the following values: Returns a new resize layer."}
+{"id": "/documentation/accelerate/bnnsfiltercreatelayertensorcontraction(_:_:)", "law": "In the case where one of the inputs is a weight or the operation is a contraction of a tensor with itself, use or ."}
+{"id": "/documentation/accelerate/bnnsfiltercreatelayertensorcontraction(_:_:)", "law": "If the operation has two inputs, use or ."}
+{"id": "/documentation/accelerate/bnnsfiltercreatelayertensorcontraction(_:_:)", "law": "Use a tensor contraction layer to also copy from one layer to another with a permutation of indices."}
+{"id": "/documentation/accelerate/bnnsfiltercreatelayertensorcontraction(_:_:)", "law": "always represents indices that occur on both sides of the operation, and never an index over which contraction performs summation."}
+{"id": "/documentation/accelerate/bnnsfiltercreatelayertensorcontraction(_:_:)", "law": "A on one side only matches indices represent by a on the other side, and never indices represented by a letter."}
+{"id": "/documentation/accelerate/bnnsfiltercreatelayertensorcontraction(_:_:)", "law": "Note that where contraction matches index letters, the sizes of the corresponding dimensions for the tensors must also match, unless one tensor has size 1."}
+{"id": "/documentation/accelerate/bnnsfiltercreatelayertensorcontraction(_:_:)", "law": "The following code performs a tensor contraction over two 2 x 1 row-major matrices, writing the result to a 2 x 2 row-major matrix."}
+{"id": "/documentation/accelerate/bnnsfiltercreatelayertensorcontraction(_:_:)", "law": "First, define the input and output matrices and their descriptors: Use the following code to perform the contraction: On return, contains the following values: Returns a new tensor-contraction layer."}
+{"id": "/documentation/accelerate/bnnsfiltercreatelayertransposedconvolution(_:_:)", "law": "Use transposed convolution to upsample a tensor by performing an operation that’s effectively the inverse of a convolution."}
+{"id": "/documentation/accelerate/bnnsfiltercreatelayertransposedconvolution(_:_:)", "law": "The final output, pictured at the bottom of the figure, is the sum of the products: Use the following code to perform the illustrated transposed convolution: On return, contains the following values: Returns a new transposed convolution layer."}
+{"id": "/documentation/accelerate/bnnslayerparametersactivation", "law": "Use an activation layer to perform type conversion."}
+{"id": "/documentation/accelerate/bnnslayerparameterslstm", "law": "Use a structure to define the parameters of a long short-term memory (LSTM) operation."}
+{"id": "/documentation/accelerate/bnnslossfilterapplybatch(_:_:_:_:_:_:_:_:_:_:_:)", "law": "The weights size must be one of: 0 (for no weights), 1 (for weight broadcast), , or (for different weight for each class and each sample in the batch) for all loss functions except ."}
+{"id": "/documentation/accelerate/bnnslossfilterapplybatch(_:_:_:_:_:_:_:_:_:_:_:)", "law": "Use specific weight factors for YOLO loss."}
+{"id": "/documentation/accelerate/bnnsmatmul(_:_:_:_:_:_:_:_:)", "law": "Use this function to perform the operation where transposes the corresponding matrix if the appropriate transpose parameter is ."}
+{"id": "/documentation/accelerate/bnnsmatmul(_:_:_:_:_:_:_:_:)", "law": "The matrix multiplication is always on the final two indices of each operand."}
+{"id": "/documentation/accelerate/bnnsmatmul(_:_:_:_:_:_:_:_:)", "law": "The function calculates the same result using a 2 x 2 matrix."}
+{"id": "/documentation/accelerate/bnnsmatmul(_:_:_:_:_:_:_:_:)", "law": "Call to calculate the required workspace size for a set of parameters."}
+{"id": "/documentation/accelerate/bnnsmatmulworkspacesize(_:_:_:_:_:_:_:)", "law": "The required allocation size for workspace paramter to , in bytes."}
+{"id": "/documentation/accelerate/bnnsmatmulworkspacesize(_:_:_:_:_:_:_:)", "law": "Returns the workspace size that a matrix multiply operation requires."}
+{"id": "/documentation/accelerate/bnnsndarrayfullyconnectedsparsifysparsecoo(_:_:_:_:_:_:_:_:_:)", "law": "Instead, BNNS provides functions that convert COO and CSR data to an optimized, opaque layout that you use with the existing machine learning primitives such as fully connected."}
+{"id": "/documentation/accelerate/bnnsndarrayfullyconnectedsparsifysparsecoo(_:_:_:_:_:_:_:_:_:)", "law": "For example, the following diagonal, single-precision matrix requires 1024 bytes of storage: You can represent the same values in COO format as three arrays: the nonzero values, the column indices, and the row indices."}
+{"id": "/documentation/accelerate/bnnsndarrayfullyconnectedsparsifysparsecoo(_:_:_:_:_:_:_:_:_:)", "law": "Note that BNNS requires interleaved column and row indices."}
+{"id": "/documentation/accelerate/bnnsndarrayfullyconnectedsparsifysparsecoo(_:_:_:_:_:_:_:_:_:)", "law": "Converts a sparse tensor from the standardized coordinate list (COO) layout to a device-specific sparse layout that BNNS fully connected layers use."}
+{"id": "/documentation/accelerate/bnnsndarrayfullyconnectedsparsifysparsecsr(_:_:_:_:_:_:_:_:_:_:)", "law": "Instead, BNNS provides functions that convert COO and CSR data to an optimized, opaque layout that you use with the existing machine learning primitives such as fully connected."}
+{"id": "/documentation/accelerate/bnnsndarrayfullyconnectedsparsifysparsecsr(_:_:_:_:_:_:_:_:_:_:)", "law": "For example, the following diagonal, single-precision matrix requires 1024 bytes of storage: You can represent the same values in CSR format as three arrays: the nonzero format as three arrays: the nonzero values, the column indices, and a third array that specifies where each row starts."}
+{"id": "/documentation/accelerate/bnnsndarrayfullyconnectedsparsifysparsecsr(_:_:_:_:_:_:_:_:_:_:)", "law": "Converts a sparse tensor from the standardized compressed sparse row (CSR) layout to a device-specific sparse layout that BNNS fully connected layers use."}
+{"id": "/documentation/accelerate/bnnsndarraygetdatasize(_:)", "law": "Use this function to calcluate the size of the workspace that the and require."}
+{"id": "/documentation/accelerate/bnnsndarraygetdatasize(_:)", "law": "Returns the size, in bytes, that an array descriptor requires."}
+{"id": "/documentation/accelerate/bnnsoptimizerstep(_:_:_:_:_:_:_:)", "law": "Use to update a set of parameters using a supplied optimization algorithm."}
+{"id": "/documentation/accelerate/bnnsoptimizerstep(_:_:_:_:_:_:_:)", "law": "Parameter, gradient, and accumulator descriptors must have the same sizes and strides and be of type ."}
+{"id": "/documentation/accelerate/bnnsoptimizerstep(_:_:_:_:_:_:_:)", "law": "For example, the following shows the code required to update the weights data described by using an Adam optimizer."}
+{"id": "/documentation/accelerate/bnnsrandomfillcategoricalfloat(_:_:_:_:)", "law": "Use this function to fill an array descriptor with random values from a categorical distribution with specified event probabilities or event log probabilities."}
+{"id": "/documentation/accelerate/bnnsrandomfillcategoricalfloat(_:_:_:_:)", "law": "If you use the same generator on multiple threads, note that this function serializes the generator through an internal lock."}
+{"id": "/documentation/accelerate/bnnsrandomfillcategoricalfloat(_:_:_:_:)", "law": "To eliminate this contention, use different generators for each thread."}
+{"id": "/documentation/accelerate/bnnsrandomfillcategoricalfloat(_:_:_:_:)", "law": "The output descriptor must have the same rank as the probabilities descriptor."}
+{"id": "/documentation/accelerate/bnnsrandomfillcategoricalfloat(_:_:_:_:)", "law": "The first dimensions of the output descriptor must be the same size as the first dimensions of the probabilities descriptor."}
+{"id": "/documentation/accelerate/bnnsrandomfillcategoricalfloat(_:_:_:_:)", "law": "For example, never selects or , and is twice as likely to select (with a probability of ) than (with a probability of )."}
+{"id": "/documentation/accelerate/bnnsrandomfilluniformfloat(_:_:_:_:)", "law": "Use this function to fill an array descriptor with uniformly distributed random values."}
+{"id": "/documentation/accelerate/bnnsrandomfilluniformfloat(_:_:_:_:)", "law": "If you use the same generator on multiple threads, note that this function serializes the generator through an internal lock."}
+{"id": "/documentation/accelerate/bnnsrandomfilluniformfloat(_:_:_:_:)", "law": "To eliminate this contention, use different generators for each thread."}
+{"id": "/documentation/accelerate/bnnsrandomfilluniformfloat(_:_:_:_:)", "law": "If the descriptor’s isn’t 32-bit floating point, the values that you specify for the bounds must be exactly representable in the descriptor’s data type."}
+{"id": "/documentation/accelerate/bnnsrandomfilluniformint(_:_:_:_:)", "law": "Use this function to fill the an array descriptor with uniformly distributed random values."}
+{"id": "/documentation/accelerate/bnnsrandomfilluniformint(_:_:_:_:)", "law": "If you use the same generator on multiple threads, note that this function serializes the generator through an internal lock."}
+{"id": "/documentation/accelerate/bnnsrandomfilluniformint(_:_:_:_:)", "law": "To eliminate this contention, use different generators for each thread."}
+{"id": "/documentation/accelerate/bnnsrandomgeneratorgetstate(_:_:_:)", "law": "Use the and functions to capture and restore a random number generator’s state."}
+{"id": "/documentation/accelerate/bnnsrandomgeneratorsetstate(_:_:_:)", "law": "Use the and functions to capture and restore a random number generator’s state."}
+{"id": "/documentation/accelerate/bnnsshuffle(_:_:_:_:)", "law": "Use to rearrange the elements in a tensor between the depth dimension and blocks of 2D spatial data."}
+{"id": "/documentation/accelerate/bnnstile(_:_:_:)", "law": "Use to tile generate a tensor by repeating tiled copies of the input tensor."}
+{"id": "/documentation/accelerate/bnnstile(_:_:_:)", "law": "The dimensions of the output tensor must be an integer multiple of the corresponding dimension of the input tensor."}
+{"id": "/documentation/accelerate/bnnstile(_:_:_:)", "law": "For example, the following code tiles a 2 x 3 matrix three times along the first dimension and twice along the second dimension: On return, contains the following values: Generates an output tensor by tiling an input tensor multiple times."}
+{"id": "/documentation/accelerate/using-long-short-term-memory-layers-lstm", "law": "BNNS provides direct apply functions for forward and backward LSTM passes, that is, you don’t need to create an explicit LSTM layer."}
+{"id": "/documentation/accelerate/using-long-short-term-memory-layers-lstm", "law": "Use to compute the size, in bytes, of the training cache: Finally, call to apply the LSTM layer: Add long short-term memory (LSTM) layers to recurrent neural networks to avoid long-term dependency problems."}
+{"id": "/documentation/accelerate/building-a-basic-image-processing-workflow", "law": "However, you’ll use the following code to initialize a destination buffer with a height and width that are a quarter of the source dimensions."}
+{"id": "/documentation/accelerate/building-a-basic-image-processing-workflow", "law": "Because your format contains four 8-bit channels, you use the function."}
+{"id": "/documentation/accelerate/building-a-basic-image-processing-workflow", "law": "The flag uses a high-quality Lanczos 5 x 5 resampling filter."}
+{"id": "/documentation/accelerate/building-a-basic-image-processing-workflow", "law": "If you require faster scaling, pass ."}
+{"id": "/documentation/accelerate/building-a-basic-image-processing-workflow", "law": "To avoid this situation, unpremultiply the image data — that is, remove the premultiplied alpha value from the image data — before the scaling operation, and premultiply the scaled result."}
+{"id": "/documentation/accelerate/building-a-basic-image-processing-workflow", "law": "This code shows the additional operations required, with error handling removed for brevity: Resize an image with vImage."}
+{"id": "/documentation/accelerate/compositing-images-with-vimage-blend-modes", "law": "The examples that follow use the image below on the left as the bottom layer and the image below on the right as the top layer."}
+{"id": "/documentation/accelerate/compositing-images-with-vimage-blend-modes", "law": "Use the function to composite two layers using the lighten blend mode."}
+{"id": "/documentation/accelerate/compositing-images-with-vimage-blend-modes", "law": "You can use the lighten blend mode to apply an overall lightening effect to images."}
+{"id": "/documentation/accelerate/compositing-images-with-vimage-blend-modes", "law": "Use the function to composite two layers using the darken blend mode."}
+{"id": "/documentation/accelerate/compositing-images-with-vimage-blend-modes", "law": "You can use the darken blend mode to apply an overall darkening effect to images."}
+{"id": "/documentation/accelerate/compositing-images-with-vimage-blend-modes", "law": "Use the function to composite two layers using the screen blend mode."}
+{"id": "/documentation/accelerate/compositing-images-with-vimage-blend-modes", "law": "You can use the screen blend mode to lighten images without affecting the darkest areas."}
+{"id": "/documentation/accelerate/compositing-images-with-vimage-blend-modes", "law": "Use the function to composite two layers using the multiply blend mode."}
+{"id": "/documentation/accelerate/compositing-images-with-vimage-blend-modes", "law": "You can the use multiply blend mode to darken images without affecting the lightest areas."}
+{"id": "/documentation/accelerate/creating-and-populating-buffers-from-core-graphics-images", "law": "The vImage functions that initialize a buffer’s size and data require an instantiated structure."}
+{"id": "/documentation/accelerate/creating-and-populating-buffers-from-core-graphics-images", "law": "In this case, you use the function to initialize a buffer of a specified size and the correct memory allocation for the bit-depth of the image:"}
+{"id": "/documentation/accelerate/gammafunction", "law": "You use this data type when you create a gamma function."}
+{"id": "/documentation/accelerate/vimage_affinetransform", "law": "Most of the time, you should use the data structure, which changes size depending on architecture."}
+{"id": "/documentation/accelerate/vimage_affinetransform_double", "law": "Most of the time, you should use the data structure, which changes size depending on architecture."}
+{"id": "/documentation/accelerate/vimage_buffer/init()", "law": "Use this initializer to create an empty vImage buffer that you pass to a subsequent function that allocates and initializes the buffer’s storage and properties."}
+{"id": "/documentation/accelerate/blas_threading", "law": "Use the threading model constants to specify whether BLAS and LAPACK operations run in a single thread or multiple threads."}
+{"id": "/documentation/accelerate/blasparamerrorproc", "law": "To use the new interfaces, define before including the Accelerate or vecLib headers."}
+{"id": "/documentation/accelerate/catlas_caxpby(_:_:_:_:_:_:_:)", "law": "To use the new interfaces, define before including the Accelerate or vecLib headers."}
+{"id": "/documentation/accelerate/catlas_cset(_:_:_:_:)", "law": "To use the new interfaces, define before including the Accelerate or vecLib headers."}
+{"id": "/documentation/accelerate/catlas_daxpby(_:_:_:_:_:_:_:)", "law": "To use the new interfaces, define before including the Accelerate or vecLib headers."}
+{"id": "/documentation/accelerate/catlas_dset(_:_:_:_:)", "law": "To use the new interfaces, define before including the Accelerate or vecLib headers."}
+{"id": "/documentation/accelerate/catlas_saxpby(_:_:_:_:_:_:_:)", "law": "To use the new interfaces, define before including the Accelerate or vecLib headers."}
+{"id": "/documentation/accelerate/catlas_sset(_:_:_:_:)", "law": "To use the new interfaces, define before including the Accelerate or vecLib headers."}
+{"id": "/documentation/accelerate/catlas_zaxpby(_:_:_:_:_:_:_:)", "law": "To use the new interfaces, define before including the Accelerate or vecLib headers."}
+{"id": "/documentation/accelerate/catlas_zset(_:_:_:_:)", "law": "To use the new interfaces, define before including the Accelerate or vecLib headers."}
+{"id": "/documentation/accelerate/cblas_caxpy(_:_:_:_:_:_:)", "law": "To use the new interfaces, define before including the Accelerate or vecLib headers."}
+{"id": "/documentation/accelerate/cblas_ccopy(_:_:_:_:_:)", "law": "To use the new interfaces, define before including the Accelerate or vecLib headers."}
+{"id": "/documentation/accelerate/cblas_cdotc_sub(_:_:_:_:_:_:)", "law": "To use the new interfaces, define before including the Accelerate or vecLib headers."}
+{"id": "/documentation/accelerate/cblas_cdotu_sub(_:_:_:_:_:_:)", "law": "To use the new interfaces, define before including the Accelerate or vecLib headers."}
+{"id": "/documentation/accelerate/cblas_cgbmv(_:_:_:_:_:_:_:_:_:_:_:_:_:_:)", "law": "To use the new interfaces, define before including the Accelerate or vecLib headers."}
+{"id": "/documentation/accelerate/cblas_cgemm(_:_:_:_:_:_:_:_:_:_:_:_:_:_:)", "law": "Thus, it calculates either or with optional use of transposed forms of , , or both."}
+{"id": "/documentation/accelerate/cblas_cgemm(_:_:_:_:_:_:_:_:_:_:_:_:_:_:)", "law": "To use the new interfaces, define before including the Accelerate or vecLib headers."}
+{"id": "/documentation/accelerate/cblas_cgemv(_:_:_:_:_:_:_:_:_:_:_:_:)", "law": "Thus, it calculates either with optional use of the transposed form of ."}
+{"id": "/documentation/accelerate/cblas_cgemv(_:_:_:_:_:_:_:_:_:_:_:_:)", "law": "To use the new interfaces, define before including the Accelerate or vecLib headers."}
+{"id": "/documentation/accelerate/cblas_cgerc(_:_:_:_:_:_:_:_:_:_:)", "law": "To use the new interfaces, define before including the Accelerate or vecLib headers."}
+{"id": "/documentation/accelerate/cblas_cgeru(_:_:_:_:_:_:_:_:_:_:)", "law": "To use the new interfaces, define before including the Accelerate or vecLib headers."}
+{"id": "/documentation/accelerate/cblas_chbmv(_:_:_:_:_:_:_:_:_:_:_:_:)", "law": "To use the new interfaces, define before including the Accelerate or vecLib headers."}
+{"id": "/documentation/accelerate/cblas_chemm(_:_:_:_:_:_:_:_:_:_:_:_:_:)", "law": "To use the new interfaces, define before including the Accelerate or vecLib headers."}
+{"id": "/documentation/accelerate/cblas_chemv(_:_:_:_:_:_:_:_:_:_:_:)", "law": "To use the new interfaces, define before including the Accelerate or vecLib headers."}
+{"id": "/documentation/accelerate/cblas_cher(_:_:_:_:_:_:_:_:)", "law": "To use the new interfaces, define before including the Accelerate or vecLib headers."}
+{"id": "/documentation/accelerate/cblas_cher2(_:_:_:_:_:_:_:_:_:_:)", "law": "To use the new interfaces, define before including the Accelerate or vecLib headers."}
+{"id": "/documentation/accelerate/cblas_cher2k(_:_:_:_:_:_:_:_:_:_:_:_:_:)", "law": "To use the new interfaces, define before including the Accelerate or vecLib headers."}
+{"id": "/documentation/accelerate/cblas_cherk(_:_:_:_:_:_:_:_:_:_:_:)", "law": "To use the new interfaces, define before including the Accelerate or vecLib headers."}
+{"id": "/documentation/accelerate/cblas_chpmv(_:_:_:_:_:_:_:_:_:_:)", "law": "To use the new interfaces, define before including the Accelerate or vecLib headers."}
+{"id": "/documentation/accelerate/cblas_chpr(_:_:_:_:_:_:_:)", "law": "To use the new interfaces, define before including the Accelerate or vecLib headers."}
+{"id": "/documentation/accelerate/cblas_chpr2(_:_:_:_:_:_:_:_:_:)", "law": "To use the new interfaces, define before including the Accelerate or vecLib headers."}
+{"id": "/documentation/accelerate/cblas_crotg(_:_:_:_:)", "law": "To use the new interfaces, define before including the Accelerate or vecLib headers."}
+{"id": "/documentation/accelerate/cblas_cscal(_:_:_:_:)", "law": "To use the new interfaces, define before including the Accelerate or vecLib headers."}
+{"id": "/documentation/accelerate/cblas_csrot(_:_:_:_:_:_:_:)", "law": "To use the new interfaces, define before including the Accelerate or vecLib headers."}
+{"id": "/documentation/accelerate/cblas_csscal(_:_:_:_:)", "law": "To use the new interfaces, define before including the Accelerate or vecLib headers."}
+{"id": "/documentation/accelerate/cblas_cswap(_:_:_:_:_:)", "law": "To use the new interfaces, define before including the Accelerate or vecLib headers."}
+{"id": "/documentation/accelerate/cblas_csymm(_:_:_:_:_:_:_:_:_:_:_:_:_:)", "law": "To use the new interfaces, define before including the Accelerate or vecLib headers."}
+{"id": "/documentation/accelerate/cblas_csyr2k(_:_:_:_:_:_:_:_:_:_:_:_:_:)", "law": "To use the new interfaces, define before including the Accelerate or vecLib headers."}
+{"id": "/documentation/accelerate/cblas_csyrk(_:_:_:_:_:_:_:_:_:_:_:)", "law": "To use the new interfaces, define before including the Accelerate or vecLib headers."}
+{"id": "/documentation/accelerate/cblas_ctbmv(_:_:_:_:_:_:_:_:_:_:)", "law": "To use the new interfaces, define before including the Accelerate or vecLib headers."}
+{"id": "/documentation/accelerate/cblas_ctbsv(_:_:_:_:_:_:_:_:_:_:)", "law": "To use the new interfaces, define before including the Accelerate or vecLib headers."}
+{"id": "/documentation/accelerate/cblas_ctpmv(_:_:_:_:_:_:_:_:)", "law": "To use the new interfaces, define before including the Accelerate or vecLib headers."}
+{"id": "/documentation/accelerate/cblas_ctpsv(_:_:_:_:_:_:_:_:)", "law": "To use the new interfaces, define before including the Accelerate or vecLib headers."}
+{"id": "/documentation/accelerate/cblas_ctrmm(_:_:_:_:_:_:_:_:_:_:_:_:)", "law": "To use the new interfaces, define before including the Accelerate or vecLib headers."}
+{"id": "/documentation/accelerate/cblas_ctrmv(_:_:_:_:_:_:_:_:_:)", "law": "To use the new interfaces, define before including the Accelerate or vecLib headers."}
+{"id": "/documentation/accelerate/cblas_ctrsm(_:_:_:_:_:_:_:_:_:_:_:_:)", "law": "To use the new interfaces, define before including the Accelerate or vecLib headers."}
+{"id": "/documentation/accelerate/cblas_ctrsv(_:_:_:_:_:_:_:_:_:)", "law": "To use the new interfaces, define before including the Accelerate or vecLib headers."}
+{"id": "/documentation/accelerate/cblas_dasum(_:_:_:)", "law": "To use the new interfaces, define before including the Accelerate or vecLib headers."}
+{"id": "/documentation/accelerate/cblas_daxpy(_:_:_:_:_:_:)", "law": "To use the new interfaces, define before including the Accelerate or vecLib headers."}
+{"id": "/documentation/accelerate/cblas_dcopy(_:_:_:_:_:)", "law": "To use the new interfaces, define before including the Accelerate or vecLib headers."}
+{"id": "/documentation/accelerate/cblas_ddot(_:_:_:_:_:)", "law": "To use the new interfaces, define before including the Accelerate or vecLib headers."}
+{"id": "/documentation/accelerate/cblas_dgbmv(_:_:_:_:_:_:_:_:_:_:_:_:_:_:)", "law": "To use the new interfaces, define before including the Accelerate or vecLib headers."}
+{"id": "/documentation/accelerate/cblas_dgemm(_:_:_:_:_:_:_:_:_:_:_:_:_:_:)", "law": "Thus, it calculates either or with optional use of transposed forms of , , or both."}
+{"id": "/documentation/accelerate/cblas_dgemm(_:_:_:_:_:_:_:_:_:_:_:_:_:_:)", "law": "To use the new interfaces, define before including the Accelerate or vecLib headers."}
+{"id": "/documentation/accelerate/cblas_dgemv(_:_:_:_:_:_:_:_:_:_:_:_:)", "law": "Thus, it calculates either with optional use of the transposed form of ."}
+{"id": "/documentation/accelerate/cblas_dgemv(_:_:_:_:_:_:_:_:_:_:_:_:)", "law": "To use the new interfaces, define before including the Accelerate or vecLib headers."}
+{"id": "/documentation/accelerate/cblas_dger(_:_:_:_:_:_:_:_:_:_:)", "law": "To use the new interfaces, define before including the Accelerate or vecLib headers."}
+{"id": "/documentation/accelerate/cblas_diag", "law": "To use the new interfaces, define before including the Accelerate or vecLib headers."}
+{"id": "/documentation/accelerate/cblas_dnrm2(_:_:_:)", "law": "To use the new interfaces, define before including the Accelerate or vecLib headers."}
+{"id": "/documentation/accelerate/cblas_drot(_:_:_:_:_:_:_:)", "law": "To use the new interfaces, define before including the Accelerate or vecLib headers."}
+{"id": "/documentation/accelerate/cblas_drotg(_:_:_:_:)", "law": "To use the new interfaces, define before including the Accelerate or vecLib headers."}
+{"id": "/documentation/accelerate/cblas_drotm(_:_:_:_:_:_:)", "law": "To use the new interfaces, define before including the Accelerate or vecLib headers."}
+{"id": "/documentation/accelerate/cblas_drotmg(_:_:_:_:_:)", "law": "To use the new interfaces, define before including the Accelerate or vecLib headers."}
+{"id": "/documentation/accelerate/cblas_dsbmv(_:_:_:_:_:_:_:_:_:_:_:_:)", "law": "To use the new interfaces, define before including the Accelerate or vecLib headers."}
+{"id": "/documentation/accelerate/cblas_dscal(_:_:_:_:)", "law": "To use the new interfaces, define before including the Accelerate or vecLib headers."}
+{"id": "/documentation/accelerate/cblas_dsdot(_:_:_:_:_:)", "law": "To use the new interfaces, define before including the Accelerate or vecLib headers."}
+{"id": "/documentation/accelerate/cblas_dspmv(_:_:_:_:_:_:_:_:_:_:)", "law": "To use the new interfaces, define before including the Accelerate or vecLib headers."}
+{"id": "/documentation/accelerate/cblas_dspr(_:_:_:_:_:_:_:)", "law": "To use the new interfaces, define before including the Accelerate or vecLib headers."}
+{"id": "/documentation/accelerate/cblas_dspr2(_:_:_:_:_:_:_:_:_:)", "law": "To use the new interfaces, define before including the Accelerate or vecLib headers."}
+{"id": "/documentation/accelerate/cblas_dswap(_:_:_:_:_:)", "law": "To use the new interfaces, define before including the Accelerate or vecLib headers."}
+{"id": "/documentation/accelerate/cblas_dsymm(_:_:_:_:_:_:_:_:_:_:_:_:_:)", "law": "To use the new interfaces, define before including the Accelerate or vecLib headers."}
+{"id": "/documentation/accelerate/cblas_dsymv(_:_:_:_:_:_:_:_:_:_:_:)", "law": "To use the new interfaces, define before including the Accelerate or vecLib headers."}
+{"id": "/documentation/accelerate/cblas_dsyr(_:_:_:_:_:_:_:_:)", "law": "To use the new interfaces, define before including the Accelerate or vecLib headers."}
+{"id": "/documentation/accelerate/cblas_dsyr2(_:_:_:_:_:_:_:_:_:_:)", "law": "To use the new interfaces, define before including the Accelerate or vecLib headers."}
+{"id": "/documentation/accelerate/cblas_dsyr2k(_:_:_:_:_:_:_:_:_:_:_:_:_:)", "law": "To use the new interfaces, define before including the Accelerate or vecLib headers."}
+{"id": "/documentation/accelerate/cblas_dsyrk(_:_:_:_:_:_:_:_:_:_:_:)", "law": "To use the new interfaces, define before including the Accelerate or vecLib headers."}
+{"id": "/documentation/accelerate/cblas_dtbmv(_:_:_:_:_:_:_:_:_:_:)", "law": "To use the new interfaces, define before including the Accelerate or vecLib headers."}
+{"id": "/documentation/accelerate/cblas_dtbsv(_:_:_:_:_:_:_:_:_:_:)", "law": "To use the new interfaces, define before including the Accelerate or vecLib headers."}
+{"id": "/documentation/accelerate/cblas_dtpmv(_:_:_:_:_:_:_:_:)", "law": "To use the new interfaces, define before including the Accelerate or vecLib headers."}
+{"id": "/documentation/accelerate/cblas_dtpsv(_:_:_:_:_:_:_:_:)", "law": "To use the new interfaces, define before including the Accelerate or vecLib headers."}
+{"id": "/documentation/accelerate/cblas_dtrmm(_:_:_:_:_:_:_:_:_:_:_:_:)", "law": "To use the new interfaces, define before including the Accelerate or vecLib headers."}
+{"id": "/documentation/accelerate/cblas_dtrmv(_:_:_:_:_:_:_:_:_:)", "law": "To use the new interfaces, define before including the Accelerate or vecLib headers."}
+{"id": "/documentation/accelerate/cblas_dtrsm(_:_:_:_:_:_:_:_:_:_:_:_:)", "law": "To use the new interfaces, define before including the Accelerate or vecLib headers."}
+{"id": "/documentation/accelerate/cblas_dtrsv(_:_:_:_:_:_:_:_:_:)", "law": "To use the new interfaces, define before including the Accelerate or vecLib headers."}
+{"id": "/documentation/accelerate/cblas_dzasum(_:_:_:)", "law": "To use the new interfaces, define before including the Accelerate or vecLib headers."}
+{"id": "/documentation/accelerate/cblas_dznrm2(_:_:_:)", "law": "To use the new interfaces, define before including the Accelerate or vecLib headers."}
+{"id": "/documentation/accelerate/cblas_errprn", "law": "Returns the minimum of or ."}
+{"id": "/documentation/accelerate/cblas_errprn", "law": "Add any additional parameters required for the format string."}
+{"id": "/documentation/accelerate/cblas_errprn", "law": "To use the new interfaces, define before including the Accelerate or vecLib headers."}
+{"id": "/documentation/accelerate/cblas_icamax(_:_:_:)", "law": "To use the new interfaces, define before including the Accelerate or vecLib headers."}
+{"id": "/documentation/accelerate/cblas_idamax(_:_:_:)", "law": "To use the new interfaces, define before including the Accelerate or vecLib headers."}
+{"id": "/documentation/accelerate/cblas_isamax(_:_:_:)", "law": "To use the new interfaces, define before including the Accelerate or vecLib headers."}
+{"id": "/documentation/accelerate/cblas_izamax(_:_:_:)", "law": "To use the new interfaces, define before including the Accelerate or vecLib headers."}
+{"id": "/documentation/accelerate/cblas_order", "law": "To use the new interfaces, define before including the Accelerate or vecLib headers."}
+{"id": "/documentation/accelerate/cblas_sasum(_:_:_:)", "law": "To use the new interfaces, define before including the Accelerate or vecLib headers."}
+{"id": "/documentation/accelerate/cblas_saxpy(_:_:_:_:_:_:)", "law": "To use the new interfaces, define before including the Accelerate or vecLib headers."}
+{"id": "/documentation/accelerate/cblas_scasum(_:_:_:)", "law": "To use the new interfaces, define before including the Accelerate or vecLib headers."}
+{"id": "/documentation/accelerate/cblas_scnrm2(_:_:_:)", "law": "To use the new interfaces, define before including the Accelerate or vecLib headers."}
+{"id": "/documentation/accelerate/cblas_scopy(_:_:_:_:_:)", "law": "To use the new interfaces, define before including the Accelerate or vecLib headers."}
+{"id": "/documentation/accelerate/cblas_sdot(_:_:_:_:_:)", "law": "To use the new interfaces, define before including the Accelerate or vecLib headers."}
+{"id": "/documentation/accelerate/cblas_sdsdot(_:_:_:_:_:_:)", "law": "To use the new interfaces, define before including the Accelerate or vecLib headers."}
+{"id": "/documentation/accelerate/cblas_sgbmv(_:_:_:_:_:_:_:_:_:_:_:_:_:_:)", "law": "To use the new interfaces, define before including the Accelerate or vecLib headers."}
+{"id": "/documentation/accelerate/cblas_sgemv(_:_:_:_:_:_:_:_:_:_:_:_:)", "law": "Thus, it calculates either Y ← αAX + βY or Y ← αA_T_X + βY `` with optional use of the transposed form of ."}
+{"id": "/documentation/accelerate/cblas_sgemv(_:_:_:_:_:_:_:_:_:_:_:_:)", "law": "To use the new interfaces, define before including the Accelerate or vecLib headers."}
+{"id": "/documentation/accelerate/cblas_sger(_:_:_:_:_:_:_:_:_:_:)", "law": "To use the new interfaces, define before including the Accelerate or vecLib headers."}
+{"id": "/documentation/accelerate/cblas_side", "law": "To use the new interfaces, define before including the Accelerate or vecLib headers."}
+{"id": "/documentation/accelerate/cblas_snrm2(_:_:_:)", "law": "To use the new interfaces, define before including the Accelerate or vecLib headers."}
+{"id": "/documentation/accelerate/cblas_srot(_:_:_:_:_:_:_:)", "law": "To use the new interfaces, define before including the Accelerate or vecLib headers."}
+{"id": "/documentation/accelerate/cblas_srotg(_:_:_:_:)", "law": "To use the new interfaces, define before including the Accelerate or vecLib headers."}
+{"id": "/documentation/accelerate/cblas_srotm(_:_:_:_:_:_:)", "law": "To use the new interfaces, define before including the Accelerate or vecLib headers."}
+{"id": "/documentation/accelerate/cblas_srotmg(_:_:_:_:_:)", "law": "To use the new interfaces, define before including the Accelerate or vecLib headers."}
+{"id": "/documentation/accelerate/cblas_ssbmv(_:_:_:_:_:_:_:_:_:_:_:_:)", "law": "To use the new interfaces, define before including the Accelerate or vecLib headers."}
+{"id": "/documentation/accelerate/cblas_sscal(_:_:_:_:)", "law": "To use the new interfaces, define before including the Accelerate or vecLib headers."}
+{"id": "/documentation/accelerate/cblas_sspmv(_:_:_:_:_:_:_:_:_:_:)", "law": "To use the new interfaces, define before including the Accelerate or vecLib headers."}
+{"id": "/documentation/accelerate/cblas_sspr(_:_:_:_:_:_:_:)", "law": "To use the new interfaces, define before including the Accelerate or vecLib headers."}
+{"id": "/documentation/accelerate/cblas_sspr2(_:_:_:_:_:_:_:_:_:)", "law": "To use the new interfaces, define before including the Accelerate or vecLib headers."}
+{"id": "/documentation/accelerate/cblas_sswap(_:_:_:_:_:)", "law": "To use the new interfaces, define before including the Accelerate or vecLib headers."}
+{"id": "/documentation/accelerate/cblas_ssymm(_:_:_:_:_:_:_:_:_:_:_:_:_:)", "law": "To use the new interfaces, define before including the Accelerate or vecLib headers."}
+{"id": "/documentation/accelerate/cblas_ssymv(_:_:_:_:_:_:_:_:_:_:_:)", "law": "To use the new interfaces, define before including the Accelerate or vecLib headers."}
+{"id": "/documentation/accelerate/cblas_ssyr(_:_:_:_:_:_:_:_:)", "law": "To use the new interfaces, define before including the Accelerate or vecLib headers."}
+{"id": "/documentation/accelerate/cblas_ssyr2(_:_:_:_:_:_:_:_:_:_:)", "law": "To use the new interfaces, define before including the Accelerate or vecLib headers."}
+{"id": "/documentation/accelerate/cblas_ssyr2k(_:_:_:_:_:_:_:_:_:_:_:_:_:)", "law": "To use the new interfaces, define before including the Accelerate or vecLib headers."}
+{"id": "/documentation/accelerate/cblas_ssyrk(_:_:_:_:_:_:_:_:_:_:_:)", "law": "To use the new interfaces, define before including the Accelerate or vecLib headers."}
+{"id": "/documentation/accelerate/cblas_stbmv(_:_:_:_:_:_:_:_:_:_:)", "law": "To use the new interfaces, define before including the Accelerate or vecLib headers."}
+{"id": "/documentation/accelerate/cblas_stbsv(_:_:_:_:_:_:_:_:_:_:)", "law": "To use the new interfaces, define before including the Accelerate or vecLib headers."}
+{"id": "/documentation/accelerate/cblas_stpmv(_:_:_:_:_:_:_:_:)", "law": "To use the new interfaces, define before including the Accelerate or vecLib headers."}
+{"id": "/documentation/accelerate/cblas_stpsv(_:_:_:_:_:_:_:_:)", "law": "To use the new interfaces, define before including the Accelerate or vecLib headers."}
+{"id": "/documentation/accelerate/cblas_strmm(_:_:_:_:_:_:_:_:_:_:_:_:)", "law": "To use the new interfaces, define before including the Accelerate or vecLib headers."}
+{"id": "/documentation/accelerate/cblas_strmv(_:_:_:_:_:_:_:_:_:)", "law": "To use the new interfaces, define before including the Accelerate or vecLib headers."}
+{"id": "/documentation/accelerate/cblas_strsm(_:_:_:_:_:_:_:_:_:_:_:_:)", "law": "To use the new interfaces, define before including the Accelerate or vecLib headers."}
+{"id": "/documentation/accelerate/cblas_strsv(_:_:_:_:_:_:_:_:_:)", "law": "To use the new interfaces, define before including the Accelerate or vecLib headers."}
+{"id": "/documentation/accelerate/cblas_transpose", "law": "To use the new interfaces, define before including the Accelerate or vecLib headers."}
+{"id": "/documentation/accelerate/cblas_xerbla", "law": "Add any additional parameters required for the format string."}
+{"id": "/documentation/accelerate/cblas_xerbla", "law": "To use the new interfaces, define before including the Accelerate or vecLib headers."}
+{"id": "/documentation/accelerate/cblas_zaxpy(_:_:_:_:_:_:)", "law": "To use the new interfaces, define before including the Accelerate or vecLib headers."}
+{"id": "/documentation/accelerate/cblas_zcopy(_:_:_:_:_:)", "law": "To use the new interfaces, define before including the Accelerate or vecLib headers."}
+{"id": "/documentation/accelerate/cblas_zdotc_sub(_:_:_:_:_:_:)", "law": "To use the new interfaces, define before including the Accelerate or vecLib headers."}
+{"id": "/documentation/accelerate/cblas_zdotu_sub(_:_:_:_:_:_:)", "law": "To use the new interfaces, define before including the Accelerate or vecLib headers."}
+{"id": "/documentation/accelerate/cblas_zdrot(_:_:_:_:_:_:_:)", "law": "To use the new interfaces, define before including the Accelerate or vecLib headers."}
+{"id": "/documentation/accelerate/cblas_zdscal(_:_:_:_:)", "law": "To use the new interfaces, define before including the Accelerate or vecLib headers."}
+{"id": "/documentation/accelerate/cblas_zgbmv(_:_:_:_:_:_:_:_:_:_:_:_:_:_:)", "law": "To use the new interfaces, define before including the Accelerate or vecLib headers."}
+{"id": "/documentation/accelerate/cblas_zgemm(_:_:_:_:_:_:_:_:_:_:_:_:_:_:)", "law": "Thus, it calculates either or with optional use of transposed forms of , , or both."}
+{"id": "/documentation/accelerate/cblas_zgemm(_:_:_:_:_:_:_:_:_:_:_:_:_:_:)", "law": "To use the new interfaces, define before including the Accelerate or vecLib headers."}
+{"id": "/documentation/accelerate/cblas_zgemv(_:_:_:_:_:_:_:_:_:_:_:_:)", "law": "Thus, it calculates either with optional use of the transposed form of ."}
+{"id": "/documentation/accelerate/cblas_zgemv(_:_:_:_:_:_:_:_:_:_:_:_:)", "law": "To use the new interfaces, define before including the Accelerate or vecLib headers."}
+{"id": "/documentation/accelerate/cblas_zgerc(_:_:_:_:_:_:_:_:_:_:)", "law": "To use the new interfaces, define before including the Accelerate or vecLib headers."}
+{"id": "/documentation/accelerate/cblas_zgeru(_:_:_:_:_:_:_:_:_:_:)", "law": "To use the new interfaces, define before including the Accelerate or vecLib headers."}
+{"id": "/documentation/accelerate/cblas_zhbmv(_:_:_:_:_:_:_:_:_:_:_:_:)", "law": "To use the new interfaces, define before including the Accelerate or vecLib headers."}
+{"id": "/documentation/accelerate/cblas_zhemm(_:_:_:_:_:_:_:_:_:_:_:_:_:)", "law": "To use the new interfaces, define before including the Accelerate or vecLib headers."}
+{"id": "/documentation/accelerate/cblas_zhemv(_:_:_:_:_:_:_:_:_:_:_:)", "law": "To use the new interfaces, define before including the Accelerate or vecLib headers."}
+{"id": "/documentation/accelerate/cblas_zher(_:_:_:_:_:_:_:_:)", "law": "To use the new interfaces, define before including the Accelerate or vecLib headers."}
+{"id": "/documentation/accelerate/cblas_zher2(_:_:_:_:_:_:_:_:_:_:)", "law": "To use the new interfaces, define before including the Accelerate or vecLib headers."}
+{"id": "/documentation/accelerate/cblas_zher2k(_:_:_:_:_:_:_:_:_:_:_:_:_:)", "law": "To use the new interfaces, define before including the Accelerate or vecLib headers."}
+{"id": "/documentation/accelerate/cblas_zherk(_:_:_:_:_:_:_:_:_:_:_:)", "law": "To use the new interfaces, define before including the Accelerate or vecLib headers."}
+{"id": "/documentation/accelerate/cblas_zhpmv(_:_:_:_:_:_:_:_:_:_:)", "law": "To use the new interfaces, define before including the Accelerate or vecLib headers."}
+{"id": "/documentation/accelerate/cblas_zhpr(_:_:_:_:_:_:_:)", "law": "To use the new interfaces, define before including the Accelerate or vecLib headers."}
+{"id": "/documentation/accelerate/cblas_zhpr2(_:_:_:_:_:_:_:_:_:)", "law": "To use the new interfaces, define before including the Accelerate or vecLib headers."}
+{"id": "/documentation/accelerate/cblas_zrotg(_:_:_:_:)", "law": "To use the new interfaces, define before including the Accelerate or vecLib headers."}
+{"id": "/documentation/accelerate/cblas_zscal(_:_:_:_:)", "law": "To use the new interfaces, define before including the Accelerate or vecLib headers."}

@@ -27,3 +27,6 @@
 {"id": "/documentation/uikit/uisearchtextfield", "sha": "bc5e24855358c3fa0382b9baa56d4d9adcf85110669136fd207bfc3d55d6fc92", "t": "UISearchTextField", "n": 1377, "laws": 5, "ts": "2026-07-26 00:17 UTC"}
 {"id": "/documentation/videotoolbox/vtdecompressionsession-api-collection", "sha": "0b521623a0a70197158caee0c0acefd7763a59fad84f8822f7411e2d65e8f929", "t": "VTDecompressionSession", "n": 1905, "laws": 0, "ts": "2026-07-26 00:17 UTC"}
 {"id": "/documentation/appkit/appkit_swift_forward_declare", "sha": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855", "t": "APPKIT_SWIFT_FORWARD_DECLARE", "n": 0, "laws": 0, "ts": "2026-07-26 00:33 UTC"}
+{"id": "/documentation/RealityKit/scene-content-audio", "sha": "d88dd5dc05208a49259b7303b58075a66edbcc3235742f3f19c7571c77375521", "t": "Audio", "n": 1541, "laws": 1, "ts": "2026-07-26 05:49 UTC"}
+{"id": "/documentation/coregraphics/cgcolorspace/extendedsrgb", "sha": "13a08c805fb44c43f712b2f1f9c8daa6f1492ac7f0634758141f8a2e10f8354c", "t": "extendedSRGB", "n": 264, "laws": 0, "ts": "2026-07-26 05:55 UTC"}
+{"id": "/documentation/accelerate/cblas_sdot(_:_:_:_:_:)", "sha": "9c7b229a038cdc8e8dc068ff7342d3990e3137e7e7dc7a0ef50c95482afb2059", "t": "cblas_sdot(_:_:_:_:_:)", "n": 655, "laws": 1, "ts": "2026-07-26 06:16 UTC"}

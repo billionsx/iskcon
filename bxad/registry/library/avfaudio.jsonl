@@ -154,3 +154,4 @@
 {"id": "/documentation/AVFAudio/creating-an-audio-unit-extension", "law": "Add the custom member variable at the end of the source file, and use the and functions to access it."}
 {"id": "/documentation/AVFAudio/creating-an-audio-unit-extension", "law": "Use the function to implement your custom signal-processing algorithm."}
 {"id": "/documentation/AVFAudio/AVAudioUnit/instantiate(with:options:completionHandler:)", "law": "You must create components with flags that include asynchronously through this method if they’re for use with ."}
+{"id": "/documentation/AVFAudio/AVAudioPlayer", "law": "For more advanced playback capabilities, like playing streaming or positional audio, use instead."}

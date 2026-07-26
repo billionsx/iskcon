@@ -52,3 +52,23 @@
 {"id": "/documentation/Apple-Silicon/porting-your-macos-apps-to-apple-silicon", "law": "Always have a well-defined test plan, ideally with a set of automated test suites you can run at build time."}
 {"id": "/documentation/Apple-Silicon/porting-your-macos-apps-to-apple-silicon", "law": "Use that information to identify additional areas to investigate."}
 {"id": "/documentation/Apple-Silicon/porting-your-macos-apps-to-apple-silicon", "law": "All code running in the same process must support the same architecture."}
+{"id": "/documentation/Apple-Silicon/addressing-architectural-differences-in-your-macos-code", "law": "Assumptions you make for your code on Intel-based Mac computers may not always apply on Apple silicon."}
+{"id": "/documentation/Apple-Silicon/addressing-architectural-differences-in-your-macos-code", "law": "Use the following tips to identify potential problem areas in your code before you begin testing."}
+{"id": "/documentation/Apple-Silicon/addressing-architectural-differences-in-your-macos-code", "law": "When a global variable isn’t available, use the or functions to fetch the information instead."}
+{"id": "/documentation/Apple-Silicon/addressing-architectural-differences-in-your-macos-code", "law": "Some features of Apple silicon are decidedly different than those of Intel-based Mac computers, and may impact your code if you don’t fetch them dynamically."}
+{"id": "/documentation/Apple-Silicon/addressing-architectural-differences-in-your-macos-code", "law": "For example, to determine if AVX512 instructions are available, use the string."}
+{"id": "/documentation/Apple-Silicon/addressing-architectural-differences-in-your-macos-code", "law": "Always protect shared data with locks, memory barriers, and other synchronization primitives present in macOS."}
+{"id": "/documentation/Apple-Silicon/addressing-architectural-differences-in-your-macos-code", "law": "To ensure the correctness of your code on both platforms, add explicit synchronization primitives to your code."}
+{"id": "/documentation/Apple-Silicon/addressing-architectural-differences-in-your-macos-code", "law": "If you use lockless algorithms or custom synchronization techniques, consider replacing them with system-provided primitives."}
+{"id": "/documentation/Apple-Silicon/addressing-architectural-differences-in-your-macos-code", "law": "Use the thread sanitizer to detect data races and identify places where your code requires synchronization."}
+{"id": "/documentation/Apple-Silicon/addressing-architectural-differences-in-your-macos-code", "law": "On , the compiler always places variadic parameters on the stack, regardless of whether registers are available."}
+{"id": "/documentation/Apple-Silicon/tuning-your-code-s-performance-for-apple-silicon", "law": "Tuning the performance of any code requires separate passes on both Apple silicon and Intel-based Mac computers."}
+{"id": "/documentation/Apple-Silicon/tuning-your-code-s-performance-for-apple-silicon", "law": "Take advantage of these APIs to ensure your code runs efficiently on all Mac computers."}
+{"id": "/documentation/Apple-Silicon/tuning-your-code-s-performance-for-apple-silicon", "law": "Use Instruments to gather performance data for your app on both Apple silicon and Intel-based Mac computers."}
+{"id": "/documentation/Apple-Silicon/tuning-your-code-s-performance-for-apple-silicon", "law": "Use the data you gather to identify potential performance regressions, and the parts of your code that you might need to change."}
+{"id": "/documentation/Apple-Silicon/tuning-your-code-s-performance-for-apple-silicon", "law": "This class emphasizes maximum performance and responsiveness."}
+{"id": "/documentation/Apple-Silicon/tuning-your-code-s-performance-for-apple-silicon", "law": "If you don’t assign QoS classes, your app’s responsiveness and efficiency may suffer as a result."}
+{"id": "/documentation/Apple-Silicon/tuning-your-code-s-performance-for-apple-silicon", "law": "For example, use the function to set the QoS class of your POSIX threads."}
+{"id": "/documentation/Apple-Silicon/tuning-your-code-s-performance-for-apple-silicon", "law": "Use GCD to execute serially, concurrently, or in parallel on the system’s available cores."}
+{"id": "/documentation/Apple-Silicon/tuning-your-code-s-performance-for-apple-silicon", "law": "Instead of custom thread pools, you use dispatch queues to schedule your tasks for execution."}
+{"id": "/documentation/Apple-Silicon/tuning-your-code-s-performance-for-apple-silicon", "law": "For more information about how to use GCD, see ."}

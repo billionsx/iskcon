@@ -25,3 +25,8 @@
 {"id": "/documentation/uikit/menus-and-shortcuts", "sha": "fded67f5be29a04fc9fad350a5f3c6378fe73160eefc3fe3ddf224914422689b", "t": "Menus and shortcuts", "n": 1195, "laws": 0, "ts": "2026-07-26 00:06 UTC"}
 {"id": "/documentation/tvmljs/slideshow", "sha": "10ed16822eac79f16dbc02b885beb97c55ec27e1c839f141a719cb07b83a7d70", "t": "Slideshow", "n": 232, "laws": 1, "ts": "2026-07-26 00:24 UTC"}
 {"id": "/documentation/Network/NetworkListener/run(_:)-4iov3", "sha": "3f66b1f8e994dad2c66f92f30cb9bbc940c2d620ac16c6510cc86968e1cea4b2", "t": "run(_:)", "n": 331, "laws": 1, "ts": "2026-07-26 00:27 UTC"}
+{"id": "/documentation/SwiftUI/Focus", "sha": "4fea5e0980e605f65e77b7df26987a152110d52fccc84d842575034dde37bbc5", "t": "Focus", "n": 1278, "laws": 1, "ts": "2026-07-26 05:48 UTC"}
+{"id": "/documentation/AppKit/gestures", "sha": "b99e4438b1d49366d09b2208eab7c98c2ed3188858dfcf4283eadda05032971c", "t": "Gestures", "n": 348, "laws": 0, "ts": "2026-07-26 05:49 UTC"}
+{"id": "/documentation/swiftui/picking-container-views-for-your-content", "sha": "2ff5cad664e25d585ac802199eb98d35694aa91416660217205cc7a170cdd3e0", "t": "Picking container views for your content", "n": 4434, "laws": 10, "ts": "2026-07-26 05:54 UTC"}
+{"id": "/documentation/coregraphics/cgimage/decode", "sha": "a4b2324a19a89ac295f4dd9549025a10f761f938c5e031d8cb42a54c8ba113ef", "t": "decode", "n": 508, "laws": 0, "ts": "2026-07-26 06:12 UTC"}
+{"id": "/documentation/accelerate/cblas_dspr(_:_:_:_:_:_:_:)", "sha": "9c3ac0d7437a8a2dc3fc255604adbe64ce7ebd91ea7a90d7aa71a0a92c746f7a", "t": "cblas_dspr(_:_:_:_:_:_:_:)", "n": 765, "laws": 1, "ts": "2026-07-26 06:15 UTC"}

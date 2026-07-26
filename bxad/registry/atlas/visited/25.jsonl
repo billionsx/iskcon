@@ -13,3 +13,11 @@
 {"id": "/documentation/Updates/ScreenCaptureKit", "sha": "315bfa26237ee2125bc1a92e82f61ff9735ec0632f98c4337da6cc17355ffe21", "t": "ScreenCaptureKit updates", "n": 2052, "laws": 2, "ts": "2026-07-25 23:18 UTC"}
 {"id": "/documentation/swiftui/textfield", "sha": "01f946506564307e0eefbfb8274d2aaad1060c7489c0e4f176e8f89823a460f2", "t": "TextField", "n": 2866, "laws": 4, "ts": "2026-07-25 23:26 UTC"}
 {"id": "/documentation/webkit/wkuidelegate", "sha": "c13a913a53de0247fcee3aecc66e597f34ec6cb563e5249192fd597101f53f6f", "t": "WKUIDelegate", "n": 1988, "laws": 0, "ts": "2026-07-26 00:21 UTC"}
+{"id": "/documentation/SwiftUI/Color", "sha": "a94a5fed41f95cbf48aa27bc2a5265e792ac94b122d1344be45e9710dbab98b9", "t": "Color", "n": 2038, "laws": 0, "ts": "2026-07-26 05:48 UTC"}
+{"id": "/documentation/accelerate/vimageconvolve_argbffff(_:_:_:_:_:_:_:_:_:_:)", "sha": "089a316c207be866d3c455ccd2a59a53cdc11cc1b00e21e18812e36d0709c491", "t": "vImageConvolve_ARGBFFFF(_:_:_:_:_:_:_:_:_:_:)", "n": 1829, "laws": 7, "ts": "2026-07-26 05:51 UTC"}
+{"id": "/documentation/Swift/SendableMetatype", "sha": "e323b64f1c833853ac82971ed0dd48cab109880ddbf89c1b4b778afd0c93fbbb", "t": "SendableMetatype", "n": 857, "laws": 1, "ts": "2026-07-26 05:54 UTC"}
+{"id": "/documentation/accelerate/vdsp/vectorizabledouble", "sha": "29a434b74a269710e1843bd3695cfd652f8c0a201f136d28e0da8c8ea081d28a", "t": "vDSP.VectorizableDouble", "n": 216, "laws": 0, "ts": "2026-07-26 05:59 UTC"}
+{"id": "/documentation/accelerate/kvimagefullinterpolation", "sha": "ab18225058245f363197c201ca1f82219a7a0db59b97c5384fcd23907c5b0b5c", "t": "kvImageFullInterpolation", "n": 26, "laws": 0, "ts": "2026-07-26 06:02 UTC"}
+{"id": "/documentation/avfoundation/avcapturevideodataoutput/new", "sha": "63caeaf4b56098d152dc204abc0a1c82c216a4dd1c2a27d5338de597ba3e7498", "t": "new", "n": 32, "laws": 0, "ts": "2026-07-26 06:03 UTC"}
+{"id": "/documentation/swift/unsafepointer/sequence()-3ksef", "sha": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855", "t": "sequence()", "n": 0, "laws": 0, "ts": "2026-07-26 06:13 UTC"}
+{"id": "/documentation/accelerate/cblas_daxpy(_:_:_:_:_:_:)", "sha": "c3dc4a4a3d3e28a032b90fe199dcf9a22251c5ce52972e842ce87b1628b0758a", "t": "cblas_daxpy(_:_:_:_:_:_:)", "n": 754, "laws": 1, "ts": "2026-07-26 06:15 UTC"}

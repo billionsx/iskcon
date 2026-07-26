@@ -30,3 +30,5 @@
 {"id": "/documentation/swift/string", "sha": "a88147ec980bde99578aa2727e2bf5f46c3e4d1cd5fc725f9715e2203956842e", "t": "String", "n": 16094, "laws": 10, "ts": "2026-07-26 00:24 UTC"}
 {"id": "/documentation/RealityKit/Model3D", "sha": "1a2342c66b31354fc82417bf1eff80593447e69868ac1b123fb959ea609d777a", "t": "Model3D", "n": 2133, "laws": 4, "ts": "2026-07-26 00:25 UTC"}
 {"id": "/documentation/SwiftUI/TabViewStyle/sidebarAdaptable", "sha": "da07db95e40c25f4b5538fe880c32c8d8e17c7ca7d264fd7546d225d084ff921", "t": "sidebarAdaptable", "n": 464, "laws": 2, "ts": "2026-07-26 00:28 UTC"}
+{"id": "/documentation/coregraphics/cgpathcreatecopybydashingpath", "sha": "ff8b8bab9aa75ef15a5df0ed2402ced3fe90b33bca7baa80ea400ac0937319eb", "t": "CGPathCreateCopyByDashingPath", "n": 279, "laws": 0, "ts": "2026-07-26 06:00 UTC"}
+{"id": "/documentation/accelerate/vimage/pixelbuffer/interleave(planarsourcebuffers:)-1i8we", "sha": "b3045caf63ad7e677fe3980c98ae58dc062bd1cdfafe90e7435584f3ebd02bae", "t": "interleave(planarSourceBuffers:)", "n": 287, "laws": 1, "ts": "2026-07-26 06:01 UTC"}

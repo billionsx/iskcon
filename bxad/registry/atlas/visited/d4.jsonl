@@ -21,3 +21,5 @@
 {"id": "/documentation/AppIntents/app-intents", "sha": "51462cc3bff2606ce61eabb76f377de6528d981db30b156d87b86028307471d5", "t": "App intents", "n": 2347, "laws": 2, "ts": "2026-07-26 00:32 UTC"}
 {"id": "/documentation/FoundationModels/Transcript/CustomSegment", "sha": "c9339e8dbdda8b7ac15689cb0b5caa732ad9a3882f1d837f381172a9292b3f3b", "t": "Transcript.CustomSegment", "n": 120, "laws": 0, "ts": "2026-07-26 00:32 UTC"}
 {"id": "/documentation/appkit/nstextalignmentfromcttextalignment", "sha": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855", "t": "NSTextAlignmentFromCTTextAlignment", "n": 0, "laws": 0, "ts": "2026-07-26 00:33 UTC"}
+{"id": "/documentation/swiftui/view/pickerstyle(_:)", "sha": "86b33adde124c811036315a6e8d2a16d31b46949913c22e7e45b6f7165515ddd", "t": "pickerStyle(_:)", "n": 44, "laws": 0, "ts": "2026-07-26 05:54 UTC"}
+{"id": "/documentation/accelerate/bnnsndarraydescriptor/stride", "sha": "7c78dc2b0ba193e640060b3254beac68d0e31f6c8dc7b08f1738bdd6593c165a", "t": "stride", "n": 465, "laws": 0, "ts": "2026-07-26 06:07 UTC"}

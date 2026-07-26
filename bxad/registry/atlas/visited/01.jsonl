@@ -23,3 +23,9 @@
 {"id": "/documentation/uikit/uifocusitem", "sha": "f0c99469d545bde3c4faf7ace63b03f9c57371e45fac5e1418d50ce966c39a9b", "t": "UIFocusItem", "n": 1005, "laws": 0, "ts": "2026-07-26 00:14 UTC"}
 {"id": "/documentation/uikit/uiactivityindicatorview", "sha": "cb67299839fc3eed7848ff132f38759e072fd84273e45c1bc0114bee4d4c88a4", "t": "UIActivityIndicatorView", "n": 623, "laws": 0, "ts": "2026-07-26 00:16 UTC"}
 {"id": "/documentation/visionos/creating-your-first-visionos-app", "sha": "95ac55829091674476903594fc3afb86966483e06457ac25723c0859d4b10a4e", "t": "Creating your first visionOS app", "n": 4085, "laws": 6, "ts": "2026-07-26 00:25 UTC"}
+{"id": "/documentation/uikit/uiresponder", "sha": "4725250826f0bd847348179cfe609c6c522e785f2c1e3b2cc878ab5b9c310fb2", "t": "UIResponder", "n": 4115, "laws": 3, "ts": "2026-07-26 05:47 UTC"}
+{"id": "/documentation/accelerate/vimagematrixmultiply_planar16s(_:_:_:_:_:_:_:_:_:)", "sha": "529f0590e3853ac8a4e9fdeefbec1e5907765ee78e510472fee5464542295fd3", "t": "vImageMatrixMultiply_Planar16S(_:_:_:_:_:_:_:_:_:)", "n": 983, "laws": 1, "ts": "2026-07-26 05:51 UTC"}
+{"id": "/documentation/accelerate/filling-buffers", "sha": "3723f2b48ad48fc3eb45ed7d683b71957b0748967637515e204f94ac815f8bf2", "t": "Filling buffers", "n": 328, "laws": 0, "ts": "2026-07-26 05:51 UTC"}
+{"id": "/documentation/accelerate/pixel_8888", "sha": "f9f3661b86c1d0c6cdd3e28dc3e4470e29389784b65180fa02597b2c06b06ecd", "t": "Pixel_8888", "n": 62, "laws": 0, "ts": "2026-07-26 05:54 UTC"}
+{"id": "/documentation/coregraphics/cgcolorspace/init(propertylistplist:)", "sha": "dcc5cfaf7508759e6f397eefde14eed06ccbbf41e27197c5ae8b4c40005f3199", "t": "init(propertyListPlist:)", "n": 43, "laws": 0, "ts": "2026-07-26 05:55 UTC"}
+{"id": "/documentation/accelerate/vimagemdtableusagehint/init(_:)", "sha": "6ebd4015a3c29fdc39ceb67e48c6bc06d0c18d16d564efb6d654fbc23c2ed8db", "t": "init(_:)", "n": 58, "laws": 0, "ts": "2026-07-26 06:02 UTC"}

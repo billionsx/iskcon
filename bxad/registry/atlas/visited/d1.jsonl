@@ -22,3 +22,9 @@
 {"id": "/documentation/SceneKit/SCNTechnique", "sha": "e87d17bef816586a3c0c3c694272cf297333d99e9dffbd6bbb9c3905691d9c17", "t": "SCNTechnique", "n": 6091, "laws": 10, "ts": "2026-07-25 23:18 UTC"}
 {"id": "/documentation/screencapturekit", "sha": "8e25ca55ca60b0082f14fcef3528e5ef50c70dae188fa992241deea12bdbabc8", "t": "ScreenCaptureKit", "n": 2001, "laws": 3, "ts": "2026-07-25 23:18 UTC"}
 {"id": "/documentation/avfoundation/supporting-coordinated-media-playback", "sha": "aeaf9531657d5b45431997deda8924bbe3e881391ed043fcd840bf252377576d", "t": "Supporting coordinated media playback", "n": 5597, "laws": 5, "ts": "2026-07-26 00:23 UTC"}
+{"id": "/documentation/accelerate/vimage_ypcbcrpixelrange/init()", "sha": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855", "t": "init()", "n": 0, "laws": 0, "ts": "2026-07-26 05:53 UTC"}
+{"id": "/documentation/coregraphics/cgcolorspace/supportsoutput", "sha": "c4f87d6e7d56d633bf90c8b4749f2358798182030e24cc6fd6565cc87d81680f", "t": "supportsOutput", "n": 94, "laws": 0, "ts": "2026-07-26 05:56 UTC"}
+{"id": "/documentation/coregraphics/cgpath/subtracting(_:using:)", "sha": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855", "t": "subtracting(_:using:)", "n": 0, "laws": 0, "ts": "2026-07-26 06:00 UTC"}
+{"id": "/documentation/accelerate/cblas_ddot(_:_:_:_:_:)", "sha": "2566a9bbaad162d623952e4455c59e7e312c0f02d731a829d43b4728f63a41cc", "t": "cblas_ddot(_:_:_:_:_:)", "n": 655, "laws": 1, "ts": "2026-07-26 06:15 UTC"}
+{"id": "/documentation/accelerate/cblas_dznrm2(_:_:_:)", "sha": "434fcf4c4f369e61156764847a8497f95d1784ee35c6728a2c702b93a6f95409", "t": "cblas_dznrm2(_:_:_:)", "n": 661, "laws": 1, "ts": "2026-07-26 06:15 UTC"}
+{"id": "/documentation/accelerate/cblas_zgemm(_:_:_:_:_:_:_:_:_:_:_:_:_:_:)", "sha": "ad3ff3a03ffba40005ae8ead9912debd7f49e812de7157f5b4ff382d4fc4bee6", "t": "cblas_zgemm(_:_:_:_:_:_:_:_:_:_:_:_:_:_:)", "n": 880, "laws": 2, "ts": "2026-07-26 06:17 UTC"}

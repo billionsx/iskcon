@@ -547,3 +547,13 @@
 {"id": "/documentation/visionos/setting-up-access-to-a-reference-accessory-file", "law": "If your app includes an imported declaration and the manufacturer’s app, with a matching exported declaration, is also installed, ARKit always gives the exported declaration precedence."}
 {"id": "/documentation/visionos/setting-up-access-to-a-reference-accessory-file", "law": "If you prefer editing file’s source, use the exported declaration if you’re the manufacturer, or the imported declaration if you’re not:"}
 {"id": "/documentation/visionos/setting-up-access-to-a-reference-accessory-file", "law": "Your app doesn’t need any configuration changes for this path; just ensure your app handles initialization failures gracefully."}
+{"id": "/documentation/visionOS/adding-3d-content-to-your-app", "law": "Incorporate depth effects into your custom views as needed, and use 3D layout options to arrange views in your windows."}
+{"id": "/documentation/visionOS/adding-3d-content-to-your-app", "law": "Use this in places where you already have the model data in your app, or can download it from the network."}
+{"id": "/documentation/visionOS/adding-3d-content-to-your-app", "law": "For example, a shopping app might use this type of view to display a 3D version of a product."}
+{"id": "/documentation/visionOS/adding-3d-content-to-your-app", "law": "In visionOS, use RealityKit and SwiftUI together to seamlessly couple your app’s 2D and 3D content."}
+{"id": "/documentation/visionOS/adding-3d-content-to-your-app", "law": "To use a Reality Composer Pro project in your app, add the Swift package to your Xcode project and import its module in your Swift file."}
+{"id": "/documentation/visionOS/adding-3d-content-to-your-app", "law": "When you’re ready to display 3D content in your interface, use a ."}
+{"id": "/documentation/visionOS/adding-3d-content-to-your-app", "law": "When you want to update the state of your entities, change the state of your view and use an update closure to apply those changes to your content."}
+{"id": "/documentation/visionOS/adding-3d-content-to-your-app", "law": "For more information about when to use volumes, see ."}
+{"id": "/documentation/visionOS/adding-3d-content-to-your-app", "law": "After receiving permission from the user, you can also use ARKit with an immersive space to integrate content into their surroundings."}
+{"id": "/documentation/visionOS/adding-3d-content-to-your-app", "law": "For example, you can use ARKit scene reconstruction to obtain a mesh of furniture and nearby objects and have your content interact with that mesh."}

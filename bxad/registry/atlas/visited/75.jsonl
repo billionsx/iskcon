@@ -22,3 +22,8 @@
 {"id": "/documentation/uikit/handling-input-from-apple-pencil", "sha": "56e5b01825193855504fd824e5acd0180b55357030173b0aaba37ddf0e318e80", "t": "Handling input from Apple Pencil", "n": 2718, "laws": 5, "ts": "2026-07-26 00:12 UTC"}
 {"id": "/documentation/ARKit/ARKitSession", "sha": "f1af1ff4ea384c863116169647254f412db650f7f8c5a9d10531e00fec053823", "t": "ARKitSession", "n": 1042, "laws": 2, "ts": "2026-07-26 00:25 UTC"}
 {"id": "/documentation/GameController/GCDevicePhysicalInput/elementValueDidChangeHandler", "sha": "b26d817509373cf2a050e867f3a76fad919ad56156b2d415b6e8940fd28b67c5", "t": "elementValueDidChangeHandler", "n": 372, "laws": 2, "ts": "2026-07-26 00:31 UTC"}
+{"id": "/documentation/coregraphics/cgcolorspace/itur_2020_pq", "sha": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855", "t": "itur_2020_PQ", "n": 0, "laws": 0, "ts": "2026-07-26 05:55 UTC"}
+{"id": "/documentation/accelerate/vdsp_length", "sha": "2abc8b3c395de189dd82982b6b153bb44710e6da238fb3ae677fe58b0492dd70", "t": "vDSP_Length", "n": 101, "laws": 0, "ts": "2026-07-26 05:59 UTC"}
+{"id": "/documentation/accelerate/vimage_buffer/init(cgimage:flags:)", "sha": "d6e62405990ee0d2924a6739545b5b3eb21d10b3b52cf46b86d51d0a58ae48dc", "t": "init(cgImage:flags:)", "n": 165, "laws": 0, "ts": "2026-07-26 06:12 UTC"}
+{"id": "/documentation/accelerate/cblas_chbmv(_:_:_:_:_:_:_:_:_:_:_:_:)", "sha": "37c028c06194fad9ac6eb71c7fe19bd523cf4ecf358b23fe793421c2ba8f9ef3", "t": "cblas_chbmv(_:_:_:_:_:_:_:_:_:_:_:_:)", "n": 748, "laws": 1, "ts": "2026-07-26 06:14 UTC"}
+{"id": "/documentation/accelerate/cblas_sswap(_:_:_:_:_:)", "sha": "23996ff78328ab0ea4700f61d90ccb7c54de7c223cfbc2abc5cba5e63a2ed784", "t": "cblas_sswap(_:_:_:_:_:)", "n": 653, "laws": 1, "ts": "2026-07-26 06:16 UTC"}

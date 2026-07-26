@@ -24,3 +24,9 @@
 {"id": "/documentation/uikit/uiview/layer", "sha": "42e2d2496488a3a78df9b68c09b98c1eae0791a5a8ee2cc72420862146ef3c1c", "t": "layer", "n": 357, "laws": 3, "ts": "2026-07-26 00:15 UTC"}
 {"id": "/documentation/groupactivities/groupactivity/sessions", "sha": "72d0e140ab13c2820c210f5d9b972ced612c1a0e8fee234cc5cedf702c19acc5", "t": "GroupActivity.Sessions", "n": 469, "laws": 1, "ts": "2026-07-26 00:23 UTC"}
 {"id": "/documentation/FoundationModels/expanding-generation-with-tool-calling", "sha": "39885a7477f466b295e613a15677e4894b470940e9c3f2904d649bdc084ca163", "t": "Expanding generation with tool calling", "n": 5286, "laws": 10, "ts": "2026-07-26 00:32 UTC"}
+{"id": "/documentation/swiftui/picker", "sha": "d0827ab5bdad3bd01ed9c6955ad86f2070ea57afe87767ad0c766816eb35c178", "t": "Picker", "n": 3874, "laws": 3, "ts": "2026-07-26 05:53 UTC"}
+{"id": "/documentation/accelerate/pixel_16s16s", "sha": "0684daa5df151614ab589f3bdce829ce5f2cd6f2740ff756f55caf6d403c5c6f", "t": "Pixel_16S16S", "n": 139, "laws": 0, "ts": "2026-07-26 05:54 UTC"}
+{"id": "/documentation/coregraphics/cgcolorspace/itur_2020_hlg", "sha": "65e8dc13466664e0c8a770148b17cf2938497bea3eb1d33ee311042ac09a73fc", "t": "itur_2020_HLG", "n": 394, "laws": 1, "ts": "2026-07-26 05:55 UTC"}
+{"id": "/documentation/accelerate/bnnsfiltercreatevectoractivationlayer(_:_:_:_:)", "sha": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855", "t": "BNNSFilterCreateVectorActivationLayer(_:_:_:_:)", "n": 0, "laws": 0, "ts": "2026-07-26 06:10 UTC"}
+{"id": "/documentation/accelerate/bnnslayerflags", "sha": "3c6c631f281d35cb96ac397c3f91f96628406b33fefe7cb9bb1bfcaabbde46fb", "t": "BNNSLayerFlags", "n": 203, "laws": 0, "ts": "2026-07-26 06:10 UTC"}
+{"id": "/documentation/accelerate/cblas_zhbmv(_:_:_:_:_:_:_:_:_:_:_:_:)", "sha": "78254af452a789079e73c4799f41385746f45a81ec74678cba04d2baf3de7640", "t": "cblas_zhbmv(_:_:_:_:_:_:_:_:_:_:_:_:)", "n": 748, "laws": 1, "ts": "2026-07-26 06:17 UTC"}

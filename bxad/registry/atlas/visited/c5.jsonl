@@ -26,3 +26,7 @@
 {"id": "/documentation/vision/identifying-trajectories-in-video", "sha": "c048c1ceb2afde4675f8e581c5df7a0380029bfd8b251356eaaf54d632d2a645", "t": "Identifying Trajectories in Video", "n": 5986, "laws": 10, "ts": "2026-07-26 00:19 UTC"}
 {"id": "/documentation/ARKit/RoomTrackingProvider/anchorUpdates", "sha": "85a3101857c09277d60359d67c0f8b4c3984cf444ac0448262041e237f413c91", "t": "anchorUpdates", "n": 48, "laws": 0, "ts": "2026-07-26 00:26 UTC"}
 {"id": "/documentation/RealityKit/ManipulationComponent", "sha": "07aff912d7158f108b4211bc13957c9633e0d5ed73aec8fc1f3ca1044f3f7fbc", "t": "ManipulationComponent", "n": 2488, "laws": 6, "ts": "2026-07-26 00:29 UTC"}
+{"id": "/documentation/uikit/uidocument/didmovetowritablelocationnotification", "sha": "95c4ed3f9f4aaf8611a21809216e39ac6bbe235ebec0e3f0dff9a99dd64a04cd", "t": "didMoveToWritableLocationNotification", "n": 174, "laws": 0, "ts": "2026-07-26 05:47 UTC"}
+{"id": "/documentation/accelerate/vdsp_dct_execute", "sha": "570e11733866b17f09112b98bd94d833c2817dd273ed13e4e03d1d7c43049b87", "t": "vDSP_DCT_Execute", "n": 101, "laws": 0, "ts": "2026-07-26 05:58 UTC"}
+{"id": "/documentation/coregraphics/cgpath/flattened(threshold:)", "sha": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855", "t": "flattened(threshold:)", "n": 0, "laws": 0, "ts": "2026-07-26 06:00 UTC"}
+{"id": "/documentation/Swift/RawRepresentable", "sha": "e365aa7cb4ae8073c5a2c28274eceae44b1d6ee49206bcd41d086747c941792f", "t": "RawRepresentable", "n": 3637, "laws": 6, "ts": "2026-07-26 06:02 UTC"}

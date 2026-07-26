@@ -12,3 +12,5 @@
 {"id": "/documentation/swiftui/view/reordercontainer(for:itemid:isenabled:move:)", "sha": "fba4d4b8b1fa227e10c0ff6fa5392a01736824a39d0fa0f04798c9bb6b664c5f", "t": "reorderContainer(for:itemID:isEnabled:move:)", "n": 1295, "laws": 2, "ts": "2026-07-25 23:26 UTC"}
 {"id": "/documentation/RealityKit/VideoPlayerComponent/immersiveViewingMode-swift.property", "sha": "53a1efa952f003ec83fc70ec0695ce3a05d03f5e7ca5dd11cc7e1f3efe8fad6e", "t": "immersiveViewingMode", "n": 35, "laws": 0, "ts": "2026-07-26 00:30 UTC"}
 {"id": "/documentation/CoreSpotlight/Spotlight-search-tool", "sha": "cc4d21fb424c59ab02ad3ee9e010d3121d1a57fda82c937c4a63096be25884c6", "t": "Spotlight search tool", "n": 1115, "laws": 3, "ts": "2026-07-26 00:32 UTC"}
+{"id": "/documentation/Swift/Float", "sha": "31aaacf5202101e916997f49c5d33254f61e7f839f9b9e56ca2faabf218a9734", "t": "Float", "n": 3279, "laws": 0, "ts": "2026-07-26 05:53 UTC"}
+{"id": "/documentation/accelerate/vdsp_biquad_createsetupd", "sha": "f46ef3cdf658c9c3f936bce62eff4ed7347acbb8647b3f8d3c13de0249a31311", "t": "vDSP_biquad_CreateSetupD", "n": 736, "laws": 3, "ts": "2026-07-26 05:58 UTC"}

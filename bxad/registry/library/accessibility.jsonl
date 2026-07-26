@@ -59,3 +59,5 @@
 {"id": "/documentation/accessibility/mobility", "law": "People who have trouble with dexterity, limb differences, or reduced mobility can use Apple’s mobility accessibility features to modify their touch interactions, create custom gestures, and control their devices in the ways that work best for them."}
 {"id": "/documentation/accessibility/switch-control", "law": "With Switch Control, people can use switches to perform actions like selecting, tapping, dragging and dropping, typing, and freehand drawing."}
 {"id": "/documentation/accessibility/switch-control", "law": "Learn more about testing your app with Switch Control to make sure it works well for people who use this assistive technology."}
+{"id": "/documentation/Accessibility/accessibility-inspector", "law": "Use Accessibility Inspector to display, query, and test accessibility information for the elements in your app’s view hierarchy."}
+{"id": "/documentation/Accessibility/accessibility-inspector", "law": "To use Accessibility Inspector, open Xcode and choose Xcode > Open Developer Tool > Accessibility Inspector."}

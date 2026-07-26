@@ -200,3 +200,120 @@
 {"id": "/documentation/Swift/AsyncStream/Continuation", "law": "Use this continuation to provide elements to the stream by calling one of the methods, then terminate the stream normally by calling the method."}
 {"id": "/documentation/Swift/swift-standard-library", "law": "Protocols, such as and , that you use to customize operations that are available to all types."}
 {"id": "/documentation/Swift/swift-standard-library", "law": "Protocols, such as , that you use to provide implementations that would otherwise require boilerplate code."}
+{"id": "/documentation/Swift/Copyable", "law": "Conforming to this protocol indicates that a type’s value can be copied; this protocol doesn’t have any required methods or properties."}
+{"id": "/documentation/Swift/Copyable", "law": "You don’t generally need to write an explicit conformance to ."}
+{"id": "/documentation/Swift/Escapable", "law": "These dependencies ensure the value does not live longer than the value it depends on."}
+{"id": "/documentation/Swift/Escapable", "law": "Explicit lifetime dependency annotations may be required when working with these types."}
+{"id": "/documentation/Swift/UnsafeMutableRawPointer/deallocate()", "law": "The memory to be deallocated must be uninitialized or initialized to a trivial type."}
+{"id": "/documentation/Swift/UnsafeMutablePointer", "law": "You use instances of the type to access data of a specific type in memory."}
+{"id": "/documentation/Swift/UnsafeMutablePointer", "law": "You are responsible for handling the life cycle of any memory you work with through unsafe pointers to avoid leaks or undefined behavior."}
+{"id": "/documentation/Swift/UnsafeMutablePointer", "law": "You use the type to access and manage memory that has been bound to a specific type."}
+{"id": "/documentation/Swift/UnsafeMutablePointer", "law": "Many pointer operations must only be applied to pointers with memory in a specific state—you must keep track of the state of the memory you are working with and understand the changes to that state that different operations perform."}
+{"id": "/documentation/Swift/UnsafeMutablePointer", "law": "Uninitialized memory must be initialized before it can be accessed for reading."}
+{"id": "/documentation/Swift/UnsafeMutablePointer", "law": "You can use methods like , , and to initialize the memory referenced by a pointer with a value or series of values."}
+{"id": "/documentation/Swift/UnsafeMutablePointer", "law": "When you access memory through an instance, the type must be consistent with the bound type of the memory."}
+{"id": "/documentation/Swift/UnsafeMutablePointer", "law": "When you only need to temporarily access a pointer’s memory as a different type, use the method."}
+{"id": "/documentation/Swift/UnsafeMutablePointer", "law": "For example, you can use this method to call an API that expects a pointer to a different type that is layout compatible with your pointer’s ."}
+{"id": "/documentation/Swift/UnsafeMutablePointer", "law": "Convert your pointer to an instance and then use the raw pointer’s and methods to read and write values."}
+{"id": "/documentation/Swift/SendableMetatype", "law": "All concrete types implicitly conform to the protocol, so its primary purpose is in generic code to prohibit the use of isolated conformances along with the generic type."}
+{"id": "/documentation/Swift/RawRepresentable", "law": "You can also use literals to specify values for one or more cases."}
+{"id": "/documentation/Swift/RawRepresentable", "law": "This initializer is failable because although every case of the type has a corresponding value, there are many values that don’t correspond to a case of ."}
+{"id": "/documentation/Swift/RawRepresentable", "law": "Whether using an option set or creating your own, you use the raw value of an option set instance to store the instance’s bitfield."}
+{"id": "/documentation/Swift/RawRepresentable", "law": "The raw value must therefore be of a type that conforms to the protocol, such as or ."}
+{"id": "/documentation/Swift/RawRepresentable", "law": "Unlike enumerations, option sets provide a nonfailable initializer to convert from a raw value, because option sets don’t have an enumerated list of all possible cases."}
+{"id": "/documentation/Swift/RawRepresentable", "law": "The raw value of the instance is the result of the bitwise OR of its three members’ raw values: Option sets use bitwise operations on their associated raw values to implement their mathematical set operations."}
+{"id": "/documentation/Swift/UnsafeMutableRawPointer", "law": "You are responsible for handling the life cycle of any memory you work with through unsafe pointers, to avoid leaks or undefined behavior."}
+{"id": "/documentation/Swift/UnsafeMutableRawPointer", "law": "You use the type to access and manage raw bytes in memory, whether or not that memory has been bound to a specific type."}
+{"id": "/documentation/Swift/UnsafeMutableRawPointer", "law": "Many pointer operations must only be applied to pointers with memory in a specific state—you must keep track of the state of the memory you are working with and understand the changes to that state that different operations perform."}
+{"id": "/documentation/Swift/UnsafeMutableRawPointer", "law": "Uninitialized memory must be initialized with values of a type before it can be used with any typed operations."}
+{"id": "/documentation/Swift/UnsafeMutableRawPointer", "law": "You can use methods like and to bind raw memory to a type and initialize it with a value or series of values."}
+{"id": "/documentation/Swift/UnsafeMutableRawPointer", "law": "To bind uninitialized memory to a type without initializing it, use the method."}
+{"id": "/documentation/Swift/UnsafeMutableRawPointer", "law": "Generally, native Swift types that do not contain strong or weak references or other forms of indirection are trivial, as are imported C structs and enumerations."}
+{"id": "/documentation/Swift/UnsafeMutableRawPointer", "law": "When reading from or writing to memory as raw bytes when that memory is bound to a type, you must ensure that you satisfy any alignment requirements."}
+{"id": "/documentation/Swift/UnsafeMutableRawPointer", "law": "Writing to typed memory as raw bytes must only be performed when the bound type is a trivial type."}
+{"id": "/documentation/Swift/UnsafeMutableRawPointer", "law": "Always remember to deallocate any memory that you allocate yourself."}
+{"id": "/documentation/Swift/CVarArg", "law": "You use this protocol to present a native Swift interface to a C “varargs” API."}
+{"id": "/documentation/Swift/CVarArg", "law": "For example, a program can import a C API like the one defined here: To create a wrapper for the function, write a function that takes arguments, and then call the imported C function using the function: Swift only imports C variadic functions that use a for their arguments."}
+{"id": "/documentation/Swift/CVarArg", "law": "C functions that use the syntax for variadic arguments are not imported, and therefore can’t be called using arguments."}
+{"id": "/documentation/Swift/CVarArg", "law": "If you need to pass an optional pointer as a argument, use the initializer to interpret the optional pointer as an value, which has the same C variadic calling conventions as a pointer on all supported platforms."}
+{"id": "/documentation/Swift/CustomDebugStringConvertible", "law": "That default representation is used by the initializer and the function for types that don’t provide their own."}
+{"id": "/documentation/Swift/CustomStringConvertible", "law": "If the passed instance conforms to , the initializer and the function use the instance’s custom property."}
+{"id": "/documentation/swift/comparable", "law": "Add conformance to your own custom types when you want to be able to compare instances using relational operators or use standard library methods that are designed for types."}
+{"id": "/documentation/swift/comparable", "law": "The most familiar use of relational operators is to compare numbers, as in the following example: You can use special versions of some sequence and collection operations when working with a type."}
+{"id": "/documentation/swift/comparable", "law": "Because default implementations of the remainder of the relational operators are provided by the standard library, you’ll be able to use , , , and with instances of your type without any further code."}
+{"id": "/documentation/swift/convertibletobytes", "law": "The sum of the size of its stored properties must be equal to its stride."}
+{"id": "/documentation/swift/copyable", "law": "Conforming to this protocol indicates that a type’s value can be copied; this protocol doesn’t have any required methods or properties."}
+{"id": "/documentation/swift/copyable", "law": "You don’t generally need to write an explicit conformance to ."}
+{"id": "/documentation/swift/customdebugstringconvertible", "law": "That default representation is used by the initializer and the function for types that don’t provide their own."}
+{"id": "/documentation/swift/cvararg", "law": "You use this protocol to present a native Swift interface to a C “varargs” API."}
+{"id": "/documentation/swift/cvararg", "law": "For example, a program can import a C API like the one defined here: To create a wrapper for the function, write a function that takes arguments, and then call the imported C function using the function: Swift only imports C variadic functions that use a for their arguments."}
+{"id": "/documentation/swift/cvararg", "law": "C functions that use the syntax for variadic arguments are not imported, and therefore can’t be called using arguments."}
+{"id": "/documentation/swift/cvararg", "law": "If you need to pass an optional pointer as a argument, use the initializer to interpret the optional pointer as an value, which has the same C variadic calling conventions as a pointer on all supported platforms."}
+{"id": "/documentation/swift/equatable", "law": "Adding conformance to your custom types means that you can use more convenient APIs when searching for particular instances in a collection."}
+{"id": "/documentation/swift/equatable", "law": "You can rely on automatic synthesis of the protocol’s requirements for a custom type when you declare conformance in the type’s original declaration and your type meets these criteria: For a , all its stored properties must conform to ."}
+{"id": "/documentation/swift/equatable", "law": "For an , all its associated values must conform to ."}
+{"id": "/documentation/swift/equatable", "law": "To use the method without including a closure in each call, extend the type to conform to ."}
+{"id": "/documentation/swift/equatable", "law": "You can use to check for equality between any two instances or call the -constrained method."}
+{"id": "/documentation/swift/equatable", "law": "To maintain substitutability, the operator should take into account all visible aspects of an type."}
+{"id": "/documentation/swift/equatable", "law": "Exposing nonvalue aspects of types other than class identity is discouraged, and any that are exposed should be explicitly pointed out in documentation."}
+{"id": "/documentation/swift/escapable", "law": "These dependencies ensure the value does not live longer than the value it depends on."}
+{"id": "/documentation/swift/escapable", "law": "Explicit lifetime dependency annotations may be required when working with these types."}
+{"id": "/documentation/swift/hashable", "law": "You can use any type that conforms to the protocol in a set or as a dictionary key."}
+{"id": "/documentation/swift/hashable", "law": "Two instances that are equal must feed the same values to in , in the same order."}
+{"id": "/documentation/swift/hashable", "law": "To use your own custom type in a set or as the key type of a dictionary, add conformance to your type."}
+{"id": "/documentation/swift/hashable", "law": "The protocol inherits from the protocol, so you must also satisfy that protocol’s requirements."}
+{"id": "/documentation/swift/hashable", "law": "The compiler automatically synthesizes your custom type’s and requirements when you declare conformance in the type’s original declaration and your type meets these criteria: For a , all its stored properties must conform to ."}
+{"id": "/documentation/swift/hashable", "law": "For an , all its associated values must conform to ."}
+{"id": "/documentation/swift/hashable", "law": "To ensure that your type meets the semantic requirements of the and protocols, it’s a good idea to also customize your type’s conformance to match."}
+{"id": "/documentation/swift/strideable", "law": "You can use a type that conforms to the protocol with the and functions."}
+{"id": "/documentation/swift/strideable", "law": "For example, you can use to iterate over an interval of floating-point values: The last parameter of these functions is of the associated type—the type that represents the distance between any two instances of the type."}
+{"id": "/documentation/swift/strideable", "law": "For example, you can iterate over a range of and use sequence and collection methods."}
+{"id": "/documentation/swift/strideable", "law": "If a type conforming to is its own type, it must provide concrete implementations of the two operators to avoid infinite recursion."}
+{"id": "/documentation/swift/unsafebufferpointer", "law": "You can use an instance in low level operations to eliminate uniqueness checks and, in release mode, bounds checks."}
+{"id": "/documentation/swift/unsafebufferpointer", "law": "Bounds checks are always performed in debug mode."}
+{"id": "/documentation/swift/unsafemutablebufferpointer", "law": "You can use an instance in low level operations to eliminate uniqueness checks and, in release mode, bounds checks."}
+{"id": "/documentation/swift/unsafemutablebufferpointer", "law": "Bounds checks are always performed in debug mode."}
+{"id": "/documentation/swift/unsafemutablepointer", "law": "You use instances of the type to access data of a specific type in memory."}
+{"id": "/documentation/swift/unsafemutablepointer", "law": "You are responsible for handling the life cycle of any memory you work with through unsafe pointers to avoid leaks or undefined behavior."}
+{"id": "/documentation/swift/unsafemutablepointer", "law": "You use the type to access and manage memory that has been bound to a specific type."}
+{"id": "/documentation/swift/unsafemutablepointer", "law": "Many pointer operations must only be applied to pointers with memory in a specific state—you must keep track of the state of the memory you are working with and understand the changes to that state that different operations perform."}
+{"id": "/documentation/swift/unsafemutablepointer", "law": "Uninitialized memory must be initialized before it can be accessed for reading."}
+{"id": "/documentation/swift/unsafemutablepointer", "law": "You can use methods like , , and to initialize the memory referenced by a pointer with a value or series of values."}
+{"id": "/documentation/swift/unsafemutablepointer", "law": "When you access memory through an instance, the type must be consistent with the bound type of the memory."}
+{"id": "/documentation/swift/unsafemutablepointer", "law": "When you only need to temporarily access a pointer’s memory as a different type, use the method."}
+{"id": "/documentation/swift/unsafemutablepointer", "law": "For example, you can use this method to call an API that expects a pointer to a different type that is layout compatible with your pointer’s ."}
+{"id": "/documentation/swift/unsafemutablepointer", "law": "Convert your pointer to an instance and then use the raw pointer’s and methods to read and write values."}
+{"id": "/documentation/swift/unsafepointer", "law": "You use instances of the type to access data of a specific type in memory."}
+{"id": "/documentation/swift/unsafepointer", "law": "You are responsible for handling the life cycle of any memory you work with through unsafe pointers to avoid leaks or undefined behavior."}
+{"id": "/documentation/swift/unsafepointer", "law": "You use the type to access and manage memory that has been bound to a specific type."}
+{"id": "/documentation/swift/unsafepointer", "law": "Many pointer operations must only be applied to pointers with memory in a specific state—you must keep track of the state of the memory you are working with and understand the changes to that state that different operations perform."}
+{"id": "/documentation/swift/unsafepointer", "law": "Uninitialized memory must be initialized before it can be accessed for reading."}
+{"id": "/documentation/swift/unsafepointer", "law": "When you access memory through an instance, the type must be consistent with the bound type of the memory."}
+{"id": "/documentation/swift/unsafepointer", "law": "When you only need to temporarily access a pointer’s memory as a different type, use the method."}
+{"id": "/documentation/swift/unsafepointer", "law": "For example, you can use this method to call an API that expects a pointer to a different type that is layout compatible with your pointer’s ."}
+{"id": "/documentation/swift/unsafepointer", "law": "Convert your pointer to an instance and then use the raw pointer’s method to read values."}
+{"id": "/documentation/swift/unsafepointer", "law": "You can also use subscript notation to access the value in memory at a specific offset."}
+{"id": "/documentation/swift/unsafepointer/customplaygroundquicklook", "law": "If this type has value semantics, the instance should be unaffected by subsequent mutations."}
+{"id": "/documentation/swift/unsafepointer/deallocate()", "law": "This pointer must be a pointer to the start of a previously allocated memory block."}
+{"id": "/documentation/swift/unsafepointer/deallocate()", "law": "The memory must not be initialized or must be a trivial type."}
+{"id": "/documentation/swift/unsafepointer/pointee", "law": "When reading from the property, the instance referenced by this pointer must already be initialized."}
+{"id": "/documentation/swift/unsafepointer/subscript(_:)", "law": "For a pointer , the memory at must be initialized."}
+{"id": "/documentation/swift/unsafepointer/withmemoryrebound(to:capacity:_:)", "law": "Use this method when you have a pointer to memory bound to one type and you need to access that memory as instances of another type."}
+{"id": "/documentation/swift/unsafepointer/withmemoryrebound(to:capacity:_:)", "law": "Accessing memory as a type requires that the memory be bound to that type."}
+{"id": "/documentation/swift/unsafepointer/withmemoryrebound(to:capacity:_:)", "law": "The region of memory that starts at this pointer and covers strides of instances must be bound to ."}
+{"id": "/documentation/swift/unsafepointer/withmemoryrebound(to:capacity:_:)", "law": "Every instance of overlapping with a given instance of should have the same initialization state (i.e."}
+{"id": "/documentation/swift/unsafepointer/withmemoryrebound(to:capacity:_:)", "law": "Because this pointer’s memory is no longer bound to its type while the closure executes, do not access memory using the original pointer from within ."}
+{"id": "/documentation/swift/unsafepointer/withmemoryrebound(to:capacity:_:)", "law": "Instead, use the closure’s pointer argument to access the values in memory as instances of type ."}
+{"id": "/documentation/swift/unsafepointer/withmemoryrebound(to:capacity:_:)", "law": "Only use this method to rebind the pointer’s memory to a type that is layout compatible with the type."}
+{"id": "/documentation/swift/unsafepointer/withmemoryrebound(to:capacity:_:)", "law": "To bind a region of memory to a type that does not match these requirements, convert the pointer to a raw pointer and use the method."}
+{"id": "/documentation/swift/unsafepointer/withmemoryrebound(to:capacity:_:)", "law": "If and have different alignments, this pointer must be aligned with the larger of the two alignments."}
+{"id": "/documentation/swift/using-imported-c-functions-in-swift", "law": "For example, here’s how to call the function in Swift: Swift only imports C variadic functions that use a for their arguments."}
+{"id": "/documentation/swift/using-imported-c-functions-in-swift", "law": "C functions that use the syntax for variadic arguments are not imported, and therefore can’t be called using arguments."}
+{"id": "/documentation/swift/using-imported-c-functions-in-swift", "law": "The following tables use as a placeholder type name to indicate syntax for the mappings."}
+{"id": "/documentation/swift/error", "law": "If there are additional details about the error that could be helpful for recovery, use associated values to include that information."}
+{"id": "/documentation/swift/error", "law": "When calling the new initializer within a statement, you can use pattern matching to match specific cases of your custom error type and access their associated values, as in the example below."}
+{"id": "/documentation/swift/error", "law": "When you do, use a structure to represent errors."}
+{"id": "/documentation/swift/error", "law": "The following example uses a structure to represent an error when parsing an XML document, including the line and column numbers where the error occurred: Once again, use pattern matching to conditionally catch errors."}
+{"id": "/documentation/swift/withunsafemutablepointer(to:_:)", "law": "Do not store or return the pointer for later use."}
+{"id": "/documentation/swift/withunsafepointer(to:_:)-35wrn", "law": "Do not store or return the pointer for later use."}
+{"id": "/documentation/swift/withunsafepointer(to:_:)-9fjn6", "law": "Do not store or return the pointer for later use."}

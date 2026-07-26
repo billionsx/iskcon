@@ -27,3 +27,5 @@
 {"id": "/documentation/uikit/uipointerhovereffect", "sha": "b0c92c2d2e2800ec026cc24b399a825211ab96895f31d5aad55b33008d6b3f30", "t": "UIPointerHoverEffect", "n": 311, "laws": 1, "ts": "2026-07-26 00:13 UTC"}
 {"id": "/documentation/uikit/uicollectionviewdatasourceprefetching/collectionview(_:prefetchitemsat:)", "sha": "f917019075cd2a5b785fe1e2df28bb007486c33938f6a6e48748ffe54842ea33", "t": "collectionView(_:prefetchItemsAt:)", "n": 771, "laws": 2, "ts": "2026-07-26 00:14 UTC"}
 {"id": "/documentation/RealityKit/AudioFileGroupResource", "sha": "a538eebfe99d392a5c966fd3754c4e328255ca66c65853acdae0ba1d19f1c02d", "t": "AudioFileGroupResource", "n": 169, "laws": 0, "ts": "2026-07-26 00:30 UTC"}
+{"id": "/documentation/Metal/resource-loading", "sha": "115332f5afa06ca6c7a987c9df062c1510903bed93c44b0fe8c78f1c55461306", "t": "Resource loading", "n": 2451, "laws": 2, "ts": "2026-07-26 05:49 UTC"}
+{"id": "/documentation/coregraphics/cgcolorspace/linearitur_2020", "sha": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855", "t": "linearITUR_2020", "n": 0, "laws": 0, "ts": "2026-07-26 05:55 UTC"}

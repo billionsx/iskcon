@@ -8,3 +8,9 @@
 {"id": "/documentation/CoreVideo/CVPixelBufferUnlockBaseAddress(_:_:)", "law": "You must call the function before accessing pixel data with the CPU, and call the function afterward."}
 {"id": "/documentation/CoreVideo/CVPixelBufferUnlockBaseAddress(_:_:)", "law": "If you include the value in the parameter when locking the buffer, you must also include it when unlocking the buffer."}
 {"id": "/documentation/CoreVideo/cvdisplaylink-k0k", "law": "You can use a display link to easily synchronize with the refresh rate of a display."}
+{"id": "/documentation/corevideo", "law": "Apps that don’t need to manipulate individual video frames don’t need to use Core Video directly."}
+{"id": "/documentation/corevideo/cvpixelbufferlockbaseaddress(_:_:)", "law": "You must call the function before accessing pixel data with the CPU, and call the function afterward."}
+{"id": "/documentation/corevideo/cvpixelbufferlockbaseaddress(_:_:)", "law": "If you include the value in the parameter when locking the buffer, you must also include it when unlocking the buffer."}
+{"id": "/documentation/corevideo/cvpixelbufferunlockbaseaddress(_:_:)", "law": "You must call the function before accessing pixel data with the CPU, and call the function afterward."}
+{"id": "/documentation/corevideo/cvpixelbufferunlockbaseaddress(_:_:)", "law": "If you include the value in the parameter when locking the buffer, you must also include it when unlocking the buffer."}
+{"id": "/documentation/corevideo/cvplanarcomponentinfo", "law": "For this reason, you should use and to get information about a planar pixel buffer."}

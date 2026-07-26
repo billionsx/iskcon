@@ -23,3 +23,6 @@
 {"id": "/documentation/swift/optionset", "sha": "dc65d46777720b4e9c5a54baf996065a583a9b982bd635d8a5831c2dc5feb2fd", "t": "OptionSet", "n": 2246, "laws": 4, "ts": "2026-07-26 00:24 UTC"}
 {"id": "/documentation/SwiftUI/Divider", "sha": "107e58b5da5a09ba459a9188febb7974810580529157b65e92868f64d1dd23af", "t": "Divider", "n": 222, "laws": 0, "ts": "2026-07-26 00:29 UTC"}
 {"id": "/documentation/AppIntents/app-extension", "sha": "26658dac22116bcef476f5ac86fedaee3b8d96305db0a1c4d53cc4f0aee0a2cb", "t": "App extension", "n": 433, "laws": 0, "ts": "2026-07-26 00:32 UTC"}
+{"id": "/documentation/uikit/uikit-data-types", "sha": "5731e3fc3c5dff2e01f7d7345b9b761ea3d05eb7b9daf54ad8e29adaa00ad59a", "t": "UIKit Data Types", "n": 285, "laws": 0, "ts": "2026-07-26 05:47 UTC"}
+{"id": "/documentation/swiftui/picker/init(_:systemimage:selection:content:)", "sha": "2b617f5ed504ca058b64e1786bd97a8ffefdbab27d536b051890832abf8a5280", "t": "init(_:systemImage:selection:content:)", "n": 242, "laws": 0, "ts": "2026-07-26 05:53 UTC"}
+{"id": "/documentation/accelerate/bnnsarithmeticfilterapplybackwardbatch(_:_:_:_:_:_:_:_:_:_:_:)", "sha": "ec907c0ecd325112ac5aa31e2236708c6692440199a3b72326f15dfc1b7efebf", "t": "BNNSArithmeticFilterApplyBackwardBatch(_:_:_:_:_:_:_:_:_:_:_:)", "n": 66, "laws": 0, "ts": "2026-07-26 06:08 UTC"}

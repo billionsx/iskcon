@@ -23,3 +23,10 @@
 {"id": "/documentation/visionkit", "sha": "ba1a29875b379d0e09bfa5b6a1caf276e8c9e30afe69b28f2c698b9d02786ca3", "t": "VisionKit", "n": 3031, "laws": 0, "ts": "2026-07-26 00:21 UTC"}
 {"id": "/documentation/Swift/Array/reduce(_:_:)", "sha": "6e6060f256b07930b5017f78ce2fecbffe9ba581e467931fb01af3a28135a39a", "t": "reduce(_:_:)", "n": 1016, "laws": 3, "ts": "2026-07-26 00:24 UTC"}
 {"id": "/documentation/RealityKit/ImageBasedLightReceiverComponent", "sha": "2050bece9aad8d6613932323be17d932c10e977778af28f8013c87fbdf81766b", "t": "ImageBasedLightReceiverComponent", "n": 79, "laws": 0, "ts": "2026-07-26 00:28 UTC"}
+{"id": "/documentation/Dispatch/DispatchQueue/main", "sha": "0362e135f8bea15e650e5a7bc46ba67811a04ae6a9ba743875433440895c0ec6", "t": "main", "n": 1039, "laws": 1, "ts": "2026-07-26 05:49 UTC"}
+{"id": "/documentation/accelerate/clipping-data", "sha": "028079b1b57fd7a5bc1fc9ad43b12b11d514503719ec456bdfd62a59d865da09", "t": "Clipping data", "n": 83, "laws": 0, "ts": "2026-07-26 05:51 UTC"}
+{"id": "/documentation/accelerate/image-rotation", "sha": "d36938420467917768124c4e60e27cfb42cb0a7f66c6f6fd203678d1c2aec7f9", "t": "Image rotation", "n": 1163, "laws": 0, "ts": "2026-07-26 05:51 UTC"}
+{"id": "/documentation/avfoundation/avvideoallowwidecolorkey", "sha": "96645b249e066e4985e649b27734214d34390226c0a82ea9efb11cc94657ce25", "t": "AVVideoAllowWideColorKey", "n": 82, "laws": 0, "ts": "2026-07-26 06:03 UTC"}
+{"id": "/documentation/accelerate/bnnslayerparameterspermute", "sha": "1bf975dbb55c34d2ed6ac8824bfc225326ec1331d9ef789ac6cbb2854c31a9e0", "t": "BNNSLayerParametersPermute", "n": 170, "laws": 0, "ts": "2026-07-26 06:10 UTC"}
+{"id": "/documentation/accelerate/cblas_csyr2k(_:_:_:_:_:_:_:_:_:_:_:_:_:)", "sha": "aadfaa2a9a61861a1348fd96ad47f58c57fa39ecb24450a4cb873a55da536fb5", "t": "cblas_csyr2k(_:_:_:_:_:_:_:_:_:_:_:_:_:)", "n": 683, "laws": 1, "ts": "2026-07-26 06:14 UTC"}
+{"id": "/documentation/accelerate/cblas_strsv(_:_:_:_:_:_:_:_:_:)", "sha": "f74c734a4c240fb16020870c772372590679464301081c6c2f29c627e036f553", "t": "cblas_strsv(_:_:_:_:_:_:_:_:_:)", "n": 717, "laws": 1, "ts": "2026-07-26 06:16 UTC"}

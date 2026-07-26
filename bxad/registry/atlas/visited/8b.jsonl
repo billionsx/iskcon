@@ -25,3 +25,5 @@
 {"id": "/documentation/Network/NWError", "sha": "37725a6f5abfffba47e54e47dddc5b8a3916ac9a56f757e2f3b8b123910ec21b", "t": "NWError", "n": 211, "laws": 0, "ts": "2026-07-26 00:22 UTC"}
 {"id": "/documentation/workoutkit", "sha": "fd9045cba662df0e7b06e8524877946d9ee77e241ebf4b31a7b392478dcbc2b9", "t": "WorkoutKit", "n": 1393, "laws": 3, "ts": "2026-07-26 00:22 UTC"}
 {"id": "/documentation/tvmljs/menubardocument", "sha": "b17ca4d00441fcc65a2c8edc1327854a54a07d873423a53adc9aa220a70e43b2", "t": "MenuBarDocument", "n": 308, "laws": 1, "ts": "2026-07-26 00:24 UTC"}
+{"id": "/documentation/accelerate/vimage/pixelbuffer/channelcount", "sha": "1b5322540aeed9f806ac9d821bd0d302812f59196890c1c89beca4a6045e8dd6", "t": "channelCount", "n": 135, "laws": 0, "ts": "2026-07-26 05:52 UTC"}
+{"id": "/documentation/accelerate/bnnsndarrayflags", "sha": "38c6630d38f89e333cc518cb79bdd8c5d25841ae4d84cd5a4d9614b078953b33", "t": "BNNSNDArrayFlags", "n": 189, "laws": 0, "ts": "2026-07-26 06:07 UTC"}

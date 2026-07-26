@@ -407,3 +407,53 @@
 {"id": "/documentation/appkit/textkit", "law": "Use if you want an -related storage type, or subclass to use your own."}
 {"id": "/documentation/appkit/textkit", "law": "Use for better performance, and support for international languages."}
 {"id": "/documentation/appkit/view-layout", "law": "The user’s language choice requires size changes for labels and text-based views."}
+{"id": "/documentation/AppKit/NSToolbar", "law": "Toolbars provide convenient access to the commands and features people use most often."}
+{"id": "/documentation/AppKit/NSToolbar", "law": "Each item has a corresponding object, which you use to make changes."}
+{"id": "/documentation/AppKit/NSToolbar", "law": "For more information about how to use toolbars, see ."}
+{"id": "/documentation/AppKit/NSTouchBar", "law": "Refer to the following sample code projects, which demonstrate how to use and related classes, including the class, with its rich API that lets you build a highly customized picker control: To use the Touch Bar, define bars in objects in your app’s responder chain."}
+{"id": "/documentation/AppKit/NSTouchBar", "law": "Because of dynamic composition and placement of items shown on the Touch Bar, always ensure that your bars appear as you expect them to, testing on the versions of macOS that you support."}
+{"id": "/documentation/AppKit/NSTouchBar", "law": "Don’t use the Touch Bar to provide a display-only element."}
+{"id": "/documentation/AppKit/NSTouchBar", "law": "On the right side of the Touch Bar, the system supplies the always-available Control Strip ."}
+{"id": "/documentation/AppKit/NSTouchBar", "law": "To use Touch ID on supported MacBook Pro models, use methods from the framework."}
+{"id": "/documentation/AppKit/NSTouchBar", "law": "Don’t show alerts in the Touch Bar, and don’t use the Touch Bar for widgets."}
+{"id": "/documentation/AppKit/NSTouchBar", "law": "The object that defines the bar must: Be a responder (an instance of an subclass) that’s present within a responder chain at runtime."}
+{"id": "/documentation/AppKit/NSTouchBar", "law": "The built-in responder classes conform to the protocol and support key-value observing (KVO), both of which are used and required by the infrastructure."}
+{"id": "/documentation/AppKit/NSTouchBar", "law": "If you explicitly adopt the protocol in the app delegate or in a window delegate, you must also explicitly send the associated key-value observing notifications from within your implementations of methods; this lets the system respond appropriately to changes in the bar."}
+{"id": "/documentation/AppKit/NSTouchBar", "law": "To avoid the need to manually support KVO, use the app object as a bar provider, instead of the app delegate, or use a window controller or window as a bar provider, instead of the associated window delegate."}
+{"id": "/documentation/AppKit/NSColor", "law": "Many methods in AppKit require you to specify color data using an object; when drawing you use them to set the current fill and stroke colors."}
+{"id": "/documentation/AppKit/NSColor", "law": "Use the semantic colors for custom UI elements, so that they match the appearance of other AppKit views; see ."}
+{"id": "/documentation/AppKit/NSColor", "law": "Use the adaptable system colors, such as , when you want a specific tint that looks correct in both light and dark environments."}
+{"id": "/documentation/AppKit/NSColor", "law": "Colors can also be created in extended color spaces: When you need to worry about color spaces, use extended color spaces as working color spaces."}
+{"id": "/documentation/AppKit/NSColor", "law": "If you have a color object in an unknown color space and you want to extract its components, convert the color object to a known color space and then use the component accessor methods of that color space."}
+{"id": "/documentation/AppKit/accessibility-for-appkit", "law": "Typically, you don’t need to do extra work to enable the standard accessibility features."}
+{"id": "/documentation/AppKit/accessibility-for-appkit", "law": "If your app contains custom user interface elements that don’t inherit from or one of the other AppKit classes with built-in accessibility, make those elements accessible by subclassing ."}
+{"id": "/documentation/AppKit/accessibility-for-appkit", "law": "If you’re using a standard AppKit user interface element, you can override its existing accessibility attributes or use it as-is."}
+{"id": "/documentation/AppKit/accessibility-for-appkit", "law": "If you’re designing a completely custom user interface element that doesn’t subclass an AppKit view, you must subclass the accessibility element class."}
+{"id": "/documentation/AppKit/view-layout", "law": "The user’s language choice requires size changes for labels and text-based views."}
+{"id": "/documentation/AppKit/views-and-controls", "law": "You can also use views to do any of the following: Respond to touches and other events (either directly or in coordination with gesture recognizers)."}
+{"id": "/documentation/AppKit/views-and-controls", "law": "For additional information about how to use views and controls, see ."}
+{"id": "/documentation/AppKit/views-and-controls", "law": "Use container views to arrange the views of your interface and to facilitate navigation among those views."}
+{"id": "/documentation/AppKit/views-and-controls", "law": "Use content views to organize and display your app’s data."}
+{"id": "/documentation/AppKit/views-and-controls", "law": "Use controls to handle specific types of user interactions."}
+{"id": "/documentation/AppKit/views-and-controls", "law": "Controls are specialized views that use the target-action design pattern to notify your app of interactions with their content."}
+{"id": "/documentation/AppKit/NSDocument", "law": "That is, the class is abstract, and your app must create at least one subclass in order to use the document architecture."}
+{"id": "/documentation/AppKit/NSDocument", "law": "To create a useful subclass, you must override some methods, and you can optionally override others."}
+{"id": "/documentation/AppKit/NSDocument", "law": "In their overrides of the data-based reading and writing methods, subclasses must add the knowledge of particular types and how data of the document’s native type is structured internally."}
+{"id": "/documentation/AppKit/NSDocument", "law": "For more information about creating subclasses, including the primitive methods that subclasses must override and those that you can optionally override, see ."}
+{"id": "/documentation/AppKit/NSDocument", "law": "As a result, some methods in any class of may be invoked with parameters that do not have the same meaning as they did in early releases of macOS."}
+{"id": "/documentation/AppKit/NSDocument", "law": "The method that is meant always to be invoked during document saving, sets the property with the file’s new modification date after it has been written (for and only)."}
+{"id": "/documentation/AppKit/NSDocument", "law": "The method that is meant always to be invoked during rereading of an open document, sets the property with the file’s modification date after it has been read."}
+{"id": "/documentation/AppKit/NSDocument", "law": "The class implements the file coordination support that is required for an iCloud-enabled, document-based Mac app (see in )."}
+{"id": "/documentation/AppKit/NSDocument", "law": "In addition, this class’s methods for moving and renaming documents, new in OS X v10.8, ensure that these operations are performed in a safe manner for iCloud-enabled apps."}
+{"id": "/documentation/AppKit/NSDocument", "law": "However, this support requires the cooperation of the document object."}
+{"id": "/documentation/AppKit/NSResponder", "law": "The core classes— , , and —inherit from , as must any class that handles events."}
+{"id": "/documentation/AppKit/NSResponder", "law": "This method helps to avoid situations where an asynchronous block unexpectedly deallocates an object on a background queue."}
+{"id": "/documentation/AppKit/NSWindowController", "law": "For documents with multiple windows or panels, your document must create separate instances of (or of custom subclasses of ), one for each window or panel."}
+{"id": "/documentation/AppKit/NSWindowController", "law": "You should create a subclass of when you want to augment the default behavior, such as to give the window a custom title or to perform some setup tasks before the window is loaded."}
+{"id": "/documentation/AppKit/NSWindowController", "law": "In your class’s initialization method, be sure to invoke on either one of the initializers or the initializer."}
+{"id": "/documentation/AppKit/NSWindowController", "law": "You can also implement an subclass to avoid requiring client code to get the corresponding nib’s filename and pass it to or when instantiating the window controller."}
+{"id": "/documentation/AppKit/menus-cursors-and-the-dock", "law": "Implement menus and cursors to facilitate interactions with your app, and use your app’s Dock tile to convey updated information."}
+{"id": "/documentation/AppKit/mouse-keyboard-and-trackpad", "law": "Any object that handles events must inherit from the class."}
+{"id": "/documentation/AppKit/text-display", "law": "Use the class to add either a label or a simple text input."}
+{"id": "/documentation/AppKit/text-display", "law": "Use the class to provide more comprehensive layout and editing features for larger bodies of text."}
+{"id": "/documentation/AppKit/text-display", "law": "To connect your app to a spell-checking service, use the class."}

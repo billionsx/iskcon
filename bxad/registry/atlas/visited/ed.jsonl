@@ -46,3 +46,7 @@
 {"id": "/documentation/SwiftUI/Tab", "sha": "6e6981132d70e7262ff37b3b4334d0bc1bcd515b5e70e77ebd9eccb8bdc3aa99", "t": "Tab", "n": 676, "laws": 0, "ts": "2026-07-26 00:28 UTC"}
 {"id": "/documentation/watchos-apps", "sha": "af28a7c7e13cdac7908f9b345e014b9e77e0cd046ebf45e27b3635ed0a8638cb", "t": "watchOS apps", "n": 4888, "laws": 10, "ts": "2026-07-26 00:31 UTC"}
 {"id": "/documentation/appkit/fonts", "sha": "ff27f2165fa5c04ce216ba6014a973129bb491eb22b367ffa0bdc66ae7bf5361", "t": "Fonts", "n": 610, "laws": 0, "ts": "2026-07-26 00:33 UTC"}
+{"id": "/documentation/coregraphics/cgcolorspace/itur_709", "sha": "0b0858994c5a99df9e51a4eba34bbb627f6bf441a1e2a054ee1bdea9985f77eb", "t": "itur_709", "n": 230, "laws": 0, "ts": "2026-07-26 05:55 UTC"}
+{"id": "/documentation/accelerate/vimageconverter/mustoperateoutofplace(source:destination:flags:)", "sha": "e32c591ca175c9255ed2321e88632399b9bd18fde53f625a046a836e7d30f2f3", "t": "mustOperateOutOfPlace(source:destination:flags:)", "n": 64, "laws": 0, "ts": "2026-07-26 05:58 UTC"}
+{"id": "/documentation/accelerate/vimagepiecewisepolynomial_planarftoplanar8(_:_:_:_:_:_:_:)", "sha": "ce8a190844fece2709638a11af45d16150455b24d6390f8b99639d519b7f2f6a", "t": "vImagePiecewisePolynomial_PlanarFtoPlanar8(_:_:_:_:_:_:_:)", "n": 1105, "laws": 0, "ts": "2026-07-26 06:01 UTC"}
+{"id": "/documentation/accelerate/bnnsgraphcontextsetmessagelogmask(_:_:)", "sha": "bce380e7ab4b23f547ff6d6276864a76364cdd44e560db515e2bc4b6a02010af", "t": "BNNSGraphContextSetMessageLogMask(_:_:)", "n": 268, "laws": 0, "ts": "2026-07-26 06:05 UTC"}

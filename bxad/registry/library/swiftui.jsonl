@@ -948,3 +948,166 @@
 {"id": "/documentation/swiftui/wishlist-planning-travel-in-a-swiftui-app", "law": "For content that extends into the safe area, use placement instead."}
 {"id": "/documentation/swiftui/wishlist-planning-travel-in-a-swiftui-app", "law": "Use the macro to do this."}
 {"id": "/documentation/swiftui/wishlist-planning-travel-in-a-swiftui-app", "law": "Use the property wrapper to create a unique value that associates the source and destination."}
+{"id": "/documentation/SwiftUI/Clipboard", "law": "When possible, prefer using transferable items."}
+{"id": "/documentation/SwiftUI/View-Input-and-Events", "law": "Use input and event modifiers to configure and provide handlers for a wide variety of user inputs or system events."}
+{"id": "/documentation/SwiftUI/VolumetricWindowStyle", "law": "Use to construct this style: A window style that creates a 3D volumetric window."}
+{"id": "/documentation/SwiftUI/Adding-Interactivity-with-Gestures", "law": "When recognizing a pattern, SwiftUI runs a callback you use to update the state of a view or perform an action."}
+{"id": "/documentation/SwiftUI/Adding-Interactivity-with-Gestures", "law": "To recognize a gesture event on a particular view, create and configure the gesture, and then use the modifier:"}
+{"id": "/documentation/SwiftUI/Adding-Interactivity-with-Gestures", "law": "To track changes to a gesture that shouldn’t reset once the gesture ends, use the callback."}
+{"id": "/documentation/SwiftUI/Adding-Interactivity-with-Gestures", "law": "To recognize when a gesture successfully completes and to retrieve the gesture’s final value, use the function to update your app’s state in the callback."}
+{"id": "/documentation/SwiftUI/Adding-Interactivity-with-Gestures", "law": "Use gesture modifiers to add interactivity to your app."}
+{"id": "/documentation/SwiftUI/Animations", "law": "To avoid abrupt visual transitions when the state changes, add animation in one of the following ways: Animate all of the visual changes for a state change by changing the state inside a call to the global function."}
+{"id": "/documentation/SwiftUI/AppKit-integration", "law": "Add AppKit views to your SwiftUI app, or use SwiftUI views in your AppKit app."}
+{"id": "/documentation/SwiftUI/Canvas", "law": "Use a canvas to draw rich and dynamic 2D graphics inside a SwiftUI view."}
+{"id": "/documentation/SwiftUI/Canvas", "law": "The canvas passes a to the closure that you use to perform immediate mode drawing operations."}
+{"id": "/documentation/SwiftUI/Canvas", "law": "The canvas also passes a value that you can use to customize what you draw."}
+{"id": "/documentation/SwiftUI/Canvas", "law": "For example, you can use the context’s command to draw a instance: The example above draws the outline of an ellipse that exactly inscribes a canvas with a blue border: In addition to outlined and filled paths, you can draw images, text, and complete SwiftUI views."}
+{"id": "/documentation/SwiftUI/Canvas", "law": "To draw views, use the method to supply views that you can reference from inside the renderer."}
+{"id": "/documentation/SwiftUI/Canvas", "law": "Use a canvas to improve performance for a drawing that doesn’t primarily involve text or require interactive elements."}
+{"id": "/documentation/SwiftUI/Configuring-Views", "law": "To help you customize the appearance and behavior of your app’s views, you use view modifiers ."}
+{"id": "/documentation/SwiftUI/Configuring-Views", "law": "For example, you can use modifiers to: Add accessibility features to a view."}
+{"id": "/documentation/SwiftUI/Configuring-Views", "law": "For example, you can wrap a text view in an invisible box with a given width using the modifier to influence its layout, and then use the modifier to draw an outline around that: The order in which you apply modifiers matters."}
+{"id": "/documentation/SwiftUI/Configuring-Views", "law": "By specifying the frame modifier after the border modifier, SwiftUI applies the border only to the text view, which never takes more space than it needs to render its contents."}
+{"id": "/documentation/SwiftUI/Configuring-Views", "law": "The effects of a modifier propagate to child views that don’t explicitly override the modifier."}
+{"id": "/documentation/SwiftUI/Configuring-Views", "law": "You can’t use such a modifier on anything but the appropriate kind of view."}
+{"id": "/documentation/SwiftUI/Configuring-Views", "law": "While you can use on any view because it’s part of the protocol, you can use only on views."}
+{"id": "/documentation/SwiftUI/Configuring-Views", "law": "As a result, you can’t use it on a container view: You also can’t use it on a view after applying another general modifier because general modifiers return an ."}
+{"id": "/documentation/SwiftUI/Declaring-a-Custom-View", "law": "Conformance to the protocol comes with both requirements that a view must fulfill, and functionality that the protocol provides."}
+{"id": "/documentation/SwiftUI/Declaring-a-Custom-View", "law": "The protocol’s main requirement is that conforming types must define a : SwiftUI reads the value of this property any time it needs to update the view, which can happen repeatedly during the life of the view, typically in response to user input or system events."}
+{"id": "/documentation/SwiftUI/Declaring-a-Custom-View", "law": "The protocol’s secondary requirement is that conforming types must indicate an for the body property."}
+{"id": "/documentation/SwiftUI/Declaring-a-Custom-View", "law": "However, you don’t make an explicit declaration."}
+{"id": "/documentation/SwiftUI/Declaring-a-Custom-View", "law": "For example, you can create a body that draws the string “Hello, World!” using a built-in view: In addition to views for specific kinds of content, controls, and indicators, like , , and , SwiftUI also provides built-in views that you can use to arrange other views."}
+{"id": "/documentation/SwiftUI/Declaring-a-Custom-View", "law": "This enables a multiple-statement closure that doesn’t require additional syntax at the call site."}
+{"id": "/documentation/SwiftUI/Declaring-a-Custom-View", "law": "For example, you can change the font of a text view by applying the modifier: For more information about how view modifiers work, and how to use them on your views, see ."}
+{"id": "/documentation/SwiftUI/Declaring-a-Custom-View", "law": "Because the system may reinitialize a view at any time, it’s important to avoid doing any significant work in your view’s initialization code."}
+{"id": "/documentation/SwiftUI/Drag-and-drop", "law": "In Swift, prefer using transferable items."}
+{"id": "/documentation/SwiftUI/EnvironmentValues", "law": "For example, you can read the current locale: Use the property you declare to dynamically control a view’s layout."}
+{"id": "/documentation/SwiftUI/EnvironmentValues", "law": "For example, rather than setting the value directly, as in the previous example, you should instead use the modifier: In some cases, using a dedicated view modifier provides additional functionality."}
+{"id": "/documentation/SwiftUI/Focus", "law": "Use view modifiers to indicate which views can receive focus, to detect which view has focus, and to programmatically control focus state."}
+{"id": "/documentation/SwiftUI/Immersive-spaces", "law": "Use an immersive space in visionOS to present SwiftUI views outside of any containers."}
+{"id": "/documentation/SwiftUI/Immersive-spaces", "law": "You can include any views in a space, although you typically use a to present RealityKit content."}
+{"id": "/documentation/SwiftUI/Immersive-spaces", "law": "You might use this style to keep people grounded in the real world while displaying a view into another world."}
+{"id": "/documentation/SwiftUI/ObservedObject", "law": "Don’t specify a default or initial value for the observed object."}
+{"id": "/documentation/SwiftUI/ObservedObject", "law": "Use the attribute only for a property that acts as an input for a view, as in the above example."}
+{"id": "/documentation/SwiftUI/ObservedObject", "law": "Don’t wrap objects conforming to the protocol with ."}
+{"id": "/documentation/SwiftUI/ObservedObject", "law": "Attempting to wrap an object with may cause a compiler error, because it requires that its wrapped object to conform to the protocol."}
+{"id": "/documentation/SwiftUI/Previews-in-Xcode", "law": "You use one of the preview macros — like — to tell Xcode what to display."}
+{"id": "/documentation/SwiftUI/Previews-in-Xcode", "law": "For example, in visionOS you can use the macro to preview your view inside an ."}
+{"id": "/documentation/SwiftUI/Shapes", "law": "If you need the efficiency or flexibility of immediate mode drawing — for example, to create particle effects — use a view instead."}
+{"id": "/documentation/SwiftUI/StateObject", "law": "Use a state object as the single source of truth for a reference type that you store in a view hierarchy."}
+{"id": "/documentation/SwiftUI/StateObject", "law": "If you need to store a value type, like a structure, string, or integer, use the property wrapper instead."}
+{"id": "/documentation/SwiftUI/StateObject", "law": "Also use if you need to store a reference type that conforms to the protocol."}
+{"id": "/documentation/SwiftUI/StateObject", "law": "Use a binding when you want to create a two-way connection."}
+{"id": "/documentation/SwiftUI/StateObject", "law": "For example, suppose the data model from the previous example takes a input during initialization and you want to use a value for that name that comes from outside the view."}
+{"id": "/documentation/SwiftUI/StateObject", "law": "You can do this with a call to the state object’s initializer inside an explicit initializer that you create for the view: Use caution when doing this."}
+{"id": "/documentation/SwiftUI/StateObject", "law": "If you want SwiftUI to reinitialize a state object when a view input changes, make sure that the view’s identity changes at the same time."}
+{"id": "/documentation/SwiftUI/StateObject", "law": "For example, you can ensure that the identity of an instance of changes when its input changes: If your view appears inside a , it implicitly receives an modifier that uses the identifier of the corresponding data element."}
+{"id": "/documentation/SwiftUI/System-events", "law": "For example, you can use the view modifier to define an action to take when your app receives a universal link, or use the scene modifier to specify an asynchronous task to carry out in response to a background task event, like the completion of a background URL session."}
+{"id": "/documentation/SwiftUI/Technology-specific-views", "law": "To access SwiftUI views that another framework defines, import both SwiftUI and the other framework into the file where you use the view."}
+{"id": "/documentation/SwiftUI/Technology-specific-views", "law": "For example, to use the view in your app, import both SwiftUI and MapKit."}
+{"id": "/documentation/SwiftUI/Technology-specific-views", "law": "Use SwiftUI views that other Apple frameworks provide."}
+{"id": "/documentation/SwiftUI/UIKit-integration", "law": "For design guidance, see the following sections in the Human Interface Guidelines: Add UIKit views to your SwiftUI app, or use SwiftUI views in your UIKit app."}
+{"id": "/documentation/SwiftUI/View/font(_:)", "law": "Use to apply a specific font to all of the text in a view."}
+{"id": "/documentation/SwiftUI/View/font(_:)", "law": "The remaining stack and the views contained with it continue to use the 16-point system font set by their containing view: Sets the default font for text in this view."}
+{"id": "/documentation/swiftui/performing-a-search-operation", "law": "By updating search results as people type, you ensure that your app’s search interface is responsive."}
+{"id": "/documentation/swiftui/performing-a-search-operation", "law": "In addition to a search string, the search field can also display tokens when you use one of the searchable modifiers that has a parameter, like ."}
+{"id": "/documentation/swiftui/performing-a-search-operation", "law": "For example, you can use a view to represent each token: You can represent the token with a view, as the above example demonstrates."}
+{"id": "/documentation/swiftui/performing-a-search-operation", "law": "In iOS and iPadOS, you can use a instead."}
+{"id": "/documentation/swiftui/performing-a-search-operation", "law": "Ensure the view clearly represents the corresponding search query, and if you use a label, that the tokens fit the search query field’s height."}
+{"id": "/documentation/swiftui/performing-a-search-operation", "law": "Use the binding to create a picker for the property and a label that uses the property:"}
+{"id": "/documentation/swiftui/performing-a-search-operation", "law": "If the cost is high, like when updates require network access, or for complex filter logic, consider prefetching and caching data or reducing the frequency of updates."}
+{"id": "/documentation/swiftui/picker", "law": "Alternatively, you can use the initializer to compose the label from other views."}
+{"id": "/documentation/swiftui/picker", "law": "For example, a string enumeration might use the case’s string as the ."}
+{"id": "/documentation/swiftui/picker", "law": "To set a specific style for all picker instances within a view, use the modifier."}
+{"id": "/documentation/swiftui/pickerstyle/menu", "law": "Use this style when there are more than five options."}
+{"id": "/documentation/swiftui/pickerstyle/menu", "law": "To apply this style to a picker, or to a view that contains pickers, use the modifier."}
+{"id": "/documentation/swiftui/pickerstyle/segmented", "law": "Use this style when there are two to five options."}
+{"id": "/documentation/swiftui/pickerstyle/segmented", "law": "For each option’s label, use sentence-style capitalization without ending punctuation, like a period or colon."}
+{"id": "/documentation/swiftui/pickerstyle/segmented", "law": "To apply this style to a picker, or to a view that contains pickers, use the modifier."}
+{"id": "/documentation/swiftui/picking-container-views-for-your-content", "law": "Use some containers purely for structure and layout, like stack views, lazy stack views, and grid views."}
+{"id": "/documentation/swiftui/picking-container-views-for-your-content", "law": "Use others, like lists and forms, to also adopt system-standard visuals and interactivity."}
+{"id": "/documentation/swiftui/picking-container-views-for-your-content", "law": "Use stacks to group collections of views into horizontal or vertical lines, or to stack them on top of one another."}
+{"id": "/documentation/swiftui/picking-container-views-for-your-content", "law": "Use to lay out views in a horizontal line, to position views in a vertical line, and to layer views on top of one another."}
+{"id": "/documentation/swiftui/picking-container-views-for-your-content", "law": "You often use stack views as building blocks inside other container views."}
+{"id": "/documentation/swiftui/picking-container-views-for-your-content", "law": "You can also use , , , and to repeat views or groups of views."}
+{"id": "/documentation/swiftui/picking-container-views-for-your-content", "law": "When choosing the type of stack view to use, always start with a standard stack view and only switch to a lazy stack if profiling your code shows a worthwhile performance improvement."}
+{"id": "/documentation/swiftui/picking-container-views-for-your-content", "law": "To lay out views horizontally and vertically at the same time, use a or ."}
+{"id": "/documentation/swiftui/picking-container-views-for-your-content", "law": "Like stack views, SwiftUI grid views don’t inherently include a scrolling viewport; place them inside a if the content might be larger than the available space."}
+{"id": "/documentation/swiftui/picking-container-views-for-your-content", "law": "Lists inherently scroll when necessary, and you don’t need to wrap them in a ."}
+{"id": "/documentation/swiftui/populating-swiftui-menus-with-adaptive-controls", "law": "Menus are versatile components you can populate adaptively and use to organize commands, actions, or items in your app."}
+{"id": "/documentation/swiftui/populating-swiftui-menus-with-adaptive-controls", "law": "Use menus to conceal complex interface options when actions can be logically grouped."}
+{"id": "/documentation/swiftui/populating-swiftui-menus-with-adaptive-controls", "law": "This adaptability ensures that your menus remain flexible and succinct while supporting complex use cases."}
+{"id": "/documentation/swiftui/populating-swiftui-menus-with-adaptive-controls", "law": "To render a menu item that performs a given action closure, use the control: SwiftUI controls and views are adaptive, and represent functionality and meaning, as well as visual representation."}
+{"id": "/documentation/swiftui/populating-swiftui-menus-with-adaptive-controls", "law": "To show a symbol next to the menu item title, use the initializer: You can also construct menu actions by adding the label closure initializers on ."}
+{"id": "/documentation/swiftui/populating-swiftui-menus-with-adaptive-controls", "law": "Use only for actions that require caution."}
+{"id": "/documentation/swiftui/populating-swiftui-menus-with-adaptive-controls", "law": "Use the style to override the system behavior and explicitly render an icon for the menu items."}
+{"id": "/documentation/swiftui/populating-swiftui-menus-with-adaptive-controls", "law": "Use a within a menu to let people choose from a list of options: This example embeds a picker within a menu, displaying multiple selectable items."}
+{"id": "/documentation/swiftui/populating-swiftui-menus-with-adaptive-controls", "law": "Multiple toggles might be more appropriate when your content doesn’t require mutual exclusivity."}
+{"id": "/documentation/swiftui/populating-swiftui-menus-with-adaptive-controls", "law": "The inline style works well for settings or configurations that require immediate context."}
+{"id": "/documentation/swiftui/scoping-a-search-operation", "law": "When you define a scope, SwiftUI presents a picker that people can use to choose one of them."}
+{"id": "/documentation/swiftui/scoping-a-search-operation", "law": "You then use the current scope selection as one of the inputs to the search operation."}
+{"id": "/documentation/swiftui/scoping-a-search-operation", "law": "For example, you can use an enumeration to scope a product search to just fruits or just vegetables: Then create a property to store the current scope, either as a state variable in a view, or a published property in your model:"}
+{"id": "/documentation/swiftui/scoping-a-search-operation", "law": "To use the scope information, bind the current scope to the modifier."}
+{"id": "/documentation/swiftui/scoping-a-search-operation", "law": "To ensure that the picker operates correctly, match the type of the scope binding with the type of each view’s tag."}
+{"id": "/documentation/swiftui/view/defaultwheelpickeritemheight(_:)", "law": "Use when you need to change the default item height in a picker control."}
+{"id": "/documentation/swiftui/view/horizontalradiogrouplayout()", "law": "Use to configure the visual layout of radio buttons in a so that the radio buttons are arranged horizontally in the view."}
+{"id": "/documentation/swiftui/view/paletteselectioneffect(_:)", "law": "If you wish to provide a specific image (or SF Symbol) to indicate selection, use to forgo the system’s default selection appearance allowing the provided image to solely indicate selection instead."}
+{"id": "/documentation/swiftui/view/paletteselectioneffect(_:)", "law": "The following example creates a palette picker that disables the system selection behavior: If a specific SF Symbol variant is preferable instead, use ."}
+{"id": "/documentation/swiftui/building-layouts-with-stack-views", "law": "Use views to align views along the primary axis of an or ."}
+{"id": "/documentation/swiftui/building-layouts-with-stack-views", "law": "They don’t expand to fill available space."}
+{"id": "/documentation/swiftui/building-layouts-with-stack-views", "law": "If your layout has one dominant view that defines the size of the layout, use the or view modifier on that view."}
+{"id": "/documentation/swiftui/building-layouts-with-stack-views", "law": "If you want the final view size to come from an aggregation of all the contained views, use a ."}
+{"id": "/documentation/swiftui/configuring-views", "law": "To help you customize the appearance and behavior of your app’s views, you use view modifiers ."}
+{"id": "/documentation/swiftui/configuring-views", "law": "For example, you can use modifiers to: Add accessibility features to a view."}
+{"id": "/documentation/swiftui/configuring-views", "law": "For example, you can wrap a text view in an invisible box with a given width using the modifier to influence its layout, and then use the modifier to draw an outline around that: The order in which you apply modifiers matters."}
+{"id": "/documentation/swiftui/configuring-views", "law": "By specifying the frame modifier after the border modifier, SwiftUI applies the border only to the text view, which never takes more space than it needs to render its contents."}
+{"id": "/documentation/swiftui/configuring-views", "law": "The effects of a modifier propagate to child views that don’t explicitly override the modifier."}
+{"id": "/documentation/swiftui/configuring-views", "law": "You can’t use such a modifier on anything but the appropriate kind of view."}
+{"id": "/documentation/swiftui/configuring-views", "law": "While you can use on any view because it’s part of the protocol, you can use only on views."}
+{"id": "/documentation/swiftui/configuring-views", "law": "As a result, you can’t use it on a container view: You also can’t use it on a view after applying another general modifier because general modifiers return an ."}
+{"id": "/documentation/swiftui/creating-performant-scrollable-stacks", "law": "Horizontal and vertical stacks are a good solution for repeating views or groups of views, but they don’t have a built-in mechanism for scrolling."}
+{"id": "/documentation/swiftui/creating-performant-scrollable-stacks", "law": "If the in the example code above has an intrinsic content size of 200 x 200 points, the maximum width of 500 points that the view modifier applies to the causes the stack to scroll inside it."}
+{"id": "/documentation/swiftui/creating-performant-scrollable-stacks", "law": "Use to repeat views for the data in your app."}
+{"id": "/documentation/swiftui/creating-performant-scrollable-stacks", "law": "From a list of profile data in a array, use to create one per element in the array inside an ."}
+{"id": "/documentation/swiftui/creating-performant-scrollable-stacks", "law": "When you use , each element you iterate over must be uniquely identifiable."}
+{"id": "/documentation/swiftui/creating-performant-scrollable-stacks", "law": "When choosing the type of stack view to use, always start with a standard stack view and only switch to a lazy stack if profiling your code shows a worthwhile performance improvement."}
+{"id": "/documentation/swiftui/creating-performant-scrollable-stacks", "law": "When considering which type of stack to use, use the Instruments tool to profile your application to identify the areas of your user interface code where large numbers of views are loading inside a stack."}
+{"id": "/documentation/swiftui/creating-performant-scrollable-stacks", "law": "Never profile your code using the iOS simulator."}
+{"id": "/documentation/swiftui/creating-performant-scrollable-stacks", "law": "Always use real devices for performance testing."}
+{"id": "/documentation/swiftui/displaying-data-in-lists", "law": "Whether it’s a list of contacts, a schedule of events, an index of categories, or a shopping list, you’ll often find a use for a ."}
+{"id": "/documentation/swiftui/displaying-data-in-lists", "law": "List views display collections of items vertically, load rows as needed, and add scrolling when the rows don’t fit on the screen, making them suitable for displaying large collections of data."}
+{"id": "/documentation/swiftui/displaying-data-in-lists", "law": "The code in this article shows the use of list views to display a company’s staff directory."}
+{"id": "/documentation/swiftui/displaying-data-in-lists", "law": "The most common use of is for representing collections of information in your data model."}
+{"id": "/documentation/swiftui/displaying-data-in-lists", "law": "Members of a list must be uniquely identifiable from one another."}
+{"id": "/documentation/swiftui/displaying-data-in-lists", "law": "The values you use for data must be unique."}
+{"id": "/documentation/swiftui/displaying-data-in-lists", "law": "Each row inside a must be a SwiftUI ."}
+{"id": "/documentation/swiftui/displaying-data-in-lists", "law": "Use views to give the data inside a a level of hierarchy."}
+{"id": "/documentation/swiftui/displaying-data-in-lists", "law": "Within the section’s view builder, use a to iterate over the department’s , and return a customized view for each ."}
+{"id": "/documentation/swiftui/displaying-data-in-lists", "law": "These views use a disclosure metaphor to allow someone to drill down to an arbitrary depth in the hierarchy."}
+{"id": "/documentation/swiftui/fitting-images-into-available-space", "law": "Consider the image , a photograph with the dimensions 4032 x 3024, showing a water wheel, the surrounding building, and the sky above."}
+{"id": "/documentation/swiftui/fitting-images-into-available-space", "law": "The following example loads the image directly into an view, and then places it in a 300 x 400 point frame, with a blue border: As seen in the following screenshot, the image data loads at full size into the view, so only the clouds from the upper left of the original image are visible."}
+{"id": "/documentation/swiftui/fitting-images-into-available-space", "law": "If you use when scaling an image, a portion of an image may extend beyond the view’s bounds, unless the view matches the image’s aspect ratio exactly."}
+{"id": "/documentation/swiftui/fitting-images-into-available-space", "law": "Rendering an image at anything other than its original size requires interpolation : using the existing image data to approximate a representation at a different size."}
+{"id": "/documentation/swiftui/fitting-images-into-available-space", "law": "You can use the modifier to provide a hint for SwiftUI rendering behavior."}
+{"id": "/documentation/swiftui/fitting-images-into-available-space", "law": "It’s easier to see the effect of interpolation when scaling a smaller image into a larger space, because the rendered image requires more image data than is available."}
+{"id": "/documentation/swiftui/fitting-images-into-available-space", "law": "Consider the following example, which renders a 34 x 34 image named into the same 300 x 400 container frame as before: Passing the value to results in a highly pixelated rendered image."}
+{"id": "/documentation/swiftui/fitting-images-into-available-space", "law": "If you change the interpolation value to , SwiftUI smoothes out the pixel data to produce an image that isn’t as pixelated: You can also specify interpolation behavior when scaling images down, to ensure the highest quality image possible, fastest rendering time, or a behavior in between."}
+{"id": "/documentation/swiftui/image/init(_:bundle:)", "law": "Creates a labeled image that you can use as content for controls."}
+{"id": "/documentation/swiftui/image/init(_:bundle:label:)", "law": "Creates a labeled image that you can use as content for controls, with the specified label."}
+{"id": "/documentation/swiftui/image/init(_:variablevalue:bundle:)", "law": "Creates a labeled image that you can use as content for controls, with a variable value."}
+{"id": "/documentation/swiftui/image/init(_:variablevalue:bundle:label:)", "law": "Creates a labeled image that you can use as content for controls, with the specified label and variable value."}
+{"id": "/documentation/swiftui/image/init(size:label:opaque:colormode:renderer:)", "law": "Use this initializer to create an image by calling drawing commands on a provided to the closure."}
+{"id": "/documentation/swiftui/image/init(systemname:)", "law": "Use to find symbols and their corresponding names."}
+{"id": "/documentation/swiftui/image/init(systemname:)", "law": "To create a custom symbol image from your app’s asset catalog, use instead."}
+{"id": "/documentation/swiftui/image/init(systemname:variablevalue:)", "law": "Use (version 4.0 or later) to find system symbols that support variable values and their corresponding names."}
+{"id": "/documentation/swiftui/image/init(systemname:variablevalue:)", "law": "To create a custom symbol image from your app’s asset catalog, use instead."}
+{"id": "/documentation/swiftui/image/interpolation", "law": "Use this behavior to prioritize rendering performance or image quality."}
+{"id": "/documentation/swiftui/image/interpolation", "law": "The level of quality for rendering an image that requires interpolation, such as a scaled image."}
+{"id": "/documentation/swiftui/image/interpolation(_:)", "law": "Specifies the current level of quality for rendering an image that requires interpolation."}
+{"id": "/documentation/swiftui/image/renderingmode(_:)", "law": "Template mode renders all nontransparent pixels as the foreground color, which you can use for purposes like creating image masks."}
+{"id": "/documentation/swiftui/image/renderingmode(_:)", "law": "The following example shows both rendering modes, as applied to an icon image of a green circle with darker green border: You also use to produce multicolored system graphics from the SF Symbols set."}
+{"id": "/documentation/swiftui/image/renderingmode(_:)", "law": "Use the mode to apply a foreground color to all parts of the symbol except those that have a distinct color in the graphic."}
+{"id": "/documentation/swiftui/image/renderingmode(_:)", "law": "Use the SF Symbols app to find system images that offer the multicolor feature."}
+{"id": "/documentation/swiftui/image/renderingmode(_:)", "law": "Keep in mind that some multicolor symbols use both the foreground and accent colors."}
+{"id": "/documentation/swiftui/image/scale", "law": "Use this type with the modifier, or the environment key, to set the image scale."}
+{"id": "/documentation/swiftui/view/aspectratio(_:contentmode:)", "law": "Use to constrain a view’s dimensions to an aspect ratio specified by a using the specified content mode."}

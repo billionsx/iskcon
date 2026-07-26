@@ -23,3 +23,9 @@
 {"id": "/documentation/uikit/uibarbuttonitem/hidessharedbackground", "sha": "ef0fccb10c11f0584294be623daaac68b54dc841b950bf1a600b11d64eef2336", "t": "hidesSharedBackground", "n": 467, "laws": 1, "ts": "2026-07-26 00:11 UTC"}
 {"id": "/documentation/uikit/uicolorpickerviewcontroller", "sha": "b4ad5f8eb6e4349044d1868ecc329453d069de44247e26e9a77a660b81d13c45", "t": "UIColorPickerViewController", "n": 588, "laws": 1, "ts": "2026-07-26 00:16 UTC"}
 {"id": "/documentation/SwiftUI/SimultaneousGesture", "sha": "097c7eb61790552003575428d622849598fa4049a9b3255bde9fab51515c641c", "t": "SimultaneousGesture", "n": 443, "laws": 0, "ts": "2026-07-26 00:30 UTC"}
+{"id": "/documentation/UIKit/windows-and-screens", "sha": "0242f713c0efd88f86fccf689857b25ff9cb180ae5101a9d09c2b6f02e3505ba", "t": "Windows and screens", "n": 1141, "laws": 2, "ts": "2026-07-26 05:48 UTC"}
+{"id": "/documentation/swiftui/picker/init(_:image:sources:selection:content:)", "sha": "115f2ce374dd29b71f93d2c06dd60b723a0ba6008f926c6fb8fef7c7445edef1", "t": "init(_:image:sources:selection:content:)", "n": 542, "laws": 0, "ts": "2026-07-26 05:53 UTC"}
+{"id": "/documentation/coregraphics/cglinejoin", "sha": "eef87fbbcc0d6abf14ee3bdb34a74f90991e05140200dc9e24e33c49507e407b", "t": "CGLineJoin", "n": 296, "laws": 1, "ts": "2026-07-26 06:00 UTC"}
+{"id": "/documentation/accelerate/bnns/shape", "sha": "41d0fcc882b40b9583637f312629d73606a52c22b3939a8b33f2579cc1843e59", "t": "BNNS.Shape", "n": 1351, "laws": 0, "ts": "2026-07-26 06:06 UTC"}
+{"id": "/documentation/accelerate/bnnscropresize(_:_:_:_:_:)", "sha": "a264d5ca9cd274ea48a0950f37c3e88512bdb5036856d77a8a83ebdb02afbf32", "t": "BNNSCropResize(_:_:_:_:_:)", "n": 931, "laws": 1, "ts": "2026-07-26 06:09 UTC"}
+{"id": "/documentation/accelerate/vimage_cgaffinetransform", "sha": "5243f71aa5c081eaef67815d97f701960b4164f99d8ecc2ca08ced17aaf952fc", "t": "vImage_CGAffineTransform", "n": 302, "laws": 0, "ts": "2026-07-26 06:12 UTC"}

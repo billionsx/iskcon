@@ -22,3 +22,5 @@
 {"id": "/documentation/photos/phlivephoto", "law": "In iOS, tvOS, and macOS, you can use this class to display edits in progress for Live Photo content in a photo editing extension."}
 {"id": "/documentation/photos/phlivephoto", "law": "(To work with Live Photos as elements of the Photos library, use the class."}
 {"id": "/documentation/photos/phlivephoto", "law": "To work with the data files that constitute a Live Photo, use the class.) To display Live Photo content on the web, use the framework."}
+{"id": "/documentation/Photos/PHAssetChangeRequest/creationRequestForAssetFromVideo(atFileURL:)", "law": "To set metadata properties of the newly created asset, use the corresponding properties of the change request (listed in Modifying Assets)."}
+{"id": "/documentation/Photos/PHAssetChangeRequest/creationRequestForAssetFromVideo(atFileURL:)", "law": "To reference the newly created asset later in the same change block or after the change block completes, use the property to retrieve a placeholder object."}

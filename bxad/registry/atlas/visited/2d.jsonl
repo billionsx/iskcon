@@ -25,3 +25,6 @@
 {"id": "/documentation/videotoolbox/vtcompressionsession-api-collection", "sha": "5f41be5a9c72ee8976797876e06f497c6e3475a9bda99bddd939cd91f1c330b8", "t": "VTCompressionSession", "n": 1768, "laws": 0, "ts": "2026-07-26 00:17 UTC"}
 {"id": "/documentation/swift/double", "sha": "c16cc9c47e5a1da50f245929316a23cb6b9126a27a1b25d593a31cc40de50686", "t": "Double", "n": 3469, "laws": 0, "ts": "2026-07-26 00:24 UTC"}
 {"id": "/documentation/visionos/understanding-transforms", "sha": "6de7aae49a974752a544b5c9ca0d07a2725856b769d0eef470c978f1556df5b9", "t": "Using transforms to move, scale, and rotate entities", "n": 7669, "laws": 10, "ts": "2026-07-26 00:27 UTC"}
+{"id": "/documentation/Metal/compute-passes", "sha": "1bde6052c1999fd3385be804750cf352da42f5ed42441b9a1a5fd7f0ac0d89b6", "t": "Compute passes", "n": 5313, "laws": 6, "ts": "2026-07-26 05:49 UTC"}
+{"id": "/documentation/accelerate/gammafunction", "sha": "4556b3908659def4edaad6a80f33baa5d7c7ee94bd09acbdd2a1843116cf61ce", "t": "GammaFunction", "n": 105, "laws": 1, "ts": "2026-07-26 06:12 UTC"}
+{"id": "/documentation/accelerate/cblas_zgbmv(_:_:_:_:_:_:_:_:_:_:_:_:_:_:)", "sha": "5f48e299080156cfe0e83d97a057930123396deb357e49423fe6d9cac80e448e", "t": "cblas_zgbmv(_:_:_:_:_:_:_:_:_:_:_:_:_:_:)", "n": 745, "laws": 1, "ts": "2026-07-26 06:17 UTC"}

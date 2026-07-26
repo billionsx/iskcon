@@ -30,3 +30,8 @@
 {"id": "/documentation/RealityKit/ModelComponent", "sha": "adb5d64d81a71758f393b5b1d70b89476e7b4263331d789688cdc261a83706a3", "t": "ModelComponent", "n": 915, "laws": 3, "ts": "2026-07-26 00:27 UTC"}
 {"id": "/documentation/RealityKit/ConstantRadialForceEffect", "sha": "d6e7adc6353e8234ca60e46a9e30e93793c77c77a2765dabaa98a0afc205640f", "t": "ConstantRadialForceEffect", "n": 322, "laws": 0, "ts": "2026-07-26 00:29 UTC"}
 {"id": "/documentation/RealityKit/VideoPlayerComponent", "sha": "24512e36eb12c83f8754ceef13ab01ea0f7f9ee362e45d34addc5efc3d11b578", "t": "VideoPlayerComponent", "n": 3068, "laws": 1, "ts": "2026-07-26 00:30 UTC"}
+{"id": "/documentation/AVFoundation/AVCaptureSession/Preset", "sha": "391e4485b8db2da26f23eae7edf98f9c1b1af4ed09ac01aa306763a2be897b00", "t": "AVCaptureSession.Preset", "n": 463, "laws": 1, "ts": "2026-07-26 05:51 UTC"}
+{"id": "/documentation/accelerate/vimage/pixelbuffer/size", "sha": "2f885f7be47b01b33917c3d513749e895d1d457a07182da785f75d50f3be4719", "t": "size", "n": 29, "laws": 0, "ts": "2026-07-26 05:52 UTC"}
+{"id": "/documentation/swiftui/displaying-data-in-lists", "sha": "1f1c2183cf29869d48c40c625d02b2706be2d5cb3c53279d8701bc8a65ddb7f2", "t": "Displaying data in lists", "n": 4518, "laws": 10, "ts": "2026-07-26 05:56 UTC"}
+{"id": "/documentation/avfoundation/avvideoscalingmodekey", "sha": "146043d313cdd7f48e5a4b35435cc69d060075b6be48b682034d03c6cd75b2d9", "t": "AVVideoScalingModeKey", "n": 59, "laws": 0, "ts": "2026-07-26 06:03 UTC"}
+{"id": "/documentation/accelerate/bnnslayerparameterslstm", "sha": "60624553150d14d0be6ddc9db806e4351338c75031bcca94e8fd229792479469", "t": "BNNSLayerParametersLSTM", "n": 641, "laws": 1, "ts": "2026-07-26 06:10 UTC"}

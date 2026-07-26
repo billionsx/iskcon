@@ -75,3 +75,18 @@
 {"id": "/documentation/security", "law": "The Security framework is not always your best option."}
 {"id": "/documentation/security", "law": "Only if your app requires lower level access to security protocol functions would you use the secure transport API directly."}
 {"id": "/documentation/security/disabling-and-enabling-system-integrity-protection", "law": "You don’t need to disable SIP to run and debug apps from Xcode, but you might need to disable it to install system extensions, such as DriverKit drivers."}
+{"id": "/documentation/Security/hardened-runtime", "law": "Make sure to use only the entitlements that are absolutely necessary for your app’s functionality."}
+{"id": "/documentation/Security/hardened-runtime", "law": "Due to their privileged position in the system, macOS refuses to load system extensions that use Hardened Runtime exception entitlements."}
+{"id": "/documentation/Security/hardened-runtime", "law": "If you’re manually signing code, follow this convention to ensure maximum compatibility."}
+{"id": "/documentation/Security/hardened-runtime", "law": "Don’t include an entitlement if the value is false."}
+{"id": "/documentation/Security/hardened-runtime", "law": "To upload a macOS app to be notarized, you must enable the Hardened Runtime capability."}
+{"id": "/documentation/Security/notarizing-macos-software-before-distribution", "law": "Beginning in macOS 10.14.5, software signed with a new Developer ID certificate and all new or updated kernel extensions must be notarized to run."}
+{"id": "/documentation/Security/notarizing-macos-software-before-distribution", "law": "Beginning in macOS 10.15, all software built after June 1, 2019, and distributed with Developer ID must be notarized."}
+{"id": "/documentation/Security/notarizing-macos-software-before-distribution", "law": "However, you aren’t required to notarize software that you distribute through the Mac App Store because the App Store submission process already includes equivalent security checks."}
+{"id": "/documentation/Security/notarizing-macos-software-before-distribution", "law": "Apple’s notary service requires you to adopt the following protections: Enable code-signing for all of the executables you distribute, and ensure that executables have valid code signatures, as described in ."}
+{"id": "/documentation/Security/notarizing-macos-software-before-distribution", "law": "Use a “Developer ID” application, kernel extension, system extension, or installer certificate for your code-signing signature."}
+{"id": "/documentation/Security/notarizing-macos-software-before-distribution", "law": "(Don’t use a Mac Distribution, ad hoc, Apple Developer, or local development certificate.) Verify the certificate type before submitting, as described in ."}
+{"id": "/documentation/Security/notarizing-macos-software-before-distribution", "law": "For custom workflows, see .) Don’t include the entitlement with the value set to any variation of ."}
+{"id": "/documentation/Security/notarizing-macos-software-before-distribution", "law": "Ensure your processes have properly-formatted XML, ASCII-encoded entitlements as described in ."}
+{"id": "/documentation/Security/notarizing-macos-software-before-distribution", "law": "Always review the notary log for any warnings, and test your software before distribution."}
+{"id": "/documentation/Security/notarizing-macos-software-before-distribution", "law": "For plug-ins that aren’t notarized, the user must explicitly approve the plug-in by opening the System Preferences app and navigating to the General tab in Security & Privacy."}

@@ -19,3 +19,6 @@
 {"id": "/documentation/uikit/adding-user-focusable-elements-to-a-tvos-app", "sha": "f671d7d53ab8efe5cbd4bd6184de5e20ecb568f5c8eb03a524d32fe9d19f488d", "t": "Adding user-focusable elements to a tvOS app", "n": 2088, "laws": 3, "ts": "2026-07-26 00:14 UTC"}
 {"id": "/documentation/RealityKit/AudioFileGroupResource/init(_:)", "sha": "e58ec1ccde5c98ea5458d95bd26289926a6359158aa4ecdf850ccff70b3d6754", "t": "init(_:)", "n": 319, "laws": 1, "ts": "2026-07-26 00:30 UTC"}
 {"id": "/documentation/appkit/textkit", "sha": "a519a341a40d474ddc3a413a4996f89daef7301c7dc3ccf178eeefa92c33bb89", "t": "TextKit", "n": 2370, "laws": 3, "ts": "2026-07-26 00:33 UTC"}
+{"id": "/documentation/Xcode/installing-the-command-line-tools", "sha": "f5654a1154651f79b7ecd366162d6a02a161274c09c7d54e0c7b046282a3bfc4", "t": "Installing the command-line tools", "n": 3861, "laws": 7, "ts": "2026-07-26 05:50 UTC"}
+{"id": "/documentation/accelerate/vimage/pixelbuffer/height", "sha": "bfac34c91b19925edf6d58305fdccbeff556e30fe80ccb4a759e859a9897af3f", "t": "height", "n": 31, "laws": 0, "ts": "2026-07-26 05:52 UTC"}
+{"id": "/documentation/coregraphics/cgimage/alphainfo", "sha": "32fb3327de4b138413632a84364e561616fb394e72232757dfe2c98407dd6b9d", "t": "alphaInfo", "n": 422, "laws": 0, "ts": "2026-07-26 06:12 UTC"}

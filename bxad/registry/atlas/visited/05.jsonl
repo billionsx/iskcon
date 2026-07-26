@@ -28,3 +28,9 @@
 {"id": "/documentation/SwiftUI/Button", "sha": "7c9ae60ce3bb230979263d14db965ebc4cc11cbbc7acfccd33a2a3407f088dc5", "t": "Button", "n": 3945, "laws": 4, "ts": "2026-07-26 00:27 UTC"}
 {"id": "/documentation/RealityKit/MeshResource/Part", "sha": "6d5b8c61c15ab5f6cee63e21bb909ad923fe305cb6b040a58abb7c1cb4d7b1ac", "t": "MeshResource.Part", "n": 175, "laws": 0, "ts": "2026-07-26 00:27 UTC"}
 {"id": "/documentation/RealityKit/AnchoringComponent/AccessoryAnchoringSource/accessoryLocations", "sha": "27e4c16c7e1e3947762708b6ec34df07cc9d5b55d7ad98e6f3515d46b39bb6e5", "t": "accessoryLocations", "n": 322, "laws": 1, "ts": "2026-07-26 00:31 UTC"}
+{"id": "/documentation/uikit/uifocus_supports_uikit", "sha": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855", "t": "UIFOCUS_SUPPORTS_UIKIT", "n": 0, "laws": 0, "ts": "2026-07-26 05:47 UTC"}
+{"id": "/documentation/accelerate/acceleratebuffer", "sha": "ba46390e95a512a7609870c89aefbe6bb15bcbb7a2d55cc9ae52c2263ade036c", "t": "AccelerateBuffer", "n": 301, "laws": 0, "ts": "2026-07-26 05:52 UTC"}
+{"id": "/documentation/coregraphics/cgcolorspace/itur_2100_hlg", "sha": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855", "t": "itur_2100_HLG", "n": 0, "laws": 0, "ts": "2026-07-26 05:55 UTC"}
+{"id": "/documentation/accelerate/vimage/interleaved16fx2", "sha": "6043bf36a4d63b5bfd3073076d2eda398242a0e64cdaf786e44589d09d2026e5", "t": "vImage.Interleaved16Fx2", "n": 100, "laws": 0, "ts": "2026-07-26 05:57 UTC"}
+{"id": "/documentation/accelerate/vimagelookuptable_planar8toplanar128(_:_:_:_:)", "sha": "0105fb927bd78f3de68ee3bc04d89be52d36535e640fc1cc1ccb3f2317bb2deb", "t": "vImageLookupTable_Planar8toPlanar128(_:_:_:_:)", "n": 482, "laws": 0, "ts": "2026-07-26 06:01 UTC"}
+{"id": "/documentation/accelerate/bnnspoolinglayerparameters", "sha": "1ee4282181d365c911da9ad71559bfafcd2921f41c954f7d345b4b6f798e47e2", "t": "BNNSPoolingLayerParameters", "n": 445, "laws": 0, "ts": "2026-07-26 06:11 UTC"}

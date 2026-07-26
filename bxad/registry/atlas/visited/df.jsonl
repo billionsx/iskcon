@@ -28,3 +28,6 @@
 {"id": "/documentation/RealityKit/DockingRegionComponent", "sha": "ce1576f0e5d7c7bc827bfe28f4927583119d97c05fbfbd6da61d96027f00459d", "t": "DockingRegionComponent", "n": 761, "laws": 0, "ts": "2026-07-26 00:26 UTC"}
 {"id": "/documentation/ARKit/BarcodeAnchor", "sha": "445493042be631e6aaa82acd555cb8f340e280bd6d2e45482fdb7cc15466874f", "t": "BarcodeAnchor", "n": 577, "laws": 0, "ts": "2026-07-26 00:29 UTC"}
 {"id": "/documentation/RealityKit/SpatialAudioComponent", "sha": "704fc5800809aabaa9f1722aa41fb80ab601a7a2d6de76ed2246618903ec9bb0", "t": "SpatialAudioComponent", "n": 2473, "laws": 1, "ts": "2026-07-26 00:30 UTC"}
+{"id": "/documentation/accelerate/vimageconvert_argb8888to420yp8_cb8_cr8(_:_:_:_:_:_:_:)", "sha": "6dac34c604ace9ddfb18dd44792968fc4252ba4df8df08d439917f3a2798fb95", "t": "vImageConvert_ARGB8888To420Yp8_Cb8_Cr8(_:_:_:_:_:_:_:)", "n": 143, "laws": 0, "ts": "2026-07-26 05:53 UTC"}
+{"id": "/documentation/accelerate/bnnslayerparameterslosssigmoidcrossentropy", "sha": "c81661a1e111a2fc182c83da7c498c84adc3c9128defcea9d4157fb6ea96ca2c", "t": "BNNSLayerParametersLossSigmoidCrossEntropy", "n": 231, "laws": 0, "ts": "2026-07-26 06:10 UTC"}
+{"id": "/documentation/accelerate/bnnspaddingmode", "sha": "44aa97f180e80e8f73f84fb3d1234c9531ac2530173ac7620dd2417d155c0229", "t": "BNNSPaddingMode", "n": 165, "laws": 0, "ts": "2026-07-26 06:11 UTC"}

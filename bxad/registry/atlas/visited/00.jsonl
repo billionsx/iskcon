@@ -18,3 +18,6 @@
 {"id": "/documentation/vision/vncoremlfeaturevalueobservation", "sha": "fb81bcc3785a934c146955fa5ca4c6567a4e50a9e93698773135b9ea29e406db", "t": "VNCoreMLFeatureValueObservation", "n": 586, "laws": 0, "ts": "2026-07-26 00:21 UTC"}
 {"id": "/documentation/BundleResources/Entitlements/com.apple.developer.arkit.main-camera-access.allow", "sha": "dbaa950ea9ad2f0ae651f6ef32b02a1c08a2440f808ff38e46fa4c5869f4d471", "t": "Main camera access", "n": 107, "laws": 1, "ts": "2026-07-26 00:25 UTC"}
 {"id": "/documentation/appkit/data-types", "sha": "cca964f8e9769692f72f924c089fa1ffd39fe846ef7c9722f7c1c04f6008963d", "t": "Data Types", "n": 91, "laws": 1, "ts": "2026-07-26 00:33 UTC"}
+{"id": "/documentation/accelerate/pixel_16u16u", "sha": "23a72e251515588ff9cad7c40aa38a8c50279cb205767f87222cb6164ad7fc5f", "t": "Pixel_16U16U", "n": 62, "laws": 0, "ts": "2026-07-26 05:54 UTC"}
+{"id": "/documentation/accelerate/bnns_graph_context_t", "sha": "9dfc04705e5bc9471d9ce7e14a74e5758b51e39859e745f0482a8838266403d4", "t": "bnns_graph_context_t", "n": 396, "laws": 2, "ts": "2026-07-26 06:04 UTC"}
+{"id": "/documentation/accelerate/cblas_scasum(_:_:_:)", "sha": "03078531b6ed02635c3b9d57b8bf79438e18cd4b9cd532df7016aadb149a0e3e", "t": "cblas_scasum(_:_:_:)", "n": 878, "laws": 1, "ts": "2026-07-26 06:16 UTC"}

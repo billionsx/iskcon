@@ -22,3 +22,9 @@
 {"id": "/documentation/tvml/lockup-elements", "sha": "60868b82a7b50e842c0dcba1f4896ae994268a7e74972819d855d7c45f36bc27", "t": "Lockup Elements", "n": 433, "laws": 0, "ts": "2026-07-26 00:24 UTC"}
 {"id": "/documentation/visionos/exploring_object_tracking_with_arkit", "sha": "12b10d4a7c62c74ce8fe8c049ef9794cc8d0a7e4ca37b75dc08dd19f59ccac35", "t": "Exploring object tracking with ARKit", "n": 5835, "laws": 8, "ts": "2026-07-26 00:26 UTC"}
 {"id": "/documentation/RealityKit/MeshBuffer", "sha": "e04090f477a926efb95f04065949ce773c125dcb33aa05510c287162b4f7b24b", "t": "MeshBuffer", "n": 808, "laws": 0, "ts": "2026-07-26 00:27 UTC"}
+{"id": "/documentation/AppKit/NSColor", "sha": "6cd0290ae32b05f28d42af1b21f2dafbd3b04d430e1d063471fe313190161644", "t": "NSColor", "n": 5299, "laws": 5, "ts": "2026-07-26 05:47 UTC"}
+{"id": "/documentation/accelerate/vdsp/ramp(in:count:)-744b4", "sha": "fbce2f37186ef09e860281dba3984459b8ebc8fb6231439610286ff4b10e137d", "t": "ramp(in:count:)", "n": 279, "laws": 1, "ts": "2026-07-26 06:00 UTC"}
+{"id": "/documentation/Swift/Double", "sha": "c16cc9c47e5a1da50f245929316a23cb6b9126a27a1b25d593a31cc40de50686", "t": "Double", "n": 3469, "laws": 0, "ts": "2026-07-26 06:01 UTC"}
+{"id": "/documentation/accelerate/bnnsalloc", "sha": "ef9f12dd91a4f359cb38b995924142d11038f7f8e8bff811b32680925958eda5", "t": "BNNSAlloc", "n": 60, "laws": 0, "ts": "2026-07-26 06:08 UTC"}
+{"id": "/documentation/accelerate/bnnsrandomgeneratorstatesize(_:)", "sha": "1da8607bbddea9fa87318a11d2d13b444986946c8967da7566cf3566b2e92bfc", "t": "BNNSRandomGeneratorStateSize(_:)", "n": 63, "laws": 0, "ts": "2026-07-26 06:11 UTC"}
+{"id": "/documentation/accelerate/cblas_ctbsv(_:_:_:_:_:_:_:_:_:_:)", "sha": "bee7ba41154824cee445ca0bf2c9c91e1b9b0cf57af3b4d24674ca4c09315967", "t": "cblas_ctbsv(_:_:_:_:_:_:_:_:_:_:)", "n": 707, "laws": 1, "ts": "2026-07-26 06:15 UTC"}

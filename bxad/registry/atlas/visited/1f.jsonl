@@ -32,3 +32,6 @@
 {"id": "/documentation/RealityKit/GeometricPinsComponent", "sha": "5ceaa748eec0499c95b1ad7ded460dd1522a1059d5c28104e7846e1996af7c93", "t": "GeometricPinsComponent", "n": 315, "laws": 0, "ts": "2026-07-26 00:24 UTC"}
 {"id": "/documentation/BundleResources/Information-Property-List/NSBonjourServices", "sha": "5bcb3bc4cd8ccfa0c2c90745af9c96b065505940f7d507f12678e1869f77ee76", "t": "NSBonjourServices", "n": 366, "laws": 1, "ts": "2026-07-26 00:27 UTC"}
 {"id": "/documentation/swiftui/layout-adjustments", "sha": "054911c922545b41fc4c5873836db8cdc2cfdb13024568e6996e8fbc980b6946", "t": "Layout adjustments", "n": 2294, "laws": 1, "ts": "2026-07-26 00:34 UTC"}
+{"id": "/documentation/accelerate/vimageconverter/make(sourceformat:destinationformat:flags:)-fub5", "sha": "bb5eae1b5fd86c047d51208d355306e7b65b880ddccaba8dc4d22d47673080f2", "t": "make(sourceFormat:destinationFormat:flags:)", "n": 105, "laws": 0, "ts": "2026-07-26 05:58 UTC"}
+{"id": "/documentation/accelerate/vdsp/dcttransformtype", "sha": "f228913fbf66eaf7433c2bd1ff030a278ac18ba6f332cb6d38b7c1e611bed351", "t": "vDSP.DCTTransformType", "n": 221, "laws": 0, "ts": "2026-07-26 05:58 UTC"}
+{"id": "/documentation/accelerate/catlas_dset(_:_:_:_:)", "sha": "61b64057c9dd42da6138ab7613c35d65398b85199bd18588baf4b0533fc84426", "t": "catlas_dset(_:_:_:_:)", "n": 681, "laws": 1, "ts": "2026-07-26 06:14 UTC"}

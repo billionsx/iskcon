@@ -23,3 +23,9 @@
 {"id": "/documentation/virtualization/vzmacosconfigurationrequirements/hardwaremodel", "sha": "8c9de93f1eccd16952b13106a289d50f5a9ccf389a8985158b975636fa7f52fd", "t": "hardwareModel", "n": 249, "laws": 2, "ts": "2026-07-26 00:18 UTC"}
 {"id": "/documentation/SwiftUI/Animation/interpolatingSpring", "sha": "6b2b0eed489b88d2f0712e64f2c9c365177c11951418560fa19332ef24165426", "t": "interpolatingSpring", "n": 335, "laws": 0, "ts": "2026-07-26 00:25 UTC"}
 {"id": "/documentation/swiftui/watchkit-integration", "sha": "ae6cd94e239a4612dcaa19e4098afc4b4851a7375fd31af97ab3ca163a55ae72", "t": "WatchKit integration", "n": 843, "laws": 1, "ts": "2026-07-26 00:34 UTC"}
+{"id": "/documentation/swiftui/image/resizingmode", "sha": "9f1e07dcfb26ce11a7298e7b37d43d1acfa4120dabca2f21eefb0fdac982739f", "t": "Image.ResizingMode", "n": 160, "laws": 0, "ts": "2026-07-26 05:57 UTC"}
+{"id": "/documentation/accelerate/bnnsreducefunction", "sha": "f201cf4571468ef0eca59440d8b84a6b3b9c8d52076cf8d7377669c9bfdecbea", "t": "BNNSReduceFunction", "n": 598, "laws": 0, "ts": "2026-07-26 06:06 UTC"}
+{"id": "/documentation/accelerate/bnnsrandomgeneratorsetstate(_:_:_:)", "sha": "a3a4d080bd8272705b0d1d1bd74488cfa03363397f92a7ad1084147d6ecb8db3", "t": "BNNSRandomGeneratorSetState(_:_:_:)", "n": 444, "laws": 1, "ts": "2026-07-26 06:11 UTC"}
+{"id": "/documentation/swift/copyable", "sha": "158a6eae9ea3cf1be7fd28029550d85e7f22ec393b820385adc11e9f3cc52540", "t": "Copyable", "n": 1372, "laws": 2, "ts": "2026-07-26 06:13 UTC"}
+{"id": "/documentation/swift/unsafepointer/bytes()", "sha": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855", "t": "bytes()", "n": 0, "laws": 0, "ts": "2026-07-26 06:13 UTC"}
+{"id": "/documentation/accelerate/catlas_daxpby(_:_:_:_:_:_:_:)", "sha": "633233e3f6814e4acfae96376fb92be07f8430c58444d5de1cbfa1b25033679e", "t": "catlas_daxpby(_:_:_:_:_:_:_:)", "n": 740, "laws": 1, "ts": "2026-07-26 06:14 UTC"}

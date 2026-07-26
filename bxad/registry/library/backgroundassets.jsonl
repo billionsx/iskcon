@@ -14,3 +14,10 @@
 {"id": "/documentation/backgroundassets/configuring-an-unmanaged-background-assets-project", "law": "The extension uses the manifest file, which should contains the asset URLs and file sizes, to return a set of download requests to the system."}
 {"id": "/documentation/backgroundassets/configuring-an-unmanaged-background-assets-project", "law": "In the next dialog, click Activate to use the extension scheme Xcode creates."}
 {"id": "/documentation/backgroundassets/configuring-an-unmanaged-background-assets-project", "law": "If you don’t have an Xcode project for your app, first create one from an Application template under the platform you support, such as iOS or macOS."}
+{"id": "/documentation/BackgroundAssets/creating-managed-asset-packs", "law": "Before you can use Managed Background Assets, you need to create asset packs with a manifest file that specifies a download policy and provides other details."}
+{"id": "/documentation/BackgroundAssets/creating-managed-asset-packs", "law": "If you use Apple-Hosted Background Assets, you upload the asset packs to App Store Connect and update them there along with your app builds."}
+{"id": "/documentation/BackgroundAssets/creating-managed-asset-packs", "law": "After you install Xcode, run this command in Terminal to generate a manifest template: Then, enter the information about your asset pack in the manifest file following the instructions in the comments: Set the key to an identifier that you use in your code to access the asset pack."}
+{"id": "/documentation/BackgroundAssets/creating-managed-asset-packs", "law": "Use the key for individual assets and the key for folders that contain assets."}
+{"id": "/documentation/BackgroundAssets/creating-managed-asset-packs", "law": "The paths that you include in the manifest file must be relative to the directory where you run the packaging tool command."}
+{"id": "/documentation/BackgroundAssets/creating-managed-asset-packs", "law": "Next, use the packaging tool command to compress the assets, along with the manifest file, into an archive."}
+{"id": "/documentation/BackgroundAssets/creating-managed-asset-packs", "law": "To use web services, see ."}

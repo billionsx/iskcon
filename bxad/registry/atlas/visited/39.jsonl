@@ -26,3 +26,8 @@
 {"id": "/documentation/visionos/creating-a-new-swiftui-window-in-visionos", "sha": "1ee6fdf4419e9b77e9f6ffef1d58f8e159c44a83517f1f4be309be74264a810f", "t": "Creating SwiftUI windows in visionOS", "n": 1007, "laws": 0, "ts": "2026-07-26 00:27 UTC"}
 {"id": "/documentation/RealityKit/VideoPlayerComponent/desiredImmersiveViewingMode", "sha": "159c616e25906176b143bbbc781b224fc8cfe187a0f16e90741310cb82a8f05a", "t": "desiredImmersiveViewingMode", "n": 150, "laws": 0, "ts": "2026-07-26 00:30 UTC"}
 {"id": "/documentation/appkit/sound-speech-and-haptics", "sha": "885f0ac30080a24c0b363f4548250d956b917e051884ec8cf3584ae1f032134b", "t": "Sound, Speech, and Haptics", "n": 288, "laws": 0, "ts": "2026-07-26 00:33 UTC"}
+{"id": "/documentation/accelerate/image-reflection", "sha": "0c2b1773d40f5341d1ca6b2117aab845b247b7cecf861f68a383fae33b4f74bd", "t": "Image reflection", "n": 1231, "laws": 0, "ts": "2026-07-26 05:51 UTC"}
+{"id": "/documentation/coregraphics/cgcolorspace/displayp3_pq_eotf", "sha": "4e8ba111627a647153c3b577d6294483e4264af27a4498b0a5a10325928167c3", "t": "displayP3_PQ_EOTF", "n": 266, "laws": 0, "ts": "2026-07-26 05:55 UTC"}
+{"id": "/documentation/coregraphics/cgcolorspace/extendedlineargray", "sha": "e32d4d82c5b08cdb9ffe6e5e20fcd39e8f2b78747544ccc79e70ee13a2fd7ab0", "t": "extendedLinearGray", "n": 186, "laws": 0, "ts": "2026-07-26 05:55 UTC"}
+{"id": "/documentation/accelerate/vimagecvimageformat/channels", "sha": "86275bafee0cb09711a38b8829cfa815072f285fcdbdb416b703e0a4895a117a", "t": "channels", "n": 140, "laws": 0, "ts": "2026-07-26 06:04 UTC"}
+{"id": "/documentation/accelerate/bnnsndarraydescriptor/data", "sha": "b6941447a18c009ceafd006fa6edaa247a3b9cbd89ced07b7c7bf869efbf7f1d", "t": "data", "n": 61, "laws": 0, "ts": "2026-07-26 06:07 UTC"}

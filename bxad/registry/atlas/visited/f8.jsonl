@@ -16,3 +16,6 @@
 {"id": "/documentation/uikit/uifontpickerviewcontroller", "sha": "c8245ce82d02675267ff97ced939afc66c04632d080a724546b9d4a12bbbfe66", "t": "UIFontPickerViewController", "n": 1046, "laws": 1, "ts": "2026-07-26 00:16 UTC"}
 {"id": "/documentation/vision/vnsaliencyimageobservation", "sha": "d3d146480dd1ae5a4f2311ea9b42744a7312d6820810ecd75b00e5aacecfac9c", "t": "VNSaliencyImageObservation", "n": 309, "laws": 1, "ts": "2026-07-26 00:20 UTC"}
 {"id": "/documentation/RealityKit/MeshResource/generateBox(size:cornerRadius:)-8em0v", "sha": "bce50b21e88510098913b12c3f0bad82dc40a75528548d6932fc9d820bb3bdb7", "t": "generateBox(size:cornerRadius:)", "n": 321, "laws": 0, "ts": "2026-07-26 00:27 UTC"}
+{"id": "/documentation/accelerate/vdsp_biquad_destroysetupd", "sha": "2787a7a5cc15c7f1c165e63c25ee21ff2769d7b5dceeb6b81d5bc94ee3cc4341", "t": "vDSP_biquad_DestroySetupD", "n": 143, "laws": 0, "ts": "2026-07-26 05:58 UTC"}
+{"id": "/documentation/corevideo/cvpixelbufferlockflags", "sha": "44f6303583377c9cd682187d6304bdfe6e92592a9756da3a11becd943694746a", "t": "CVPixelBufferLockFlags", "n": 82, "laws": 0, "ts": "2026-07-26 06:03 UTC"}
+{"id": "/documentation/accelerate/cblas_sspr2(_:_:_:_:_:_:_:_:_:)", "sha": "7e1b1ea7a9c06fb22733f07618ef645b0829171957ae64ea5cbce088b2ea26f7", "t": "cblas_sspr2(_:_:_:_:_:_:_:_:_:)", "n": 691, "laws": 1, "ts": "2026-07-26 06:16 UTC"}

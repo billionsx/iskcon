@@ -108,3 +108,6 @@
 {"id": "/documentation/BundleResources/Information-Property-List/NSCameraUsageDescription", "law": "This key is required if your app uses APIs that access the device’s camera."}
 {"id": "/documentation/BundleResources/Entitlements/com.apple.developer.arkit.barcode-detection.allow", "law": "A Boolean value that indicates whether an app can use ARKit to detect, position, and decode barcode and QR codes."}
 {"id": "/documentation/BundleResources/Entitlements/com.apple.developer.arkit.visual-fidelity.allow", "law": "To use the Visual Fidelity API, you need to apply for the entitlement."}
+{"id": "/documentation/BundleResources/Information-Property-List/LSMinimumSystemVersion", "law": "Use this key to indicate the minimum macOS release that your app supports."}
+{"id": "/documentation/BundleResources/Information-Property-List/LSMinimumSystemVersion", "law": "To specify the minimum version of iOS, iPadOS, tvOS, or watchOS that your app supports, use ."}
+{"id": "/documentation/BundleResources/Information-Property-List/LSMinimumSystemVersion", "law": "The minimum version of the operating system required for the app to run in macOS."}

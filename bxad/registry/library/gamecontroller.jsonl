@@ -53,3 +53,5 @@
 {"id": "/documentation/GameController/handling-input-events", "law": "To get a collection of all the elements with changed inputs compared to the previous input state, use the method."}
 {"id": "/documentation/GameController/GCDevicePhysicalInput/elementValueDidChangeHandler", "law": "Use this property to get the latest state of the element."}
 {"id": "/documentation/GameController/GCDevicePhysicalInput/elementValueDidChangeHandler", "law": "The block’s parameters are: To track every element value change, set the property instead and use the method to get all the buffered changes."}
+{"id": "/documentation/GameController/GCDeviceHaptics", "law": "Use this class to create a haptic engine with a specified locality."}
+{"id": "/documentation/GameController/GCDeviceHaptics", "law": "Use the method in this class to determine whether a game controller supports haptics."}

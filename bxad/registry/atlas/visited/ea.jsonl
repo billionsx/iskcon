@@ -20,3 +20,9 @@
 {"id": "/documentation/xcode/localization-friendly-layouts-in-macos", "sha": "75dab77d8f139ebe0c71a3cc0827c265a924487b26a55dea39ac8019d01ce6cd", "t": "Localization-friendly layouts in macOS", "n": 226, "laws": 0, "ts": "2026-07-26 00:22 UTC"}
 {"id": "/documentation/AVFoundation/controlling-the-transport-behavior-of-a-player", "sha": "0e5a14f904bc82eff8a4069fb5ba962c90bfcaccadb8a456e3a91f3992592cdb", "t": "Controlling the transport behavior of a player", "n": 2974, "laws": 5, "ts": "2026-07-26 00:28 UTC"}
 {"id": "/documentation/Foundation/UUID", "sha": "979dcc52caa4cf6788e601010a29ea4ed2526cc3e527f2bb3e8d305fadc4cac2", "t": "UUID", "n": 238, "laws": 0, "ts": "2026-07-26 00:31 UTC"}
+{"id": "/documentation/Testing/DefiningTests", "sha": "de715db7585676972a58eca7c2e578f62b755c7e0968ad95360c44e19e7f71c3", "t": "Defining test functions", "n": 2215, "laws": 4, "ts": "2026-07-26 05:50 UTC"}
+{"id": "/documentation/Swift/UnsafeMutableRawPointer/deallocate()", "sha": "3a431ef2d9b44bdb52533cc70abef9052957728b73148f7a2a6655977e3122c3", "t": "deallocate()", "n": 176, "laws": 1, "ts": "2026-07-26 05:52 UTC"}
+{"id": "/documentation/accelerate/vimage_argbtoypcbcr", "sha": "b2d3901b3aea7c0b69e5e817f1c5902141261d74b120ce0708e4ea71d865f871", "t": "vImage_ARGBToYpCbCr", "n": 111, "laws": 0, "ts": "2026-07-26 05:53 UTC"}
+{"id": "/documentation/accelerate/multiplication", "sha": "e0495584fa7db7e03cce0ce2b2c5fb270975b1b961544dd92670ef208ac3a7a3", "t": "Multiplication", "n": 53, "laws": 0, "ts": "2026-07-26 05:59 UTC"}
+{"id": "/documentation/coregraphics/cgpath/copy(using:)", "sha": "2bbc51e0cff29c86800dfa4ca7a3b6551d78bf16d08970653fb97c48abb64706", "t": "copy(using:)", "n": 182, "laws": 0, "ts": "2026-07-26 06:00 UTC"}
+{"id": "/documentation/accelerate/kvimagehalfinterpolation", "sha": "61b35023512f3ef48f25cdb4fac337743be79043554a1cfa597a3e39e2c1033b", "t": "kvImageHalfInterpolation", "n": 29, "laws": 0, "ts": "2026-07-26 06:02 UTC"}

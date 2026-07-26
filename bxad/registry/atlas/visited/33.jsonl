@@ -24,3 +24,4 @@
 {"id": "/documentation/BundleResources/Information-Property-List/UIApplicationPreferredDefaultSceneSessionRole", "sha": "66cb0972039fd70d7b19ab40eb6151bb3f165f96e9828a54831b9f21b6154fde", "t": "UIApplicationPreferredDefaultSceneSessionRole", "n": 357, "laws": 1, "ts": "2026-07-26 00:27 UTC"}
 {"id": "/documentation/ShaderGraph/realitykit/Reflection-Specular-(RealityKit)", "sha": "21e7ce167ad4d9e869d4639d5ccfc5e4cbb9d7ca1267e6678722609cc7fc3af5", "t": "Reflection Specular (RealityKit)", "n": 52, "laws": 0, "ts": "2026-07-26 00:28 UTC"}
 {"id": "/documentation/swiftui/clipboard", "sha": "6dc7aa5e77d2cdb4d731bb6bd1d2b2d670b130856a545abf2a51b66b8ed529d3", "t": "Clipboard", "n": 837, "laws": 1, "ts": "2026-07-26 00:33 UTC"}
+{"id": "/documentation/simd/simd_fast_distance-1pqse", "sha": "a565134e1acd8aa501261ea3b89647b4996c8be281d41c690e24b21266f2a2cf", "t": "simd_fast_distance", "n": 46, "laws": 0, "ts": "2026-07-26 06:02 UTC"}

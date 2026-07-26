@@ -23,3 +23,9 @@
 {"id": "/documentation/vision/cropping-images-using-saliency", "sha": "11c7ebc23b9f1bdc2e8ed867c83cdde68b94ba6b0d0249c22c9b383eed4d33dc", "t": "Cropping Images Using Saliency", "n": 3856, "laws": 8, "ts": "2026-07-26 00:20 UTC"}
 {"id": "/documentation/Network/NetworkBrowser", "sha": "c0621b97ebc8af10bcfb29bf43d6b090bfc238aa33a1d2241e5c33adc26a0620", "t": "NetworkBrowser", "n": 491, "laws": 0, "ts": "2026-07-26 00:22 UTC"}
 {"id": "/documentation/mapkit/mklookaroundviewcontroller", "sha": "dceff8afc0f2be1493655ba5cff4b8d7ab71fb9f9df3fa05ed2f9dc3efaa853e", "t": "MKLookAroundViewController", "n": 410, "laws": 0, "ts": "2026-07-26 00:23 UTC"}
+{"id": "/documentation/uikit/uitextcontenttype/cellularimei2", "sha": "d1a3879c5b98978162c7e8ad2848a5955c4c1399af7f7486697276656a8a9477", "t": "cellularIMEI2", "n": 202, "laws": 1, "ts": "2026-07-26 05:47 UTC"}
+{"id": "/documentation/Xcode/projects-and-workspaces", "sha": "92a70da7f5df227022739cbe00d8c9d7ce41ff51fd41b09ced3ba15056e634e8", "t": "Projects and workspaces", "n": 715, "laws": 1, "ts": "2026-07-26 05:50 UTC"}
+{"id": "/documentation/coregraphics/kcgcolorspacegenericgray", "sha": "36638a5ba3bd58cbf6d7f01b69f518a420ab253b7dec6211992a78914007cd43", "t": "kCGColorSpaceGenericGray", "n": 41, "laws": 0, "ts": "2026-07-26 05:56 UTC"}
+{"id": "/documentation/simd/simd_precise_distance-wp3e", "sha": "380e3c242abefbd2e0eef6f6dd7d2936e0b9f71b3be6ac959fc8fd4b66af7092", "t": "simd_precise_distance", "n": 49, "laws": 0, "ts": "2026-07-26 06:02 UTC"}
+{"id": "/documentation/accelerate/vimagecvimageformat/formatcode", "sha": "4b6d68700be72c68f5cc3e01dc36f51e06e7994688d8bcc13d6b6fd227b80ee0", "t": "formatCode", "n": 214, "laws": 0, "ts": "2026-07-26 06:04 UTC"}
+{"id": "/documentation/accelerate/bnnscropresizebackward(_:_:_:_:_:)", "sha": "11cf3e71c2ffaa2e7a2d65211cf836874a1bc7610d7c61438eca0db9018fc70d", "t": "BNNSCropResizeBackward(_:_:_:_:_:)", "n": 60, "laws": 0, "ts": "2026-07-26 06:09 UTC"}

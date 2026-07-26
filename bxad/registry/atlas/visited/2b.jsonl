@@ -19,3 +19,9 @@
 {"id": "/documentation/virtualization", "sha": "1618043dabdb9a7aa4605a7e282b15e1e86d8947bb05ed1212c39665568cd8b5", "t": "Virtualization", "n": 1991, "laws": 2, "ts": "2026-07-26 00:17 UTC"}
 {"id": "/documentation/vision/vnrecognizedpoints3dobservation", "sha": "c0156e0a3cbc1cb070a169fce4ff6a4de02a3b5067bbceb47c9a155da9d7bb07", "t": "VNRecognizedPoints3DObservation", "n": 180, "laws": 0, "ts": "2026-07-26 00:19 UTC"}
 {"id": "/documentation/ARKit/WorldAnchor/id", "sha": "aff8ad6e358629c41870da788787de08667136b584fb90c20a878d4bed20caa5", "t": "id", "n": 37, "laws": 0, "ts": "2026-07-26 00:30 UTC"}
+{"id": "/documentation/accelerate/dspsplitcomplex", "sha": "81ac2e431182aeaf5745f19931c344e0ef2c9c859435e66acbfbcbbc4e574db9", "t": "DSPSplitComplex", "n": 305, "laws": 0, "ts": "2026-07-26 05:59 UTC"}
+{"id": "/documentation/corevideo/cvpixelbuffer", "sha": "92b33a4b8ce831238252cdf89329282b268ad553ff52684358814d852f162794", "t": "CVPixelBuffer", "n": 111, "laws": 0, "ts": "2026-07-26 06:03 UTC"}
+{"id": "/documentation/accelerate/bnns/paddinglayer", "sha": "5a8db04f2d80de443a017f5d283c303ad15619cebaef78e5109b8746724d1fcd", "t": "BNNS.PaddingLayer", "n": 201, "laws": 0, "ts": "2026-07-26 06:08 UTC"}
+{"id": "/documentation/accelerate/bnnsdestroynearestneighbors(_:)", "sha": "0b234aec9e48bd5e33cd6cc69d2b8f9013b4782b9304e7844a4fbc4e06329a00", "t": "BNNSDestroyNearestNeighbors(_:)", "n": 38, "laws": 0, "ts": "2026-07-26 06:09 UTC"}
+{"id": "/documentation/accelerate/cblas_drotmg(_:_:_:_:_:)", "sha": "e6b11081114983eb9d736d3921fa0582e5f87054849477c43e793076799c3284", "t": "cblas_drotmg(_:_:_:_:_:)", "n": 705, "laws": 1, "ts": "2026-07-26 06:15 UTC"}
+{"id": "/documentation/accelerate/cblas_ssymv(_:_:_:_:_:_:_:_:_:_:_:)", "sha": "9f730e1b84c832164d5e066d000a5fdf80c41278b1ba146e957262fe5faf0e7d", "t": "cblas_ssymv(_:_:_:_:_:_:_:_:_:_:_:)", "n": 739, "laws": 1, "ts": "2026-07-26 06:16 UTC"}

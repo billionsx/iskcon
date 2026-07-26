@@ -20,3 +20,7 @@
 {"id": "/documentation/uikit/views-and-controls", "sha": "65fba64d9e27c2dfd01b24f57884247ccd8877a529bdfe0ad9f87319407d8ecc", "t": "Views and controls", "n": 2775, "laws": 3, "ts": "2026-07-26 00:07 UTC"}
 {"id": "/documentation/tvmljs/browser", "sha": "73f273934684e0aa4ff5be735340fd018c00e65adc2351079e68cfae09a4f30d", "t": "Browser", "n": 327, "laws": 1, "ts": "2026-07-26 00:24 UTC"}
 {"id": "/documentation/SwiftUI/Viewpoint3D", "sha": "e6bdcbf92dfec304ba75d633e92d9276027637356a719afe07355f746fb3f31d", "t": "Viewpoint3D", "n": 131, "laws": 0, "ts": "2026-07-26 00:24 UTC"}
+{"id": "/documentation/uikit/interprocess-communication", "sha": "b9e6858ace771cd7b1eabea7e4d0373746e40a245f635c736c0b20082fda3994", "t": "Interprocess communication", "n": 198, "laws": 0, "ts": "2026-07-26 05:47 UTC"}
+{"id": "/documentation/Foundation/UndoManager", "sha": "a2f636641ea4152e8987b4515e7dede8be6559f3c421a6af90279338679797c4", "t": "UndoManager", "n": 3210, "laws": 4, "ts": "2026-07-26 05:48 UTC"}
+{"id": "/documentation/accelerate/matrix-and-submatrix-copying-functions", "sha": "081d54bfcbbc42441809005bdda3a49bfd3eb4cc1f5062dfcb94bdf3d761a685", "t": "Matrix and submatrix copying functions", "n": 54, "laws": 0, "ts": "2026-07-26 05:59 UTC"}
+{"id": "/documentation/accelerate/bnns/sparseparameters", "sha": "2752a65d36f3ecc7a99c30d69c7afe7ef7c0c3841054c1e4d6f9fa16d74882b2", "t": "BNNS.SparseParameters", "n": 226, "laws": 0, "ts": "2026-07-26 06:08 UTC"}

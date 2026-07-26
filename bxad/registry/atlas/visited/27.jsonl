@@ -29,3 +29,8 @@
 {"id": "/documentation/swiftui/view/tabviewcustomization(_:)", "sha": "d258327bf43c50e6941e9f62718d04e64b2158f3e1f92766a7de85ace11cbd23", "t": "tabViewCustomization(_:)", "n": 1209, "laws": 1, "ts": "2026-07-25 23:25 UTC"}
 {"id": "/documentation/uikit/nsdiffabledatasourcesnapshot-swift.struct/reconfigureitems(_:)", "sha": "27e57afdf58e30444ad31704cc354ab8f5b6cb4ef944abd965d7ba13bd4bfd4c", "t": "reconfigureItems(_:)", "n": 1369, "laws": 7, "ts": "2026-07-26 00:16 UTC"}
 {"id": "/documentation/appkit/appkit_final", "sha": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855", "t": "APPKIT_FINAL", "n": 0, "laws": 0, "ts": "2026-07-26 00:33 UTC"}
+{"id": "/documentation/GameKit/encourage-progress-and-competition-with-leaderboards", "sha": "89407f13846b2cc59ce225202a1f06bb5dc3b99f88c3eeec19fbcc5eea233c9e", "t": "Encourage progress and competition with leaderboards", "n": 7134, "laws": 10, "ts": "2026-07-26 05:49 UTC"}
+{"id": "/documentation/accelerate/pixel_16f16f", "sha": "915eb1c0604ba217996ea28877d52b42a3fa1a36a9eaf3ef84997c0e5b0e6876", "t": "Pixel_16F16F", "n": 147, "laws": 0, "ts": "2026-07-26 05:54 UTC"}
+{"id": "/documentation/coregraphics/cgcolorspace/itur_2020_pq_eotf", "sha": "7cb111e42da202e646107fcb27e6cb99c9d0e8e5f6c41bbdd6668cc8d662e48b", "t": "itur_2020_PQ_EOTF", "n": 399, "laws": 0, "ts": "2026-07-26 05:55 UTC"}
+{"id": "/documentation/coregraphics/cgimage", "sha": "47c783e16a640f616360f3f31847e7155ff8bee8d469d9aa85b4d1f522c1ad22", "t": "CGImage", "n": 1556, "laws": 0, "ts": "2026-07-26 05:56 UTC"}
+{"id": "/documentation/swift/unsafepointer/unsafesequence()-215j3", "sha": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855", "t": "unsafeSequence()", "n": 0, "laws": 0, "ts": "2026-07-26 06:13 UTC"}

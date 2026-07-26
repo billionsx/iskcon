@@ -340,3 +340,20 @@
 {"id": "/documentation/Foundation/NSURL/stopAccessingSecurityScopedResource()", "law": "You can also use its Core Foundation equivalent, the function."}
 {"id": "/documentation/Foundation/NSURL/stopAccessingSecurityScopedResource()", "law": "You must balance each call to for a given security-scoped URL with a call to ."}
 {"id": "/documentation/Foundation/NSURL/stopAccessingSecurityScopedResource()", "law": "If you call this method on a URL whose referenced resource you don’t have access to, nothing happens."}
+{"id": "/documentation/Foundation/Bundle", "law": "Any executable can use a bundle object to locate resources, either inside an app’s bundle or in a known bundle located elsewhere."}
+{"id": "/documentation/Foundation/Bundle", "law": "You don’t use a bundle object to locate files in a container directory or in other parts of the file system."}
+{"id": "/documentation/Foundation/Bundle", "law": "Use the methods of the bundle object to locate or load the needed resource."}
+{"id": "/documentation/Foundation/Bundle", "law": "Use other system APIs to interact with the resource."}
+{"id": "/documentation/Foundation/Bundle", "law": "Similarly, for string resources, you use to load individual strings instead of loading the entire file yourself."}
+{"id": "/documentation/Foundation/Bundle", "law": "If you need functionality provided by , you can still create a and use the API."}
+{"id": "/documentation/Foundation/Bundle", "law": "Before you can locate a resource, you must first specify which bundle contains it."}
+{"id": "/documentation/Foundation/Bundle", "law": "The class has many constructors, but the one you use most often is ."}
+{"id": "/documentation/Foundation/Bundle", "law": "If your app interacts directly with plug-ins, frameworks, or other bundled content, you can use other methods of this class to create appropriate bundle objects."}
+{"id": "/documentation/Foundation/Bundle", "law": "You can always create bundle objects from a known URL or path, but other methods make it easier to access bundles your app is already using."}
+{"id": "/documentation/Foundation/UndoManager", "law": "also serves as a general-purpose state manager, which you can use to undo and redo many kinds of actions."}
+{"id": "/documentation/Foundation/UndoManager", "law": "For example, an interactive command-line utility can use this class to undo the last command run, or a networking library can undo a request by sending another request that invalidates the previous one."}
+{"id": "/documentation/Foundation/UndoManager", "law": "is -isolated in Swift, making it safe to use in UI frameworks like and that expect to execute code on the main thread, queue, or actor."}
+{"id": "/documentation/Foundation/UndoManager", "law": "When registering an undoable action with , the closure is also -isolated to ensure safety and simplify ergonomics."}
+{"id": "/documentation/Foundation/data-formatting", "law": "Foundation supports two approaches for data formatting: When working in Swift, use methods directly on the types you want to format, optionally using and its subtypes to customize formatter output."}
+{"id": "/documentation/Foundation/data-formatting", "law": "In Objective-C, create instances of and its subtypes, and use the method to convert objects to formatted strings."}
+{"id": "/documentation/Foundation/NSExceptionName/invalidArgumentException", "law": "Name of an exception that occurs when you pass an invalid argument to a method, such as a pointer where a non- object is required."}

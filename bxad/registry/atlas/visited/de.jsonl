@@ -23,3 +23,6 @@
 {"id": "/documentation/uikit/uidatepicker", "sha": "fec1dd8544b5ff7448865da060d0ef4d25d55a81a6328ee52c7ad2660f05ac2c", "t": "UIDatePicker", "n": 5491, "laws": 10, "ts": "2026-07-26 00:16 UTC"}
 {"id": "/documentation/xcode/using-generated-localizable-symbols-in-your-code", "sha": "8c0b2aa07875d8abd4cd7bb5cd2f8b7472309444a63c1d8719f66c90d2c5a5a1", "t": "Using generated localizable symbols in your code", "n": 5116, "laws": 9, "ts": "2026-07-26 00:23 UTC"}
 {"id": "/documentation/SwiftUI/View/ornament(visibility:attachmentAnchor:contentAlignment:ornament:)", "sha": "30b360148f22ebcbe0e9d4e4be4529524003f4cfc9d5da0d4a435491f9e09dcb", "t": "ornament(visibility:attachmentAnchor:contentAlignment:ornament:)", "n": 155, "laws": 1, "ts": "2026-07-26 00:24 UTC"}
+{"id": "/documentation/SwiftUI/Clipboard", "sha": "6dc7aa5e77d2cdb4d731bb6bd1d2b2d670b130856a545abf2a51b66b8ed529d3", "t": "Clipboard", "n": 837, "laws": 1, "ts": "2026-07-26 05:48 UTC"}
+{"id": "/documentation/SwiftUI/AppKit-integration", "sha": "0b9ee8f2c726f6354a70a221e4a7f8547e93c43fc9491d0632761b84e87b673a", "t": "AppKit integration", "n": 1188, "laws": 1, "ts": "2026-07-26 05:48 UTC"}
+{"id": "/documentation/accelerate/catlas_sset(_:_:_:_:)", "sha": "91047a08eb3195d60c3f791c6878b0ca58145289e117838d6f2e08c2caafcc4e", "t": "catlas_sset(_:_:_:_:)", "n": 681, "laws": 1, "ts": "2026-07-26 06:14 UTC"}

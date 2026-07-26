@@ -413,3 +413,4 @@
 {"id": "/documentation/RealityKit/SpatialAudioComponent", "law": "To avoid any unwanted mixdown artifacts, use mono source material where possible."}
 {"id": "/documentation/RealityKit/AnchoringComponent/AccessoryAnchoringSource/accessoryLocations", "law": "is supported by every accessory and is always available via the static property, regardless of whether it appears in this array."}
 {"id": "/documentation/RealityKit/SceneEvents/Update", "law": "An event invoked once per frame interval that you can use to execute custom logic for each frame."}
+{"id": "/documentation/RealityKit/scene-content-audio", "law": "Use RealityKit’s default audio settings to create a personalized and realistic experience or utilize advanced customization options to tailor the audio for the needs of your application."}

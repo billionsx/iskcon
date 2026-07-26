@@ -23,3 +23,6 @@
 {"id": "/documentation/vision/vntrackobjectrequest", "sha": "ae2324cca0e5095f3c50a52ba90807c9c9a2593f1c4bab3cedf8f97e8adc64bb", "t": "VNTrackObjectRequest", "n": 557, "laws": 1, "ts": "2026-07-26 00:20 UTC"}
 {"id": "/documentation/SwiftUI/PrimitiveButtonStyle/card", "sha": "dfa8309de71230748f6fb589a31002f38afe4b257421618d840e8ba23842b9a7", "t": "card", "n": 404, "laws": 1, "ts": "2026-07-26 00:28 UTC"}
 {"id": "/documentation/Apple-Silicon/porting-your-macos-apps-to-apple-silicon", "sha": "e3171593188cd6592b78f054050e974bb46d697d91239f8aafbc93783ed6f3f7", "t": "Porting your macOS apps to Apple silicon", "n": 10320, "laws": 10, "ts": "2026-07-26 00:32 UTC"}
+{"id": "/documentation/uikit/uikit-enumerations", "sha": "00d6d9f04e5a81825541f5a24a8157d50466023f8528b8777b28d8e182613847", "t": "UIKit Enumerations", "n": 220, "laws": 0, "ts": "2026-07-26 05:47 UTC"}
+{"id": "/documentation/accelerate/bnnsgraphargumenttype", "sha": "84856ba0dbe204c3c4a9fc3df39bbde0daa9078d79b33ceceda22a46f56e05eb", "t": "BNNSGraphArgumentType", "n": 198, "laws": 0, "ts": "2026-07-26 06:05 UTC"}
+{"id": "/documentation/swift/withunsafebytes(of:_:)-5gesg", "sha": "bacdaac507bb85765135f0e079773327b93352b96c9cff217ad07533c30f8d12", "t": "withUnsafeBytes(of:_:)", "n": 352, "laws": 0, "ts": "2026-07-26 06:13 UTC"}

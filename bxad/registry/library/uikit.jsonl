@@ -1401,3 +1401,159 @@
 {"id": "/documentation/uikit/accessibility-for-uikit", "law": "Typically, you don’t need to do extra work to enable the standard accessibility features."}
 {"id": "/documentation/uikit/accessibility-for-uikit", "law": "If your app contains custom user interface elements that don’t inherit from or one of the other UIKit classes with built-in accessibility, make those elements accessible by subclassing ."}
 {"id": "/documentation/uikit/app-extensions", "law": "Use these Foundation classes to manage interactions between your app extension and its hosting app."}
+{"id": "/documentation/uikit/drawing", "law": "Use renderers to turn a set of programmatic drawing commands into a bitmap or PDF image."}
+{"id": "/documentation/uikit/protecting-the-user-s-privacy", "law": "In addition, take appropriate steps to protect user and device data, and be transparent about how you use it."}
+{"id": "/documentation/uikit/protecting-the-user-s-privacy", "law": "When storing files in iOS, use the strongest data protection level that works for your app, as described in ."}
+{"id": "/documentation/uikit/protecting-the-user-s-privacy", "law": "Use App Transport Security when sending user or device data over the network, as described in ."}
+{"id": "/documentation/uikit/protecting-the-user-s-privacy", "law": "If the user sets that property to false, then use the class only for limited advertising purposes, like frequency capping, attribution, conversion events, estimating the number of unique users, advertising fraud detection, and debugging."}
+{"id": "/documentation/uikit/protecting-the-user-s-privacy", "law": "If you must identify users persistently, use the property of the class or the property of the class."}
+{"id": "/documentation/uikit/protecting-the-user-s-privacy", "law": "Request and use the minimum amount of user or device data needed to accomplish a given task."}
+{"id": "/documentation/uikit/protecting-the-user-s-privacy", "law": "Don’t seek access to or collect data for unnecessary or non-obvious reasons, or because you think it might be useful later."}
+{"id": "/documentation/uikit/protecting-the-user-s-privacy", "law": "Don’t configure your audio session for recording at launch time if you don’t plan to record right away."}
+{"id": "/documentation/uikit/resource-management", "law": "Manage the images, strings, storyboards, and nib files that you use to implement your app’s interface."}
+{"id": "/documentation/uikit/supporting-voiceover-in-your-app", "law": "VoiceOver assists all types of people, but those who are blind rely on VoiceOver whenever they use their devices."}
+{"id": "/documentation/uikit/supporting-voiceover-in-your-app", "law": "By increasing accessibility, you open your app to a wider audience, and make it easier for everyone to use."}
+{"id": "/documentation/uikit/supporting-voiceover-in-your-app", "law": "To test the accessibility of your app, turn on VoiceOver and navigate through the interface."}
+{"id": "/documentation/uikit/supporting-voiceover-in-your-app", "law": "Then, open your app and use the specified action whenever you want to test VoiceOver."}
+{"id": "/documentation/uikit/supporting-voiceover-in-your-app", "law": "To audit your app with VoiceOver on, you use VoiceOver’s unique set of gestures to navigate your app."}
+{"id": "/documentation/uikit/supporting-voiceover-in-your-app", "law": "For testing, there are five key gestures that you may use: Swipe left or right to navigate to the next or previous UI element."}
+{"id": "/documentation/uikit/supporting-voiceover-in-your-app", "law": "For example, when you’re navigating back to your app’s initial view, or you’re sharing content with another app or user, how can you use VoiceOver to make it accessible?"}
+{"id": "/documentation/uikit/supporting-voiceover-in-your-app", "law": "If you want VoiceOver to read your elements in a different order, use groups to facilitate navigation that makes sense for your app."}
+{"id": "/documentation/uikit/supporting-voiceover-in-your-app", "law": "Make sure that VoiceOver says whether the button is in a selected state."}
+{"id": "/documentation/uikit/supporting-voiceover-in-your-app", "law": "Depending on the context, hints aren’t always necessary."}
+{"id": "/documentation/uikit/uiapplication/systemprefersreducedresourceusage", "law": "When this value is , the system has entered a state where it would prefer apps to scale back resource-intensive work."}
+{"id": "/documentation/uikit/uiapplication/systemprefersreducedresourceusage", "law": "Use this to avoid or reduce expensive work."}
+{"id": "/documentation/uikit/uiapplication/systemprefersreducedresourceusage", "law": "Avoid performing or scheduling expensive work in response to changes in this property, as this could worsen resource usage."}
+{"id": "/documentation/uikit/uiapplication/systemprefersreducedresourceusage", "law": "Use for higher-level decisions that cannot make on its own."}
+{"id": "/documentation/uikit/uiapplication/systemprefersreducedresourceusagedidchangenotification", "law": "Use this notification to re-read the value and adjust the scheduling of future work, the same way the property is read proactively."}
+{"id": "/documentation/uikit/uiapplication/systemprefersreducedresourceusagedidchangenotification", "law": "Avoid performing or scheduling expensive work directly in the handler, as this could worsen resource usage."}
+{"id": "/documentation/uikit/uiresponder", "law": "To handle a specific type of event, a responder must override the corresponding methods."}
+{"id": "/documentation/uikit/uiresponder", "law": "UIKit manages the responder chain dynamically, using predefined rules to determine which object should be next to receive an event."}
+{"id": "/documentation/uikit/uiresponder", "law": "Generally, responders that handle press events should override all four of these methods."}
+{"id": "/documentation/uikit/uitextcontenttype/cellularimei1", "law": "This content type requires clients to have Carrier eSIM entitlements."}
+{"id": "/documentation/uikit/uitextcontenttype/cellularimei2", "law": "This content type requires clients to have Carrier eSIM entitlements."}
+{"id": "/documentation/uikit/uitextcontenttype/cellularnal", "law": "This content type requires clients to have Carrier eSIM entitlements."}
+{"id": "/documentation/uikit/uiwritingtoolscoordinator/textdecoration", "law": "Use the constants to determine the type of decoration to be applied to a preview for grammar animation."}
+{"id": "/documentation/uikit/uiwritingtoolscoordinator/textdecoration", "law": "If you use grammar animation, you must implement the delegate method to provide both forms of previews, based on the specified decoration."}
+{"id": "/documentation/uikit/choosing-a-user-interface-idiom-for-your-mac-app", "law": "To choose the idiom in which your app runs, select from the following options after you turn on Mac Catalyst in your Xcode project: To learn more about turning on Mac Catalyst in your Xcode project, see ."}
+{"id": "/documentation/uikit/choosing-a-user-interface-idiom-for-your-mac-app", "law": "By default, Xcode selects Scale Interface to Match iPad after you turn on Mac Catalyst."}
+{"id": "/documentation/uikit/choosing-a-user-interface-idiom-for-your-mac-app", "law": "However, selecting this option may require you to make additional changes to your app."}
+{"id": "/documentation/uikit/choosing-a-user-interface-idiom-for-your-mac-app", "law": "Remember, macOS doesn’t scale the interface of apps that use the Mac idiom so you may need to update your app to accommodate size differences even when the preferred behavioral style is ."}
+{"id": "/documentation/uikit/choosing-a-user-interface-idiom-for-your-mac-app", "law": "However, these properties and methods are available for use in the Mac idiom when the control’s behavioral style is ."}
+{"id": "/documentation/uikit/choosing-a-user-interface-idiom-for-your-mac-app", "law": "Use the compilation conditional to choose a different code path depending on the target environment."}
+{"id": "/documentation/uikit/creating-a-mac-version-of-your-ipad-app", "law": "Depending on the features and frameworks that your app uses, the configuration process may require a few extra steps, such as manually excluding other frameworks or content."}
+{"id": "/documentation/uikit/creating-a-mac-version-of-your-ipad-app", "law": "You can use these same approaches to include a framework and code that are available only in macOS."}
+{"id": "/documentation/uikit/creating-a-mac-version-of-your-ipad-app", "law": "After following these steps, you should be able to run your iPad app on Mac."}
+{"id": "/documentation/uikit/detecting-changes-in-the-preferences-window", "law": "To use the sample app, open the sample code project in Xcode and select My Mac as the destination."}
+{"id": "/documentation/uikit/detecting-changes-in-the-preferences-window", "law": "However, when the sample app launches for the first time, the preference values don’t exist in the user defaults system."}
+{"id": "/documentation/uikit/detecting-changes-in-the-preferences-window", "law": "To ensure that the app always retrieves a non- value, the sample app registers the default preference values with the registration domain."}
+{"id": "/documentation/uikit/optimizing-your-ipad-app-for-mac", "law": "Mac apps built with Mac Catalyst can only use APIs marked as available in Mac Catalyst, such as and ."}
+{"id": "/documentation/uikit/optimizing-your-ipad-app-for-mac", "law": "Set your split view controller’s to to avoid styling the primary view controller’s background."}
+{"id": "/documentation/uikit/optimizing-your-ipad-app-for-mac", "law": "As the user moves the pointer over UI elements, some elements should change their appearance."}
+{"id": "/documentation/uikit/showing-help-tags-for-views-and-controls-using-tooltip-interactions", "law": "In addition to setting the tooltip text in a object, a delegate can specify the region of an interface element where the pointer must hover to trigger the display of the tooltip."}
+{"id": "/documentation/uikit/showing-help-tags-for-views-and-controls-using-tooltip-interactions", "law": "When the pointer is in one of those regions, the delegate method returns a tooltip configuration that contains the tooltip text and the source rectangle, which defines the area of the view that the pointer must hover over to trigger the display of the tooltip."}
+{"id": "/documentation/UIKit/UIColor", "law": "Use color to customize your app’s appearance, communicate status, and help people visualize data."}
+{"id": "/documentation/UIKit/UIColor", "law": "The only time subclassing might be necessary is if you require support for additional color spaces or color models."}
+{"id": "/documentation/UIKit/UIColor", "law": "If you do subclass, the properties and methods you add must be safe to use from multiple threads."}
+{"id": "/documentation/UIKit/UIImage", "law": "You use image objects to represent image data of all kinds, and the class is capable of managing data for all image formats supported by the underlying platform."}
+{"id": "/documentation/UIKit/UIImage", "law": "Image objects are immutable, so you always create them from existing image data, such as an image file on disk or programmatically created image data."}
+{"id": "/documentation/UIKit/UIImage", "law": "An image object may contain a single image or a sequence of images for use in an animation."}
+{"id": "/documentation/UIKit/UIImage", "law": "You can use image objects in several different ways: Assign an image to a object to display the image in your interface."}
+{"id": "/documentation/UIKit/UIImage", "law": "Use an image to customize system controls such as buttons, sliders, and segmented controls."}
+{"id": "/documentation/UIKit/UIImage", "law": "Pass an image to other APIs that might require image data."}
+{"id": "/documentation/UIKit/UIImage", "law": "Although image objects support all platform-native image formats, it’s recommended that you use PNG or JPEG files for most images in your app."}
+{"id": "/documentation/UIKit/UIImage", "law": "Because the PNG format is lossless, it’s especially recommended for the images you use in your app’s interface."}
+{"id": "/documentation/UIKit/UIImage", "law": "When creating image objects using the methods of this class, you must have existing image data located in a file or data structure."}
+{"id": "/documentation/UIKit/UIImage", "law": "There are many options for creating image objects, each of which is best for specific situations: Use the method (or the method) to create an image from an image asset or image file located in your app’s main bundle (or some other known bundle)."}
+{"id": "/documentation/UIKit/accessibility-for-uikit", "law": "Typically, you don’t need to do extra work to enable the standard accessibility features."}
+{"id": "/documentation/UIKit/accessibility-for-uikit", "law": "If your app contains custom user interface elements that don’t inherit from or one of the other UIKit classes with built-in accessibility, make those elements accessible by subclassing ."}
+{"id": "/documentation/UIKit/configuring-and-displaying-symbol-images-in-your-ui", "law": "Symbol images give you a consistent set of icons to use in your app, and guarantee that those icons adapt to different sizes and to app-specific content."}
+{"id": "/documentation/UIKit/configuring-and-displaying-symbol-images-in-your-ui", "law": "You use symbol images in places where you display a simple shape or glyph, such as a bar button item."}
+{"id": "/documentation/UIKit/configuring-and-displaying-symbol-images-in-your-ui", "law": "Scale and style symbol images to match the font you use for text."}
+{"id": "/documentation/UIKit/configuring-and-displaying-symbol-images-in-your-ui", "law": "Symbol images also adapt to the current trait environment, reducing the work required to support different sized interfaces."}
+{"id": "/documentation/UIKit/configuring-and-displaying-symbol-images-in-your-ui", "law": "To browse the available symbol images, use the SF Symbols app, which you can download from ."}
+{"id": "/documentation/UIKit/configuring-and-displaying-symbol-images-in-your-ui", "law": "In each, you use certain methods when loading system images by name."}
+{"id": "/documentation/UIKit/configuring-and-displaying-symbol-images-in-your-ui", "law": "When loading custom symbol images, you use a different set of methods."}
+{"id": "/documentation/UIKit/configuring-and-displaying-symbol-images-in-your-ui", "law": "In SwiftUI, you use to load a system symbol image and to load your custom symbol, as the following code shows: In UIKit, a object includes methods for loading the symbol image with specific traits or configuration options."}
+{"id": "/documentation/UIKit/configuring-and-displaying-symbol-images-in-your-ui", "law": "When you load system symbol images, use , , or ."}
+{"id": "/documentation/UIKit/configuring-and-displaying-symbol-images-in-your-ui", "law": "When you load your custom symbol images from an asset catalog, use , , or ."}
+{"id": "/documentation/UIKit/handling-input-from-apple-pencil", "law": "If you use altitude, azimuth, or force information from Apple Pencil, you must explicitly handle estimated properties."}
+{"id": "/documentation/UIKit/handling-input-from-apple-pencil", "law": "Use this value as a key to a dictionary that you maintain to identify the touch later."}
+{"id": "/documentation/UIKit/handling-input-from-apple-pencil", "law": "Set the value of that key to the app-specific object that you use to store the touch information."}
+{"id": "/documentation/UIKit/handling-input-from-apple-pencil", "law": "When UIKit later reports the real values, use the index to look up your app-specific object and replace the estimated values with the real values."}
+{"id": "/documentation/UIKit/handling-input-from-apple-pencil", "law": "Use that method to replace estimated data with the real values provided by UIKit."}
+{"id": "/documentation/UIKit/scaling-fonts-automatically", "law": "To add support for Dynamic Type in your app, you use text styles ."}
+{"id": "/documentation/UIKit/scaling-fonts-automatically", "law": "A text style describes the use of the text, such as or or , and lets the system know how best to adjust its size."}
+{"id": "/documentation/UIKit/scaling-fonts-automatically", "law": "If you use a custom font in your app and want to let the user control the text size, you must create a scaled instance of the font in your source code."}
+{"id": "/documentation/UIKit/scaling-fonts-automatically", "law": "Call , passing in a reference to the custom font that’s at a point size suitable for use with ."}
+{"id": "/documentation/UIKit/scaling-fonts-automatically", "law": "You can use this call on the default font metrics, or you can specify a text style, such as ."}
+{"id": "/documentation/UIKit/scenes", "law": "Each scene also has a corresponding object, which you use to coordinate interactions between UIKit and your app."}
+{"id": "/documentation/UIKit/supporting-dark-mode-in-your-interface", "law": "Users choose the aesthetic they prefer, and can also choose to toggle their interface based on ambient lighting conditions or a specific schedule."}
+{"id": "/documentation/UIKit/supporting-dark-mode-in-your-interface", "law": "All apps should support both light and dark interface styles, but might perform better with a specific appearance in some places."}
+{"id": "/documentation/UIKit/supporting-dark-mode-in-your-interface", "law": "For example, you might always adopt a light appearance for printed content."}
+{"id": "/documentation/UIKit/supporting-dark-mode-in-your-interface", "law": "Before you change your code, turn on Dark Mode and see how your app responds."}
+{"id": "/documentation/UIKit/supporting-dark-mode-in-your-interface", "law": "If you already use color and image assets, you can add dark variants without changing your code."}
+{"id": "/documentation/UIKit/supporting-dark-mode-in-your-interface", "law": "Light and dark interfaces use very different color palettes."}
+{"id": "/documentation/UIKit/supporting-dark-mode-in-your-interface", "law": "These semantic colors convey the intended use of the color, rather than specific color values."}
+{"id": "/documentation/UIKit/supporting-dark-mode-in-your-interface", "law": "When you use them for their intended purpose, they render with color values appropriate for the current settings."}
+{"id": "/documentation/UIKit/supporting-dark-mode-in-your-interface", "law": "Use the Any Appearance variant to specify the color value to use on older systems that do not support Dark Mode."}
+{"id": "/documentation/UIKit/supporting-dark-mode-in-your-interface", "law": "To load a color value from an asset catalog, load the color by name: When you create a color object from a color asset, you do not have to recreate that object when the current appearance changes."}
+{"id": "/documentation/UIKit/view-layout", "law": "Variations in the screen sizes of iOS devices (including differences between portrait and landscape orientations) require different layouts for each device and orientation."}
+{"id": "/documentation/UIKit/view-layout", "law": "Apps on iPad must adapt to cover different amounts of screen space, ranging from a third of the screen to the entire screen."}
+{"id": "/documentation/UIKit/view-layout", "law": "Language changes might require size changes for labels and other text-based views."}
+{"id": "/documentation/UIKit/view-layout", "law": "Use stack views to lay out the views of your interface automatically."}
+{"id": "/documentation/UIKit/view-layout", "law": "Use Auto Layout when you require precise placement of your views."}
+{"id": "/documentation/UIKit/views-and-controls", "law": "Use them to draw and organize your app’s content onscreen."}
+{"id": "/documentation/UIKit/views-and-controls", "law": "You can also use views to do any of the following: Respond to touches and other events (either directly or in coordination with gesture recognizers)."}
+{"id": "/documentation/UIKit/views-and-controls", "law": "For additional information about how to use views and controls, see ."}
+{"id": "/documentation/UIKit/windows-and-screens", "law": "Use to configure and manage your user interface, and review objects to understand the device’s main screen or connected displays."}
+{"id": "/documentation/UIKit/windows-and-screens", "law": "UIKit provides an initial window for you to use, and you can create additional windows as needed."}
+{"id": "/documentation/UIKit/UIApplicationDelegate", "law": "Like the object, UIKit creates your app delegate object early in your app’s launch cycle so it’s always present."}
+{"id": "/documentation/UIKit/UIApplicationDelegate", "law": "In iOS 12 and earlier, you use your app delegate to manage major life cycle events in your app."}
+{"id": "/documentation/UIKit/UIApplicationDelegate", "law": "Specifically, you use methods of the app delegate to update the state of your app when it enters the foreground or moves to the background."}
+{"id": "/documentation/UIKit/UIContextMenuInteraction", "law": "Use a object to focus the user’s attention on a specific portion of your content, and to provide actions for the user to perform on that content."}
+{"id": "/documentation/UIKit/UIContextMenuInteraction", "law": "A context menu interaction object tracks Force Touch gestures on devices that support 3D Touch, and long-press gestures on devices that don’t support it."}
+{"id": "/documentation/UIKit/UIContextMenuInteraction", "law": "After creating the object, assign an appropriate object to its property and use the method to attach it to one of your views."}
+{"id": "/documentation/UIKit/UIContextMenuInteraction", "law": "The delegate object you provide must adopt the protocol."}
+{"id": "/documentation/UIKit/UIContextMenuInteraction", "law": "Use the methods of that object to provide the contents of the contextual menu."}
+{"id": "/documentation/UIKit/UIContextMenuInteraction", "law": "An interaction object that you use to display relevant actions for your content."}
+{"id": "/documentation/UIKit/UIDocument", "law": "A document-based app must create a subclass of for its documents."}
+{"id": "/documentation/UIKit/UIDocument", "law": "When you initialize an instance of your document subclass by calling , you must pass a file URL locating the document file in the app sandbox."}
+{"id": "/documentation/UIKit/UIDocument", "law": "You must enable the document for cloud storage."}
+{"id": "/documentation/UIKit/UIDocument", "law": "You must also resolve any conflicts between different versions of the same document."}
+{"id": "/documentation/UIKit/UIDocument", "law": "Each document-based app must create a subclass of whose instances represent its documents."}
+{"id": "/documentation/UIKit/UIDocument", "law": "The data must be in the form of an object (for flat files) or an object (for file packages)."}
+{"id": "/documentation/UIKit/UIDocument", "law": "To enable the autosaving feature of , you must notify it when users make changes to a document."}
+{"id": "/documentation/UIKit/UIDocument", "law": "Be sure to read the description for the method for its guidance on handling errors encountered during document saving."}
+{"id": "/documentation/UIKit/UIDocument", "law": "An example of this is an RTF document which, after a user adds an image to it, should be saved as an RTFD document."}
+{"id": "/documentation/UIKit/UIDocument", "law": "If you override these methods, be aware that all reading and writing of document data must be done on a background queue and must be coordinated with other attempts to read from and write to the same document file."}
+{"id": "/documentation/UIKit/UIResponder", "law": "To handle a specific type of event, a responder must override the corresponding methods."}
+{"id": "/documentation/UIKit/UIResponder", "law": "UIKit manages the responder chain dynamically, using predefined rules to determine which object should be next to receive an event."}
+{"id": "/documentation/UIKit/UIResponder", "law": "Generally, responders that handle press events should override all four of these methods."}
+{"id": "/documentation/UIKit/UITraitCollection", "law": "To make your view controllers and views responsive to changes in the iOS interface environment, use automatic trait tracking in supported and methods, or register to track specific trait changes with methods."}
+{"id": "/documentation/UIKit/UITraitCollection", "law": "One important use of standalone trait collections is to enable conditional use of images based on the current iOS interface environment."}
+{"id": "/documentation/UIKit/UITraitCollection", "law": "You can also use a standalone trait collection to customize view appearance with the protocol method, as described in ."}
+{"id": "/documentation/UIKit/drawing", "law": "Use renderers to turn a set of programmatic drawing commands into a bitmap or PDF image."}
+{"id": "/documentation/UIKit/handling-touches-in-your-view", "law": "If you don’t plan to use gesture recognizers with a custom view, you can handle touch events directly from the view itself."}
+{"id": "/documentation/UIKit/handling-touches-in-your-view", "law": "You can override these methods in your custom views and use them to provide a response to touch events."}
+{"id": "/documentation/UIKit/handling-touches-in-your-view", "law": "You use that method to perform any needed cleanup of your view’s data structures."}
+{"id": "/documentation/UIKit/handling-touches-in-your-view", "law": "To receive the additional touches, you must set the view’s property to true."}
+{"id": "/documentation/UIKit/handling-touches-in-your-view", "law": "Use touch events directly on a view subclass if touch handling is intricately linked to the view’s content."}
+{"id": "/documentation/UIKit/managing-content-in-your-app-s-windows", "law": "Each window has a root view controller, which you use to specify the window’s initial set of views."}
+{"id": "/documentation/UIKit/managing-content-in-your-app-s-windows", "law": "In fact, many apps use the same type of page in multiple places, filling each copy with different sets of data."}
+{"id": "/documentation/UIKit/managing-content-in-your-app-s-windows", "law": "Defining a view controller always involves subclassing and adding custom behavior."}
+{"id": "/documentation/UIKit/managing-content-in-your-app-s-windows", "law": "Always use the UIKit container view controllers to implement the common navigation models: manages a stack of child view controllers in a navigation interface ."}
+{"id": "/documentation/UIKit/managing-content-in-your-app-s-windows", "law": "Don’t use them for more complex navigation schemes."}
+{"id": "/documentation/UIKit/managing-content-in-your-app-s-windows", "law": "If you use storyboards, the root view controller is the initial view controller of your scene’s storyboard file."}
+{"id": "/documentation/UIKit/managing-content-in-your-app-s-windows", "law": "When the root view controller is a container, you must also configure any child view controllers displayed by that container."}
+{"id": "/documentation/UIKit/responding-to-control-based-events-using-target-action", "law": "Use to connect events directly from controls in your UI to methods in your code."}
+{"id": "/documentation/UIKit/responding-to-control-based-events-using-target-action", "law": "Use the generic type to allow any control to call the action method, or specify the type when you need more information about the control for event processing."}
+{"id": "/documentation/UIKit/responding-to-control-based-events-using-target-action", "law": "In UIKit, use the method to set up target-action programmatically on a control: In AppKit, use the control’s and properties to set target-action programmatically:"}
+{"id": "/documentation/UIKit/textkit", "law": "In UIKit, you can use , which packages TextKit capabilities to provide a convenient text rendering and editing experience."}
+{"id": "/documentation/UIKit/textkit", "law": "Use if you want an -related storage type, or subclass to use your own."}
+{"id": "/documentation/UIKit/textkit", "law": "Use for better performance, and support for international languages."}
+{"id": "/documentation/UIKit/touches-presses-and-gestures", "law": "However, if you use custom views to display your content, you must handle all touch events that occur in your views."}
+{"id": "/documentation/UIKit/touches-presses-and-gestures", "law": "Use gesture recognizers to track the touches; see ."}
+{"id": "/documentation/UIKit/view-controllers", "law": "You use view controllers to manage your UIKit app’s interface."}
+{"id": "/documentation/UIKit/view-controllers", "law": "Every app has at least one view controller whose content fills the main window."}
+{"id": "/documentation/UIKit/view-controllers", "law": "If your app has more content than can fit on-screen at once, use multiple view controllers to manage different parts of that content."}

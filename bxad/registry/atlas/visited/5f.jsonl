@@ -22,3 +22,7 @@
 {"id": "/documentation/visionos/combining-spatial-support-from-multiple-frameworks", "sha": "b089449c0c2f00eed1ebe1e0968a685221db0f403d1463610e0ecdc7b21bec39", "t": "Combining spatial support from multiple frameworks", "n": 5517, "laws": 3, "ts": "2026-07-26 00:27 UTC"}
 {"id": "/documentation/visionos/generating-procedural-textures-in-visionos", "sha": "4861bd3ec1bbbb6824216a74d1b6ef0b9f843f74bd7815e68bff420a5c2a35fc", "t": "Generating procedural textures", "n": 2879, "laws": 0, "ts": "2026-07-26 00:28 UTC"}
 {"id": "/documentation/ARKit/ARKitCoordinateSpace/Correction", "sha": "5e79b8a49ba865b9cf76b02aedeb7593c754a0b279748af99e2e80503ea70d6d", "t": "ARKitCoordinateSpace.Correction", "n": 210, "laws": 0, "ts": "2026-07-26 00:28 UTC"}
+{"id": "/documentation/uikit/uikit-constants", "sha": "ff54cd6f4303fac4cc3fedca0d318e0006fecf9903ba46215024d4d3f4f089dc", "t": "UIKit Constants", "n": 79, "laws": 0, "ts": "2026-07-26 05:47 UTC"}
+{"id": "/documentation/coregraphics/cgpath/isempty", "sha": "fa04150976a5ba53592f94de855d89e138c0ecc76fb4b5fcc925985a8dca528c", "t": "isEmpty", "n": 100, "laws": 0, "ts": "2026-07-26 06:00 UTC"}
+{"id": "/documentation/coregraphics/cgimage/calculatedcontentheadroom", "sha": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855", "t": "calculatedContentHeadroom", "n": 0, "laws": 0, "ts": "2026-07-26 06:12 UTC"}
+{"id": "/documentation/accelerate/cblas_transpose", "sha": "65c8bb37a6f514ed21fdb3193f23c11a4044458cdd798a426aaa464c8b79e5e5", "t": "CBLAS_TRANSPOSE", "n": 723, "laws": 1, "ts": "2026-07-26 06:16 UTC"}

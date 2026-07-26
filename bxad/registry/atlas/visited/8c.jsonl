@@ -22,3 +22,7 @@
 {"id": "/documentation/vision/vnrequest", "sha": "9fcb4cf3683814f338dbaedd67eff8ad3f8af9216610747416b907c5005bd039", "t": "VNRequest", "n": 791, "laws": 1, "ts": "2026-07-26 00:18 UTC"}
 {"id": "/documentation/AVFoundation/capturing-still-and-live-photos", "sha": "6ecb83faaa1aa10c13d2e4bd3a2deb06bcec6fcf0d4819040938155d18427030", "t": "Capturing still and Live Photos", "n": 4004, "laws": 10, "ts": "2026-07-26 00:20 UTC"}
 {"id": "/documentation/RealityKit/AudioPlaybackController", "sha": "5bc479c64e732139a8ce11ba141fb5fc8e4ade8fed29fa84079f30f1b43dd6ee", "t": "AudioPlaybackController", "n": 1386, "laws": 0, "ts": "2026-07-26 00:30 UTC"}
+{"id": "/documentation/UIKit/accessibility-for-uikit", "sha": "6659004661d9aac820355a3ccd167d86ef3afd397388e731fbc5b9d13c0ff0af", "t": "Accessibility for UIKit", "n": 3001, "laws": 2, "ts": "2026-07-26 05:48 UTC"}
+{"id": "/documentation/accelerate/bnnsfiltercreatelayerdropout(_:_:)", "sha": "8158da963d03fee94ee3044faa7b1cd104be3473431969971ace957c03d519f4", "t": "BNNSFilterCreateLayerDropout(_:_:)", "n": 451, "laws": 2, "ts": "2026-07-26 06:09 UTC"}
+{"id": "/documentation/swift/escapable", "sha": "b97b2606fd63fccd9e4df0e09209fb2098d74b130b512fb7f8897d9e563ab350", "t": "Escapable", "n": 987, "laws": 2, "ts": "2026-07-26 06:13 UTC"}
+{"id": "/documentation/accelerate/cblas_sgemv(_:_:_:_:_:_:_:_:_:_:_:_:)", "sha": "d372216f4dbb3887e1225ff5a56d450413bba38cf37c7bd9c75ab58bfca3fdf8", "t": "cblas_sgemv(_:_:_:_:_:_:_:_:_:_:_:_:)", "n": 940, "laws": 2, "ts": "2026-07-26 06:16 UTC"}

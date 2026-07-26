@@ -25,3 +25,7 @@
 {"id": "/documentation/Technotes/tn3179-understanding-local-network-privacy", "sha": "11e73063a4bad5029bfbebfedea6cde09de727743ee0a21608307749fb0bef32", "t": "TN3179: Understanding local network privacy", "n": 18994, "laws": 10, "ts": "2026-07-26 00:27 UTC"}
 {"id": "/documentation/SwiftUI/SceneLaunchBehavior/suppressed", "sha": "536ec2478631d4d6fe4d6cab095a4b57ca11b8db12b078036932cef1216ef977", "t": "suppressed", "n": 108, "laws": 0, "ts": "2026-07-26 00:29 UTC"}
 {"id": "/documentation/ARKit/HandSkeleton/JointName", "sha": "98e145379a89e6fe223b47830ed889b442424471f936dde6ba93fe0881d3c952", "t": "HandSkeleton.JointName", "n": 1390, "laws": 0, "ts": "2026-07-26 00:30 UTC"}
+{"id": "/documentation/accelerate/vimage_ypcbcrpixelrange/cbcrmax", "sha": "d40e58c5a41fa8441069d6f715626b6b78a4162c8f8f533b65060b7942a1f9fb", "t": "CbCrMax", "n": 129, "laws": 1, "ts": "2026-07-26 05:53 UTC"}
+{"id": "/documentation/accelerate/fractional-part-extraction", "sha": "76b73164b96c6e18f1364dee7337e34b3b46cb23706846d17f8b3b006f6632e8", "t": "Fractional part extraction", "n": 286, "laws": 0, "ts": "2026-07-26 05:59 UTC"}
+{"id": "/documentation/accelerate/vdsp/add(_:_:result:)-2w0o9", "sha": "284f1756c2e85bcfda8ab71fffb158e0ea85029ef15c8df18d397c7a89a46632", "t": "add(_:_:result:)", "n": 263, "laws": 0, "ts": "2026-07-26 06:01 UTC"}
+{"id": "/documentation/coregraphics/cgimage/height", "sha": "7cc375e4bb0323d25331e8290fbb91920cde231e5ad392394b70025573b2b69f", "t": "height", "n": 37, "laws": 0, "ts": "2026-07-26 06:12 UTC"}

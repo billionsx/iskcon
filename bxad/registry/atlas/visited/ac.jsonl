@@ -28,3 +28,11 @@
 {"id": "/documentation/RealityKit/ShapeResource/generateStaticMesh(from:)", "sha": "58b3d6e62a2b43c82062ff8dd6cf8f2f8113f7bdef14b6b86938b1b92337aca9", "t": "generateStaticMesh(from:)", "n": 233, "laws": 1, "ts": "2026-07-26 00:29 UTC"}
 {"id": "/documentation/GameController/GCSpatialAccessory/spatialAccessories", "sha": "326eb27b24cc64ef744bb9ae518670a78569410954ae2a1c4f10fdf89cae901a", "t": "spatialAccessories", "n": 76, "laws": 0, "ts": "2026-07-26 00:31 UTC"}
 {"id": "/documentation/swiftui/toolbars", "sha": "dc6cac74864eb7cb45bd445cb0e0f7fe188d964aa782f27aeee8a7dafeddcddb", "t": "Toolbars", "n": 1999, "laws": 0, "ts": "2026-07-26 00:34 UTC"}
+{"id": "/documentation/AppKit/NSToolbar", "sha": "2dbb50b9987ef0d1c3bbecc3e1f2f6076b19702b66fe9e1fde04fd6f726ed828", "t": "NSToolbar", "n": 2017, "laws": 3, "ts": "2026-07-26 05:47 UTC"}
+{"id": "/documentation/AppKit/view-management", "sha": "259c766b8708c5c0a3445d100adc193b9d4936162e341950725bf0a73b7977ec", "t": "View Management", "n": 457, "laws": 0, "ts": "2026-07-26 05:49 UTC"}
+{"id": "/documentation/accelerate/applying-arithmetic-operations", "sha": "b2b5e727c2047327ee661628681b30eae57a417e99853309026eb00442852c56", "t": "Applying arithmetic operations", "n": 569, "laws": 0, "ts": "2026-07-26 05:52 UTC"}
+{"id": "/documentation/simd/simd_double4x2", "sha": "092f5ad2c73591a6cf0c9dc46f24081de90711b4e9f1477127924b32d06700fd", "t": "simd_double4x2", "n": 678, "laws": 0, "ts": "2026-07-26 05:58 UTC"}
+{"id": "/documentation/accelerate/bnnsvectordescriptor", "sha": "22bf7cdeefd4dbe8798937935a88037af502c0f1ffdfda84ef829fc65a394644", "t": "BNNSVectorDescriptor", "n": 600, "laws": 1, "ts": "2026-07-26 06:06 UTC"}
+{"id": "/documentation/accelerate/bnnsndarraydescriptor/init(data:shape:batchsize:)", "sha": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855", "t": "init(data:shape:batchSize:)", "n": 0, "laws": 0, "ts": "2026-07-26 06:07 UTC"}
+{"id": "/documentation/coregraphics/cgimage/bytesperrow", "sha": "dd0556657b69b573ded616ae82226a2662cae7b59939e02919e3d79fe2974008", "t": "bytesPerRow", "n": 73, "laws": 0, "ts": "2026-07-26 06:12 UTC"}
+{"id": "/documentation/swift/unsafepointer/sequence()-6p1ru", "sha": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855", "t": "sequence()", "n": 0, "laws": 0, "ts": "2026-07-26 06:13 UTC"}

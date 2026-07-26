@@ -27,3 +27,10 @@
 {"id": "/documentation/technologyoverviews/communication-and-connection", "sha": "c236e8b30240291d8f8b69c97cab04ea9741fff79528c88564cfc05a30b0085b", "t": "Communication and connection", "n": 4531, "laws": 9, "ts": "2026-07-26 00:31 UTC"}
 {"id": "/documentation/swiftui/search", "sha": "a6489d81813fbfae2ef8296b3232cf6abf736aa3292c7da9d012a0c5bffeb731", "t": "Search", "n": 2101, "laws": 0, "ts": "2026-07-26 00:34 UTC"}
 {"id": "/documentation/swiftui/xcode-library-customization", "sha": "ab002a8a6113615ded2832f20eb0fa2cca7bdbcb688db7900e23eb0d751871ca", "t": "Xcode library customization", "n": 856, "laws": 0, "ts": "2026-07-26 00:34 UTC"}
+{"id": "/documentation/UIKit/UIResponder", "sha": "4725250826f0bd847348179cfe609c6c522e785f2c1e3b2cc878ab5b9c310fb2", "t": "UIResponder", "n": 4115, "laws": 3, "ts": "2026-07-26 05:49 UTC"}
+{"id": "/documentation/AVFoundation/AVCaptureMovieFileOutput/availableVideoCodecTypes", "sha": "0a4971daf198ddde33c35e0052fb0a3876c97a6e408e0efb5425e552c815ffa6", "t": "availableVideoCodecTypes", "n": 310, "laws": 0, "ts": "2026-07-26 05:51 UTC"}
+{"id": "/documentation/accelerate/alpha-compositing", "sha": "22c3b996a7e04bb56b9080b4c4a4b1c8effacc9907ebd11d9808a9ec4c12f43b", "t": "Alpha compositing", "n": 2982, "laws": 0, "ts": "2026-07-26 05:51 UTC"}
+{"id": "/documentation/accelerate/vdsp_zmms", "sha": "7e26b1da95664d24b4ee7e9420b895032cf00a4be2db22d11552a5f36b68373d", "t": "vDSP_zmms", "n": 225, "laws": 0, "ts": "2026-07-26 05:59 UTC"}
+{"id": "/documentation/avfoundation/avcapturevideodataoutput/availablevideopixelformattypes", "sha": "8e607feaf1eb2e0e60bf0b878dc74e3d489929c7f01b4fc28b60b06d5a489a51", "t": "availableVideoPixelFormatTypes", "n": 316, "laws": 0, "ts": "2026-07-26 06:02 UTC"}
+{"id": "/documentation/accelerate/bnnsdestroyrandomgenerator(_:)", "sha": "b6a0c587ee3c95b9c15f35b6a789a06cff1ef92c5bb4de3accf4a8227399e8b8", "t": "BNNSDestroyRandomGenerator(_:)", "n": 35, "laws": 0, "ts": "2026-07-26 06:09 UTC"}
+{"id": "/documentation/coregraphics/cgimage/colorspace", "sha": "3a4b99b17d0073c5c4d8bf1f28dbfc021045286295ea309f320084306a745f6f", "t": "colorSpace", "n": 42, "laws": 0, "ts": "2026-07-26 06:12 UTC"}

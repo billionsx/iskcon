@@ -21,3 +21,9 @@
 {"id": "/documentation/uikit/uisearchtoken", "sha": "759de4745ac53a9bfdfe7106a3ec1114b3e12b1b9bd7b0ecfea3b5370e54d404", "t": "UISearchToken", "n": 733, "laws": 3, "ts": "2026-07-26 00:17 UTC"}
 {"id": "/documentation/SwiftUI/View/rotation3DLayout(_:)", "sha": "ca5e251f7f70728158976a7501c0b20b09e32b22324c0ee23cf9aa7fed4ca552", "t": "rotation3DLayout(_:)", "n": 411, "laws": 1, "ts": "2026-07-26 00:26 UTC"}
 {"id": "/documentation/swiftui/input-events", "sha": "af980252b17336de70bef7675f743b09a4f7ca2967692a80fe76b25bd457ed2c", "t": "Input events", "n": 2941, "laws": 0, "ts": "2026-07-26 00:34 UTC"}
+{"id": "/documentation/accelerate/vimagegamma_planarf(_:_:_:_:)", "sha": "3701512922086525ddf254b7f8189a661f1fcb0fbb046ce2cf45be9900952e1f", "t": "vImageGamma_PlanarF(_:_:_:_:)", "n": 101, "laws": 0, "ts": "2026-07-26 05:51 UTC"}
+{"id": "/documentation/accelerate/vimage/multidimensionallookuptable/destinationchannelcount", "sha": "0728fe0bf91933586323898dd992231d8a69e615fb54002d1c90f9facb883200", "t": "destinationChannelCount", "n": 35, "laws": 0, "ts": "2026-07-26 06:02 UTC"}
+{"id": "/documentation/accelerate/bnnsgraphgetfunctionnames(_:_:_:)", "sha": "7f3493e25c410e650f4cef9de46a80b1764e8639b4efd21764c015d68be5f175", "t": "BNNSGraphGetFunctionNames(_:_:_:)", "n": 102, "laws": 0, "ts": "2026-07-26 06:05 UTC"}
+{"id": "/documentation/accelerate/bnnslayerparametersdropout", "sha": "90573a85918c79f531c87518fda2422e551afd545e566f2eef1fb915ac00d9f8", "t": "BNNSLayerParametersDropout", "n": 184, "laws": 0, "ts": "2026-07-26 06:10 UTC"}
+{"id": "/documentation/accelerate/bnnslayerparametersnormalization", "sha": "77e70bd8494e7d3bda1c0751bdd9b9095478d7d5345a6ef6475c9321a3627645", "t": "BNNSLayerParametersNormalization", "n": 394, "laws": 0, "ts": "2026-07-26 06:10 UTC"}
+{"id": "/documentation/accelerate/cblas_side", "sha": "ddf13ecf20b41d661242adfe9fad326be59213b5b311192a29ac34abaff00111", "t": "CBLAS_SIDE", "n": 717, "laws": 1, "ts": "2026-07-26 06:16 UTC"}

@@ -35,3 +35,10 @@
 {"id": "/documentation/coreimage", "law": "Use the many built-in image filters to process images and build complex effects by chaining filters."}
 {"id": "/documentation/coreimage", "law": "Use built-in or custom filters to process still and video images."}
 {"id": "/documentation/coreimage/cirenderdestination", "law": "You can create a object for each surface or buffer to which you must render."}
+{"id": "/documentation/CoreImage/CIImageProcessorInput", "law": "In your image processor class’ method, use the provided object to access the image data and supporting information to perform your custom image processing routine."}
+{"id": "/documentation/CoreImage/CIImageProcessorInput", "law": "For example, if you process the image using a Metal shader, use the property to bind the image as an input texture."}
+{"id": "/documentation/CoreImage/CIImageProcessorInput", "law": "Or, if you process the image using a CPU-based routine, use the property to access pixel data in memory."}
+{"id": "/documentation/CoreImage/CIImageProcessorInput", "law": "To finish setting up or performing your image processing routine, use the provided object to return processed pixel data to Core Image."}
+{"id": "/documentation/CoreImage/CIImageProcessorInput", "law": "A container of image data and information for use in a custom image processor."}
+{"id": "/documentation/CoreImage/CIImageProcessorOutput", "law": "In your image processor class’ method, use an appropriate property of the provided object to return processed pixel data to Core Image."}
+{"id": "/documentation/CoreImage/CIImageProcessorOutput", "law": "You must provide rendered output to one (and only one) of the properties listed in ."}

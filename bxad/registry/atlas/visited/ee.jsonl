@@ -24,3 +24,11 @@
 {"id": "/documentation/uikit/implementing-a-custom-gesture-recognizer", "sha": "0d79ba31b7f545c5dc0955ce9d039defed16d97a1ac6d62daff7fa10affb2c36", "t": "Implementing a custom gesture recognizer", "n": 1520, "laws": 4, "ts": "2026-07-26 00:15 UTC"}
 {"id": "/documentation/vision/vnfeatureprintobservation", "sha": "e5ba688ab92eac197d910bcb4d3fd2300bf7a3d0b3753b6a992f0483ac4d6eeb", "t": "VNFeaturePrintObservation", "n": 262, "laws": 0, "ts": "2026-07-26 00:18 UTC"}
 {"id": "/documentation/widgetkit/developing-a-widgetkit-strategy", "sha": "9205affa3ea997be6c82a853f61cc1402ffae92fa1cdf6b0a52f98e253c05c28", "t": "Developing a WidgetKit strategy", "n": 9609, "laws": 10, "ts": "2026-07-26 00:22 UTC"}
+{"id": "/documentation/Xcode/build-system", "sha": "adeba777e8bf8b8318bdbfb2c8da57adf28940bfcd90bbedee9a7d7301c01602", "t": "Build system", "n": 1511, "laws": 2, "ts": "2026-07-26 05:50 UTC"}
+{"id": "/documentation/accelerate/pixel_16u", "sha": "7b21df0c0a3b681934eeb69d9fe58dd20066cfcd77e11d782dbf2651ec10f221", "t": "Pixel_16U", "n": 57, "laws": 0, "ts": "2026-07-26 05:54 UTC"}
+{"id": "/documentation/kernel/vdsp_biquad_setup", "sha": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855", "t": "vDSP_biquad_Setup", "n": 0, "laws": 0, "ts": "2026-07-26 06:00 UTC"}
+{"id": "/documentation/coregraphics/cgpathcontainspoint", "sha": "94e1fc9fc94930fbb6eccf3ac57c25f0716d515428e663ebc7aac95d70d6b3c1", "t": "CGPathContainsPoint", "n": 240, "laws": 0, "ts": "2026-07-26 06:00 UTC"}
+{"id": "/documentation/accelerate/vdsp/absolute(_:)-5ehc1", "sha": "bd7197ce3e859ead0a784a22298989d1612ca9db7db0e35442779db926fe7081", "t": "absolute(_:)", "n": 189, "laws": 0, "ts": "2026-07-26 06:01 UTC"}
+{"id": "/documentation/accelerate/bnnsscatternd(_:_:_:_:_:)", "sha": "9521b309bb710eafe4fe7d0c08e90d3e373926c0da7728c46f6d370ddd7fc6ce", "t": "BNNSScatterND(_:_:_:_:_:)", "n": 1013, "laws": 3, "ts": "2026-07-26 06:06 UTC"}
+{"id": "/documentation/accelerate/bnnslinearsamplingmode", "sha": "34ef6d14b7f6b61d652c2ccb1146989b9e600daecc56b3e689e406cb70565edd", "t": "BNNSLinearSamplingMode", "n": 276, "laws": 0, "ts": "2026-07-26 06:10 UTC"}
+{"id": "/documentation/accelerate/cblas_zscal(_:_:_:_:)", "sha": "7eb2b6a44d01223290708ce7d2f30084b34aff2b4af1d93dac9624713a7a077b", "t": "cblas_zscal(_:_:_:_:)", "n": 673, "laws": 1, "ts": "2026-07-26 06:17 UTC"}
