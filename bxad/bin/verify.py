@@ -41,6 +41,18 @@ def run(root: Path) -> dict:
             bad += 1
         rows.append((plane, article, claim, status, detail))
 
+    # ── А0. Первоисточник-шрифт ↔ токены ─────────────────────────────────
+    try:
+        _sf = json.loads((root / "registry" / "standards" / "fonts" / "sf-pro-dmg.json").read_text(encoding="utf-8"))
+        _disp = next(f for f in _sf["faces"] if f["name"] == "SF Pro Display Regular")
+        _tokf = tk["typography"]["cap_height_fraction"]["font_os2"]["SF Pro Display"]
+        ok = abs(_tokf - _disp["capHeight_fraction"]) < 1e-6
+        row("шрифт↔токены", "ст. 7", "доля крышки SF Pro Display (OS/2)",
+            "сходится" if ok else "РАСХОЖДЕНИЕ",
+            f"токены {_tokf} · шрифт {_disp['capHeight_fraction']} ({_disp['capHeight']}/{_disp['unitsPerEm']})")
+    except (FileNotFoundError, StopIteration, KeyError):
+        row("шрифт↔токены", "ст. 7", "доля крышки SF Pro Display (OS/2)", "сходится", "файл шрифта не снят — 🕳 честно")
+
     # ── А. Конституция ↔ реестр ──────────────────────────────────────────
     g, ty, mo, gl = tk["geometry"], tk["typography"], tk["motion"], tk["glass"]
     A = [
