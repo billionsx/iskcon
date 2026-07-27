@@ -130,6 +130,7 @@ def run_live(root: Path) -> dict:
     with sync_playwright() as pw:
         b = pw.chromium.launch()
         pg = b.new_page(viewport={"width": 393, "height": 852}, device_scale_factor=3,
+                        color_scheme="dark",  # канон ст.10 — тёмный холст; headless по умолчанию light
                         user_agent="Mozilla/5.0 (iPhone; CPU iPhone OS 26_0 like Mac OS X) "
                                    "AppleWebKit/605.1.15 (KHTML, like Gecko) Version/26.0 Mobile/15E148 Safari/604.1")
         for url in cfg["pages"]:
