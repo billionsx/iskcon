@@ -1,3 +1,0 @@
-{"id": "/documentation/SCSIPeripheralsDriverKit", "law": "For block-level driver development, use ."}
-{"id": "/documentation/SCSIPeripheralsDriverKit", "law": "For protocol-level driver development, use ."}
-{"id": "/documentation/SCSIPeripheralsDriverKit", "law": "Develop drivers for peripherals that use SCSI Block Command and Multimedia Command protocols."}

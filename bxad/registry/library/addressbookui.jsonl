@@ -1,2 +1,0 @@
-{"id": "/documentation/AddressBookUI", "law": "Do not use the AddressBookUI framework in iOS 9 and later."}
-{"id": "/documentation/AddressBookUI", "law": "Use the APIs defined in the framework instead."}

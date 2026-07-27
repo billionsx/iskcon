@@ -1,0 +1,14 @@
+# BILLIONS X EYES · надзор департамента над этим проектом.
+# Департамент живёт в своём репозитории billionsx/eyes и приходит сюда сам
+# на каждый pull request: построчные замечания числами измеренных законов.
+name: eyes
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+    paths: ["apps/web/**"]
+jobs:
+  review:
+    uses: billionsx/eyes/.github/workflows/eyes-review-reusable.yml@main
+    with:
+      project: iskcon
+      globs: "apps/web/src/**/*.css,apps/web/src/**/*.tsx"
