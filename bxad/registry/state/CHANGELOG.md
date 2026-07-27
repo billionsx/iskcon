@@ -641,3 +641,23 @@
 ### 2026-07-26 20:55 UTC · сертификация
 - iskcon: скор 81.5 · грейд C (strict 0 · report 327 · live 9 · сверка 0)
 
+### 2026-07-27 06:37 UTC · атлас · шаг дня
+- пройдено 1500 · в очередь 240 · законов добыто 1067 · изменилось 0
+- фронтир 53601 · всего пройдено 12700 · библиотека 20079 законов / 335 фреймворков
+
+### · веб-атлас лендингов
+- страниц 85 · секций-видов 253 · модулей-видов 528 · новых типографических законов 0
+
+### 2026-07-27 06:55 UTC · кит
+- tvOS-18-Design-Templates-Sketch.dmg: цветов 0 · текст-стилей 0 · радиусов 4 · символов 7
+- ОШИБКА руки: iOS-27-Icon-Templates-Photoshop-Illustrator.dmg: RuntimeError: в контейнере нет .sketch
+- шрифты: SF-Pro.dmg: лиц 47 · крышка 0.7046 
+- шрифты: SF-Compact.dmg: лиц 38 · крышка 0.6665 
+- шрифты: SF-Mono.dmg: лиц 12 · крышка 0.7046 
+- все ссылки страницы: Bezel-Apple-TV.dmg · Bezel-Apple-Watch-Series-11-2025.dmg · Bezel-Apple-Watch-Ultra-2-2024.dmg · Bezel-Apple-Watch-Ultra-3-2025.dmg · Bezel-MacBook-Air-M5.dmg · Bezel-MacBook-Neo.dmg · Bezel-MacBook-Pro-M5.dmg · Bezel-Studio-Displays.dmg · Bezel-iMac-M4.dmg · Bezel-iPad-(A16).dmg · Bezel-iPad-Air-(M4).dmg · Bezel-iPad-Pro-(M5).dmg · Bezel-iPad-mini-(A17-Pro).dmg · Bezel-iPhone-16.dmg · Bezel-iPhone-17.dmg · Glyph-ARKit.dmg · Glyph-Add-Apple-Watch-Face.dmg · Glyph-AirPlay.dmg · Icon-Apple-Health.dmg · Icon-Game-Center.dmg · Icon-HomeKit.dmg · Icon-Siri.dmg · Keynote-Live-Video-Product-Bezel.dmg · Logo-Sign-in-with-Apple.dmg · NY.dmg · Parallax%20Previewer.dmg · Parallax%20Previewer_1_0.dmg · ParallaxExporter_Apps.zip · ParallaxExporter_Windows.zip · SF-Arabic.dmg · SF-Armenian.dmg · SF-Compact.dmg · SF-Georgian.dmg · SF-Hebrew.dmg · SF-Mono.dmg · SF-Pro.dmg · iOS-27-Icon-Templates-Photoshop-Illustrator.dmg · tvOS-18-Design-Templates-Sketch.dmg · tvOS-18-Production-Templates-Photoshop.dmg · tvOS-18-Production-Templates-Sketch.dmg · visionOS-2-Design-Templates-Sketch.dmg
+
+### живой взгляд
+- https://brajs.com/: элементов 37 · находок 3
+- https://brajs.com/katha: элементов 32 · находок 3
+- https://brajs.com/library: элементов 37 · находок 3
+

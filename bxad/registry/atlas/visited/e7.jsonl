@@ -45,3 +45,5 @@
 {"id": "/documentation/appkit/nsaccessibilityprotocol/setaccessibilitynextcontents(_:)", "sha": "ec8fb4b9e615b0e18c98363a40d7b2abd7fce96f083c61a8bf3dacd29362a3e1", "t": "setAccessibilityNextContents(_:)", "n": 64, "laws": 0, "ts": "2026-07-26 18:26 UTC"}
 {"id": "/documentation/accessibility/animated-images", "sha": "57a617a1ab48c2855ea83c3dccf70829af0df304a5490a01770b4bdcb152608a", "t": "Animated images", "n": 872, "laws": 1, "ts": "2026-07-26 18:31 UTC"}
 {"id": "/documentation/alarmkit/alarmpresentationstate", "sha": "c92b8687cb15a9cf3f06d3ece8f12650b2f23f42f1478dad9aaa7ad7968a2f28", "t": "AlarmPresentationState", "n": 865, "laws": 0, "ts": "2026-07-26 18:33 UTC"}
+{"id": "/documentation/appintents/entityproperty/init(identifier:getsetter:)-6q12y", "sha": "7714647999b65ffee50456c621a784f6f30bd8632543379de6c3ce1e57867226", "t": "init(identifier:getSetter:)", "n": 108, "laws": 1, "ts": "2026-07-27 06:15 UTC"}
+{"id": "/documentation/appintents/entityproperty/init(identifier:indexingkey:)-2u9sg", "sha": "7714647999b65ffee50456c621a784f6f30bd8632543379de6c3ce1e57867226", "t": "init(identifier:indexingKey:)", "n": 108, "laws": 1, "ts": "2026-07-27 06:17 UTC"}

@@ -37,3 +37,5 @@
 {"id": "/documentation/appkit/nsaccessibility-c.protocol/accessibilitysearchmenu", "sha": "00bd8c32998ff4df0e3e4c9187d7e49a1c7b0e569598e2f528a8884690346496", "t": "accessibilitySearchMenu", "n": 88, "laws": 1, "ts": "2026-07-26 18:21 UTC"}
 {"id": "/documentation/appkit/nsaccessibilityprotocol/accessibilitycolumntitles()", "sha": "92b3027488d29beb652fb296f2b3e4471ad85f5fe09ddb32ae995a6413e52b1e", "t": "accessibilityColumnTitles()", "n": 56, "laws": 0, "ts": "2026-07-26 18:22 UTC"}
 {"id": "/documentation/CoreBluetooth/CBPeer/identifier", "sha": "3c89cbbe822a3a08a1ea14a347017c7711583edd01371f5903cc2ddb681efd31", "t": "identifier", "n": 407, "laws": 1, "ts": "2026-07-26 18:32 UTC"}
+{"id": "/documentation/appintents/entityproperty/init(customindexingkey:)-8ju0q", "sha": "1a9bdefdd67e861e0ab0de5c14548d5225e17103f4b751d33b4b7d48ebabaa07", "t": "init(customIndexingKey:)", "n": 38, "laws": 0, "ts": "2026-07-27 06:09 UTC"}
+{"id": "/documentation/appintents/entityproperty/init(identifier:)-70my4", "sha": "7714647999b65ffee50456c621a784f6f30bd8632543379de6c3ce1e57867226", "t": "init(identifier:)", "n": 108, "laws": 1, "ts": "2026-07-27 06:10 UTC"}

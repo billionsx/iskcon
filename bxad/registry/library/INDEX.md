@@ -5,6 +5,7 @@
 | Фреймворк | Законов |
 |---|---|
 | uikit | 1656 |
+| appintents | 1454 |
 | accelerate | 1303 |
 | swiftui | 1212 |
 | appkit | 747 |
@@ -16,7 +17,6 @@
 | foundation | 510 |
 | arkit | 468 |
 | realitykit | 416 |
-| appintents | 389 |
 | technologyoverviews | 366 |
 | swift | 361 |
 | updates | 296 |
@@ -32,8 +32,8 @@
 | mapkit | 151 |
 | coredata | 143 |
 | sirikit | 141 |
+| bundleresources | 138 |
 | avkit | 137 |
-| bundleresources | 136 |
 | healthkit | 132 |
 | networkextension | 122 |
 | swiftdata | 122 |
@@ -340,4 +340,4 @@
 | weatherkit | 1 |
 | xcselect | 1 |
 
-Итого законов: 19012 · фреймворков: 335
+Итого законов: 20079 · фреймворков: 335

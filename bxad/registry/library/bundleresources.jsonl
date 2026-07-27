@@ -134,3 +134,5 @@
 {"id": "/documentation/BundleResources/Entitlements/com.apple.developer.pass-type-identifiers", "law": "In iOS 17 and later, App Clips can use the Wallet capability."}
 {"id": "/documentation/BundleResources/Information-Property-List/NSFaceIDUsageDescription", "law": "This key is required if your app uses APIs that access Face ID."}
 {"id": "/documentation/BundleResources/Information-Property-List/NSFaceIDUsageDescription", "law": "Also note that App Clips can’t use Face ID."}
+{"id": "/documentation/BundleResources/Information-Property-List/CFBundleIcons/CFBundlePrimaryIcon/NSAppIconComplementingColorNames", "law": "Use for the value’s type, even when specifying a single custom color for a solid background."}
+{"id": "/documentation/BundleResources/Information-Property-List/CFBundleIcons/CFBundlePrimaryIcon/NSAppIconComplementingColorNames", "law": "The names of the colors to use for the background of the App Shortcuts platter."}
