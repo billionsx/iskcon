@@ -32,6 +32,7 @@ import { ProviderButtons, PROVIDER_META, PROVIDER_NAME, providerGlyph, oauthStar
 import { pushSupported, pushPermission, isSubscribed, enablePush, disablePush, updateCats, loadCats, type PushCats } from "./push";
 import { levelLabel, atLeastLevel, LEVEL_META } from "./devotee";
 import { BUILD_SHA } from "./buildStamp";
+import { getThemePref, setThemePref, THEME_LABEL, type ThemePref } from "./theme";
 import {
   GroupedCanvas, Groups, Group, Row, IdentityHeader, Separator, Sheet,
   Toggle, Checkmark,
@@ -723,6 +724,27 @@ function SecuritySheet({ onClose, flash }: { onClose: () => void; flash: (m: str
   );
 }
 
+/* ─────────────────────────── оформление ─────────────────────────── */
+
+function AppearanceSheet({ current, onPick, onClose }: {
+  current: ThemePref; onPick: (p: ThemePref) => void; onClose: () => void;
+}) {
+  const opts: ThemePref[] = ["auto", "light", "dark"];
+  return (
+    <Sheet title="Оформление" onClose={onClose}>
+      <Groups>
+        <Group footer="«Авто» следует настройке системы. Обе темы — полноценные: тёмная выверена по канону iOS, светлая — её дневная сестра.">
+          {opts.map((p, i) => (
+            <Row key={p} title={THEME_LABEL[p]} last={i === opts.length - 1}
+              onClick={() => { onPick(p); onClose(); }}
+              accessory={current === p ? <Checkmark /> : undefined} chevron={false} />
+          ))}
+        </Group>
+      </Groups>
+    </Sheet>
+  );
+}
+
 /* ─────────────────────────── о приложении ─────────────────────────── */
 
 function AboutSheet({ onClose }: { onClose: () => void }) {
@@ -758,7 +780,8 @@ function Dashboard({ onOpenPath, onDonate, flash }: {
   onOpenPath: (p: string) => void; onDonate: () => void; flash: (m: string) => void;
 }) {
   const { user, logout } = useAuth();
-  const [sheet, setSheet] = useState<"" | "profile" | "level" | "push" | "security" | "about">("");
+  const [sheet, setSheet] = useState<"" | "profile" | "level" | "push" | "security" | "appearance" | "about">("");
+  const [themePref, setThemePrefState] = useState<ThemePref>(() => getThemePref());
   const [pushOn, setPushOn] = useState<boolean | null>(null);
 
   useEffect(() => { void isSubscribed().then(setPushOn).catch(() => setPushOn(false)); }, [sheet]);
@@ -808,6 +831,7 @@ function Dashboard({ onOpenPath, onDonate, flash }: {
 
         <Group header="Аккаунт">
           <Row title="Вход и безопасность" onClick={() => setSheet("security")} />
+          <Row title="Оформление" value={THEME_LABEL[themePref]} onClick={() => setSheet("appearance")} />
           <Row title="Уведомления"
             value={pushOn == null ? undefined : pushOn ? "Включены" : "Выключены"}
             last onClick={() => setSheet("push")} />
@@ -838,6 +862,7 @@ function Dashboard({ onOpenPath, onDonate, flash }: {
       {sheet === "level" && <LevelSheet onClose={() => setSheet("")} />}
       {sheet === "push" && <NotificationsSheet onClose={() => setSheet("")} />}
       {sheet === "security" && <SecuritySheet onClose={() => setSheet("")} flash={flash} />}
+      {sheet === "appearance" && <AppearanceSheet current={themePref} onPick={(p) => { setThemePref(p); setThemePrefState(p); }} onClose={() => setSheet("")} />}
       {sheet === "about" && <AboutSheet onClose={() => setSheet("")} />}
     </>
   );

@@ -6,6 +6,10 @@
     <meta name="robots" content="noindex, nofollow, noarchive, nosnippet, noimageindex, notranslate" />
     <meta name="googlebot" content="noindex, nofollow" />
     <meta name="theme-color" content="#FFFFFF" />
+    <script>/* тема до первой отрисовки: выбор пользователя, иначе система */
+      try{var p=localStorage.getItem("ol-theme");var d=window.matchMedia&&matchMedia("(prefers-color-scheme: dark)").matches;
+      var th=(p==="light"||p==="dark")?p:(d?"dark":"light");document.documentElement.setAttribute("data-theme",th);
+      var m=document.querySelector('meta[name="theme-color"]');if(m)m.setAttribute("content",th==="dark"?"#000000":"#FFFFFF");}catch(e){}</script>
     <title>ISKCON ONE LOVE</title>
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="manifest" href="/manifest.webmanifest" />

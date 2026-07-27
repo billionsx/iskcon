@@ -1,4 +1,6 @@
 import React from "react";
+import { initTheme } from "./theme";
+initTheme();
 import { createRoot } from "react-dom/client";
 import App from "./App";
 import { lazy, Suspense } from "react";
