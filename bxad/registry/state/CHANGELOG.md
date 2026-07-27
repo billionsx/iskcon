@@ -673,3 +673,6 @@
 ### 2026-07-27 07:53 UTC · страж App Store
 - пунктов 55 · privacy НЕТ · support ok
 
+### 2026-07-27 08:05 UTC · страж App Store
+- пунктов 55 · privacy ok · support ok
+
