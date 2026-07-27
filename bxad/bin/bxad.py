@@ -554,6 +554,9 @@ def cmd_selftest(root: Path) -> int:
                  "textShadow": "none", "backdropFilter": "none", "fontFamily": "Arial"}]
     check("чистый живой DOM → находок нет (белый inset-блик и svg-шрифт законны)",
           lv.check_dump(good_els, tok) == [])
+    check("канон холста: чёрный drop в light — законен, в dark — находка",
+          lv.check_dump([bad_els[1]], tok, theme="light") == []
+          and any(r == "AE2" for r, *_ in lv.check_dump([bad_els[1]], tok, theme="dark")))
 
     print("SELFTEST · рука шрифтов (метрики первоисточника)")
     import figkit as fk2

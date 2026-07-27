@@ -75,7 +75,7 @@ def _dark_drop_shadow(v: str) -> bool:
     return False
 
 
-def check_dump(elements: list, tokens: dict) -> list:
+def check_dump(elements: list, tokens: dict, theme: str = "dark") -> list:
     finds = []
     ladder = {c.upper() for c in tokens["surfaces"]["allow"]} | {"#1C1C1C", "#2C2C2C", "#181818", "#111111"}
     stack = tuple(s.lower() for s in tokens["typography"]["font_stack_head"])
@@ -89,7 +89,7 @@ def check_dump(elements: list, tokens: dict) -> list:
                 finds.append(("AE1", sel, f"живой тёмный фон {hx} вне лестницы"))
         for prop in ("boxShadow", "textShadow"):
             v = el.get(prop) or "none"
-            if _dark_drop_shadow(v):
+            if theme == "dark" and _dark_drop_shadow(v):  # ст.10 — канон ТЁМНОГО холста; в light тени законны
                 finds.append(("AE2", sel, f"чёрная выпадающая тень на чёрном холсте: {v[:80]}"))
         bf = (el.get("backdropFilter") or "").lower()
         if "blur(" in bf and "saturate(" not in bf:
@@ -146,9 +146,10 @@ def run_live(root: Path) -> dict:
                 results[slug] = {"url": url, "elements": 0, "findings": [], "note": f"{type(e).__name__}: {str(e)[:160]}"}
                 continue
             diag = pg.evaluate("() => ({url: location.href, title: document.title,"
+                                   " theme: document.documentElement.getAttribute('data-theme') || 'dark',"
                                    " ready: document.readyState, htmlLen: document.documentElement.outerHTML.length,"
                                    " bodyChildren: document.body ? document.body.childElementCount : -1})")
-            finds = check_dump(els, tokens)
+            finds = check_dump(els, tokens, theme=diag.get("theme", "dark"))
             (out / f"{slug}.json").write_text(json.dumps(
                 {"url": url, "elements": els, "findings": finds, "diag": diag}, ensure_ascii=False), encoding="utf-8")
             results[slug] = {"url": url, "elements": len(els), "findings": finds, "diag": diag}
