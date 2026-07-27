@@ -1,5 +1,5 @@
 {
- "ts": "2026-07-27 07:45 UTC",
+ "ts": "2026-07-27 07:52 UTC",
  "atlas": {
   "visited": 12700,
   "frontier": 53601,
@@ -24,6 +24,10 @@
  "screens": {
   "frames": 195,
   "apps": 10
+ },
+ "appstore": {
+  "points": 0,
+  "have": true
  },
  "brief": "BIG7 · бриф недели 2026-W31",
  "certificate": "81.5 · C",
@@ -63,8 +67,8 @@
   },
   "service": {
    "done": 0,
-   "active": 4,
-   "queued": 4,
+   "active": 5,
+   "queued": 3,
    "blocked": 0,
    "partial": 1
   }
@@ -294,8 +298,8 @@
    {
     "id": "M5",
     "task": "Страж App Store: прогон по живым App Review Guidelines до сабмита",
-    "status": "queued",
-    "organ": "знание appstore-кодекса + чек-лист",
+    "status": "active",
+    "organ": "bin/appstore.py + bxad-appstore.yml (15-е число + dispatch): пункты живых гайдлайнов дословно + автопроверки репо (privacy/support с путями)",
     "article": "ст. 56"
    },
    {

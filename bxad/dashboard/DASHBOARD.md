@@ -1,4 +1,4 @@
-# BXAD · ЭФИР — 2026-07-27 07:45 UTC
+# BXAD · ЭФИР — 2026-07-27 07:52 UTC
 Живые числа реестров департамента Billions X Apple Developer; лист пересобирается каждым прогоном.
 
 | Орган | Состояние |
@@ -12,6 +12,7 @@
 | SF Symbols | **9184** символов (macOS-плечо) |
 | Кадротека | 195 кадров · 10 приложений |
 | Живой взгляд | страниц в эфире: 3 |
+| Страж App Store (M5) | пунктов 0 · чек-лист готов |
 | Big7-бриф (M6) | BIG7 · бриф недели 2026-W31 |
 | Сертификат (M3) | 81.5 · C |
 | Монитор прода | деплой  · сейчас 9 · новых 9 · закрыто 0 |
@@ -21,7 +22,7 @@
 ## Поручения основателя
 - BXAD: done 10 · active 7 · queued 1 · partial 1 · blocked 0
 - Продукт ISKCON: done 2 · active 1 · queued 6 · partial 0 · blocked 0
-- Служба (трек M): done 0 · active 4 · queued 4 · partial 1 · blocked 0
+- Служба (трек M): done 0 · active 5 · queued 3 · partial 1 · blocked 0
 
 | ID | Поручение | Статус | Орган |
 |---|---|---|---|
@@ -48,7 +49,7 @@
 | M2 | Монитор прода 24/7: живой взгляд после каждого деплоя + алерт в Slack | **active** | bin/monitor.py + bxad-monitor.yml (workflow_run: deploy-web); Slack при секрете SLACK_WEBHOOK_URL, иначе комментарий к коммиту деплоя |
 | M3 | Пиксель-сертификация: ежемесячный PDF-отчёт соответствия с адресами + бейдж | **active** | bin/certify.py + bxad-certify.yml (1-е число + dispatch): HTML+PDF+badge.json, формула объявлена в сертификате |
 | M4 | Генерация по канону: скрин/Figma → компонент, прошедший суд; персональный tokens.json клиента | **queued** | мок-конвейер + адаптеры |
-| M5 | Страж App Store: прогон по живым App Review Guidelines до сабмита | **queued** | знание appstore-кодекса + чек-лист |
+| M5 | Страж App Store: прогон по живым App Review Guidelines до сабмита | **active** | bin/appstore.py + bxad-appstore.yml (15-е число + dispatch): пункты живых гайдлайнов дословно + автопроверки репо (privacy/support с путями) |
 | M6 | Big7-бриф: еженедельные тезисы семёрки, применённые к продукту клиента | **active** | bin/brief.py + bxad-brief.yml (пн 08:31 UTC): новые положения дословно с адресами · движение рамок · канонические вопросы |
 | M7 | GitHub App мульти-тенант (кнопки владельца: регистрация приложения) | **partial** | путь А ГОТОВ: reusable workflow bxad-review-reusable.yml (клиент подключается 8-строчным yml без App); путь Б: BUSINESS/APP-SETUP.md — регистрация GitHub App кнопками владельца |
 | M8 | Stripe + тарифы Solo 99 / Team 499 / Studio 1000 | **queued** | после M7 |
