@@ -44,4 +44,4 @@ jobs:
           printf '### %s · macOS-плечо\n- Xcode зафиксирован · SF Symbols установлен · символов выгружено: %s\n\n' "$(date -u '+%Y-%m-%d %H:%M UTC')" "$N" >> bxad/registry/state/CHANGELOG.md
           git add bxad/registry/standards/symbols bxad/registry/state/CHANGELOG.md
           git commit -m "bxad: macOS-плечо — приложения и символы" || exit 0
-          for i in 1 2 3 4; do git pull --rebase -q && git push -q && break || sleep 3; done
+          for i in 1 2 3 4; do git pull --rebase -X theirs -q && git push -q && break || sleep 3; done

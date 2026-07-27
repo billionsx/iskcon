@@ -24,4 +24,4 @@ jobs:
           git config user.name "bxad"; git config user.email "ceo@billionsx.com"
           git add bxad/briefs bxad/registry bxad/dashboard
           git commit -m "bxad: big7-бриф недели" || exit 0
-          for i in 1 2 3 4 5 6; do git pull --rebase -q && git push -q && break || sleep 4; done
+          for i in 1 2 3 4 5 6; do git pull --rebase -X theirs -q && git push -q && break || sleep 4; done
