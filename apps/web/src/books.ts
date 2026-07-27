@@ -1117,8 +1117,26 @@ export const LINEAGE_ORDER: Lineage[] = ["prabhupada", "acharya", "guru-iskcon"]
 export const WORK_TO_SLUG: Record<string, string> =
   Object.fromEntries(Object.values(BOOKS).map((b) => [b.work, b.slug]));
 
-export const SLUG_TO_WORK: Record<string, string> =
-  Object.fromEntries(Object.values(BOOKS).map((b) => [b.slug, b.work]));
+/* ЗКН-Н092 · СЛАГ ВЕДЁТ К ЧИТАЕМОЙ КНИГЕ, А НЕ К ПОРЯДКУ КЛЮЧЕЙ.
+ *
+ * Один слаг может занимать ДВА входа реестра: полная книга с текстом (`ndm`,
+ * 6796 стихов) и каталожная заглушка `noText` под тем же именем
+ * («navadvipa-dhama-mahatmya»). Карта строилась через Object.fromEntries — и
+ * побеждал ПОСЛЕДНИЙ вход, то есть заглушка. Итог: `bookSlug("ndm")` давал
+ * /navadvipa-dhama-mahatmya, а `bookWork` этого же адреса возвращал заглушку без
+ * текста. Писатель и читатель адреса указывали на разные книги, и закладка стиха
+ * НДМ открывала книгу без содержания.
+ *
+ * Разрешение коллизии детерминированное: побеждает вход С ТЕКСТОМ. Отсутствие
+ * коллизий между читаемыми книгами держит гейт (nav-audit.py::check_n092). */
+export const SLUG_TO_WORK: Record<string, string> = (() => {
+  const out: Record<string, string> = {};
+  for (const b of Object.values(BOOKS)) {
+    const prev = out[b.slug];
+    if (!prev || (BOOKS[prev]?.noText && !b.noText)) out[b.slug] = b.work;
+  }
+  return out;
+})();
 
 /** Слаг книги для адреса. Неизвестная книга → сам ключ (лучше, чем пусто). */
 export function bookSlug(work: string): string {

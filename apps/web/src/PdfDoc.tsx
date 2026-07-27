@@ -133,19 +133,28 @@ export function PdfDoc() {
             } else if (live) setData({ kind: "chapter", chapter, verses: (d.verses ?? []) as ChapterVerse[] });
           }
         } else if (kind === "verse") {
-          if (work !== "bg") {
+          /* ЗКН-Н092: ветка выбиралась по `work !== "bg"` — то есть ЛЮБАЯ книга кроме
+           * БГ разбиралась как многочастная: номер главы читался из третьего сегмента
+           * division (у плоской книги его нет), а метка лилы бралась из словаря ЧЧ.
+           * Признак иерархии один — реестр книг. */
+          if (BOOKS[work]?.hierarchical) {
             const vRes = await (await fetch(api(`/books/${work}/verses/${encodeURIComponent(ref)}`))).json();
             const divId = (vRes.division as string) || "";
             const lilaSlug = divId.split(".")[1] ?? "";
             const num = divId.split(".")[2] ?? (ref.replace(/^[^\d]*/, "").split(".")[0] ?? "");
             if (live) setData({ kind: "verse", verse: vRes as ChapterVerse, chapterNo: String(num), chapterTitle: "", lila: CC_LILA[lilaSlug] ?? "" });
           } else {
+            /* ЗКН-Н092: плоская ветка ходила по ЗАШИТОМУ `/books/bg/…` — она была
+             * написана как «ветка БГ», хотя плоских книг восемнадцать. После правки
+             * теста иерархии сюда приходят все они, поэтому книга берётся из аргумента,
+             * а номер главы — из divisions.number её раздела (regex по ref не годится:
+             * у предисловий номер отрицательный, у Лиламриты id ≠ number). */
             const [chRes, vRes] = await Promise.all([
-              fetch(api("/books/bg/chapters")).then((r) => r.json()),
-              fetch(api(`/books/bg/verses/${encodeURIComponent(ref)}`)).then((r) => r.json()),
+              fetch(api(`/books/${work}/chapters`)).then((r) => r.json()),
+              fetch(api(`/books/${work}/verses/${encodeURIComponent(ref)}`)).then((r) => r.json()),
             ]);
             const m = ref.match(/(\d+)\s*\.\s*\d+/);
-            const chapterNo = m ? m[1] : "";
+            const chapterNo = String((vRes as { division_number?: string | null }).division_number ?? (m ? m[1] : ""));
             const chapterTitle = ((chRes.chapters ?? []) as ChapterRow[]).find((c) => String(c.number) === chapterNo)?.title_ru ?? "";
             if (live) setData({ kind: "verse", verse: vRes as ChapterVerse, chapterNo, chapterTitle });
           }

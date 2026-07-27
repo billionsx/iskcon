@@ -36,6 +36,8 @@ import { MediaRow, PopMenu, TAP, fmtDur, type MenuItem, type MenuAction } from "
 import { requestNote } from "../notes";
 import { BOOKS, bookFullTitle, bookSlug } from "../books";
 import { ROUTES, url, ORIGIN as SITE_ORIGIN } from "../routes";
+// ЗКН-Н092: адрес книги строит один модуль.
+import { bookPath, chapterPath, versePath } from "../bookPath";
 
 const INK = "var(--color-label)";
 const INK2 = "var(--color-label-2)";
@@ -100,12 +102,11 @@ export function NowPlaying({ onOpenPath, onOpenBhajan, onDonate }: {
 
   /* ЗКН-Б011: аудио и текст — ОДНА книга. Кнопка ведёт туда, где играет звук. */
   const ch = p.track?.kind === "chapter" ? (p.track?.chapter ?? null) : null;
-  const verseSeg = p.track?.ref ? (String(p.track.ref).split(".").pop() ?? "") : "";
+  // ЗКН-Н092: путь строит общий модуль; ключ раздела иерархической книги — «work.лила.глава».
+  const trackChKey = { divisionId: p.track?.lila ? `${p.book}.${p.track.lila}.${ch}` : null, number: ch };
   const textPath = !isBook ? null
-    : ch == null ? `/${bookSlug(p.book)}`
-    : BOOK.hierarchical && p.track?.lila
-      ? `/${bookSlug(p.book)}/${p.track.lila}/${ch}${verseSeg ? `/${verseSeg}` : ""}`
-      : `/${bookSlug(p.book)}/${ch}`;
+    : ch == null ? bookPath(p.book)
+    : (p.track?.ref ? versePath(p.book, trackChKey, String(p.track.ref)) : null) ?? chapterPath(p.book, trackChKey);
 
   function flash(m: string) {
     setToast(m);
@@ -130,7 +131,7 @@ export function NowPlaying({ onOpenPath, onOpenBhajan, onDonate }: {
     }
     const bk = `book:${p.book}`;
     if (favs.some((f) => f.key === bk)) { removeFavorite(bk); flash("Убрано из отложенного"); }
-    else { addFavorite(bk, { t: bookFullTitle(BOOK), s: BOOK.tagline, h: `/${bookSlug(p.book)}` }); flash("В отложенное"); }
+    else { addFavorite(bk, { t: bookFullTitle(BOOK), s: BOOK.tagline, h: bookPath(p.book) }); flash("В отложенное"); }
   }
   function download(tr: Track | null) {
     if (!tr) return;
@@ -178,7 +179,7 @@ export function NowPlaying({ onOpenPath, onOpenBhajan, onDonate }: {
       id: "note", label: "Заметка", icon: <NoteEditIcon size={19} />,
       onSelect: () => requestNote(isMedia
         ? { kind: "kirtan", ref: `${p.kind}:${p.book}`, title: tr?.title || p.bookTitle, subtitle: p.artist || fallbackName, href: p.kind === "katha" ? "/katha" : "/kirtans" }
-        : { kind: "book", ref: `book:${p.book}`, title: bookFullTitle(BOOK), subtitle: tr?.title || subtitle, href: `/${bookSlug(p.book)}` }),
+        : { kind: "book", ref: `book:${p.book}`, title: bookFullTitle(BOOK), subtitle: tr?.title || subtitle, href: bookPath(p.book) }),
     });
     if (onDonate) items.push({ id: "donate", label: "Поддержать проект", icon: <HeartGlyph size={19} />, divider: true, onSelect: onDonate });
     return { items, actions };

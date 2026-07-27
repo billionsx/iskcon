@@ -29,6 +29,8 @@ import { cleanCardText } from "./cardText";
 import { SectionSubTabs } from "./SectionSubTabs";
 import { COVER_FALLBACK } from "./ui/CoverFallback";
 import { ROUTES, url } from "./routes";
+// ЗКН-Н092: адрес книги строит один модуль.
+import { bookPath } from "./bookPath";
 
 const GOLD = "var(--color-gold)";
 
@@ -748,7 +750,7 @@ function kindHref(kind: string, ref: string): string | null {
     case "tirtha": return "/dhama/" + ref;   // ref = "<dhamaId>/<tirthaId>"
     case "kirtan": return "/kirtans/" + ref;  // ref = слаг исполнителя
     case "bhajan": return ref;               // ref = полный слаг бхаджана (/ru/bhajans/...)
-    case "work":   return "/" + bookSlug(ref);    // ref = id произведения (bg, sb, cc…) → читалка
+    case "work":   return bookPath(ref);    // ref = id произведения (bg, sb, cc…) → читалка
     default: return null; // остальные виды получат маршруты по мере ввода рефов
   }
 }

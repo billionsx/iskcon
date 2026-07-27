@@ -213,9 +213,17 @@ booksRouter.get('/:work/verses/:ref', async (c) => {
   const work = c.req.param('work');
   const ref = decodeURIComponent(c.req.param('ref'));
 
+  /* ЗКН-Н092: вместе со стихом отдаём `divisions.number` его раздела. Это
+   * ЕДИНСТВЕННЫЙ ключ главы плоской книги (по нему ищет /chapters/:number/read),
+   * и клиент обязан строить адрес стиха из него, а не из цифр в ref: у
+   * Прабхупада-лиламриты id раздела «spl.1.5» ↔ number «9», у предисловий number
+   * отрицательный («brs.preface» → «-2»). Без этого поля адрес стиха угадывался
+   * строкой и вёл на чужую главу либо схлопывался на книгу. */
   const verse = await c.env.DB.prepare(
-    `SELECT id, ref, division_id, ordinal, devanagari, translit, uvaca, source_url
-     FROM verses WHERE work_id = ? AND ref = ?`,
+    `SELECT v.id, v.ref, v.division_id, v.ordinal, v.devanagari, v.translit, v.uvaca, v.source_url,
+            d.number AS division_number
+     FROM verses v LEFT JOIN divisions d ON d.id = v.division_id
+     WHERE v.work_id = ? AND v.ref = ?`,
   )
     .bind(work, ref)
     .first<Row>();
@@ -265,6 +273,7 @@ booksRouter.get('/:work/verses/:ref', async (c) => {
     ref: verse.ref,
     label,
     division: verse.division_id ?? null,
+    division_number: verse.division_number != null ? String(verse.division_number) : null,
     uvaca: verse.uvaca ?? null,
     devanagari: stripScriptLabel(verse.devanagari),
     translit: verse.translit ?? null,

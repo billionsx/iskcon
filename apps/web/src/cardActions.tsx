@@ -62,6 +62,26 @@ export function addFavorite(key: string, meta?: FavMeta) { favWrite(key, meta); 
 /** Стоит ли сердце — без подписки. Для списков, где строк сотни. */
 export function isFavorite(key: string): boolean { return favOn(key); }
 
+/** ЗКН-Н092 · ЛЕЧЕНИЕ СНИМКА, А НЕ ТОЛЬКО КОДА.
+ *
+ * Пока путь стиха строил сломанный построитель, в закладки лёг адрес КНИГИ. Починка
+ * кода такие записи не исправляет: снимок уже сохранён и по-прежнему ведёт на обложку.
+ * Здесь адрес переписывается, а «когда добавил» и подписи сохраняются — иначе лечение
+ * выбросило бы закладку в начало списка и стёрло канонические t/s. */
+export function repairFavoriteHref(key: string, href: string): void {
+  if (!key || !href) return;
+  let rec: { ts?: number; t?: string; s?: string; h?: string } = {};
+  try {
+    const raw = localStorage.getItem(FAV_PREFIX + key);
+    if (raw == null) return;                     // не в избранном — лечить нечего
+    try { rec = JSON.parse(raw) || {}; } catch { rec = {}; }   // legacy "1"
+    if (rec.h === href) return;
+    localStorage.setItem(FAV_PREFIX + key, JSON.stringify({ ...rec, h: href }));
+  } catch { return; /* приватный режим */ }
+  mirrorFavorite(key, true, { t: rec.t, s: rec.s, h: href });
+  favInvalidate();
+}
+
 export function useFavorite(key: string, meta?: FavMeta): { on: boolean; toggle: (flash?: (m: string) => void) => void } {
   const on = useSyncExternalStore(
     useCallback((cb) => { favListeners.add(cb); return () => favListeners.delete(cb); }, []),

@@ -25,6 +25,8 @@ import { BOOKS, bookFullTitle, bookSlug } from "./books";
 import { albumById } from "./kirtans";
 import { plural } from "./ui/primitives";   // ЗКН-Д002: одна функция, не копия
 import { GroupedCanvas, Groups, Group, Row, Separator, Chevron } from "./ui/ios";
+// ЗКН-Н092: адрес книги строит один модуль.
+import { bookPath } from "./bookPath";
 
 const GOLD = "var(--color-gold)";
 const INK = "var(--color-label)";
@@ -163,7 +165,7 @@ export default function PracticeHub({ onOpen }: { onOpen?: (path: string) => voi
 
   const openReading = useCallback((it: ReadingItem) => {
     // ЗКН-Н060: путь книги — только через bookSlug.
-    go(it.href || `/${bookSlug(it.work)}`);
+    go(it.href || bookPath(it.work));
   }, [go]);
 
   const name = (user?.spiritualName || user?.name || "").trim();

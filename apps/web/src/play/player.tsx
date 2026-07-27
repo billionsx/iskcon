@@ -8,6 +8,8 @@ import { PlayerProvider as CoreProvider, usePlayer as useCore, mediaTrackKey, ty
 import { HeartIcon } from "../ui/icons";
 import { useFavorite } from "../cardActions";
 import { bookSlug } from "../books";
+// ЗКН-Н092: адрес книги строит один модуль.
+import { bookPath, chapterPath } from "../bookPath";
 
 type P = {
   q: Song[]; idx: number; playing: boolean; pos: number;
@@ -71,10 +73,10 @@ function Bridge({ children }: { children: React.ReactNode }) {
     dismiss: c.dismiss,
     favKey: c.track ? mediaTrackKey(c.track, c.kind) : "",
     dlUrl: c.track?.url || "",
+    // ЗКН-Н092: адрес книги/главы — только общий построитель.
     textPath: c.kind !== "book" ? null
-      : c.track?.chapter == null ? `/${bookSlug(c.book)}`
-      : c.track?.lila ? `/${bookSlug(c.book)}/${c.track.lila}/${c.track.chapter}`
-      : `/${bookSlug(c.book)}/${c.track.chapter}`,
+      : c.track?.chapter == null ? bookPath(c.book)
+      : chapterPath(c.book, { divisionId: c.track?.lila ? `${c.book}.${c.track.lila}.${c.track.chapter}` : null, number: c.track.chapter }),
   };
   return <Ctx.Provider value={api}>{children}</Ctx.Provider>;
 }

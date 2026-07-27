@@ -1653,7 +1653,114 @@ def check_n091() -> list[tuple[str, str]]:
     return bad
 
 
+
+
+def _strip_comments(t: str) -> str:
+    """Комментарии естественно содержат строки-нарушения (мы сами их там цитируем,
+    объясняя баг). Гейт обязан судить КОД, иначе объяснение закона его же ломает."""
+    # Номера строк обязаны совпадать с файлом, иначе гейт указывает не туда:
+    # вырезанное заменяется переводами строк, а не удаляется.
+    t = re.sub(r"/\*[\s\S]*?\*/", lambda m: "\n" * m.group(0).count("\n"), t)
+    return re.sub(r"(?m)^(\s*)//.*$", r"\1", t)
+
+
+# Файлы, которым можно знать про слаг книги: реестр, единственный построитель пути
+# и разборщик канонической подписи (он читает уже готовый путь).
+_PATH_OWNERS = {"books.ts", "bookPath.ts", "bookRef.ts"}
+# «Иерархия по шифру книги» — корень ЗКН-Н092. Признак иерархии один: BOOKS[work].hierarchical.
+# Ловим именно ОТРИЦАТЕЛЬНУЮ форму: «не БГ» всегда подставлялось вместо «многочастная»
+# (versePathFor, verseUrl, PdfDoc, имя PDF-файла). Положительная форма `work === "bg"` —
+# законная особенность ОДНОЙ книги (у БГ есть режим аудио «с комментарием», свой обзор).
+_HIER_BY_CODE = re.compile(r"""work\s*!==\s*["']bg["']|["']bg["']\s*!==\s*\w*[Ww]ork""")
+
+
+def check_n092():
+    """ЗКН-Н092: адрес книги/главы/стиха строит и разбирает ОДИН модуль.
+
+    Баг основателя: закладка стиха иногда открывает стих, иногда обложку книги.
+    Корень — три построителя пути, из которых два решали, многочастная ли книга,
+    проверкой `work !== "bg"`. Иерархических книг пять, плоских восемнадцать: у
+    плоской `division_id` двухчастный, условие `>= 3` ложно, и путь МОЛЧА
+    схлопывался до `/slug`, то есть до книги. Снимок закладки сохранял этот путь.
+
+    Инвариант: путь рождается и читается в bookPath.ts; иерархия — только из
+    реестра; ключ главы плоской книги — только `divisions.number`; обратимость
+    проверяется живым self-тестом на РЕАЛЬНЫХ формах всех книг канона.
+    """
+    bad = []
+    mod = read(SRC / "bookPath.ts")
+    if not mod:
+        bad.append(("bookPath.ts", "Н092: модуль единственного построителя адреса книги отсутствует"))
+    else:
+        for fn in ("versePath", "chapterPath", "bookPath", "parseBookPath", "verseSeg", "pathReachesVerse"):
+            if ("export function %s" % fn) not in mod:
+                bad.append(("bookPath.ts", "Н092: bookPath.ts обязан экспортировать %s" % fn))
+        if "BOOKS[work]?.hierarchical" not in mod:
+            bad.append(("bookPath.ts", "Н092: иерархия обязана выводиться из BOOKS[work].hierarchical, а не из шифра книги"))
+        if "return null" not in mod:
+            bad.append(("bookPath.ts", "Н092: versePath обязан возвращать null, когда адрес стиха построить нельзя — подмена уровнем книги и есть баг"))
+
+    # 1. Иерархия по шифру книги запрещена во всём вебе.
+    for f in files():
+        if f.name in _PATH_OWNERS:
+            continue
+        for i, ln in enumerate(_strip_comments(read(f)).split("\n"), 1):
+            if _HIER_BY_CODE.search(ln):
+                bad.append((f.relative_to(SRC), "Н092:%d иерархия книги определяется шифром (`work !== \"bg\"`) — признак один: BOOKS[work].hierarchical" % i))
+
+    # 2. Слаг книги знает только реестр и построитель пути: второй построитель
+    #    обязан разойтись с первым — и уже расходился (ЗКН-Н060, Н076, Н079).
+    for f in files():
+        if f.name in _PATH_OWNERS:
+            continue
+        for i, ln in enumerate(_strip_comments(read(f)).split("\n"), 1):
+            if "bookSlug(" in ln:
+                bad.append((f.relative_to(SRC), "Н092:%d путь книги собран через bookSlug() мимо bookPath/chapterPath/versePath" % i))
+
+    # 3. Читалка и роутер обязаны пользоваться общим модулем.
+    bdp = read(SRC / "BookDetailPage.tsx")
+    if bdp:
+        if 'from "./bookPath"' not in bdp:
+            bad.append(("BookDetailPage.tsx", "Н092: читалка не импортирует единственный построитель адреса"))
+        if "versePath(" not in bdp or "chapterPath(" not in bdp:
+            bad.append(("BookDetailPage.tsx", "Н092: адрес стиха/главы в читалке обязан строиться versePath/chapterPath"))
+        if "versePathFor" in _strip_comments(bdp):
+            bad.append(("BookDetailPage.tsx", "Н092: вернулся второй построитель versePathFor"))
+    app = read(SRC / "App.tsx")
+    if app and "parseBookPath(" not in app:
+        bad.append(("App.tsx", "Н092: роутер обязан разбирать адрес книги через parseBookPath — иначе индексы сегментов живут копией и расходятся"))
+
+    # 4. Отравленные снимки закладок лечатся, а не остаются лежать.
+    fav = read(SRC / "FavoritesScreen.tsx")
+    favc = _strip_comments(fav)
+    if fav and ("repairFavoriteHref(it.key," not in favc or "await resolveScripturePath(" not in favc
+                or "!deepEnough(it, h)" not in favc):
+        bad.append(("FavoritesScreen.tsx", "Н092: закладки, сохранённые со схлопнутым путём, обязаны лечиться при открытии (resolveScripturePath + repairFavoriteHref)"))
+
+    # 5. Слаг ведёт к ЧИТАЕМОЙ книге: слаг «navadvipa-dhama-mahatmya» занимали два
+    #    входа реестра, и побеждала каталожная заглушка noText — адрес НДМ вёл в книгу без текста.
+    books = read(SRC / "books.ts")
+    if books and "Object.fromEntries(Object.values(BOOKS).map((b) => [b.slug, b.work]))" in _strip_comments(books):
+        bad.append(("books.ts", "Н092: SLUG_TO_WORK собран через fromEntries — при коллизии слага побеждает порядок ключей, а не читаемая книга"))
+
+    # 6. Живой self-тест обратимости на реальных формах книг.
+    st = ROOT / "tools" / "book-path-selftest.mjs"
+    if not st.exists():
+        bad.append(("book-path-selftest.mjs", "Н092: self-тест обратимости адреса отсутствует"))
+    else:
+        try:
+            r = subprocess.run(["node", str(st)], capture_output=True, text=True, timeout=180)
+            if r.returncode != 0:
+                lines = (r.stdout or r.stderr or "").strip().splitlines()
+                for ln in lines[-6:]:
+                    bad.append(("book-path-selftest.mjs", "Н092: %s" % ln.strip()))
+        except Exception as e:
+            bad.append(("book-path-selftest.mjs", "Н092: не удалось запустить self-тест (%s)" % type(e).__name__))
+    return bad
+
+
 CHECKS = [
+    ("ЗКН-Н092", "адрес книги строит и разбирает один модуль", check_n092),
     ("ЗКН-Н090", "у аудиотеки три уровня: голос → собрание → запись", check_n090),
     ("ЗКН-Н091", "плеер помнит место для любого звука, не только для книги", check_n091),
     ("ЗКН-Н089", "сторож витрины судит по тем же полям, что и отбор сервера", check_n089),

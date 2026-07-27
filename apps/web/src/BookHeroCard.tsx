@@ -15,6 +15,8 @@ import { useFavorite } from "./cardActions";
 import { usePlayer } from "./player/store";
 import { useCoverSlider } from "./CardCover";
 import { CoverFallback } from "./ui/CoverFallback";
+// ЗКН-Н092: адрес книги строит один модуль.
+import { bookPath } from "./bookPath";
 
 const GRAPHITE = "radial-gradient(120% 80% at 50% 0%, #3a3a40 0%, #2a2a2f 45%, #1b1b1f 100%)";
 
@@ -29,7 +31,7 @@ export function ActionBtn({ active, activeColor, ariaLabel, onClick, children }:
 }
 
 export function BookHeroCard({ book, topLeft, onOpen, flash, onMenuSelect, presentational, coverActions, onListen, canOrder }: { book: BookData; topLeft?: ReactNode; onOpen?: () => void; flash?: (m: string) => void; onMenuSelect?: (id: string) => void; presentational?: boolean; coverActions?: ReactNode; onListen?: () => void; canOrder?: boolean }) {
-  const { on: favorited, toggle: toggleFav } = useFavorite(`book:${book.work}`, { t: bookFullTitle(book), s: book.tagline, h: `/${bookSlug(book.work)}` });
+  const { on: favorited, toggle: toggleFav } = useFavorite(`book:${book.work}`, { t: bookFullTitle(book), s: book.tagline, h: bookPath(book.work) });
   const [inCart, setInCart] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const moreRef = useRef<HTMLSpanElement>(null);

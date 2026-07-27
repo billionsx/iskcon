@@ -15,9 +15,12 @@
  * Только инлайн-SVG и токены приложения (без сторонних зависимостей).
  */
 import { useEffect, useMemo, useRef, useState, type CSSProperties, type ReactNode } from "react";
-import { useFavorites, removeFavorite, type FavItem } from "./cardActions";
+import { useFavorites, removeFavorite, repairFavoriteHref, type FavItem } from "./cardActions";
 import { useNotes, requestNote, requestOpenNote, type Note } from "./notes";
-import { BOOKS, bookFullTitle, bookSlug } from "./books";
+import { BOOKS, bookFullTitle } from "./books";
+// ЗКН-Н092: адрес книги/главы/стиха — один построитель и один разборщик.
+import { bookPath, versePath, pathReachesVerse, pathReachesChapter } from "./bookPath";
+import { api } from "./api";
 // ЗКН-Н083: закладка стиха/главы показывает КАНОНИЧЕСКУЮ ссылку (писание · песнь/
 // лила · глава · стих), а не голое «Текст 17». Строится единым модулем bookRef.
 import { scriptureRef, type ScriptureRef } from "./bookRef";
@@ -107,7 +110,7 @@ function HeartOutline({ size = 30 }: { size?: number }) { return <svg width={siz
 function hrefFor(it: FavItem): string | null {
   if (it.href) return it.href;
   const { type, id } = it;
-  if (type === "book") return `/${bookSlug(id)}`;
+  if (type === "book") return bookPath(id);
   if (type === "entity") return `/${id}`;
   if (type === "doc") return `/doc/${id}`;
   if (type === "centre" || type === "restaurant") return `/place/${id}`;
@@ -128,13 +131,20 @@ function hrefFor(it: FavItem): string | null {
    *
    * Теперь путь строит тот же bookSlug + иерархия книги, что и читалка.
    */
+  /* ЗКН-Н092 · СТРОКОВАЯ ХИРУРГИЯ ПУТИ ЗАПРЕЩЕНА.
+   *
+   * Здесь ref резался по [./] и склеивался в путь. Для «brs/НП 1.1» это давало
+   * `/nectar-of-devotion/НП 1/1` — сегмент с кириллицей и пробелом; для
+   * Прабхупада-лиламриты — чужую главу (id spl.1.5 ↔ number 9).
+   *
+   * Ключ закладки хранит ТОЛЬКО work и ref — раздела в нём нет, а без раздела
+   * адрес стиха построить нельзя честно. Поэтому: адрес берётся из снимка `h`
+   * (выше), а если снимка нет или он не доходит до стиха — путь достраивается
+   * АСИНХРОННО по данным стиха (см. resolveScripturePath) и снимок лечится.
+   * Здесь остаётся только уровень книги — как заведомо верный минимум. */
   if (type === "chapter" || type === "verse") {
-    const [w, ...rest] = id.split("/");
-    const bk = BOOKS[w];
-    if (!bk || !rest.length) return null;
-    let segs = rest.join("/").split(/[./]/).filter(Boolean);
-    if (segs[0] === w) segs = segs.slice(1);          // «cc.madhya.19.117» → без шифра
-    return segs.length ? `/${bookSlug(w)}/${segs.join("/")}` : `/${bookSlug(w)}`;
+    const w = id.split("/")[0];
+    return BOOKS[w] ? bookPath(w) : null;
   }
   // ЗКН-Н077: киртан-избранное ведёт к самому треку (?t=<хвост audio из ключа>),
   // а не к библиотеке. id = хвост ключа kirtan:<хвост> → работает и для старых
@@ -142,6 +152,46 @@ function hrefFor(it: FavItem): string | null {
   if (type.indexOf("katha") === 0) return id ? `/katha?t=${encodeURIComponent(id)}` : "/katha";
   if (type.indexOf("kirtan") === 0) return id ? `/kirtans?t=${encodeURIComponent(id)}` : "/kirtans";
   return null;
+}
+
+/* ЗКН-Н092 · ОТКРЫТИЕ ЗАКЛАДКИ ПИСАНИЯ — С ЛЕЧЕНИЕМ СТАРОГО СНИМКА.
+ *
+ * Пока адрес стиха строил сломанный построитель (иерархия по `work !== "bg"`), в
+ * закладки семнадцати книг лёг адрес КНИГИ. Одной починки кода мало: уже сохранённые
+ * записи по-прежнему открывали обложку. Поэтому у стиха/главы проверяется ГЛУБИНА
+ * пути, и если он не доходит до цели — раздел берётся у самого стиха (единственный
+ * честный источник: ключ закладки хранит только work и ref), путь строится общим
+ * модулем, снимок лечится, и следующий тап уже мгновенный. */
+function isScripture(t: string): boolean { return t === "verse" || t === "chapter"; }
+
+function deepEnough(it: FavItem, h: string | null): boolean {
+  const w = it.id.split("/")[0];
+  if (!h) return false;
+  return it.type === "verse" ? pathReachesVerse(w, h) : pathReachesChapter(w, h);
+}
+
+async function resolveScripturePath(it: FavItem): Promise<string | null> {
+  const w = it.id.split("/")[0];
+  const ref = it.id.slice(w.length + 1);
+  if (!BOOKS[w] || !ref) return null;
+  try {
+    const r = await fetch(api(`/books/${w}/verses/${encodeURIComponent(ref)}`), { credentials: "same-origin" });
+    if (!r.ok) return null;
+    const d = (await r.json()) as { ref?: string; division?: string | null; division_number?: string | null };
+    return versePath(w, { divisionId: d.division ?? null, number: d.division_number ?? null }, d.ref || ref);
+  } catch {
+    return null;
+  }
+}
+
+/** Открыть закладку: снимок, а для писания с недоглубоким путём — резолв и лечение. */
+async function openFav(it: FavItem, go: (h: string) => void): Promise<void> {
+  const h = hrefFor(it);
+  if (isScripture(it.type) && !deepEnough(it, h)) {
+    const fixed = await resolveScripturePath(it);
+    if (fixed) { repairFavoriteHref(it.key, fixed); go(fixed); return; }
+  }
+  if (h) go(h);
 }
 
 /** ЗКН-Н083 · каноническая ссылка стиха/главы (писание · песнь/лила · глава · стих).
@@ -329,7 +379,7 @@ function Section({ title, accent, items, onNavigate, reduce, notesByRef }: { tit
       <div style={{ borderRadius: 16, overflow: "hidden", border: `0.5px solid ${LINE}`, background: "var(--color-bg-2)", boxShadow: "0 1px 3px rgba(0,0,0,0.03)" }}>
         {items.map((it, i) => (
           <Row key={it.key} it={it} first={i === 0} last={i === items.length - 1} reduce={reduce} notes={notesByRef.get(it.key) ?? EMPTY_NOTES}
-            onTap={() => { const h = hrefFor(it); if (h) onNavigate(h); }} />
+            onTap={() => { void openFav(it, onNavigate); }} />
         ))}
       </div>
     </div>

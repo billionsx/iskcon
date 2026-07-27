@@ -16,6 +16,8 @@ import {
   TOP_PICKS, TRENDING, UPDATED_PLAYLISTS, WATCH_INTERVIEWS,
 } from "./data";
 import type { UI } from "./MusicApp";
+// ЗКН-Н092: адрес книги строит один модуль.
+import { bookPath } from "../bookPath";
 
 export const ANTH: Song[] = SUMMER_ANTHEMS.map((s) => (ANTHEMS_E.has(s.id) ? { ...s, e: true } : s));
 
@@ -578,7 +580,7 @@ export function BookScreen({ ui, b }: { ui: UI; b: string }) {
           <button className="amx-capsule" onClick={() => { core.playBook({ book: b, mode, expand: false }); }}>
             {I.play({ s: 18 })}<span>Слушать</span>
           </button>
-          <button className="amx-capsule" onClick={() => window.location.assign(`/${bookSlug(book.work)}`)}>
+          <button className="amx-capsule" onClick={() => window.location.assign(bookPath(book.work))}>
             {I.lib({ s: 18 })}<span>Читать</span>
           </button>
         </div>

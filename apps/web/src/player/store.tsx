@@ -20,6 +20,8 @@ import { kathaAlbumById, speakerBySlug } from "../katha";
 import { recordListen } from "../account/track";
 import { replaceUrl } from "../nav";
 import { createWebEngine, type AudioEngine } from "./engine";
+// ЗКН-Н092: адрес книги строит один модуль.
+import { bookPath } from "../bookPath";
 
 export type AudioMode = "plain" | "commentary";
 export type Source = "book" | "kirtan" | "bhajan" | "katha";
@@ -487,7 +489,7 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
          * дорожку. Второго способа делать то же самое не заводим. */
         href: sourceRef.current === "katha"
           ? `/katha?t=${encodeURIComponent(listenRef.replace(/^\/audio\//, ""))}`
-          : isK ? null : `/${bookSlug(bookRef.current)}`,
+          : isK ? null : bookPath(bookRef.current),
         durationSec: t.durationSec ?? null,
         positionSec: 0,
       });

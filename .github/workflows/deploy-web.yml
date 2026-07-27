@@ -75,6 +75,19 @@ jobs:
           sys.exit(1 if bad else 0)
           PY
 
+      - name: Гейт адреса книги (ЗКН-Н092 · Н079)
+        run: |
+          python3 - <<'PY'
+          import importlib.util, sys
+          spec = importlib.util.spec_from_file_location("na", "tools/nav-audit.py")
+          m = importlib.util.module_from_spec(spec); spec.loader.exec_module(m)
+          bad = m.check_n092() + m.check_n079()
+          for f, w in bad:
+              print("::error file=apps/web/src/%s::%s" % (f, w))
+          print("ГЕЙТ АДРЕСА КНИГИ: %s" % ("ЧИСТО" if not bad else "НАРУШЕНИЙ %d" % len(bad)))
+          sys.exit(1 if bad else 0)
+          PY
+
       - name: Гейт поверхности (ЗКН-Д014 · Д005 · Д015 · Д018 · Д019 · Н088)
         run: python3 tools/surface-lint.py
 

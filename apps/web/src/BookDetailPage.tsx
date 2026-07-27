@@ -12,7 +12,10 @@ import { SCRIPTURE_VOICE } from "./ui/voice";
 import type { SVGProps, ReactNode, CSSProperties } from "react";
 import type { BookData } from "./books";
 import { resolveVerseRef } from "./bookVerseRef";
-import { BOOK_MENU_ITEMS, BOOK_ABOUT, bookShareTitle, bookFullTitle, AUDIO_WORKS, BOOKS, bookSlug } from "./books";
+// ЗКН-Н092: адрес книги/главы/стиха строит ОДИН модуль (см. bookPath.ts).
+// Ручная сборка пути здесь запрещена гейтом — она и была корнем «стих открывает книгу».
+import { bookPath, chapterPath, versePath, verseSeg as verseSegOf, isHierBook, pathReachesVerse, parseBookPath } from "./bookPath";
+import { BOOK_MENU_ITEMS, BOOK_ABOUT, bookShareTitle, bookFullTitle, AUDIO_WORKS, BOOKS } from "./books";
 import { PDF_CACHE_REV } from "./pdfRev";
 import { api } from "./api";
 import { sbChapterHasAudio } from "./sbAudio";
@@ -1152,16 +1155,18 @@ function NodReviews() {
 }
 
 /* ───────── Содержание (flat rows on white) ───────── */
-/** Путь стиха для кабинета (прогресс чтения): /book/<work>/<lila|ch>/<verse?>. */
-function versePathFor(work: string, division: string | undefined, ref: string): string {
-  const dv = (division ?? "").split(".").filter(Boolean); // ["sb","1","9"] | ["cc","adi","7"] | ["bg","2"]
-  const vseg = ref.split(".").pop() ?? "";
-  if (work !== "bg") {
-    return dv.length >= 3 ? `/${bookSlug(work)}/${dv[1]}/${dv[2]}${vseg ? `/${vseg}` : ""}` : `/${bookSlug(work)}`;
-  }
-  const ch = dv.length >= 2 ? dv[dv.length - 1] : (ref.split(".")[0] ?? "");
-  return `/${bookSlug(work)}/${ch}${vseg ? `/${vseg}` : ""}`;
-}
+/* ЗКН-Н092 · ЗДЕСЬ ЖИЛ ВТОРОЙ ПОСТРОИТЕЛЬ АДРЕСА СТИХА — И ОН ЛГАЛ.
+ *
+ * `versePathFor` решал, многочастная ли книга, проверкой `work !== "bg"`. Шифр
+ * книги признаком иерархии не является: иерархических книг ПЯТЬ (ШБ · ЧЧ · ЧБ ·
+ * ЧМ · Вишну-пурана), а плоских — восемнадцать. У плоской книги `division_id`
+ * двухчастный («brs.7»), условие `dv.length >= 3` было ложно, и функция МОЛЧА
+ * возвращала адрес КНИГИ вместо адреса стиха. Закладка честно сохраняла этот
+ * адрес — и открывала обложку. В БГ работало, в семнадцати книгах нет.
+ *
+ * Построитель один: bookPath.ts (иерархия из BOOKS[work].hierarchical, ключ
+ * главы плоской книги — divisions.number, невозможность построить = null, а не
+ * подмена уровнем книги). Гейт check_n092 не даёт второму родиться снова. */
 
 export interface ChapterRow { id: string; number: string; title_ru: string; title_en: string; source_url: string; verses: number; }
 
@@ -1494,7 +1499,8 @@ function ChapterPage({ chapter, chapters, hierOrder, hierWeights, divisionInfo, 
   const [flashVref, setFlashVref] = useState<string | null>(null);
   const [collapsed, setCollapsed] = useState(false);
   const [menu, setMenu] = useState(false);
-  const favHref = hierarchical ? `/${bookSlug(work)}/${chapter.id.split(".")[1] ?? ""}/${chapter.number}` : `/${bookSlug(work)}/${chapter.number}`;
+  // ЗКН-Н092: адрес главы строит тот же модуль, что и адрес стиха (bookPath.ts).
+  const favHref = chapterPath(work, { divisionId: chapter.id, number: chapter.number });
   const { on: fav, toggle: toggleFav } = useFavorite(`chapter:${work}/${chapter.id || chapter.number}`, { t: chapter.title_ru, s: `Глава ${chapter.number} · ${bookTitle}`, h: favHref });
   const [printing, setPrinting] = useState(false);
   const moreRef = useRef<HTMLSpanElement>(null);
@@ -1766,7 +1772,7 @@ function ChapterPage({ chapter, chapters, hierOrder, hierWeights, divisionInfo, 
             ref: `chapter:${work}/${chapter.id || chapter.number}`,
             title: chapter.title_ru,
             subtitle: `Глава ${chapter.number} · ${bookTitle}`,
-            href: `/${bookSlug(work)}${hierarchical ? `/${chapter.id.split(".")[1]}/${chapter.number}` : `/${chapter.number}`}`,
+            href: favHref,
           });
           return;
         }
@@ -1821,6 +1827,9 @@ function DemoBadge() {
 interface VerseToken { term: string; gloss: string | null; }
 interface VerseDetail {
   ref: string; label: string; uvaca: string | null; division?: string | null;
+  // ЗКН-Н092: divisions.number раздела стиха — ключ главы ПЛОСКОЙ книги для адреса.
+  // Приходит с самим стихом, поэтому адрес не зависит от догрузки оглавления.
+  division_number?: string | null;
   devanagari: string | null; translit: string | null;
   tokens: VerseToken[]; translation: string | null; purport: string | null;
   source_url: string | null; prev: string | null; next: string | null;
@@ -2165,7 +2174,7 @@ function ProseChapterPage({ chapter, chapters, bookTitle, work = "brs", onBack, 
   const [paras, setParas] = useState<ProsePara[] | null>(null);
   const [collapsed, setCollapsed] = useState(false);
   const [menu, setMenu] = useState(false);
-  const { on: fav, toggle: toggleFav } = useFavorite(`chapter:${work}/${chapter.id || chapter.number}`, { t: chapter.title_ru, s: `Глава ${chapter.number} · ${bookTitle}`, h: `/${bookSlug(work)}/${chapter.number}` });
+  const { on: fav, toggle: toggleFav } = useFavorite(`chapter:${work}/${chapter.id || chapter.number}`, { t: chapter.title_ru, s: `Глава ${chapter.number} · ${bookTitle}`, h: chapterPath(work, { divisionId: chapter.id, number: chapter.number }) });
   const moreRef = useRef<HTMLSpanElement>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
   const printRef = useRef<HTMLDivElement>(null);
@@ -2174,7 +2183,7 @@ function ProseChapterPage({ chapter, chapters, bookTitle, work = "brs", onBack, 
 
   const n = Number(chapter.number);
   const numbered = n >= 1 && n <= 999;
-  const prHref = numbered ? `/${bookSlug(work)}/${chapter.number}` : `/${bookSlug(work)}`;
+  const prHref = numbered ? chapterPath(work, { divisionId: chapter.id, number: chapter.number }) : bookPath(work);
   const prLabel = chapter.title_ru || (numbered ? `Глава ${chapter.number}` : bookTitle);
   const prog = useMemo(() => {
     const i = chapters ? chapters.findIndex((c) => c.id === chapter.id) : -1;
@@ -2305,7 +2314,7 @@ function ProseChapterPage({ chapter, chapters, bookTitle, work = "brs", onBack, 
             ref: `chapter:${work}/${chapter.id || chapter.number}`,
             title: chapter.title_ru,
             subtitle: `Глава ${chapter.number} · ${bookTitle}`,
-            href: `/${bookSlug(work)}/${chapter.number}`,
+            href: chapterPath(work, { divisionId: chapter.id, number: chapter.number }),
           });
           return;
         }
@@ -2337,6 +2346,10 @@ function VerseReader({ refStr, bookTitle, work = "bg", chapters, hierOrder, hier
   const vScrollRef = useRef<HTMLDivElement>(null);
   const [vProg, setVProg] = useState<{ idx: number; total: number; weight: number; totalWeight: number } | null>(null);
   const player = usePlayer();
+  // ЗКН-Н092: оглавление читаем через ref — адрес стиха обязан строиться из живого
+  // списка глав, но догрузка оглавления не должна перезапускать загрузку стиха.
+  const chaptersRef = useRef(chapters);
+  chaptersRef.current = chapters;
 
   useEffect(() => {
     let live = true;
@@ -2346,7 +2359,8 @@ function VerseReader({ refStr, bookTitle, work = "bg", chapters, hierOrder, hier
       .then((d) => {
         if (!live) return;
         setData(d as VerseDetail);
-        const href = versePathFor(work, d.division, d.ref || refStr);
+        const ck = { divisionId: d.division ?? null, number: d.division_number ?? chaptersRef.current?.find((c) => c.id === (d.division ?? ""))?.number ?? null };
+        const href = versePath(work, ck, d.ref || refStr) ?? chapterPath(work, ck, d.ref || refStr);
         recordRead({ work, ref: (d.ref || refStr), label: (d.label ?? refStr), href, kind: "verse" });
         // Глава стиха → позиция в оглавлении. У иерархических — по division (он же id
         // главы), у плоских — по номеру главы. Вес = число стихов в этой главе.
@@ -2385,31 +2399,41 @@ function VerseReader({ refStr, bookTitle, work = "bg", chapters, hierOrder, hier
   });
 
   const demo = DEMO_VERSES[data?.ref ?? refStr];
-  const divParts = (data?.division ?? "").split(".").filter(Boolean);      // ["sb","1","9"] | ["cc","adi","7"] | ["bg","2"]
-  const refDigits = (data?.ref ?? refStr).replace(/^[^\d]*/, "");           // "1.9.40" | "2.13" | "2.16-17"
-  const chapterNo = divParts.length >= 2 ? divParts[divParts.length - 1] : (refDigits.split(".")[0] ?? "");
-  const verseSeg = (data?.ref ?? refStr).split(".").pop() ?? "";            // "40" | "13" | "16-17"
-  /* ЗКН-Н076: сохранённая/расшаренная ссылка на стих ОБЯЗАНА быть той же
-   * канонической slug-формой (`/${bookSlug}/...`), что и ссылка на главу
-   * (см. favHref в ChapterPage) и весь URL-контур читалки. Раньше здесь
-   * стоял ROUTES.book(work), дающий work-code-форму `/bg/2/13`; её не узнаёт
-   * ни safety-net подписки читалки (`path.startsWith("/${bookSlug}")`), ни
-   * гейт route — поэтому при уже открытой книге стих не доставлялся и
-   * открытие «схлопывалось» на главу. Slug-форма чинит и тёплый, и холодный
-   * путь. */
-  const verseUrl = work !== "bg"
-    ? (divParts.length >= 3
-        ? url(`/${bookSlug(work)}/${divParts[1]}/${divParts[2]}`) + (verseSeg ? `/${verseSeg}` : "")
-        : url(`/${bookSlug(work)}`))
-    : url(`/${bookSlug(work)}/${chapterNo}`) + (verseSeg ? `/${verseSeg}` : "");
-  const ccDiv = (data?.division ?? "").split(".");                 // ["cc","madhya","6"] | ["sb","1","9"]
-  const ccLila = work !== "bg" ? (ccDiv[1] || undefined) : undefined;
-  const ccChapterNum = work !== "bg" && ccDiv[2] ? Number(ccDiv[2]) : (Number(chapterNo) || 1);
-  const chapterTitle = chapters?.find((c) => c.number === chapterNo)?.title_ru;
+  const vRef = data?.ref ?? refStr;
+  const hier = isHierBook(work);
+  const divParts = (data?.division ?? "").split(".").filter(Boolean);      // ["sb","1","9"] | ["cc","adi","7"] | ["brs","7"]
+  /* ЗКН-Н092 · КЛЮЧ ГЛАВЫ — `divisions.number`, А НЕ ЦИФРЫ ИЗ REF.
+   * Номер знает либо сам стих (division_number из API), либо оглавление (по id
+   * раздела). Строку ref ключом главы считать нельзя: у Прабхупада-лиламриты id
+   * «spl.1.5» ↔ number «9» (расходятся ВСЕ 62 раздела), у предисловий number
+   * отрицательный («brs.preface» → «-2»). */
+  const vChKey = {
+    divisionId: data?.division ?? null,
+    number: data?.division_number ?? chapters?.find((c) => c.id === (data?.division ?? ""))?.number ?? null,
+  };
+  const chapterNo = hier
+    ? (divParts[2] ?? "")
+    : (vChKey.number != null && String(vChKey.number) !== ""
+        ? String(vChKey.number)
+        : (vRef.replace(/^[^\d]*/, "").split(".")[0] ?? ""));
+  const verseSeg = verseSegOf(vRef);                                       // "40" | "13" | "16-17" | "invocation"
+  /* ЗКН-Н076 + ЗКН-Н092: сохранённая/расшаренная ссылка на стих — каноническая
+   * slug-форма ОДНОГО построителя (bookPath.ts), та же, что у ссылки на главу и
+   * у всего URL-контура читалки. Раньше форму собирали здесь же, решая иерархию
+   * по `work !== "bg"`: у семнадцати плоских книг адрес схлопывался до книги — и
+   * закладка стиха открывала обложку. Если построить нельзя (стих ещё грузится) —
+   * берём текущий адрес читалки: он уже канонический, а вот адрес КНИГИ выдавать
+   * за адрес стиха нельзя, это и была ложь снимка. */
+  const vFavHref = versePath(work, vChKey, vRef)
+    ?? (typeof window !== "undefined" && pathReachesVerse(work, window.location.pathname) ? window.location.pathname : null)
+    ?? chapterPath(work, vChKey, vRef);
+  const verseUrl = url(vFavHref);
+  const ccLila = hier ? (divParts[1] || undefined) : undefined;
+  const ccChapterNum = hier && divParts[2] ? Number(divParts[2]) : (Number(chapterNo) || 1);
+  const chapterTitle = chapters?.find((c) => c.id === (data?.division ?? "") || c.number === chapterNo)?.title_ru;
   // ЗКН-Н083: снимок избранного стиха — писание (t) + канонический путь «Песнь 1 ·
   // Глава 17 · Текст 17» (s) через единый строитель ссылки (bookRef). Голое «Текст
   // 17» вне книги в «Избранном» не опознаётся — это и была жалоба основателя.
-  const vFavHref = verseUrl.replace(/^https?:\/\/[^/]+/, "");
   const vSref = scriptureRef("verse", work, vFavHref);
   const { on: fav, toggle: toggleFav } = useFavorite(`verse:${work}/${refStr}`,
     vSref
@@ -2566,14 +2590,14 @@ function VerseReader({ refStr, bookTitle, work = "bg", chapters, hierOrder, hier
         if (id === "pdf") {
           const label = data?.label ?? refStr;
           const vref = data?.ref ?? refStr;
-          const isCc = work !== "bg";
-          const lilaLab = ccLilaLabel(ccLila ?? "");
-          const vfile = isCc
-            ? `Шри Чайтанья-чаритамрита. ${lilaLab}. Глава ${ccChapterNum}${verseSeg ? `. Стих ${verseSeg}` : ""}.pdf`
-            : `Бхагавад-гита как она есть. Глава ${chapterNo}${verseSeg ? `. Стих ${verseSeg}` : ""}.pdf`;
-          const sub = isCc
-            ? `${lilaLab} · Глава ${ccChapterNum} · ${bookTitle}`
-            : `${chapterNo ? "Глава " + chapterNo + " · " : ""}${bookTitle}`;
+          /* ЗКН-Н092: имя файла и подзаголовок брались по правилу «не БГ = значит ЧЧ».
+           * У Нектара преданности, НДМ, Ишопанишад PDF стиха уходил с именем
+           * «Шри Чайтанья-чаритамрита…» — чужая книга в имени файла. Название берём
+           * у САМОЙ книги, а метку лилы добавляем только там, где лилы есть. */
+          const lilaLab = hier && ccLila ? ccLilaLabel(ccLila) : "";
+          const chLab = hier ? String(ccChapterNum) : chapterNo;
+          const vfile = `${bookTitle}.${lilaLab ? ` ${lilaLab}.` : ""}${chLab ? ` Глава ${chLab}` : ""}${verseSeg ? `. Стих ${verseSeg}` : ""}.pdf`;
+          const sub = [lilaLab, chLab ? `Глава ${chLab}` : "", bookTitle].filter(Boolean).join(" · ");
           void downloadServerPdf(
             `/pdf?kind=verse&work=${encodeURIComponent(work)}&ref=${encodeURIComponent(vref)}`,
             vfile,
@@ -2823,19 +2847,14 @@ export function BookDetailPage({ book, onBack, onDonate, onOpenCart, initialTarg
   useEffect(() => {
     if (navLock.current || typeof window === "undefined") return;
     if (book.hierarchical) {
-      const base = `/${bookSlug(book.work)}`;
+      const base = bookPath(book.work);
       let path = base;
-      /* ЗКН-Н079: адрес главы строим из id РАЗДЕЛА ("sb.9.8" → /9/8,
-       * "cc.madhya.6" → /madhya/6), а номер стиха — последний сегмент ref
-       * (форматы ref у книг разные, часто с кириллицей, но номер всегда в
-       * хвосте). Раньше адрес собирался из readerRef.split(".") в расчёте на
-       * 4-частный ref с префиксом — для ШБ ("9.8.11") это давало адрес ГЛАВЫ,
-       * pushUrl перезапускал навигацию, и стих схлопывался на главу. */
+      /* ЗКН-Н079 + ЗКН-Н092: адрес строит ОДИН модуль по ключу раздела (id + number).
+       * Раньше здесь стояла своя сборка из id и хвоста ref — третий построитель, и он
+       * расходился с построителем закладки (см. ЗКН-Н092 в bookPath.ts). */
       if (openChapter) {
-        const idp = openChapter.id.split(".");            // ["sb","9","8"] | ["cc","madhya","6"]
-        const chapPath = idp.length >= 3 ? `${base}/${idp[1]}/${idp[2]}` : `${base}/${openChapter.number}`;
-        const vseg = readerRef ? (readerRef.split(".").pop() ?? "") : "";
-        path = vseg ? `${chapPath}/${vseg}` : chapPath;
+        const ck = { divisionId: openChapter.id, number: openChapter.number };
+        path = (readerRef ? versePath(book.work, ck, readerRef) : null) ?? chapterPath(book.work, ck, readerRef);
       }
       const cur = window.location.pathname;
       if (cur === path) { audioNavRef.current = false; return; }
@@ -2843,27 +2862,36 @@ export function BookDetailPage({ book, onBack, onDonate, onOpenCart, initialTarg
        * Проверка шла по мёртвой схеме `/book/<шифр>/…` и не срабатывала никогда:
        * каждый стих ПЛОДИЛ запись истории вместо замены. «Назад» из книги вело
        * не наружу, а по всем пролистанным стихам подряд. */
-      const bs = bookSlug(book.work);
-      const isVerse = (p: string) => new RegExp(`^/${bs}/[a-z0-9-]+/\\d+/.+`, "i").test(p);
+      // ЗКН-Н092: «это адрес стиха?» решает тот же разбор, что и роутер (parseBookPath),
+      // а не самодельная регулярка — она уже один раз не срабатывала никогда (ЗКН-Н023).
+      const isVerse = (p: string) => pathReachesVerse(book.work, p);
       if (audioNavRef.current || (isVerse(cur) && isVerse(path))) replaceUrl(path);
       else pushUrl(path);
       audioNavRef.current = false;
       return;
     }
     if (!chapters) return;
-    const base = `/${bookSlug(book.work)}`;
+    const base = bookPath(book.work);
     let path = base;
+    /* ЗКН-Н092 · ГЛАВА ПЛОСКОЙ КНИГИ — ЭТО `divisions.number`, А НЕ ЦИФРЫ ИЗ REF.
+     *
+     * Здесь глава выводилась цифрами из readerRef: срезали нецифровой префикс и
+     * брали первый дотированный сегмент.
+     * Для «НП preface.9» это давало /nectar-of-devotion/9 — адрес ДРУГОЙ, реально
+     * существующей главы 9 (у предисловия number «-2»). Для Прабхупада-лиламриты
+     * («ПЛ 1.5.10», id раздела spl.1.5, number 9) — адрес главы 1 и «стиха 5.10».
+     * Номер главы знает открытый раздел — берём его, а не строку. */
     if (readerRef) {
-      const rd = readerRef.replace(/^[^\d]*/, "");
-      const ch = rd.split(".")[0];
-      const v = rd.includes(".") ? rd.slice(rd.indexOf(".") + 1) : "";
-      path = v ? `${base}/${ch}/${v}` : `${base}/${ch}`;
+      const ck = { divisionId: openChapter?.id ?? null, number: openChapter?.number ?? null };
+      path = versePath(book.work, ck, readerRef) ?? chapterPath(book.work, ck, readerRef);
     } else if (openChapter) {
-      path = `${base}/${openChapter.number}`;
+      path = chapterPath(book.work, { divisionId: openChapter.id, number: openChapter.number });
     }
     const cur = window.location.pathname;
     if (cur === path) { audioNavRef.current = false; return; }
-    const isVerse = (p: string) => new RegExp(`^/${bookSlug(book.work)}/\\d+/.+`).test(p);
+    // ЗКН-Н092: «адрес стиха?» — общий разбор, а не регулярка на \d+ (главы бывают
+    // «-2» у предисловий, и регулярка их не узнавала).
+    const isVerse = (p: string) => pathReachesVerse(book.work, p);
     if (audioNavRef.current || (isVerse(cur) && isVerse(path))) replaceUrl(path);
     else pushUrl(path);
     audioNavRef.current = false;
@@ -2875,13 +2903,10 @@ export function BookDetailPage({ book, onBack, onDonate, onOpenCart, initialTarg
   const goBack = () => {
     if (typeof window === "undefined") return;
     if (canGoBack()) { window.history.back(); return; }
-    const base = `/${bookSlug(book.work)}`;
-    if (book.hierarchical) {
-      if (readerRef) { setReaderRef(null); replaceUrl(openChapter ? `${base}/${openChapter.id.split(".")[1]}/${openChapter.number}` : base); return; }
-      if (openChapter) { setOpenChapter(null); replaceUrl(base); return; }
-      onBack(); return;
-    }
-    if (readerRef) { setReaderRef(null); replaceUrl(openChapter ? `${base}/${openChapter.number}` : base); return; }
+    const base = bookPath(book.work);
+    // ЗКН-Н092: спуск на уровень главы — общий построитель (иерархия внутри него).
+    const chPath = () => (openChapter ? chapterPath(book.work, { divisionId: openChapter.id, number: openChapter.number }) : base);
+    if (readerRef) { setReaderRef(null); replaceUrl(chPath()); return; }
     if (openChapter) { setOpenChapter(null); replaceUrl(base); return; }
     onBack();
   };
@@ -2893,21 +2918,20 @@ export function BookDetailPage({ book, onBack, onDonate, onOpenCart, initialTarg
   const goToChapter = () => {
     if (!readerRef) return;
     setChapterScrollTo(readerRef); // проскроллить главу к этому стиху
-    const base = `/${bookSlug(book.work)}`;
     if (openChapter) {
-      replaceUrl(book.hierarchical ? `${base}/${openChapter.id.split(".")[1]}/${openChapter.number}` : `${base}/${openChapter.number}`);
+      replaceUrl(chapterPath(book.work, { divisionId: openChapter.id, number: openChapter.number }));
       setReaderRef(null);
       return;
     }
+    /* Глава не задана (редкий случай межглавной навигации) — выводим её из ref.
+     * ЗКН-Н092: у плоской книги цифры ref НЕ ключ главы, поэтому без открытого
+     * раздела честнее вернуться к книге, чем открыть чужую главу. */
     if (book.hierarchical) {
       const pr = readerRef.split(".");           // ["cc","adi","2","45"]
       if (pr.length >= 4) { openTarget.current(pr[1], pr[2], null); return; }
-    } else {
-      const rd = readerRef.replace(/^[^\d]*/, "");
-      openTarget.current(null, rd.split(".")[0] || null, null);
-      return;
     }
     setReaderRef(null);
+    replaceUrl(bookPath(book.work));
   };
 
   // «К содержанию»: детерминированный переход глава → оглавление. Подсвечиваем главу,
@@ -2917,7 +2941,7 @@ export function BookDetailPage({ book, onBack, onDonate, onOpenCart, initialTarg
   const toContents = (chId: string) => {
     setContentsFlashId(chId);
     setTab("contents");
-    replaceUrl(`/${bookSlug(book.work)}`);
+    replaceUrl(bookPath(book.work));
     setOpenChapter(null);
     setReaderRef(null);
   };
@@ -2928,7 +2952,7 @@ export function BookDetailPage({ book, onBack, onDonate, onOpenCart, initialTarg
    * race-ятся, порядок не гарантирован. Владелец `popstate` — App; он разбирает
    * маршрут и ТОЛЬКО ПОТОМ оповещает подписчиков. Порядок детерминирован. */
   useEffect(() => subscribeNav((path) => {
-    const base = `/${bookSlug(book.work)}`;
+    const base = bookPath(book.work);
     if (!path.startsWith(base)) return;
     if (book.prose) return;               // прозовые книги не используют глубоких URL глав
     /* ⚠️ ЗКН-Н025 — ИНДЕКСЫ СЪЕХАЛИ НА ОДИН. ГЛАВЫ И СТИХИ НЕ ОТКРЫВАЛИСЬ.
@@ -2943,9 +2967,10 @@ export function BookDetailPage({ book, onBack, onDonate, onOpenCart, initialTarg
      * Папки `/book/` больше нет — а индексы остались от неё. Книга читала
      * ПУСТОТУ и никуда не переходила. Опять одно и то же: адрес переехал,
      * читатель остался. */
-    const parts = path.split("/");        // ["", "<книга>", a?, b?, c?]
-    if (book.hierarchical) openTarget.current(parts[2] || null, parts[3] || null, parts[4] || null);
-    else openTarget.current(null, parts[2] || null, parts[3] || null);
+    // ЗКН-Н092: адрес разбирает ТОТ ЖЕ модуль, что его строит (parseBookPath) —
+    // индексы сегментов больше не живут копией в каждом читателе (ЗКН-Н025 был именно про это).
+    const t = parseBookPath(path)?.target;
+    openTarget.current(t?.div ?? null, t?.chapter ?? null, t?.verse ?? null);
   }), [book.hierarchical, book.work, book.prose]);
 
   const openChapterByNumber = (num: string) => {
@@ -3042,7 +3067,7 @@ export function BookDetailPage({ book, onBack, onDonate, onOpenCart, initialTarg
   const menuAction = (id: string) => {
     setMoreOpen(false);
     if (id === "note") {
-      requestNote({ kind: "book", ref: `book:${book.work}`, title: bookFullTitle(book), subtitle: book.tagline, href: `/${bookSlug(book.work)}` });
+      requestNote({ kind: "book", ref: `book:${book.work}`, title: bookFullTitle(book), subtitle: book.tagline, href: bookPath(book.work) });
       return;
     }
     if (id === "share") { void shareBook(); return; }

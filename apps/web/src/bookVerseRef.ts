@@ -28,11 +28,23 @@ export function matchChapterVerse<T extends { ref: string }>(verses: T[], want: 
   if (!w) return null;
   const wNoZero = w.replace(/^0+(?=\d)/, "");
   const last = (r: string) => normVerseSeg(String(r).split(".").pop());
+  /* ЗКН-Н079 (расширение): у книг из ОДНОГО раздела ref вовсе без точек —
+   * «НН 1», «ИШО invocation», «Кришна-сандарбха 28», «Мукунда-мала 1». Точка там
+   * не разделитель, номер стоит после ПРОБЕЛА. Без этих стратегий матч не находил
+   * стих даже по верному адресу, и Ишопанишад/Нектар наставлений открывались главой. */
+  const tok = (r: string) => {
+    const s = normVerseSeg(r);
+    const i = s.lastIndexOf(" ");
+    return i >= 0 ? s.slice(i + 1) : s;
+  };
   return (
     verses.find((v) => last(v.ref) === w) ??
     verses.find((v) => normVerseSeg(v.ref) === w) ??
     verses.find((v) => normVerseSeg(v.ref).endsWith("." + w)) ??
+    verses.find((v) => tok(v.ref) === w) ??
+    verses.find((v) => normVerseSeg(v.ref).endsWith(" " + w)) ??
     verses.find((v) => last(v.ref).replace(/^0+(?=\d)/, "") === wNoZero) ??
+    verses.find((v) => tok(v.ref).replace(/^0+(?=\d)/, "") === wNoZero) ??
     null
   );
 }

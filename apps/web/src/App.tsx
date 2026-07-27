@@ -20,7 +20,9 @@ import { ScreenFallback } from "./ScreenFallback";
 import { requestHomeTab } from "./homeNav";
 import type { HomeTabId } from "./HomeTabs";
 import { DonateModal } from "./DonateModal";
-import { BOOKS, bookFullTitle, bookSlug, bookWork } from "./books";
+import { BOOKS, bookFullTitle } from "./books";
+// ЗКН-Н092: единственный построитель/разборщик адреса книги.
+import { bookPath, parseBookPath } from "./bookPath";
 import { downloadBookPdf } from "./bookPdf";
 import { QrSheet, type QrData } from "./QrSheet";
 import { ReportSheet } from "./ReportSheet";
@@ -1035,7 +1037,7 @@ function Screen({ tab, onChange, onOpenBook, onOpenBhajan, onOpenKirtanArtist, o
     if (id === "qr") { setQr({ shareUrl, data: { kind: "book", bookTitle: bookFullTitle(b), tagline: b.tagline, cover: b.covers[0] } }); return; }
     if (id === "donate") { onDonate(); return; }
     if (id === "report") { setReportOpen(true); return; }
-    if (id === "note") { requestNote({ kind: "book", ref: `book:${work}`, title: bookFullTitle(b), subtitle: b.tagline, href: `/${bookSlug(work)}` }); return; }
+    if (id === "note") { requestNote({ kind: "book", ref: `book:${work}`, title: bookFullTitle(b), subtitle: b.tagline, href: bookPath(work) }); return; }
     onOpenBook(work);
   };
   return (
@@ -1223,7 +1225,7 @@ const RESERVED: readonly string[] = [
     if (openAdmin) return "/admin";
     if (openDownloader) return "/downloader";
     if (openStoriesTool) return "/stories-tool";
-    if (openBook) { const base = `/${bookSlug(openBook)}`; return (typeof window !== "undefined" && window.location.pathname.startsWith(base)) ? window.location.pathname : base; }
+    if (openBook) { const base = bookPath(openBook); return (typeof window !== "undefined" && window.location.pathname.startsWith(base)) ? window.location.pathname : base; }
     /* ЗКН-Н060 — СОСТОЯНИЕ ХРАНИТ СЛАГ, АДРЕС СТРОИТ ROUTES.
      * Здесь стояло `return openBhajan` с подписью «slug сам по себе путь» — ЛОЖЬ:
      * в состоянии лежит ГОЛЫЙ слаг («gaurakisor-das-babaji-pranama»), а адрес
@@ -1575,15 +1577,14 @@ const RESERVED: readonly string[] = [
      * Проверяется РАНЬШЕ личности: иначе `/bhagavad-gita` уйдёт в резолвер имён
      * и не найдётся. Столкновений нет — проверено: ни один слаг книги не совпадает
      * со слагом личности (гейт `data-audit.py`). */
-    const bw = bookWork(seg0);
-    if (bw) {
-      const parts = clean.split("/");
-      if (BOOKS[bw]?.hierarchical) {
-        setBookTarget(parts[2] ? { div: parts[2], chapter: parts[3] ?? null, verse: parts[4] ?? null } : null);
-      } else {
-        setBookTarget(parts[2] ? { div: null, chapter: parts[2], verse: parts[3] ?? null } : null);
-      }
-      setOpenBook(bw);
+    /* ЗКН-Н092: адрес книги разбирает ТОТ ЖЕ модуль, который его строит
+     * (bookPath.ts). Раньше индексы сегментов и тест иерархии жили копией здесь и
+     * копией в читалке — расхождение копий и есть «стих открывается через раз». */
+    const bp = parseBookPath(clean);
+    if (bp) {
+      const t = bp.target;
+      setBookTarget(t.chapter ? t : null);
+      setOpenBook(bp.work);
       return;
     }
 
@@ -1614,7 +1615,7 @@ const RESERVED: readonly string[] = [
    * Иначе applyPath пересобирал бы книгу на каждом перелистывании главы. */
   const route = (path: string) => {
     const ob = openBookRef.current;
-    if (ob && (path === `/${bookSlug(ob)}` || path.startsWith(`/${bookSlug(ob)}/`))) return;
+    if (ob && (path === bookPath(ob) || path.startsWith(`${bookPath(ob)}/`))) return;
     fromPop.current = true;
     applyPath(path);
     setRouteGen((g) => g + 1);   // ЗКН-Н043: гарантирует пробуждение эффекта-синхронизатора
@@ -1822,9 +1823,9 @@ const RESERVED: readonly string[] = [
      * только 301-редиректом, а до редиректа успевал лечь в историю лишней записью:
      * «назад» приходилось жать дважды, и один из этих шагов вёл на /books. */
     const bw = BOOKS[work] ? work : "bg";
-    if (kind === "book") { navigate(`/${bookSlug(bw)}`); return; }
+    if (kind === "book") { navigate(bookPath(bw)); return; }
     const seg = kind === "verse" ? `/${div ?? ""}/${ch ?? ""}/${v ?? ""}` : kind === "chap" ? `/${div ?? ""}/${ch ?? ""}` : "";
-    navigate(`/${bookSlug(bw)}${seg}`.replace(/\/+$/, ""));
+    navigate(`${bookPath(bw)}${seg}`.replace(/\/+$/, ""));
   }
   // Открыть конкретный стих по его id («Стих дня» → читалка): БГ — книга, ШБ/ЧЧ — референс-ридер.
   function openVerseId(id: string) {
@@ -1835,7 +1836,7 @@ const RESERVED: readonly string[] = [
     const tail = BOOKS[bw]?.hierarchical
       ? `/${p[1] ?? ""}/${p[2] ?? ""}/${p[3] ?? ""}`   // sb.1.9.40 · cc.adi.1.19
       : `/${p[1] ?? ""}/${p[2] ?? ""}`;                // bg.2.13
-    navigate(`/${bookSlug(bw)}${tail}`.replace(/\/+$/, ""));
+    navigate(`${bookPath(bw)}${tail}`.replace(/\/+$/, ""));
   }
   // Открытие связанной сущности: книги-читалки уходят в ридер, остальное — в EntityPage.
   /* ЗКН-Н035 — ЭКРАН СМЕНИЛСЯ → АДРЕС СМЕНИЛСЯ. ВСЕГДА.
@@ -1965,7 +1966,7 @@ const RESERVED: readonly string[] = [
           </main>
         ) : openSearch ? (
           <main style={{ position: "relative", height: "100dvh", overflowX: "hidden", overflowY: "auto", overscrollBehavior: "contain" }}>
-            <SearchScreen onBack={goBack} onOpenEntity={openEntityTarget} onOpenBook={(work) => navigate("/" + bookSlug(work))} onNavigate={navigate} />
+            <SearchScreen onBack={goBack} onOpenEntity={openEntityTarget} onOpenBook={(work) => navigate(bookPath(work))} onNavigate={navigate} />
           </main>
         ) : openCart ? (
           <main style={{ position: "relative", height: "100dvh", overflow: "hidden" }}>
@@ -2037,7 +2038,7 @@ const RESERVED: readonly string[] = [
           </main>
         ) : (
           <Screen tab={tab} onChange={setTab}
-            onOpenBook={(work) => navigate("/" + bookSlug(work))}
+            onOpenBook={(work) => navigate(bookPath(work))}
             onOpenBhajan={(slug) => navigate("/bhajans/" + slug)}
             onOpenKirtanArtist={(slug) => navigate("/kirtans/" + slug)}
             onOpenCatalog={() => navigate("/bhajans")}
