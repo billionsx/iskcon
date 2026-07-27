@@ -223,8 +223,8 @@
   {
    "id": "M5",
    "task": "Страж App Store: прогон по живым App Review Guidelines до сабмита",
-   "status": "queued",
-   "organ": "знание appstore-кодекса + чек-лист",
+   "status": "active",
+   "organ": "bin/appstore.py + bxad-appstore.yml (15-е число + dispatch): пункты живых гайдлайнов дословно + автопроверки репо (privacy/support с путями)",
    "article": "ст. 56"
   },
   {

@@ -670,6 +670,25 @@ def cmd_selftest(root: Path) -> int:
         brief_mod.ROOT = ROOT
         shutil.rmtree(tmpb, ignore_errors=True)
 
+    print("SELFTEST · служба M5 (страж App Store)")
+    import appstore as guard
+    fx_html = "<h2>1.1 Objectionable Content</h2><p>Apps should not include...</p><li>5.1.1 Data Collection and Storage</li><p>2.3 Accurate Metadata</p>"
+    pts = guard.parse_points(fx_html)
+    check("гайдлайны: пункты извлечены дословно с номерами и адресами #N.N",
+          [p["n"] for p in pts] == ["1.1", "2.3", "5.1.1"]
+          and pts[0]["title"] == "Objectionable Content"
+          and pts[2]["at"].endswith("#5.1.1"))
+    tmpg = Path(tempfile.mkdtemp(prefix="bxad-g-"))
+    try:
+        (tmpg / "apps" / "web" / "src").mkdir(parents=True)
+        (tmpg / "apps" / "web" / "src" / "App.tsx").write_text('<a href="/privacy">Privacy</a>', encoding="utf-8")
+        chk_p = guard.repo_check(tmpg, ["privacy"])
+        chk_m = guard.repo_check(tmpg, ["nonexistent-word-xyz"])
+        check("автопроверка: privacy найден с путём App.tsx:1, отсутствие — честное НЕТ",
+              chk_p["ok"] and chk_p["at"].endswith("App.tsx:1") and not chk_m["ok"])
+    finally:
+        shutil.rmtree(tmpg, ignore_errors=True)
+
     print("SELFTEST · конституция (ст. 45: полнота мандата машиной)")
     const_t = (root / "CONSTITUTION.md").read_text(encoding="utf-8")
     missing = [d for d, anchor in FOUNDER_MANDATE.items() if anchor not in const_t]
@@ -735,6 +754,9 @@ def cmd_selftest(root: Path) -> int:
     check("индекс раскрыт: секция стала заголовком, страницы — строками",
           "Components" in exd["headings"] and "Buttons" in exd["text"] and "Sliders" in exd["text"])
 
+    if not isinstance(ok, bool):  # мета-страж: вердикт суда перезаписан тенью — это провал сам по себе
+        print("SELFTEST: КРАСНЫЙ — вердикт суда был перезаписан (тень переменной ok)")
+        return 1
     print("SELFTEST:", "ЗЕЛЁНЫЙ" if ok else "КРАСНЫЙ")
     return 0 if ok else 1
 

@@ -1,0 +1,28 @@
+name: bxad-appstore
+on:
+  schedule:
+    - cron: "41 9 15 * *"   # страж — 15-е число (ст. 56 · M5)
+  workflow_dispatch:
+concurrency:
+  group: bxad-appstore
+  cancel-in-progress: false
+permissions:
+  contents: write
+jobs:
+  guard:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@v4
+        with: { fetch-depth: 0 }
+      - name: "Страж App Store — чек-лист из живых гайдлайнов (ст. 56 · M5)"
+        env: { PROJECT_ROOT: "." }
+        run: python3 bxad/bin/appstore.py
+      - name: "Эфир"
+        run: python3 bxad/bin/dashboard.py
+      - name: "Хроника стража"
+        run: |
+          git config user.name "bxad"; git config user.email "ceo@billionsx.com"
+          git add bxad/registry bxad/dashboard
+          git commit -m "bxad: страж App Store" || exit 0
+          for i in 1 2 3 4 5 6; do git pull --rebase -q && git push -q && break || sleep 4; done

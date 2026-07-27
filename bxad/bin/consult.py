@@ -128,6 +128,7 @@ def run(root: Path, budget: int = None, fixtures: Path = None) -> dict:
         vis = set(fs["visited"])
         steps = 0
         cap = per_render if firm in RENDER_FIRMS else per
+        last_html, last_txt = "", ""
         while fs["frontier"] and steps < cap:
             url = fs["frontier"].pop(0)
             if BLOCK_PATH.search(url):
@@ -170,6 +171,8 @@ def run(root: Path, budget: int = None, fixtures: Path = None) -> dict:
             steps += 1
             pages += 1
             text = strip_html(html)
+            if firm in RENDER_FIRMS:
+                last_html, last_txt = html, text
             laws, frames = mine(text, url)
             for fr in frames:
                 frames_c[fr] += 1
@@ -188,8 +191,9 @@ def run(root: Path, budget: int = None, fixtures: Path = None) -> dict:
                 if pu.netloc == host and pu.scheme.startswith("http") and u not in vis \
                         and len(fs["frontier"]) < 4000 and not re.search(r"\.(pdf|jpg|png|zip|mp4)$", u, re.I) and not BLOCK_PATH.search(u):
                     fs["frontier"].append(u)
-        if firm in RENDER_FIRMS and steps and not fs["frontier"] and firm not in st["errors"]:
-            st["errors"][firm] = f"свидетельство: страниц {steps}, html {len(html) if 'html' in dir() else 0}b, ссылок host=0 — похоже на бот-заслон; текст: {mine(strip_html(html), url)[1] if 'html' in dir() else ''}"[:200] if steps else ""
+        if firm in RENDER_FIRMS:
+            st["errors"][firm] = (f"сводка: шагов {steps} · фронтир после {len(fs['frontier'])} · "
+                                  f"последняя страница {len(last_html)}б: «{last_txt[:90]}»") if steps else "сводка: шагов 0 (фронтир пуст до входа)"
         fs.pop("_seeds", None)
         fs["visited"] = sorted(vis)
         st["frames"] = dict(frames_c)

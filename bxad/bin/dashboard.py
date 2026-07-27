@@ -47,6 +47,9 @@ def collect() -> dict:
     sc = R / "state" / "SCREENS.md"
     ms = re.search(r"Итого кадров: (\d+) · приложений: (\d+)", sc.read_text(encoding="utf-8")) if sc.exists() else None
     d["screens"] = {"frames": int(ms.group(1)) if ms else 0, "apps": int(ms.group(2)) if ms else 0}
+    ap = _j(R / "appstore" / "points.json", [])
+    ck = (R / "appstore" / "CHECKLIST.md")
+    d["appstore"] = {"points": len(ap), "have": ck.exists()}
     br = (ROOT / "briefs" / "latest.md")
     d["brief"] = br.read_text(encoding="utf-8").splitlines()[0].replace("# ", "") if br.exists() else ""
     bd = _j(ROOT / "certificates" / "iskcon" / "badge.json", {})
@@ -95,6 +98,7 @@ def render(d: dict):
           f"| SF Symbols | **{d['symbols']}** символов (macOS-плечо) |",
           f"| Кадротека | {d['screens']['frames']} кадров · {d['screens']['apps']} приложений |",
           f"| Живой взгляд | страниц в эфире: {d['live']['pages']} |",
+          f"| Страж App Store (M5) | {'пунктов ' + str(d['appstore']['points']) + ' · чек-лист готов' if d['appstore']['have'] else 'первый прогон впереди'} |",
           f"| Big7-бриф (M6) | {d['brief'] or 'первый — в понедельник'} |",
           f"| Сертификат (M3) | {d['certificate'] or 'не выдан'} |",
           f"| Монитор прода | {('деплой ' + d['monitor'].get('sha','')[:9] + ' · сейчас ' + str(d['monitor'].get('now')) + ' · новых ' + str(d['monitor'].get('new')) + ' · закрыто ' + str(d['monitor'].get('gone'))) if d.get('monitor') else 'первого снятия не было'} |",
