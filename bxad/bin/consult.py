@@ -39,7 +39,8 @@ def strip_html(raw: str) -> str:
     return re.sub(r"\s+", " ", _html.unescape(raw)).strip()
 
 DELAY = 1.0
-RENDER_FIRMS = {"mckinsey", "bain"}  # их хабы собираются скриптом — берём браузером
+RENDER_FIRMS = {"mckinsey", "bain"}
+BLOCK_PATH = re.compile(r"/(account|login|profile|search|careers?|contact|privacy|legal|cookies|subscribe|preference|rss)\b|\?", re.I)  # их хабы собираются скриптом — берём браузером
 LINK = re.compile(r'href="([^"#]+)"', re.I)
 IMP = re.compile(r"\b(should|must|need(?:s)? to|it is essential|imperative|"
                  r"companies that [^.]{10,80} outperform|leaders (?:should|must|need))\b", re.I)
@@ -108,7 +109,7 @@ def run(root: Path, budget: int = None, fixtures: Path = None) -> dict:
     if lib.exists():
         for ln in lib.read_text(encoding="utf-8").splitlines():
             try:
-                seen_at.add(json.loads(ln)["at"] + "|" + json.loads(ln)["text"][:60])
+                seen_at.add(json.loads(ln)["text"][:100])
             except Exception:
                 pass
     frames_c = Counter(st.get("frames", {}))
@@ -129,6 +130,9 @@ def run(root: Path, budget: int = None, fixtures: Path = None) -> dict:
         cap = per_render if firm in RENDER_FIRMS else per
         while fs["frontier"] and steps < cap:
             url = fs["frontier"].pop(0)
+            if BLOCK_PATH.search(url):
+                vis.add(url)
+                continue
             if url in vis and url not in fs.get("_seeds", []):
                 continue
             vis.add(url)
@@ -169,12 +173,12 @@ def run(root: Path, budget: int = None, fixtures: Path = None) -> dict:
             laws, frames = mine(text, url)
             for fr in frames:
                 frames_c[fr] += 1
-            fresh = [l for l in laws if (l["at"] + "|" + l["text"][:60]) not in seen_at]
+            fresh = [l for l in laws if l["text"][:100] not in seen_at]
             if fresh:
                 with lib.open("a", encoding="utf-8") as fh:
                     for l in fresh:
                         fh.write(json.dumps({"firm": firm, "ts": datetime.now(timezone.utc).isoformat(timespec="seconds"), **l}, ensure_ascii=False) + "\n")
-                        seen_at.add(l["at"] + "|" + l["text"][:60])
+                        seen_at.add(l["text"][:100])
                 fs["laws"] += len(fresh)
                 new_laws += len(fresh)
             host = urllib.parse.urlparse(url).netloc
@@ -182,7 +186,7 @@ def run(root: Path, budget: int = None, fixtures: Path = None) -> dict:
                 u = urllib.parse.urljoin(url, h.split("?")[0])
                 pu = urllib.parse.urlparse(u)
                 if pu.netloc == host and pu.scheme.startswith("http") and u not in vis \
-                        and len(fs["frontier"]) < 4000 and not re.search(r"\.(pdf|jpg|png|zip|mp4)$", u, re.I):
+                        and len(fs["frontier"]) < 4000 and not re.search(r"\.(pdf|jpg|png|zip|mp4)$", u, re.I) and not BLOCK_PATH.search(u):
                     fs["frontier"].append(u)
         if firm in RENDER_FIRMS and steps and not fs["frontier"] and firm not in st["errors"]:
             st["errors"][firm] = f"свидетельство: страниц {steps}, html {len(html) if 'html' in dir() else 0}b, ссылок host=0 — похоже на бот-заслон; текст: {mine(strip_html(html), url)[1] if 'html' in dir() else ''}"[:200] if steps else ""
