@@ -620,6 +620,15 @@ def cmd_selftest(root: Path) -> int:
     finally:
         shutil.rmtree(tmpc, ignore_errors=True)
 
+    print("SELFTEST · кит (очередь Sketch-китов)")
+    import figkit as fk
+    names = ["tvOS-18-Design-Templates-Sketch.dmg", "visionOS-2-Design-Templates-Sketch.dmg",
+             "tvOS-18-Production-Templates-Photoshop.dmg", "Bezel-iPhone-17.dmg",
+             "tvOS-18-Production-Templates-Sketch.dmg"]
+    check("очередь: следующий невзятый Sketch-кит, Photoshop/безель мимо, по одному",
+          fk.pick_targets(names, {"tvOS-18-Design-Templates-Sketch.dmg"}) == ["tvOS-18-Production-Templates-Sketch.dmg"]
+          and fk.pick_targets(names, set(names)) == [])
+
     print("SELFTEST · служба M1 (парсер диффа)")
     import review as review_mod
     patch = "@@ -1,2 +1,4 @@\n context\n+.bad { color: #8E8E8E; }\n+.ok { color: var(--x); }\n-old line\n context2\n@@ -10 +12,2 @@\n+.later { box-shadow: 0 10px 30px rgba(0,0,0,.5); }"

@@ -140,6 +140,12 @@ def _extract_container(blob: bytes, suffix: str, tmp: Path) -> bytes:
     return sk[0].read_bytes()
 
 
+def pick_targets(all_names: list, done: set) -> list:
+    """Очередь китов: только контейнеры со Sketch внутри, по одному за прогон."""
+    cands = [n for n in all_names if KITWORD.search(n) and "Sketch" in n]
+    return sorted(n for n in cands if n not in done)[:1]
+
+
 def run_sketch_arm(root: Path, force=False, fixtures: Path = None) -> dict:
     reg = root / "registry"
     kdir = reg / "standards" / "kit"
@@ -153,8 +159,9 @@ def run_sketch_arm(root: Path, force=False, fixtures: Path = None) -> dict:
         snap = reg / "snapshots" / "design-resources.txt"
         page_sha = json.loads((reg / "state" / "watch-state.json").read_text(encoding="utf-8")) \
             .get("design-resources", {}).get("sha", "")
-        if not force and st.get("page_sha") == page_sha:
-            return {"status": "без изменений — кит не перекачивался", "kits": st.get("kits", [])}
+        done = set(st.get("done", []))
+        if not force and st.get("page_sha") == page_sha and not pick_targets(st.get("links_seen", []), done):
+            return {"status": "без изменений — очередь китов пуста", "kits": st.get("kits", [])}
         if not _robots_ok(RES_URL):
             return {"status": "robots-disallow", "kits": []}
         html = _get(RES_URL)
@@ -172,17 +179,18 @@ def run_sketch_arm(root: Path, force=False, fixtures: Path = None) -> dict:
             if KITWORD.search(fn):
                 url = href if href.startswith("http") else "https://developer.apple.com" + href
                 name = url.rsplit("/", 1)[-1]
-                try:
-                    links.append((name, _get(url, binary=True, timeout=900)))
-                except Exception as e:
-                    links.append((name + "!download", str(e).encode()))
+                if name in pick_targets(all_names, done):
+                    try:
+                        links.append((name, _get(url, binary=True, timeout=900)))
+                    except Exception as e:
+                        links.append((name + "!download", str(e).encode()))
         if not links:
-            return {"status": "ссылок на iOS-кит не найдено (страница изменилась?)", "kits": []}
+            return {"status": "очередь китов пуста (все Sketch-киты разобраны)", "kits": st.get("kits", [])}
     kits, arm_errors, fonts = [], [], []
     with tempfile.TemporaryDirectory() as td:
         if fixtures is None and font_links:
             fonts = run_fonts_arm(root, font_links[:3], Path(td))
-        for name, blob in links[:2]:
+        for name, blob in links[:1]:
             try:
                 if name.endswith("!download"):
                     raise RuntimeError("закачка: " + blob.decode(errors="replace")[:160])
@@ -196,7 +204,8 @@ def run_sketch_arm(root: Path, force=False, fixtures: Path = None) -> dict:
             except Exception as e:  # рука не убивает движок: ошибка = честная запись
                 arm_errors.append(f"{name}: {type(e).__name__}: {e}")
     st = {"page_sha": (page_sha if not arm_errors else st.get("page_sha", "")),
-          "kits": kits, "errors": arm_errors,
+          "done": sorted(set(st.get("done", [])) | {k["kit"] for k in kits}),
+          "kits": (st.get("kits", []) + kits), "errors": arm_errors,
           "links_seen": (all_names if fixtures is None else ["fixture"]),
           "fonts": fonts, "ts": _now()}
     stf.write_text(json.dumps(st, ensure_ascii=False, indent=1), encoding="utf-8")
