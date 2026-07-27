@@ -1,5 +1,5 @@
 {
- "ts": "2026-07-27 07:41 UTC",
+ "ts": "2026-07-27 07:45 UTC",
  "atlas": {
   "visited": 12700,
   "frontier": 53601,
@@ -42,7 +42,7 @@
  },
  "big7": {
   "pages": 161,
-  "laws": 252,
+  "laws": 97,
   "frames": 7
  },
  "base": "ios26.5-dark",
