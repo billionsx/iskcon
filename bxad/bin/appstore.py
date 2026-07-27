@@ -76,7 +76,7 @@ def run(project_root: Path, fetch: bool = True) -> dict:
         points = json.loads((out / "points.json").read_text(encoding="utf-8"))
         src = f"points.json прошлого прогона · пунктов {len(points)}"
     priv = repo_check(project_root, [r"privacy", r"конфиденциальн"])
-    supp = repo_check(project_root, [r"support", r"contact", r"поддержк", r"обратн"])
+    supp = repo_check(project_root, [r"mailto:", r"Поддержк", r"Связь:", r"href=\"/contact"])
     ts = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
     md = [f"# СТРАЖ APP STORE · чек-лист перед сабмитом — {ts}",
           f"Источник пунктов: {src}. Каждый пункт — дословный заголовок гайдлайна с адресом.", "",

@@ -155,6 +155,7 @@ export const ROUTES = {
   // ── Совместимость (только для 301) ──
   practice: () => "/sadhana",
   account: () => "/id",
+  privacy: () => "/privacy",
   lichnosti: () => "/hero",
   dhana: () => "/hero",
   book: (work: string, ...rest: string[]) => ["", work, ...rest].filter(Boolean).join("/"),

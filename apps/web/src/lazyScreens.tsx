@@ -46,6 +46,7 @@ export const JapaScreen = lazy(() => import("./JapaScreen"));
 export const SadhanaScreen = lazy(() => import("./SadhanaScreen"));
 export const VowScreen = lazy(() => import("./VowScreen"));
 export const DarshanScreen = lazy(() => import("./DarshanScreen"));
+export const PrivacyScreen = lazy(() => import("./PrivacyScreen"));
 export const DownloaderScreen = lazy(() => import("./DownloaderScreen"));
 export const StoriesToolScreen = lazy(() => import("./StoriesToolScreen"));
 export const DailyVerseScreen = lazy(() => import("./DailyVerseScreen"));

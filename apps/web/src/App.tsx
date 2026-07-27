@@ -9,7 +9,7 @@ import type { SVGProps, MouseEvent as ReactMouseEvent, PointerEvent as ReactPoin
 import {
   HomeScreen, EntityPage, AccountScreen, BooksHub, KirtansScreen, KathaScreen, AcharyaScreen, PracticeHub, DhamaScreen,
   BookDetailPage, BhajanDetailPage, KirtanArtistPage, ContentDetailPage, SearchScreen, FavoritesScreen,
-  NotesScreen, NoteDetail, BookLoaderPage, CartScreen, JapaScreen, SadhanaScreen, VowScreen, DarshanScreen,
+  NotesScreen, NoteDetail, BookLoaderPage, CartScreen, JapaScreen, SadhanaScreen, VowScreen, DarshanScreen, PrivacyScreen,
   DownloaderScreen, StoriesToolScreen, DailyVerseScreen, EkadashiScreen, MyProgressScreen,
   CenterScreen, MyCentersScreen, CenterEditor, CenterSchedule, CenterDeities, CenterEvents,
   CenterModeration, CenterPhotos, PrasadamScreen, RecipeDetail, CookbookScreen, DhamaDetailPage,
@@ -1143,6 +1143,7 @@ export default function App() {
   const [openVow, setOpenVow] = useState(false);
   const [openDarshan, setOpenDarshan] = useState(false);
   const [openDailyVerse, setOpenDailyVerse] = useState(false);
+  const [openPrivacy, setOpenPrivacy] = useState(false);
   const [openEkadashi, setOpenEkadashi] = useState(false);
   const [openProgress, setOpenProgress] = useState(false);
   const [openCenter, setOpenCenter] = useState<string | null>(null);
@@ -1312,7 +1313,7 @@ const RESERVED: readonly string[] = [
     const clean = (path || "/").replace(/\/+$/, "") || "/";
     if (clean === "/donate") { setDonate(true); return; }   // оверлей доната — подложку не трогаем
     setDonate(false);
-    setOpenBook(null); setBookTarget(null); setOpenBhajan(null); setOpenKirtanArtist(null); setOpenCatalog(false); setOpenContent(null); setOpenAdmin(false); setOpenEntity(null); setOpenCollection(null); setOpenFavorites(false); setOpenSearch(false); setOpenNotes(false); setOpenNoteId(null); setOpenCart(false); setOpenJapa(false); setOpenDiary(false); setOpenVow(false); setOpenDarshan(false); setOpenDailyVerse(false); setOpenEkadashi(false); setOpenProgress(false); setPrasadamSection(null); setPrasadamRecipe(null); setOpenCookbook(false); setCookbookChapter(null); setOpenCenter(null); setOpenMyCenters(false); setOpenCenterNew(false); setOpenCenterEdit(null); setOpenCenterSchedule(null); setOpenCenterDeities(null); setOpenCenterEvents(null); setOpenCenterPhotos(null); setOpenModeration(false); setOpenDhama(null); setOpenTirtha(null); setOpenDownloader(false); setOpenStoriesTool(false); setOpenPost(null);
+    setOpenBook(null); setBookTarget(null); setOpenBhajan(null); setOpenKirtanArtist(null); setOpenCatalog(false); setOpenContent(null); setOpenAdmin(false); setOpenEntity(null); setOpenCollection(null); setOpenFavorites(false); setOpenSearch(false); setOpenNotes(false); setOpenNoteId(null); setOpenCart(false); setOpenJapa(false); setOpenDiary(false); setOpenVow(false); setOpenDarshan(false); setOpenDailyVerse(false); setOpenPrivacy(false); setOpenEkadashi(false); setOpenProgress(false); setPrasadamSection(null); setPrasadamRecipe(null); setOpenCookbook(false); setCookbookChapter(null); setOpenCenter(null); setOpenMyCenters(false); setOpenCenterNew(false); setOpenCenterEdit(null); setOpenCenterSchedule(null); setOpenCenterDeities(null); setOpenCenterEvents(null); setOpenCenterPhotos(null); setOpenModeration(false); setOpenDhama(null); setOpenTirtha(null); setOpenDownloader(false); setOpenStoriesTool(false); setOpenPost(null);
     const seg0 = clean.split("/")[1] ?? "";
 
     /* ЗКН-Н029 — ОСНОВА СТАВИТСЯ ПЕРВОЙ, ДО РАЗБОРА ОВЕРЛЕЯ.
@@ -1445,6 +1446,7 @@ const RESERVED: readonly string[] = [
       if (s1 === "all") { setOpenDarshan(true); return; }
       setTab("sadhana"); setOpenDarshan(false); return;
     }
+    if (clean === "/privacy") { setOpenPrivacy(true); return; }
     if (clean === "/verse") { setOpenDailyVerse(true); return; }
     if (clean === "/ekadashi") { setOpenEkadashi(true); return; }
     if (clean === "/progress") { setOpenProgress(true); return; }
@@ -1856,7 +1858,7 @@ const RESERVED: readonly string[] = [
     // адрес личности — в КОРНЕ (ЗКН-Н023). pushUrl, чтобы «назад» вернул откуда пришёл.
     if (typeof window !== "undefined" && window.location.pathname !== "/" + id) pushUrl("/" + id);
   }
-  const tabBarVisible = !openAdmin && !openBook && !openBhajan && !openKirtanArtist && !openCatalog && !openContent && !openEntity && !openCollection && !openFavorites && !openSearch && !openNotes && !openNoteId && !openCart && !openJapa && !openDiary && !openVow && !openDarshan && !openDailyVerse && !openEkadashi && !openProgress && !prasadamSection && !prasadamRecipe && !openCookbook && !cookbookChapter && !openCenter && !openMyCenters && !openCenterNew && !openCenterEdit && !openCenterSchedule && !openCenterDeities && !openCenterEvents && !openCenterPhotos && !openModeration && !openDhama && !openTirtha && !openDownloader && !openStoriesTool;
+  const tabBarVisible = !openAdmin && !openBook && !openBhajan && !openKirtanArtist && !openCatalog && !openContent && !openEntity && !openCollection && !openFavorites && !openSearch && !openNotes && !openNoteId && !openCart && !openJapa && !openDiary && !openVow && !openDarshan && !openDailyVerse && !openPrivacy && !openEkadashi && !openProgress && !prasadamSection && !prasadamRecipe && !openCookbook && !cookbookChapter && !openCenter && !openMyCenters && !openCenterNew && !openCenterEdit && !openCenterSchedule && !openCenterDeities && !openCenterEvents && !openCenterPhotos && !openModeration && !openDhama && !openTirtha && !openDownloader && !openStoriesTool;
   // Главное нижнее меню остаётся поверх страниц-оверлеев со скроллом (книга, ПКЛ,
   // контент, каталоги) — чтобы из любой главы/карточки можно было перейти в раздел.
   // Читалки (fixed, z70) и модалки перекрывают пилюлю (z40) сами → конфликта нет.
@@ -1944,6 +1946,10 @@ const RESERVED: readonly string[] = [
         ) : openDarshan ? (
           <main style={{ position: "relative", height: "100dvh", overflow: "hidden" }}>
             <DarshanScreen onBack={goBack} />
+          </main>
+        ) : openPrivacy ? (
+          <main style={{ position: "relative", height: "100dvh", overflow: "hidden" }}>
+            <PrivacyScreen onBack={goBack} />
           </main>
         ) : openDailyVerse ? (
           <main style={{ position: "relative", height: "100dvh", overflow: "hidden" }}>

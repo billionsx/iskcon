@@ -25,7 +25,7 @@
  */
 import { useCallback, useEffect, useState, type CSSProperties, type ReactNode } from "react";
 import { useAuth } from "./account/store";
-import { replaceUrl } from "./nav";
+import { replaceUrl, pushUrl } from "./nav";
 import { ROUTES, SITE_HOST } from "./routes";
 import { accountClient, ApiError, type DevoteeLevel, type Initiation, type IdentityItem } from "./account/api";
 import { ProviderButtons, PROVIDER_META, PROVIDER_NAME, providerGlyph, oauthStartUrl, useAuthProviders, type ProviderId } from "./account/providers";
@@ -744,6 +744,7 @@ function AboutSheet({ onClose }: { onClose: () => void }) {
       <Groups>
         <Group footer="Приложение не показывает рекламу и не продаёт данные. Всё, что вы отмечаете, остаётся вашим.">
           <Row title="Сборка" value={version} chevron={false} />
+          <Row title="Конфиденциальность" onClick={() => { onClose(); pushUrl(ROUTES.privacy()); }} />
           <Row title="Сайт" value={SITE_HOST} chevron={false} last />
         </Group>
       </Groups>
