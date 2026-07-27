@@ -1,7 +1,7 @@
 name: bxad-monitor
 on:
   workflow_run:
-    workflows: ["deploy-web"]
+    workflows: ["Deploy Web (Cloudflare)"]
     types: [completed]
   workflow_dispatch:
 concurrency:
