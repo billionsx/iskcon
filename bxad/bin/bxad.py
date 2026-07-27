@@ -644,6 +644,32 @@ def cmd_selftest(root: Path) -> int:
     check("чистый проект → 100 · A+", cert.score_of({"strict": 0, "report": 0, "live": 0, "verify_diverg": 0}) == 100.0
           and cert.grade(100.0) == "A+")
 
+    print("SELFTEST · служба M6 (бриф недели)")
+    import brief as brief_mod
+    tmpb = Path(tempfile.mkdtemp(prefix="bxad-b-"))
+    try:
+        (tmpb / "registry" / "library").mkdir(parents=True)
+        (tmpb / "registry" / "bizlab").mkdir(parents=True)
+        (tmpb / "registry" / "state").mkdir(parents=True)
+        (tmpb / "registry" / "state" / "CHANGELOG.md").write_text("", encoding="utf-8")
+        (tmpb / "registry" / "library" / "big7.jsonl").write_text(json.dumps(
+            {"firm": "bain", "text": "Companies must adopt zero-based budgeting.",
+             "at": "page:https://fixture/1"}, ensure_ascii=False) + "\n", encoding="utf-8")
+        (tmpb / "registry" / "bizlab" / "state.json").write_text(json.dumps(
+            {"firms": {}, "frames": {"ZBB": 21, "NPS": 3}}), encoding="utf-8")
+        (tmpb / "registry" / "bizlab" / "frames-week.json").write_text(json.dumps({"ZBB": 19}), encoding="utf-8")
+        import importlib
+        brief_mod.ROOT = tmpb
+        rb = brief_mod.run()
+        latest = (tmpb / "briefs" / "latest.md").read_text(encoding="utf-8")
+        check("бриф: положение дословно с адресом, дифф рамки +2, канонический вопрос ZBB",
+              "zero-based budgeting" in latest and "page:https://fixture/1" in latest
+              and "ZBB: +2 (всего 21)" in latest and "статьи расходов" in latest and rb["grew"] >= 1)
+        brief_mod.ROOT = ROOT
+    finally:
+        brief_mod.ROOT = ROOT
+        shutil.rmtree(tmpb, ignore_errors=True)
+
     print("SELFTEST · конституция (ст. 45: полнота мандата машиной)")
     const_t = (root / "CONSTITUTION.md").read_text(encoding="utf-8")
     missing = [d for d, anchor in FOUNDER_MANDATE.items() if anchor not in const_t]

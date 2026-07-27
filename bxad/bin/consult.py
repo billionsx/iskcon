@@ -23,6 +23,7 @@ import re
 import sys
 import time
 import urllib.parse
+from datetime import datetime, timezone
 import urllib.request
 from collections import Counter
 from pathlib import Path
@@ -172,7 +173,7 @@ def run(root: Path, budget: int = None, fixtures: Path = None) -> dict:
             if fresh:
                 with lib.open("a", encoding="utf-8") as fh:
                     for l in fresh:
-                        fh.write(json.dumps({"firm": firm, **l}, ensure_ascii=False) + "\n")
+                        fh.write(json.dumps({"firm": firm, "ts": datetime.now(timezone.utc).isoformat(timespec="seconds"), **l}, ensure_ascii=False) + "\n")
                         seen_at.add(l["at"] + "|" + l["text"][:60])
                 fs["laws"] += len(fresh)
                 new_laws += len(fresh)
@@ -183,6 +184,8 @@ def run(root: Path, budget: int = None, fixtures: Path = None) -> dict:
                 if pu.netloc == host and pu.scheme.startswith("http") and u not in vis \
                         and len(fs["frontier"]) < 4000 and not re.search(r"\.(pdf|jpg|png|zip|mp4)$", u, re.I):
                     fs["frontier"].append(u)
+        if firm in RENDER_FIRMS and steps and not fs["frontier"] and firm not in st["errors"]:
+            st["errors"][firm] = f"свидетельство: страниц {steps}, html {len(html) if 'html' in dir() else 0}b, ссылок host=0 — похоже на бот-заслон; текст: {mine(strip_html(html), url)[1] if 'html' in dir() else ''}"[:200] if steps else ""
         fs.pop("_seeds", None)
         fs["visited"] = sorted(vis)
         st["frames"] = dict(frames_c)
