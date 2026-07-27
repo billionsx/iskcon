@@ -99,8 +99,9 @@ def _robots_ok(url: str) -> bool:
     if rp is None:
         rp = urllib.robotparser.RobotFileParser()
         try:
-            rp.set_url(host + "/robots.txt")
-            rp.read()
+            req = urllib.request.Request(host + "/robots.txt", headers={"User-Agent": UA})
+            with urllib.request.urlopen(req, timeout=8) as r:  # без таймаута Akamai держит сокет вечно (733s-урок семёрки)
+                rp.parse(r.read().decode("utf-8", "replace").splitlines())
         except Exception:
             rp = None
         _ROBOTS[host] = rp

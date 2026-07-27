@@ -30,7 +30,9 @@ jobs:
       - name: "Большая семёрка — познание бизнес-логики (ст. 55)"
         timeout-minutes: 12
         continue-on-error: true
-        run: python3 bxad/bin/bxad.py consult || true
+        run: |
+          python3 bxad/bin/bxad.py consult > bxad/registry/bizlab/last-run.log 2>&1 || echo "ШАГ УПАЛ RC=$?" >> bxad/registry/bizlab/last-run.log
+          tail -4 bxad/registry/bizlab/last-run.log
 
       - name: "Кит — величины официальных китов (ст. 36.1)"
         env:
