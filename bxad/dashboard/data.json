@@ -1,5 +1,5 @@
 {
- "ts": "2026-07-27 06:55 UTC",
+ "ts": "2026-07-27 07:40 UTC",
  "atlas": {
   "visited": 12700,
   "frontier": 53601,
@@ -25,6 +25,7 @@
   "frames": 195,
   "apps": 10
  },
+ "brief": "",
  "certificate": "81.5 · C",
  "monitor": {
   "ts": "2026-07-26 20:12 UTC",
@@ -62,8 +63,8 @@
   },
   "service": {
    "done": 0,
-   "active": 3,
-   "queued": 5,
+   "active": 4,
+   "queued": 4,
    "blocked": 0,
    "partial": 1
   }
@@ -300,8 +301,8 @@
    {
     "id": "M6",
     "task": "Big7-бриф: еженедельные тезисы семёрки, применённые к продукту клиента",
-    "status": "queued",
-    "organ": "consult → digest→бриф",
+    "status": "active",
+    "organ": "bin/brief.py + bxad-brief.yml (пн 08:31 UTC): новые положения дословно с адресами · движение рамок · канонические вопросы",
     "article": "ст. 56"
    },
    {
