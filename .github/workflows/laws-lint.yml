@@ -25,6 +25,12 @@ jobs:
       - name: Гейт маркеров конфликта (ЗКН-Р016)
         run: python3 tools/conflict-lint.py
 
+      - name: Канон стран — суд над таблицей (ЗКН-Р010b)
+        run: python3 tools/countries.py --selftest
+
+      - name: Гейт географии — статика на каноне (ЗКН-Р010b)
+        run: python3 tools/geo-lint.py
+
       - name: Гейт связи с департаментом (ЗКН-Д030)
         run: python3 tools/eyes-link-lint.py
 

@@ -784,43 +784,75 @@ CHECKS = [
     },
     {
         "law": "ЗКН-Р010b",
-        "name": "страна не по канону ISO 3166 (псевдоним, опечатка или регион вместо страны)",
-        # Слепое место Р010, вскрытое 28.07.2026: его нормализация видит только
-        # регистр и двойные пробелы. «United States» (2 центра) и «United States
-        # of America» (66) дают РАЗНЫЕ ключи — гейт молчал, а фильтр всё равно
-        # троился. Именно так США и жили под тремя написаниями, хотя закон Р010
-        # уже стоял.
+        "name": "страна не по канону ISO 3166 (псевдоним, опечатка, код или регион)",
+        # Слепое место Р010, вскрытое 28.07.2026: его нормализация видела только
+        # регистр и двойные пробелы. «United States» и «United States of America»
+        # давали РАЗНЫЕ ключи — гейт молчал, а фильтр троился.
+        #
+        # Канон ОДИН на весь продукт и живёт в `tools/countries.py`; этот SQL
+        # СОБРАН из него же генератором ниже, поэтому второго определения канона
+        # не существует (ЗКН-Э005 инструмента). Файловую половину географии
+        # (фиды календаря, каталоги мест) стережёт `tools/geo-lint.py` тем же
+        # каноном.
         #
         # Псевдонимы не выводятся правилом: «Niger» — префикс «Nigeria», но это
         # РАЗНЫЕ страны, и префиксная эвристика красила бы гейт вечно. Поэтому
-        # канон ЯВНЫЙ и пополняется фактом: сюда вносится только та короткая
-        # форма, которая реально встретилась в базе рядом с полным именем.
+        # таблица явная и пополняется только встреченным в данных.
         "sql": """WITH alias(bad, good) AS (VALUES
-                    ('United States','United States of America'),
-                    ('USA','United States of America'),
-                    ('US','United States of America'),
-                    ('U.S.A.','United States of America'),
-                    ('UK','United Kingdom'),
-                    ('Great Britain','United Kingdom'),
-                    ('England','United Kingdom'),
-                    ('Scotland','United Kingdom'),
-                    ('Wales','United Kingdom'),
-                    ('Northern Ireland','United Kingdom'),
-                    ('Netherland','Netherlands'),
-                    ('Holland','Netherlands'),
-                    ('Burma','Myanmar'),
-                    ('Burma(Myanmar)','Myanmar'),
-                    ('Swaziland','Eswatini'),
-                    ('Macedonia','North Macedonia'),
+                    ('AM','Armenia'),
+                    ('AZ','Azerbaijan'),
+                    ('Antigua','Antigua and Barbuda'),
+                    ('BY','Belarus'),
+                    ('Balkans','Slovenia'),
                     ('Bosina & Herzegovina','Bosnia and Herzegovina'),
                     ('Bosnia','Bosnia and Herzegovina'),
-                    ('Balkans','—регион, не страна: подставить страну города'),
-                    ('Europe','—регион, не страна'),
-                    ('Asia','—регион, не страна'))
+                    ('Burma','Myanmar'),
+                    ('Burma(Myanmar)','Myanmar'),
+                    ('Cauman','Cayman Islands'),
+                    ('Comoro','Comoros'),
+                    ('Czech','Czech Republic'),
+                    ('Czechia','Czech Republic'),
+                    ('Djibouty','Djibouti'),
+                    ('EE','Estonia'),
+                    ('England','United Kingdom'),
+                    ('Faroe','Faroe Islands'),
+                    ('GE','Georgia'),
+                    ('Great Britain','United Kingdom'),
+                    ('Holland','Netherlands'),
+                    ('KG','Kyrgyzstan'),
+                    ('KZ','Kazakhstan'),
+                    ('LT','Lithuania'),
+                    ('LV','Latvia'),
+                    ('Lesser Sunda Islands','Indonesia'),
+                    ('MD','Moldova'),
+                    ('Macedonia','North Macedonia'),
+                    ('Mahe','Seychelles'),
+                    ('Miquelon','Saint Pierre and Miquelon'),
+                    ('Nairobi','Kenya'),
+                    ('Netherland','Netherlands'),
+                    ('Northern Ireland','United Kingdom'),
+                    ('Ponape','Micronesia'),
+                    ('RU','Russia'),
+                    ('Saint Vincent','Saint Vincent and the Grenadines'),
+                    ('Sao Tome','Sao Tome and Principe'),
+                    ('Scotland','United Kingdom'),
+                    ('Swaziland','Eswatini'),
+                    ('TJ','Tajikistan'),
+                    ('TM','Turkmenistan'),
+                    ('Tahiti','French Polynesia'),
+                    ('Tunis','Tunisia'),
+                    ('U.S.A.','United States of America'),
+                    ('UA','Ukraine'),
+                    ('UK','United Kingdom'),
+                    ('US','United States of America'),
+                    ('USA','United States of America'),
+                    ('UZ','Uzbekistan'),
+                    ('United States','United States of America'),
+                    ('Wales','United Kingdom'))
                   SELECT COUNT(*) AS n FROM places p JOIN alias a ON p.country = a.bad""",
         "baseline": 0,
-        "hint": "→ страна пишется полным каноном; короткая форма ведёт к лишней "
-                "вкладке фильтра (ЗКН-Р010b)",
+        "hint": "→ страна пишется каноном ISO 3166 из tools/countries.py; "
+                "короткая форма, код или город дают лишнюю вкладку фильтра (ЗКН-Р010b)",
     },
     {
         "law": "ЗКН-Н023",

@@ -17,6 +17,9 @@ Skips a city if its feed file already exists (preserves curated + corrected feed
 import sys, os, json, re, signal
 from datetime import datetime
 from zoneinfo import ZoneInfo
+import sys as _sys, os as _os
+_sys.path.insert(0, _os.path.join(_os.path.dirname(_os.path.abspath(__file__)), '..', 'tools'))
+import countries  # ЗКН-Р010b: канон стран один на весь продукт
 
 GA = sys.argv[1]
 TSV = sys.argv[2]
@@ -151,7 +154,7 @@ def main():
                 failed += 1
                 continue
             doc = {"slug": slug,
-                   "location": {"name": name, "country": cc, "lat": lat, "lng": lng},
+                   "location": {"name": name, "country": countries.canon(cc), "lat": lat, "lng": lng},
                    "tz": tzn, "source": "GCal (Gaurabda) — GBC Vaisnava Calendar; GeoNames",
                    "events": ev}
             with open(fp, "w") as o:

@@ -56,6 +56,9 @@ import os
 import re
 import signal
 import sys
+import sys as _sys, os as _os
+_sys.path.insert(0, _os.path.join(_os.path.dirname(_os.path.abspath(__file__)), '..', '..', 'tools'))
+import countries  # ЗКН-Р010b: канон стран один на весь продукт
 import time
 from datetime import datetime
 from multiprocessing import Pool
@@ -291,7 +294,9 @@ def build(sl):
 
     return (sl, {
         "slug": sl,
-        "location": feed.get("location") or {},
+        "location": {**(feed.get("location") or {}),
+                     **({"country": countries.canon((feed.get("location") or {}).get("country"))}
+                        if (feed.get("location") or {}).get("country") else {})},
         "source": "GCAL gaurabda (GBC Vaishnava Calendar Committee)",
         "from": FROM, "to": TO,
         "t": list(dic.keys()),
