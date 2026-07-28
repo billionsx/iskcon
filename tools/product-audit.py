@@ -196,9 +196,14 @@ def check_b011():
     t_st = st.read_text(encoding="utf-8") if st.exists() else ""
     t_bd = bd.read_text(encoding="utf-8") if bd.exists() else ""
 
-    if "textPath" not in t_np or "hierarchical" not in t_np:
+    # Иерархия проверяется КАНОНИЧЕСКИМ тестом `isHierBook(` из bookPath.ts
+    # (ЗКН-Н092 — единственный тест иерархии). Раньше искалось слово
+    # «hierarchical»: его давал любой комментарий, и гейт охранял орфографию,
+    # а не закон — плеер выводил иерархию из наличия `lila` у дорожки.
+    if "textPath" not in t_np or "isHierBook(" not in t_np:
         bad.append(("player/NowPlaying.tsx",
-                    "плеер не строит адрес текста с учётом иерархии — «Читать» уронит на обложку"))
+                    "плеер не строит адрес текста каноническим тестом иерархии "
+                    "(isHierBook) — «Читать» уронит на обложку"))
     if "onOpenPath?.(textPath)" not in t_np:
         bad.append(("player/NowPlaying.tsx",
                     "кнопка «Читать» не ведёт в место звучания (ЗКН-Б011)"))

@@ -24,8 +24,16 @@ export function resolveTheme(pref: ThemePref = getThemePref()): "light" | "dark"
 
 function apply(theme: "light" | "dark"): void {
   document.documentElement.setAttribute("data-theme", theme);
+  /* ЗКН-Д001: цвет строки состояния — ТОТ ЖЕ токен холста, что и у страницы.
+   * Два литерала (#000000/#FFFFFF) были третьим определением холста: смена
+   * канона в ui/globals.css оставила бы строку состояния прежней. Читаем
+   * применённое значение --color-bg — оно уже верное для обеих тем. */
   const meta = document.querySelector('meta[name="theme-color"]');
-  if (meta) meta.setAttribute("content", theme === "dark" ? "#000000" : "#FFFFFF");
+  if (meta) {
+    const canvas = getComputedStyle(document.documentElement)
+      .getPropertyValue("--color-bg").trim();
+    if (canvas) meta.setAttribute("content", canvas);
+  }
 }
 
 export function setThemePref(pref: ThemePref): void {

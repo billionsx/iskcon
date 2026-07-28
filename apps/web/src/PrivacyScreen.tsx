@@ -2,6 +2,7 @@
  * Каждый пункт — факт кода: oauth.ts (Google/Apple: имя, e-mail) ·
  * track.ts + /me/bookmark (прогресс в D1) · localStorage (настройки/заметки)
  * · push.ts (endpoint подписки) · сторонних трекеров и рекламной аналитики нет. */
+import { SITE_HOST } from "./routes";
 import { GroupedCanvas, Groups, Group, Row } from "./ui/ios";
 
 const INK = "var(--color-label)";
@@ -28,7 +29,7 @@ export default function PrivacyScreen({ onBack }: { onBack: () => void }) {
       <GroupedCanvas>
         <Groups>
           <Group header="Оператор">
-            <Row title="ISKCON ONE LOVE · brajs.com" subtitle="Связь: ceo@billionsx.com" />
+            <Row title={`ISKCON ONE LOVE · ${SITE_HOST}`} subtitle="Связь: ceo@billionsx.com" />
           </Group>
           <Group header="Что мы храним">
             <div style={{ padding: "10px 16px 4px" }}>

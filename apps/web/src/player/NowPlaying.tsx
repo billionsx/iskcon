@@ -37,7 +37,7 @@ import { requestNote } from "../notes";
 import { BOOKS, bookFullTitle, bookSlug } from "../books";
 import { ROUTES, url, ORIGIN as SITE_ORIGIN } from "../routes";
 // ЗКН-Н092: адрес книги строит один модуль.
-import { bookPath, chapterPath, versePath } from "../bookPath";
+import { bookPath, chapterPath, isHierBook, versePath } from "../bookPath";
 
 const INK = "var(--color-label)";
 const INK2 = "var(--color-label-2)";
@@ -103,7 +103,12 @@ export function NowPlaying({ onOpenPath, onOpenBhajan, onDonate }: {
   /* ЗКН-Б011: аудио и текст — ОДНА книга. Кнопка ведёт туда, где играет звук. */
   const ch = p.track?.kind === "chapter" ? (p.track?.chapter ?? null) : null;
   // ЗКН-Н092: путь строит общий модуль; ключ раздела иерархической книги — «work.лила.глава».
-  const trackChKey = { divisionId: p.track?.lila ? `${p.book}.${p.track.lila}.${ch}` : null, number: ch };
+  // Иерархия книги — ТОЛЬКО из реестра (isHierBook), не из наличия lila у дорожки:
+  // у плоской книги со случайным lila адрес складывался в «книга.лила.глава» и
+  // «Читать» уводило мимо главы.
+  const hier = isHierBook(p.book);
+  const div = p.track?.lila ?? null;
+  const trackChKey = { divisionId: hier && div ? `${p.book}.${div}.${ch}` : null, number: ch };
   const textPath = !isBook ? null
     : ch == null ? bookPath(p.book)
     : (p.track?.ref ? versePath(p.book, trackChKey, String(p.track.ref)) : null) ?? chapterPath(p.book, trackChKey);
