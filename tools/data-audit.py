@@ -784,7 +784,7 @@ CHECKS = [
     },
     {
         "law": "ЗКН-Р010b",
-        "name": "страна под ПСЕВДОНИМОМ (короткая форма мимо канона)",
+        "name": "страна не по канону ISO 3166 (псевдоним, опечатка или регион вместо страны)",
         # Слепое место Р010, вскрытое 28.07.2026: его нормализация видит только
         # регистр и двойные пробелы. «United States» (2 центра) и «United States
         # of America» (66) дают РАЗНЫЕ ключи — гейт молчал, а фильтр всё равно
@@ -802,7 +802,21 @@ CHECKS = [
                     ('U.S.A.','United States of America'),
                     ('UK','United Kingdom'),
                     ('Great Britain','United Kingdom'),
-                    ('England','United Kingdom'))
+                    ('England','United Kingdom'),
+                    ('Scotland','United Kingdom'),
+                    ('Wales','United Kingdom'),
+                    ('Northern Ireland','United Kingdom'),
+                    ('Netherland','Netherlands'),
+                    ('Holland','Netherlands'),
+                    ('Burma','Myanmar'),
+                    ('Burma(Myanmar)','Myanmar'),
+                    ('Swaziland','Eswatini'),
+                    ('Macedonia','North Macedonia'),
+                    ('Bosina & Herzegovina','Bosnia and Herzegovina'),
+                    ('Bosnia','Bosnia and Herzegovina'),
+                    ('Balkans','—регион, не страна: подставить страну города'),
+                    ('Europe','—регион, не страна'),
+                    ('Asia','—регион, не страна'))
                   SELECT COUNT(*) AS n FROM places p JOIN alias a ON p.country = a.bad""",
         "baseline": 0,
         "hint": "→ страна пишется полным каноном; короткая форма ведёт к лишней "

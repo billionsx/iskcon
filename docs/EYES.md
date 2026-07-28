@@ -14,11 +14,19 @@ git и в ветке `eyes-standalone` до её очистки). Перенос
 снимает живой взгляд с brajs.com, выдаёт пиксель-сертификат и гоняет по
 App Review Guidelines.
 
+Бейдж соответствия (обновляется выдачей сам):
+
+![BXE](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/billionsx/eyes/main/certificates/iskcon/badge.json)
+
+Копии сертификата в этом репозитории нет намеренно: выданный документ неизменен
+и живёт в реестре органа выдачи, а копия отстала бы от следующей выдачи.
+Подлинность проверяется отпечатком sha256 из реестра.
+
 Живые числа — по адресу, а не переписанные сюда (иначе разойдутся):
 
 | что | где смотреть |
 |---|---|
-| сертификат проекта | [`certificates/iskcon/latest.html`](https://github.com/billionsx/eyes/blob/main/certificates/iskcon/latest.html) · бейдж `certificates/iskcon/badge.json` |
+| сертификат проекта | [последний](https://github.com/billionsx/eyes/blob/main/certificates/iskcon/latest.html) · [реестр выдачи с отпечатками](https://github.com/billionsx/eyes/blob/main/certificates/iskcon/REGISTER.md) |
 | отчёт советника (находки AE) | [`registry/state/report-iskcon.md`](https://github.com/billionsx/eyes/blob/main/registry/state/report-iskcon.md) |
 | храповик долга | [`registry/state/ae-baseline.json`](https://github.com/billionsx/eyes/blob/main/registry/state/ae-baseline.json) |
 | эфир департамента | [vrajs.com](https://vrajs.com) · машинам [vrajs.com/data.json](https://vrajs.com/data.json) |
