@@ -25,6 +25,9 @@ jobs:
       - name: Гейт маркеров конфликта (ЗКН-Р016)
         run: python3 tools/conflict-lint.py
 
+      - name: Гейт связи с департаментом (ЗКН-Д030)
+        run: python3 tools/eyes-link-lint.py
+
       - name: Гейт расписаний (ЗКН-Ф024)
         run: |
           pip install --quiet pyyaml
