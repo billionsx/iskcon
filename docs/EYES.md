@@ -10,9 +10,18 @@ git и в ветке `eyes-standalone` до её очистки). Перенос
 
 Этот проект подключён к департаменту паспортом
 [`adapters/iskcon.json`](https://github.com/billionsx/eyes/blob/main/adapters/iskcon.json):
-департамент сам забирает код, проходит советником, держит храповик долга
-(сейчас 327 находок AE, только вниз), снимает живой взгляд с brajs.com,
-выдаёт пиксель-сертификат (95.0 · A) и гоняет по App Review Guidelines.
+департамент сам забирает код, проходит советником, держит храповик долга,
+снимает живой взгляд с brajs.com, выдаёт пиксель-сертификат и гоняет по
+App Review Guidelines.
+
+Живые числа — по адресу, а не переписанные сюда (иначе разойдутся):
+
+| что | где смотреть |
+|---|---|
+| сертификат проекта | [`certificates/iskcon/latest.html`](https://github.com/billionsx/eyes/blob/main/certificates/iskcon/latest.html) · бейдж `certificates/iskcon/badge.json` |
+| отчёт советника (находки AE) | [`registry/state/report-iskcon.md`](https://github.com/billionsx/eyes/blob/main/registry/state/report-iskcon.md) |
+| храповик долга | [`registry/state/ae-baseline.json`](https://github.com/billionsx/eyes/blob/main/registry/state/ae-baseline.json) |
+| эфир департамента | [vrajs.com](https://vrajs.com) · машинам [vrajs.com/data.json](https://vrajs.com/data.json) |
 
 Со стороны этого репозитория работают два файла:
 - `.github/workflows/eyes.yml` — ревью каждого PR по apps/web;
