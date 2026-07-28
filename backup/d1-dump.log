@@ -14,9 +14,9 @@
   collective_vows: 1
   content_blocks: 1470
   content_items: 170
-  darshan: 77
+  darshan: 80
   deities: 4
-  deploy_checks: 3099
+  deploy_checks: 3133
   dhama_clusters: 35
   dhamas: 3
   divisions: 1084
@@ -68,7 +68,7 @@
   sessions: 2
   shop_groups: 3
   shop_products: 9
-  tilda_assets: 82456
+  tilda_assets: 88347
   tilda_pages: 148
   tirtha_persons: 289
   tirthas: 660
@@ -82,6 +82,6 @@
   verses: 68816
   vraja_raw: 578
   works: 39
-✓ дамп готов за 261 c; строк всего: 581339
+✓ дамп готов за 432 c; строк всего: 587267
 rc=0
--rw-r--r-- 1 runner runner 40M Jul 27 06:05 d1.sql.gz
+-rw-r--r-- 1 runner runner 40M Jul 28 05:32 d1.sql.gz
