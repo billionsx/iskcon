@@ -31,8 +31,15 @@ App Review Guidelines.
 | храповик долга | [`registry/state/ae-baseline.json`](https://github.com/billionsx/eyes/blob/main/registry/state/ae-baseline.json) |
 | эфир департамента | [vrajs.com](https://vrajs.com) · машинам [vrajs.com/data.json](https://vrajs.com/data.json) |
 
-Со стороны этого репозитория работают два файла:
+Со стороны этого репозитория работают три файла:
 - `.github/workflows/eyes.yml` — ревью каждого PR по apps/web;
+- `.github/workflows/eyes-watch.yml` — надзор на КАЖДЫЙ коммит в main.
+  Здесь пишут прямо в ветку: за всё время один PR при тысяче с лишним
+  деплоев, и PR-ревью не срабатывало ни разу. Департамент берётся только
+  на чтение (разреженный клон `bin`, `adapters`, `registry/standards`),
+  храповик долга читается у него же — база одна на всех, копии здесь нет
+  намеренно. Рост долга по правилу — красный на коммите; деплой гейт не
+  роняет, перевод правил в строгий режим — решением основателя;
 - `.github/workflows/ping-eyes.yml` — пинг монитора после деплоя
   (нужен секрет `EYES_DISPATCH_TOKEN`, без него монитор ходит по расписанию).
 

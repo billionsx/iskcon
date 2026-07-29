@@ -84,6 +84,31 @@ if stale:
     errors.append("воркфлоу прежнего дома здесь: " + ", ".join(stale))
 
 # 5. пинг монитора
+# ── надзор на каждый коммит (второй вход: проект пишет прямо в main) ──
+watch = WF / "eyes-watch.yml"
+if not watch.exists():
+    errors.append("нет .github/workflows/eyes-watch.yml — надзор приходит только "
+                  "на pull request, а этот проект пишет прямо в main: департамент "
+                  "молчал бы не от чистоты, а от отсутствия повода")
+else:
+    w = read(watch)
+    if "billionsx/eyes" not in w:
+        errors.append("eyes-watch.yml не берёт департамент из billionsx/eyes")
+    if "registry/state/ae-baseline.json" not in w:
+        errors.append("eyes-watch.yml не читает храповик долга у департамента — "
+                      "надзор без базы не отличит рост долга от его погашения")
+    if "raw.githubusercontent.com/billionsx/eyes" not in w:
+        errors.append("храповик берётся не из репозитория департамента — "
+                      "две базы разойдутся, и настоящую будет не найти")
+
+# ── копий департамента здесь не заводится ──
+for stray, why in (("__eyes", "разреженный клон инструмента попал в репозиторий"),
+                   ("registry/state/ae-baseline.json", "копия храповика долга"),
+                   ("adapters", "копия паспортов департамента")):
+    if (ROOT / stray).exists():
+        errors.append(f"{stray}: {why} — у департамента и клиента одна копия, "
+                      "и она живёт в billionsx/eyes")
+
 ping = WF / "ping-eyes.yml"
 if ping.exists():
     t = read(ping)

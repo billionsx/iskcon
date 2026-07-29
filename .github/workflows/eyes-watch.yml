@@ -1,0 +1,101 @@
+name: eyes-watch
+# BILLIONS X EYES · НАДЗОР НА КАЖДЫЙ КОММИТ.
+#
+# Зачем этот файл рядом с `eyes.yml`. Тот приходит на pull request — а этот
+# проект пишет прямо в main: за всё время здесь один PR при тысяче с лишним
+# деплоев. Значит надзор департамента молчал не потому, что код чист, а
+# потому, что не наступал повод, которого он ждал. Молчание нельзя
+# предъявлять как чистоту.
+#
+# Как устроено. Департамент живёт в своём репозитории и сюда не переезжает:
+# он берётся ТОЛЬКО НА ЧТЕНИЕ, разреженным клоном (bin, adapters,
+# registry/standards). Ни одной строки инструмента в этом репозитории нет и
+# не появится — иначе получилось бы две копии департамента: судит один,
+# чинят другой.
+#
+# Храповик долга берётся оттуда же — `registry/state/ae-baseline.json`,
+# одна база на всех. Копии здесь нет намеренно: две базы разошлись бы, и
+# было бы не понять, какая настоящая. Ужать базу вправе только сам
+# департамент у себя; здесь она только читается.
+#
+# Правило: гейт НЕ роняет деплой. Он говорит красным на коммите, когда долг
+# по правилу вырос. Перевод правил в строгий режим — решением основателя
+# (паспорт `adapters/iskcon.json`, ст. 7.4 конституции департамента).
+on:
+  push:
+    branches: [main]
+    paths: ["apps/web/**"]
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: eyes-watch-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  watch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: "Департамент — на чтение, без переезда"
+        run: |
+          git clone -q --depth 1 --filter=blob:none --sparse \
+            https://github.com/billionsx/eyes.git __eyes
+          cd __eyes
+          git sparse-checkout set bin adapters registry/standards
+          echo "инструмент: $(git rev-parse --short=9 HEAD) · органов $(ls bin | wc -l)"
+
+      - name: "Храповик долга — база департамента, одна на всех"
+        run: |
+          curl -fsS --retry 3 \
+            https://raw.githubusercontent.com/billionsx/eyes/main/registry/state/ae-baseline.json \
+            -o /tmp/ae-baseline.json
+          python3 -c "import json;d=json.load(open('/tmp/ae-baseline.json'))['iskcon'];print('база долга:',sum(d.values()),'по',len(d),'правилам')"
+
+      - name: "Надзор по измеренным законам"
+        id: lint
+        run: |
+          set +e
+          python3 __eyes/bin/eyes.py lint --adapter iskcon --mode report \
+            --project-root . --ratchet /tmp/ae-baseline.json \
+            --out /tmp/eyes-report.md > /tmp/eyes-out.txt 2>&1
+          RC=$?
+          set -e
+          grep -E "^Файлов просмотрено|ХРАПОВИК|храповик" /tmp/eyes-out.txt || true
+          echo "rc=$RC" >> "$GITHUB_OUTPUT"
+          exit 0
+
+      - name: "Хроника прогона"
+        if: always()
+        env:
+          RC: ${{ steps.lint.outputs.rc }}
+        run: |
+          {
+            if [ "${RC:-1}" = "0" ]; then
+              echo "## BXE · надзор: долг не вырос"
+            else
+              echo "## BXE · надзор: ДОЛГ ВЫРОС — красный"
+            fi
+            echo
+            grep -E "^Файлов просмотрено" /tmp/eyes-report.md 2>/dev/null || true
+            echo
+            grep -E "ХРАПОВИК" /tmp/eyes-out.txt 2>/dev/null || true
+            echo
+            echo "Область надзора — глобы паспорта \`adapters/iskcon.json\` в репозитории"
+            echo "департамента. Строки вне её не смотрели и чистыми не объявляем."
+            echo
+            echo "<details><summary>Полный отчёт советника</summary>"
+            echo
+            head -c 900000 /tmp/eyes-report.md 2>/dev/null || echo "(отчёт не собран)"
+            echo
+            echo "</details>"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: "Вердикт"
+        run: |
+          if [ "${{ steps.lint.outputs.rc }}" != "0" ]; then
+            echo "долг по правилу вырос — смотри хронику прогона"
+            exit 1
+          fi
+          echo "долг не вырос"
