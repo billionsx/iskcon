@@ -1167,6 +1167,10 @@ async function kirtanAllManifest(env: Env, origin: string): Promise<Response> {
  * Порядок дорожек ОДИН И ТОТ ЖЕ здесь и в `/api/katha` (ORDER BY цикл, sort):
  * разойдутся — витрина пошлёт индекс, а заиграет не то.
  */
+/** КАНОНИЧЕСКИЙ ПОРЯДОК КАТХИ — один на все выборки. Витрина шлёт ИНДЕКС в
+ *  очереди; два места с «почти таким же» ORDER BY — и заиграет не то. */
+const KATHA_ORDER = "COALESCE(b.sort, 9999), b.title, t.sort, t.file";
+
 async function kathaTrackRows(env: Env, where = "", binds: unknown[] = []) {
   const stmt = env.DB.prepare(
     `SELECT t.identifier, t.file, t.title, t.duration, t.album_id, t.speaker_slug,
@@ -1175,7 +1179,7 @@ async function kathaTrackRows(env: Env, where = "", binds: unknown[] = []) {
        LEFT JOIN katha_albums b ON b.id = t.album_id
        LEFT JOIN katha_speakers s ON s.slug = t.speaker_slug
       ${where}
-      ORDER BY COALESCE(b.sort, 9999), b.title, t.sort, t.file`
+      ORDER BY ${KATHA_ORDER}`
   );
   const res = await (binds.length ? stmt.bind(...binds) : stmt).all<{
     identifier: string; file: string; title: string; duration: number | null;
@@ -1221,15 +1225,69 @@ async function kathaSpeakerManifest(env: Env, origin: string, slug: string): Pro
   return json({ book: `s:${slug}`, kind: "katha", modes: { plain: { identifier: "katha-s-" + slug, tracks: kathaTracksToAudio(rows, origin) } } });
 }
 
-/** ⚠️ Фильтруем В JS: SQLite `lower()` кириллицу НЕ ПОНИМАЕТ, и «Гопи» с «гопи»
- *  для него разные слова — половина запросов молча не находила бы ничего. */
+/* ── Ц12 · ПРОВОД БЕЗ ПОВТОРОВ (тот же принцип, что у /api/katha) ──
+ * Дорожка не везёт то, что выводится из её цикла: `identifier` и `speaker`
+ * пишутся только когда ОТЛИЧАЮТСЯ (два рассказчика одной «Упадешамриты»). */
+type KathaWireRow = {
+  album_id: string; file: string; title: string; duration: number | null;
+  identifier: string; speaker_slug: string; aarch: string | null; aspk: string | null;
+};
+function kathaWire(rows: KathaWireRow[]): Record<string, unknown>[] {
+  return rows.map((r) => {
+    const t: Record<string, unknown> = { album: r.album_id, file: r.file, title: r.title, duration: r.duration ?? 0 };
+    if (r.identifier !== r.aarch) t.identifier = r.identifier;
+    if (r.speaker_slug !== r.aspk) t.speaker = r.speaker_slug;
+    return t;
+  });
+}
+async function kathaWireRows(env: Env, where = "", binds: unknown[] = [], limit = 0, offset = 0) {
+  const lim = limit > 0 ? ` LIMIT ${limit} OFFSET ${offset}` : "";
+  const stmt = env.DB.prepare(
+    `SELECT t.album_id, t.file, t.title, t.duration, t.identifier, t.speaker_slug,
+            b.archive AS aarch, b.speaker_slug AS aspk
+       FROM katha_tracks t LEFT JOIN katha_albums b ON b.id = t.album_id
+      ${where} ORDER BY ${KATHA_ORDER}${lim}`
+  );
+  const res = await (binds.length ? stmt.bind(...binds) : stmt).all<KathaWireRow>();
+  return res.results || [];
+}
+
+/* ── Ц12 · ПОИСК В БАЗЕ, А НЕ В ПАМЯТИ ──
+ * Было: каждый запрос вытягивал ВСЕ дорожки из D1 и фильтровал в JS, потому
+ * что SQLite `lower()` кириллицу не понимает. С фонотекой на тысячи записей
+ * это чтение всей таблицы на каждый ввод.
+ * Стало: заголовки живут в `katha_fts` (FTS5, unicode61 — регистр складывает
+ * САМ токенизатор, кириллицу тоже; проверено живьём на D1: «ШРИМАД» находит
+ * «Шримад», ответ идёт из индекса, а не сканом). Таблицу ведут ТРИГГЕРЫ на
+ * katha_tracks (insert/delete/update of title) — конвейеры заливки о ней не
+ * знают и знать не обязаны: REPLACE у них превращается в delete+insert, и оба
+ * триггера срабатывают сами. Названия циклов и имена рассказчиков — таблицы
+ * на сотни строк: их читаем целиком и сводим к спискам id в JS, где
+ * toLowerCase честный. */
+async function kathaFindParts(env: Env, q: string): Promise<{ where: string; binds: unknown[] } | null> {
+  const tokens = q.toLowerCase().split(/[^\p{L}\p{N}]+/u).filter(Boolean);
+  if (!tokens.length) return null;
+  // Токен в кавычках + «*» — префиксный поиск без права на FTS-синтаксис из запроса.
+  const match = tokens.map((t) => `"${t.replaceAll('"', '""')}"*`).join(" AND ");
+  const [aRes, sRes] = await Promise.all([
+    env.DB.prepare(`SELECT id, title FROM katha_albums`).all<{ id: string; title: string }>(),
+    env.DB.prepare(`SELECT slug, name FROM katha_speakers`).all<{ slug: string; name: string }>(),
+  ]);
+  const needle = q.trim().toLowerCase();
+  const albumIds = (aRes.results || []).filter((a) => (a.title || "").toLowerCase().includes(needle)).map((a) => a.id);
+  const spk = (sRes.results || []).filter((s) => (s.name || "").toLowerCase().includes(needle)).map((s) => s.slug);
+  return {
+    where: `WHERE (t.id IN (SELECT tid FROM katha_fts WHERE katha_fts MATCH ?1)
+        OR t.album_id IN (SELECT value FROM json_each(?2))
+        OR t.speaker_slug IN (SELECT value FROM json_each(?3)))`,
+    binds: [match, JSON.stringify(albumIds), JSON.stringify(spk)],
+  };
+}
+
 async function kathaFindManifest(env: Env, origin: string, q: string): Promise<Response> {
-  const rows = await kathaTrackRows(env);
-  const s = q.toLowerCase();
-  const hit = rows.filter((r) => (r.title || "").toLowerCase().includes(s)
-    || (r.album || "").toLowerCase().includes(s)
-    || (r.speaker || "").toLowerCase().includes(s));
-  return json({ book: `q:${q}`, kind: "katha", modes: { plain: { identifier: "katha-find", tracks: kathaTracksToAudio(hit, origin) } } });
+  const parts = await kathaFindParts(env, q);
+  const rows = parts ? await kathaTrackRows(env, parts.where, parts.binds) : [];
+  return json({ book: `q:${q}`, kind: "katha", modes: { plain: { identifier: "katha-find", tracks: kathaTracksToAudio(rows, origin) } } });
 }
 
 /**
@@ -2484,6 +2542,10 @@ export default {
     }
 
     // ── КАТХА: реестр и очереди (вся катха · один цикл · найденное) ──
+    /* ЛЕГАСИ (Ц12). Полный каталог С ДОРОЖКАМИ оставлен для СТАРЫХ сборок в
+     * открытых вкладках: убери его в том же деплое, где витрина переехала на
+     * /catalog, — и у них Катха молча опустеет до жёсткого обновления. Свежая
+     * сборка сюда не ходит. Снять после того, как отлежится хотя бы неделя. */
     if (url.pathname === "/api/katha") {
       return edgeCached(request, ctx, async () => {
       const [sRes, aRes, tRes] = await Promise.all([
@@ -2566,6 +2628,100 @@ export default {
       return json({ albums: res.results || [] });
       });
     }
+
+    /* ── Ц12 · КАТАЛОГ БЕЗ ДОРОЖЕК ──
+     * Открытие Катхи разбирало массив всех дорожек (0,96 МБ на 3151; при
+     * фонотеке 5000+ — снова за потолком UX_AUDIT §Ц12 даже после ужатия
+     * провода). Витрине на входе нужны ГОЛОСА и ЦИКЛЫ СО СЧЁТЧИКАМИ — это
+     * десятки килобайт; дорожки едут отдельно и только для открытого уровня
+     * (/api/katha/tracks). «Есть что играть» теперь считается суммой `n` по
+     * циклам, а не длиной массива дорожек. */
+    if (url.pathname === "/api/katha/catalog") {
+      return edgeCached(request, ctx, async () => {
+      const [sRes, aRes] = await Promise.all([
+        env.DB.prepare(
+          `SELECT slug, name, full, role, era, origin, bio, mono, accent, entity_id
+             FROM katha_speakers ORDER BY sort, name`
+        ).all<{ slug: string; name: string; full: string | null; role: string | null; era: string | null; origin: string | null; bio: string | null; mono: string | null; accent: number; entity_id: string | null }>(),
+        env.DB.prepare(
+          `SELECT b.id, b.speaker_slug, b.title, b.archive, b.year, b.note,
+                  COUNT(t.id) AS n, SUM(COALESCE(t.duration, 0)) AS secs
+             FROM katha_albums b LEFT JOIN katha_tracks t ON t.album_id = b.id
+            GROUP BY b.id ORDER BY b.sort, b.title`
+        ).all<{ id: string; speaker_slug: string; title: string; archive: string | null; year: string | null; note: string | null; n: number; secs: number | null }>(),
+      ]);
+      // Пустой цикл в витрине — обещание без звука; рассказчик без записей — тем более.
+      const albums = (aRes.results || []).filter((r) => r.n > 0).map((r) => ({
+        id: r.id, speaker: r.speaker_slug, title: r.title, archive: r.archive ?? undefined,
+        year: r.year ?? undefined, note: r.note ?? undefined, n: r.n, secs: r.secs ?? 0,
+      }));
+      const voiced = new Set(albums.map((a) => a.speaker));
+      const speakers = (sRes.results || []).map((r) => ({
+        slug: r.slug, name: r.name, full: r.full ?? undefined, role: r.role ?? "",
+        era: r.era ?? undefined, origin: r.origin ?? undefined, bio: r.bio ?? "",
+        mono: r.mono ?? "", accent: !!r.accent, entityId: r.entity_id ?? undefined,
+      })).filter((s) => voiced.has(s.slug));
+      return json({ speakers, albums });
+      });
+    }
+
+    /* Ц12 · ДОРОЖКИ ПО ЗАПРОСУ: один цикл, один голос или все — постранично.
+     * Порядок ВЕЗДЕ канонический (KATHA_ORDER): позиция строки в ответе и есть
+     * её индекс в одноимённой очереди плеера. */
+    if (url.pathname === "/api/katha/tracks") {
+      return edgeCached(request, ctx, async () => {
+      const album = url.searchParams.get("album");
+      const speaker = url.searchParams.get("speaker");
+      if (album) return json({ tracks: kathaWire(await kathaWireRows(env, "WHERE t.album_id = ?1", [album])) });
+      if (speaker) return json({ tracks: kathaWire(await kathaWireRows(env, "WHERE t.speaker_slug = ?1", [speaker])) });
+      const after = Math.max(0, parseInt(url.searchParams.get("after") || "0", 10) || 0);
+      const limit = Math.min(1000, Math.max(1, parseInt(url.searchParams.get("limit") || "500", 10) || 500));
+      const [rows, tot] = await Promise.all([
+        kathaWireRows(env, "", [], limit, after),
+        env.DB.prepare(`SELECT COUNT(*) AS n FROM katha_tracks`).first<{ n: number }>(),
+      ]);
+      const total = tot?.n ?? 0;
+      const next = after + rows.length < total ? after + rows.length : null;
+      return json({ tracks: kathaWire(rows), total, next });
+      });
+    }
+
+    /* Ц12 · ТОЧЕЧНЫЙ ПОИСК ЗАПИСИ по хвосту audio (?t=<identifier/file>, можно
+     * несколько). Нужен «Отложенному» и переходу из закладки (ЗКН-Н077): раньше
+     * ради одной записи грузилась ВСЯ катха. Возвращает и МЕСТА записи в трёх
+     * очередях (gi/vi/ci) — их считает ROW_NUMBER по каноническому порядку,
+     * витрине не из чего считать самой: полного списка у неё больше нет. */
+    if (url.pathname === "/api/katha/track") {
+      const tails = url.searchParams.getAll("t").map((t) => t.split("?")[0]).filter(Boolean).slice(0, 200);
+      if (!tails.length) return noStore(json({ tracks: [] }));
+      const res = await env.DB.prepare(
+        `WITH win AS (
+           SELECT t.id, t.album_id, t.file, t.title, t.duration, t.identifier, t.speaker_slug,
+                  b.archive AS aarch, b.speaker_slug AS aspk,
+                  ROW_NUMBER() OVER (ORDER BY ${KATHA_ORDER}) - 1 AS gi,
+                  ROW_NUMBER() OVER (PARTITION BY t.speaker_slug ORDER BY ${KATHA_ORDER}) - 1 AS vi,
+                  ROW_NUMBER() OVER (PARTITION BY t.album_id ORDER BY t.sort, t.file) - 1 AS ci
+             FROM katha_tracks t LEFT JOIN katha_albums b ON b.id = t.album_id)
+         SELECT * FROM win WHERE id IN (SELECT value FROM json_each(?1))`
+      ).bind(JSON.stringify(tails)).all<KathaWireRow & { id: string; gi: number; vi: number; ci: number }>();
+      const tracks = (res.results || []).map((r) => ({
+        ...kathaWire([r])[0], gi: r.gi, vi: r.vi, ci: r.ci,
+      }));
+      return noStore(json({ tracks }));
+    }
+
+    /* Ц12 · СЧЁТ НАЙДЕННОГО для сторожа витрины (ЗКН-Н089: сторож судит по тем
+     * же полям, что и отбор, — теперь буквально: тем же WHERE). no-store: поиск
+     * динамика, залипший по URL счёт хуже отсутствия кэша. */
+    if (url.pathname === "/api/katha/find/count") {
+      const q = (url.searchParams.get("q") || "").trim();
+      const parts = q ? await kathaFindParts(env, q) : null;
+      if (!parts) return noStore(json({ n: 0 }));
+      const row = await env.DB.prepare(`SELECT COUNT(*) AS n FROM katha_tracks t ${parts.where}`)
+        .bind(...parts.binds).first<{ n: number }>();
+      return noStore(json({ n: row?.n ?? 0 }));
+    }
+
     if (url.pathname === "/api/katha/all/audio") {
       return edgeCached(request, ctx, () => kathaAllManifest(env, url.origin));
     }

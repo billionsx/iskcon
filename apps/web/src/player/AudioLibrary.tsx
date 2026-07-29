@@ -85,6 +85,14 @@ export interface LibDomain {
   collectionQueue?: (id: string) => string;
   /** Куда ведёт «полная карточка голоса», если она есть в приложении. */
   voiceHref?: (slug: string) => string;
+  /* ── Ц12 · КОГДА items — НЕ ВЕСЬ КАТАЛОГ, А ЗАГРУЖЕННАЯ ЧАСТЬ ──
+   * Катха больше не привозит все дорожки на вход: счёт и звучание целого
+   * раздела называет сервер (`totals`), запись «в пути» отличается от
+   * «нет записей» (`loading`), а «Записи» доезжают страницами (`moreItems`).
+   * У киртанов items по-прежнему полон — поля не заданы, поведение прежнее. */
+  totals?: { items: number; seconds: number };
+  loading?: boolean;
+  moreItems?: { has: boolean; loading: boolean; loaded: number; load: () => void };
 }
 
 /** Уровень, с которого включили запись, — он же уровень очереди. */
@@ -129,7 +137,9 @@ export function AudioLibrary({ domain, view, onView, onOpenPath, header }: {
      смены хвоста и человек видит пустое отложенное при полной полке. */
   const favKeys = useMemo(() => new Set(favs.map((f) => f.key.split("?")[0])), [favs]);
   const nowKey = p.track ? mediaTrackKey(p.track, p.kind).split("?")[0] : "";
-  const totalSec = useMemo(() => domain.items.reduce((s, i) => s + i.seconds, 0), [domain.items]);
+  const totalSec = domain.totals?.seconds
+    ?? domain.items.reduce((s, i) => s + i.seconds, 0);
+  const totalN = domain.totals?.items ?? domain.items.length;
 
   /** Очередь = ЭКРАН, с которого включили. Иначе после лекции пойдёт чужая. */
   const queueOf = (it: LibItem, scope: Scope): [string, number] => {
@@ -198,7 +208,7 @@ export function AudioLibrary({ domain, view, onView, onOpenPath, header }: {
               onClick={() => onView({ name: "voices" })} />
           )}
           <SectionRow icon={<NoteIcon size={22} />} title={domain.itemsTitle}
-            value={String(domain.items.length)} onClick={() => onView({ name: "items" })} />
+            value={String(totalN)} onClick={() => onView({ name: "items" })} />
           <SectionRow icon={<StarIcon size={22} />} title="Отложенное"
             value={mine.length ? String(mine.length) : ""} onClick={() => onView({ name: "mine" })} last />
         </ListCard>
@@ -250,7 +260,7 @@ export function AudioLibrary({ domain, view, onView, onOpenPath, header }: {
         )}
 
         <p style={{ margin: "16px 4px 0", fontSize: "var(--text-footnote)", color: INK3 }}>
-          {count(domain.items.length, "запись", "записи", "записей")} · {fmtDur(totalSec)} звучания
+          {count(totalN, "запись", "записи", "записей")} · {fmtDur(totalSec)} звучания
         </p>
       </div>
     );
@@ -319,7 +329,7 @@ export function AudioLibrary({ domain, view, onView, onOpenPath, header }: {
 
         <GroupTitle>{domain.itemsTitle}</GroupTitle>
         <ItemList items={items} onPlay={(it) => start(it, "voice")} isPlaying={isPlaying}
-          playingNow={p.isPlaying} subtitleOf={(it) => it.collectionTitle}
+          playingNow={p.isPlaying} loading={domain.loading} subtitleOf={(it) => it.collectionTitle}
           empty="Здесь пока нет записей" />
       </div>
     );
@@ -375,7 +385,8 @@ export function AudioLibrary({ domain, view, onView, onOpenPath, header }: {
             onShuffle={() => playQueue(items, "collection", true)} />
         </div>
         <ItemList items={items} onPlay={(it) => start(it, "collection")} isPlaying={isPlaying}
-          playingNow={p.isPlaying} numbered empty="В этом собрании пока нет записей" />
+          playingNow={p.isPlaying} numbered loading={domain.loading}
+          empty="В этом собрании пока нет записей" />
       </div>
     );
   }
@@ -383,10 +394,11 @@ export function AudioLibrary({ domain, view, onView, onOpenPath, header }: {
   /* ── все записи ── */
   if (view.name === "items") {
     const items = sortItems(domain.items);
+    const more = domain.moreItems;
     return (
       <div>
         <ScreenHeader title={domain.itemsTitle} onBack={() => onView({ name: "home" })} backLabel={domain.homeLabel}
-          subtitle={`${count(items.length, "запись", "записи", "записей")} · ${fmtDur(totalSec)}`}
+          subtitle={`${count(totalN, "запись", "записи", "записей")} · ${fmtDur(totalSec)}`}
           actions={<>
             <MenuButton plain label="Порядок и фильтр" width={240}
               items={[...sortMenu(["default", "title", "voice", "longest", "shortest"]), favFilter]}>
@@ -397,11 +409,27 @@ export function AudioLibrary({ domain, view, onView, onOpenPath, header }: {
           <PlayShuffle onPlay={() => playQueue(items, "all", false)} onShuffle={() => playQueue(items, "all", true)} />
         </div>
         <ItemList items={items} onPlay={(it) => start(it, "all")} isPlaying={isPlaying}
-          playingNow={p.isPlaying}
+          playingNow={p.isPlaying} loading={domain.loading}
           subtitleOf={(it) => (domain.voices.length > 1 && it.collectionTitle
             ? `${it.collectionTitle} · ${it.voiceName}`
             : it.collectionTitle || it.voiceName)}
           empty="Записей пока нет" />
+        {/* Ц12 · страницы. Подпись честная: сортировка и фильтр работают в
+            пределах ЗАГРУЖЕННОГО — молчать об этом значит выдавать часть за целое. */}
+        {more?.has && (
+          <div style={{ marginTop: 16, textAlign: "center" }}>
+            <p style={{ margin: "0 0 10px", fontSize: "var(--text-footnote)", color: INK3 }}>
+              Загружено {more.loaded} из {totalN}
+            </p>
+            <button type="button" onClick={more.load} disabled={more.loading} className="tap-row"
+              style={{ border: "1px solid var(--color-separator)", background: "none",
+                borderRadius: 999, padding: "10px 22px", cursor: "pointer",
+                fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)",
+                color: "var(--color-label)", opacity: more.loading ? 0.55 : 1 }}>
+              {more.loading ? "Загружается…" : "Показать ещё"}
+            </button>
+          </div>
+        )}
       </div>
     );
   }
@@ -418,7 +446,8 @@ export function AudioLibrary({ domain, view, onView, onOpenPath, header }: {
         </div>
       )}
       <ItemList items={mine} onPlay={(it) => start(it, "voice")} isPlaying={isPlaying}
-        playingNow={p.isPlaying} subtitleOf={(it) => it.collectionTitle || it.voiceName}
+        playingNow={p.isPlaying} loading={domain.loading}
+        subtitleOf={(it) => it.collectionTitle || it.voiceName}
         empty="Отложенных записей пока нет"
         hint="Сердце у записи — и она появится здесь." />
     </div>
@@ -436,12 +465,16 @@ export function AudioLibrary({ domain, view, onView, onOpenPath, header }: {
  *    повторять заголовок: где различает цикл — там цикл, где голос — голос,
  *    а внутри собрания различать нечего, и подписи нет.
  */
-function ItemList({ items, onPlay, isPlaying, playingNow, numbered, subtitleOf, empty, hint }: {
+function ItemList({ items, onPlay, isPlaying, playingNow, numbered, subtitleOf, empty, hint, loading }: {
   items: LibItem[]; onPlay: (i: LibItem) => void;
   isPlaying: (key: string) => boolean; playingNow: boolean;
   numbered?: boolean; subtitleOf?: (i: LibItem) => string | undefined;
   empty: string; hint?: string;
+  /** Ц12: записи ЕДУТ. «Пусто» и «в пути» — разные состояния; показать первое
+   *  вместо второго значит соврать про полку, которая просто ещё грузится. */
+  loading?: boolean;
 }) {
+  if (!items.length && loading) return <EmptyState icon={<ClockIcon size={44} />} text="Записи загружаются…" />;
   if (!items.length) return <EmptyState icon={<NoteIcon size={44} />} text={empty} hint={hint} />;
   return (
     <ListCard>

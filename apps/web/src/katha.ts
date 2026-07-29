@@ -9,9 +9,14 @@
  * без частей 1–6 — не самостоятельная вещь. Поэтому здесь нет ни настроений,
  * ни жанров: главная и единственная структура — РАССКАЗЧИК → ЦИКЛ → ЧАСТЬ.
  *
- * Модель повторяет kirtans.ts: каталог — данные из D1, звук живёт на Internet
- * Archive, элемент архива = один цикл катхи. Чистый TS (без React/DOM) — модуль
- * импортируют и фронт, и воркер.
+ * Ц12 · ХРАНИЛИЩЕ СТАЛО ЛЕНИВЫМ. Раньше сюда приезжали ВСЕ дорожки одним
+ * массивом — 0,96 МБ разбора на телефоне при каждом холодном открытии, и это
+ * до фонотеки goswami.ru на 5000+ записей. Теперь на входе живут только
+ * ГОЛОСА и ЦИКЛЫ СО СЧЁТЧИКАМИ (`n`, `secs` считает воркер), а дорожки
+ * складываются сюда ПО ОБЛАСТЯМ по мере того, как человек их открывает:
+ * цикл целиком, голос целиком, «все записи» страницами, отдельные записи —
+ * точечно по хвосту audio. Загрузкой занимается kathaHydrate.ts (там fetch и
+ * React); этот модуль — чистый TS без DOM: его импортирует и плеер.
  */
 
 export interface KathaSpeaker {
@@ -36,6 +41,7 @@ export interface KathaAlbum {
   year?: string;
   note?: string;
   n?: number;             // сколько частей залито (считает воркер)
+  secs?: number;          // сколько секунд звучит цикл (считает воркер)
 }
 
 /** ЧАСТЬ — одна залитая запись цикла. */
@@ -49,6 +55,15 @@ export interface KathaTrack {
   duration: number;
 }
 
+/** Запись С МЕСТАМИ в трёх очередях — так её присылает точечный поиск
+ *  (/api/katha/track): полного списка у витрины больше нет, и позицию в
+ *  очереди для неё считает ROW_NUMBER на сервере. */
+export interface KathaTrackAt extends KathaTrack {
+  gi: number;             // место в очереди «вся катха»
+  vi: number;             // …в очереди своего рассказчика
+  ci: number;             // …в очереди своего цикла
+}
+
 /** ОДНА ОЧЕРЕДЬ НА ВСЮ КАТХУ. Разделы очереди — циклы (ЗКН-Б011). */
 export const KATHA_ALL = "all";
 /** Очередь одного цикла. */
@@ -56,16 +71,24 @@ export const KATHA_ALBUM = "a:";
 /** Поиск — своя очередь, а не второй список. */
 export const KATHA_FIND = "q:";
 
-// ── Гидрация из D1 (плейн, без React — модуль грузит и воркер) ──
+// ── Хранилище (плейн, без React — модуль грузит и воркер) ──
 let _speakers: KathaSpeaker[] = [];
 let _albums: KathaAlbum[] = [];
-let _tracks: KathaTrack[] = [];
+const _byAlbum = new Map<string, KathaTrack[]>();
+const _bySpeaker = new Map<string, KathaTrack[]>();
+let _all: KathaTrack[] = [];
+let _allTotal = -1;                       // −1 = «сервер ещё не называл число»
+const _byTail = new Map<string, KathaTrackAt>();
 let _version = 0;
 const _subs = new Set<() => void>();
 
+function bump(): void {
+  _version++;
+  _subs.forEach((f) => f());
+}
+
 export function kathaSpeakers(): KathaSpeaker[] { return _speakers; }
 export function kathaAlbums(): KathaAlbum[] { return _albums; }
-export function kathaTracks(): KathaTrack[] { return _tracks; }
 
 export function speakerBySlug(slug: string): KathaSpeaker | undefined {
   return _speakers.find((s) => s.slug === slug);
@@ -76,10 +99,20 @@ export function kathaAlbumById(id: string): KathaAlbum | undefined {
 export function albumsBySpeaker(slug: string): KathaAlbum[] {
   return _albums.filter((a) => a.speaker === slug);
 }
-/** Сколько часов звучит цикл — единица измерения катхи, а не число файлов. */
+/** Сколько часов звучит цикл — единица измерения катхи, а не число файлов.
+ *  Секунды теперь считает воркер вместе со счётчиком частей. */
 export function albumHours(id: string): number {
-  const sec = _tracks.filter((t) => t.album === id).reduce((s, t) => s + (t.duration || 0), 0);
-  return sec / 3600;
+  return (kathaAlbumById(id)?.secs ?? 0) / 3600;
+}
+
+// ── Ленивые области ──
+export function albumTracks(id: string): KathaTrack[] | undefined { return _byAlbum.get(id); }
+export function speakerTracks(slug: string): KathaTrack[] | undefined { return _bySpeaker.get(slug); }
+export function allTracksLoaded(): KathaTrack[] { return _all; }
+/** Сколько записей во всей катхе по слову сервера; −1 — ещё не спрашивали. */
+export function kathaAllTotal(): number { return _allTotal; }
+export function trackByTail(tail: string): KathaTrackAt | undefined {
+  return _byTail.get(tail.split("?")[0]);
 }
 
 /** Дорожка, КАК ЕЁ ПРИСЫЛАЕТ ВОРКЕР: без полей, которые выводятся из цикла.
@@ -117,12 +150,36 @@ function hydrateTracks(wire: KathaTrackWire[], albums: KathaAlbum[]): KathaTrack
   return out;
 }
 
-export function setKathaData(speakers: KathaSpeaker[], albums: KathaAlbum[], tracks: KathaTrackWire[]): void {
+export function setKathaCatalog(speakers: KathaSpeaker[], albums: KathaAlbum[]): void {
   if (Array.isArray(speakers)) _speakers = speakers;
   if (Array.isArray(albums)) _albums = albums;
-  if (Array.isArray(tracks)) _tracks = hydrateTracks(tracks, _albums);
-  _version++;
-  _subs.forEach((f) => f());
+  bump();
+}
+export function setAlbumTracks(id: string, wire: KathaTrackWire[]): void {
+  _byAlbum.set(id, hydrateTracks(wire, _albums));
+  bump();
+}
+export function setSpeakerTracks(slug: string, wire: KathaTrackWire[]): void {
+  _bySpeaker.set(slug, hydrateTracks(wire, _albums));
+  bump();
+}
+/** Страница «всех записей». `after` обязан равняться числу уже загруженных:
+ *  страницы клеятся встык, позиция строки в массиве = её индекс в очереди. */
+export function appendAllTracks(after: number, wire: KathaTrackWire[], total: number): void {
+  if (after !== _all.length) return;      // пришла не та страница — не рвём порядок
+  _all = _all.concat(hydrateTracks(wire, _albums));
+  _allTotal = total;
+  bump();
+}
+export function setTailTracks(rows: (KathaTrackWire & { gi: number; vi: number; ci: number })[]): void {
+  /* Построчно: hydrateTracks ПРОПУСКАЕТ несобираемые строки, и спаривание
+     «по индексу» двух массивов разной длины подсунуло бы записи чужие места
+     в очередях. Строка за строкой — пар просто не из чего перепутать. */
+  for (const r of rows) {
+    const [t] = hydrateTracks([r], _albums);
+    if (t) _byTail.set(t.id, { ...t, gi: r.gi, vi: r.vi, ci: r.ci });
+  }
+  bump();
 }
 export function subscribeKatha(cb: () => void): () => void {
   _subs.add(cb);

@@ -1563,18 +1563,36 @@ def check_n089() -> list[tuple[str, str]]:
 
     Инвариант: число полей у сторожа ≥ числа полей у отбора. Гейт считает
     `.includes(` по обе стороны и сверяет.
+
+    Ц12 · ВЫСШАЯ ФОРМА ЗАКОНА — СТОРОЖ И ОТБОР СТАЛИ ОДНИМ КОДОМ. У катхи
+    полного списка на витрине больше нет (каталог без дорожек), и сторож
+    спрашивает счёт у сервера (`/katha/find/count`), где его считает ТОТ ЖЕ
+    WHERE, что и отбор (`kathaFindParts` — единственный источник для обоих
+    маршрутов). Полям не из чего разъехаться. Гейт признаёт такой сторож,
+    если на экране есть обращение к `find/count`, а в воркере маршрут счёта
+    построен на общей с манифестом функции `*FindParts`.
     """
     bad: list[tuple[str, str]] = []
     worker = read(SRC.parent / "worker.ts") or ""
     pairs = [("katha", "kathaFindManifest", "KathaScreen.tsx"),
              ("kirtan", "kirtanFindManifest", "KirtansScreen.tsx")]
     for dom, fn, screen in pairs:
+        t = read(SRC / screen) or ""
+        # ── серверный сторож: экран спрашивает find/count, воркер строит счёт
+        #    и отбор из одного *FindParts — сверять нечего, поля общие ──
+        if f"/{dom}/find/count" in t:
+            parts_fn = fn.replace("Manifest", "Parts")
+            count_route = re.search(r"/api/" + dom + r"/find/count.*?" + parts_fn, worker, re.S)
+            manifest_uses = re.search(r"async function " + fn + r"\b.*?" + parts_fn, worker, re.S)
+            if not (count_route and manifest_uses):
+                bad.append(("worker.ts", f"Н089: экран {screen} ждёт /{dom}/find/count из общего {parts_fn}, "
+                                         f"а воркер счёт и отбор из одного места не строит"))
+            continue
         m = re.search(r"async function " + fn + r"\b.*?\n}", worker, re.S)
         if not m:
             bad.append(("worker.ts", f"Н089: не найден {fn} — нечем сверить поля отбора"))
             continue
         srv = len(re.findall(r"\.includes\(", m.group(0)))
-        t = read(SRC / screen) or ""
         g = re.search(r"const n = tracks\.filter\(.*?\)\.length;", t, re.S)
         if not g:
             bad.append((screen, "Н089: не найден счётчик витрины `const n = tracks.filter(…)`"))
