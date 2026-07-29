@@ -64,7 +64,7 @@ export function requireAuth(): void {
 
 /* ─────────────────────── низкоуровневый POST ─────────────────────── */
 
-function post(path: string, body: unknown): void {
+export function post(path: string, body: unknown): void {
   if (!authed) return;
   try {
     void fetch(api(path), {

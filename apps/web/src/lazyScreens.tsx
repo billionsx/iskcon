@@ -52,6 +52,7 @@ export const StoriesToolScreen = lazy(() => import("./StoriesToolScreen"));
 export const DailyVerseScreen = lazy(() => import("./DailyVerseScreen"));
 export const EkadashiScreen = lazy(() => import("./EkadashiScreen"));
 export const MyProgressScreen = lazy(() => import("./MyProgressScreen"));
+export const PathScreen = lazy(() => import("./PathScreen"));   // Ц8 · Путь ученика
 
 // — центры —
 export const CenterScreen = lazy(() => import("./centers/CenterScreen"));

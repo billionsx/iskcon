@@ -6,6 +6,8 @@
  * Кураторские каталоги официальных и авторитетных ресурсов.
  */
 
+import { pushUrl } from "./nav";
+
 const GOLD = "var(--color-gold)";
 const fill: React.CSSProperties = { background: "var(--color-glass-thin)", borderRadius: 20 };
 
@@ -86,6 +88,13 @@ export function HomeEducation() {
     <div>
       <Head eyebrow="Учиться" title="Образование ИСККОН"
         sub="Путь ученика в ИСККОН по-русски: от первой программы в храме и пранама-мантры — через Школу Бхакти и «Ученика в ИСККОН» к первой и второй инициации. Официальные курсы Отдела вайшнавского образования ЦОСКР." />
+      {/* Ц8: тот же путь — лестницей с отметками в приложении */}
+      <button type="button" onClick={() => pushUrl("/path")}
+        style={{ display: "block", width: "100%", textAlign: "left", border: "none", cursor: "pointer", background: "var(--color-surface-2)", borderRadius: 14, padding: "14px 16px", margin: "0 0 14px", WebkitTapHighlightColor: "transparent" }}>
+        <span style={{ display: "block", fontFamily: "var(--font-text)", fontSize: "var(--text-callout)", fontWeight: 600, color: "var(--color-ink)" }}>Мой путь ученика</span>
+        <span style={{ display: "block", marginTop: 4, fontFamily: "var(--font-text)", fontSize: "var(--text-footnote)", color: "var(--color-ink-3)" }}>Та же лестница — ступенями с отметками: от первых шагов до брахманского посвящения</span>
+        <span style={{ display: "block", marginTop: 6, fontFamily: "var(--font-text)", fontSize: "var(--text-footnote)", fontWeight: 600, color: "var(--color-gold)" }}>Открыть путь →</span>
+      </button>
       <GroupedList groups={EDUCATION} />
     </div>
   );

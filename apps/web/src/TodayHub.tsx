@@ -135,7 +135,13 @@ export default function TodayHub({ onOpenPath, onSub }: { onOpenPath: (path: str
         <div style={{ fontSize: "var(--text-title1)", fontWeight: 700, color: INK, fontFamily: FONT, letterSpacing: -0.3, marginTop: 3 }}>
           {name ? `Харе Кришна, ${name}` : "Харе Кришна"}
         </div>
-        {level && <div style={{ fontSize: "var(--text-subhead)", color: INK2, fontFamily: FONT, marginTop: 4 }}>{LEVEL_LINE[level]}</div>}
+        {level && (
+          /* Ц8: строка уровня — дверь на «Путь ученика» */
+          <button type="button" onClick={() => onOpenPath("/path")}
+            style={{ display: "block", border: "none", background: "none", padding: 0, textAlign: "left", cursor: "pointer", WebkitTapHighlightColor: "transparent", fontSize: "var(--text-subhead)", color: INK2, fontFamily: FONT, marginTop: 4 }}>
+            {LEVEL_LINE[level]} <span style={{ color: GOLD, fontWeight: 600 }}>Мой путь →</span>
+          </button>
+        )}
       </div>
 
       {/* Даршан дня */}

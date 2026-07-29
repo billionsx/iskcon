@@ -10,7 +10,7 @@ import {
   HomeScreen, EntityPage, AccountScreen, BooksHub, KirtansScreen, KathaScreen, AcharyaScreen, PracticeHub, DhamaScreen,
   BookDetailPage, BhajanDetailPage, KirtanArtistPage, ContentDetailPage, SearchScreen, FavoritesScreen,
   NotesScreen, NoteDetail, BookLoaderPage, CartScreen, JapaScreen, SadhanaScreen, VowScreen, DarshanScreen, PrivacyScreen,
-  DownloaderScreen, StoriesToolScreen, DailyVerseScreen, EkadashiScreen, MyProgressScreen,
+  DownloaderScreen, StoriesToolScreen, DailyVerseScreen, EkadashiScreen, MyProgressScreen, PathScreen,
   CenterScreen, MyCentersScreen, CenterEditor, CenterSchedule, CenterDeities, CenterEvents,
   CenterModeration, CenterPhotos, PrasadamScreen, RecipeDetail, CookbookScreen, DhamaDetailPage,
   TirthaDetailPage, PdfDoc, prefetchTopScreens,
@@ -1145,6 +1145,7 @@ export default function App() {
   const [openVow, setOpenVow] = useState(false);
   const [openDarshan, setOpenDarshan] = useState(false);
   const [openDailyVerse, setOpenDailyVerse] = useState(false);
+  const [openPath, setOpenPath] = useState(false);   // Ц8 · Путь ученика (/path)
   const [openPrivacy, setOpenPrivacy] = useState(false);
   const [openEkadashi, setOpenEkadashi] = useState(false);
   const [openProgress, setOpenProgress] = useState(false);
@@ -1207,6 +1208,7 @@ const RESERVED: readonly string[] = [
     if (openVow) return "/promise";
     if (openDarshan) return "/darshan/all";   // ЗКН-Н036: /darshan — это РАЗДЕЛ, а архив — его глубина
     if (openDailyVerse) return "/verse";
+    if (openPath) return "/path";
     if (openEkadashi) return "/ekadashi";
     if (openProgress) return "/progress";
     if (openCenterNew) return "/my/centers/new";
@@ -1295,6 +1297,7 @@ const RESERVED: readonly string[] = [
     "": HOME_TAB, feed: "sadhana",
     japa: "sadhana", story: "sadhana", verse: "sadhana", promise: "sadhana",
     darshan: "sadhana", progress: "sadhana", ekadashi: "sadhana",
+    path: "sadhana",   // Ц8 · Путь ученика
     calendar: "sadhana", id: "sadhana", sadhana: "sadhana",
     // ИСККОН
     iskcon: "iskcon", my: "iskcon", centers: "iskcon", center: "iskcon",
@@ -1315,7 +1318,7 @@ const RESERVED: readonly string[] = [
     const clean = (path || "/").replace(/\/+$/, "") || "/";
     if (clean === "/donate") { setDonate(true); return; }   // оверлей доната — подложку не трогаем
     setDonate(false);
-    setOpenBook(null); setBookTarget(null); setOpenBhajan(null); setOpenKirtanArtist(null); setOpenCatalog(false); setOpenContent(null); setOpenAdmin(false); setOpenEntity(null); setOpenCollection(null); setOpenFavorites(false); setOpenSearch(false); setOpenNotes(false); setOpenNoteId(null); setOpenCart(false); setOpenJapa(false); setOpenDiary(false); setOpenVow(false); setOpenDarshan(false); setOpenDailyVerse(false); setOpenPrivacy(false); setOpenEkadashi(false); setOpenProgress(false); setPrasadamSection(null); setPrasadamRecipe(null); setOpenCookbook(false); setCookbookChapter(null); setOpenCenter(null); setOpenMyCenters(false); setOpenCenterNew(false); setOpenCenterEdit(null); setOpenCenterSchedule(null); setOpenCenterDeities(null); setOpenCenterEvents(null); setOpenCenterPhotos(null); setOpenModeration(false); setOpenDhama(null); setOpenTirtha(null); setOpenDownloader(false); setOpenStoriesTool(false); setOpenPost(null);
+    setOpenBook(null); setBookTarget(null); setOpenBhajan(null); setOpenKirtanArtist(null); setOpenCatalog(false); setOpenContent(null); setOpenAdmin(false); setOpenEntity(null); setOpenCollection(null); setOpenFavorites(false); setOpenSearch(false); setOpenNotes(false); setOpenNoteId(null); setOpenCart(false); setOpenJapa(false); setOpenDiary(false); setOpenVow(false); setOpenDarshan(false); setOpenDailyVerse(false); setOpenPath(false); setOpenPrivacy(false); setOpenEkadashi(false); setOpenProgress(false); setPrasadamSection(null); setPrasadamRecipe(null); setOpenCookbook(false); setCookbookChapter(null); setOpenCenter(null); setOpenMyCenters(false); setOpenCenterNew(false); setOpenCenterEdit(null); setOpenCenterSchedule(null); setOpenCenterDeities(null); setOpenCenterEvents(null); setOpenCenterPhotos(null); setOpenModeration(false); setOpenDhama(null); setOpenTirtha(null); setOpenDownloader(false); setOpenStoriesTool(false); setOpenPost(null);
     const seg0 = clean.split("/")[1] ?? "";
 
     /* ЗКН-Н029 — ОСНОВА СТАВИТСЯ ПЕРВОЙ, ДО РАЗБОРА ОВЕРЛЕЯ.
@@ -1450,6 +1453,7 @@ const RESERVED: readonly string[] = [
     }
     if (clean === "/privacy") { setOpenPrivacy(true); return; }
     if (clean === "/verse") { setOpenDailyVerse(true); return; }
+    if (clean === "/path") { setOpenPath(true); return; }
     if (clean === "/ekadashi") { setOpenEkadashi(true); return; }
     if (clean === "/progress") { setOpenProgress(true); return; }
     if (clean === "/centers/review") { setOpenModeration(true); return; }
@@ -1859,7 +1863,7 @@ const RESERVED: readonly string[] = [
     // адрес личности — в КОРНЕ (ЗКН-Н023). pushUrl, чтобы «назад» вернул откуда пришёл.
     if (typeof window !== "undefined" && window.location.pathname !== "/" + id) pushUrl("/" + id);
   }
-  const tabBarVisible = !openAdmin && !openBook && !openBhajan && !openKirtanArtist && !openCatalog && !openContent && !openEntity && !openCollection && !openFavorites && !openSearch && !openNotes && !openNoteId && !openCart && !openJapa && !openDiary && !openVow && !openDarshan && !openDailyVerse && !openPrivacy && !openEkadashi && !openProgress && !prasadamSection && !prasadamRecipe && !openCookbook && !cookbookChapter && !openCenter && !openMyCenters && !openCenterNew && !openCenterEdit && !openCenterSchedule && !openCenterDeities && !openCenterEvents && !openCenterPhotos && !openModeration && !openDhama && !openTirtha && !openDownloader && !openStoriesTool;
+  const tabBarVisible = !openAdmin && !openBook && !openBhajan && !openKirtanArtist && !openCatalog && !openContent && !openEntity && !openCollection && !openFavorites && !openSearch && !openNotes && !openNoteId && !openCart && !openJapa && !openDiary && !openVow && !openDarshan && !openDailyVerse && !openPath && !openPrivacy && !openEkadashi && !openProgress && !prasadamSection && !prasadamRecipe && !openCookbook && !cookbookChapter && !openCenter && !openMyCenters && !openCenterNew && !openCenterEdit && !openCenterSchedule && !openCenterDeities && !openCenterEvents && !openCenterPhotos && !openModeration && !openDhama && !openTirtha && !openDownloader && !openStoriesTool;
   // Главное нижнее меню остаётся поверх страниц-оверлеев со скроллом (книга, ПКЛ,
   // контент, каталоги) — чтобы из любой главы/карточки можно было перейти в раздел.
   // Читалки (fixed, z70) и модалки перекрывают пилюлю (z40) сами → конфликта нет.
@@ -1959,6 +1963,10 @@ const RESERVED: readonly string[] = [
         ) : openEkadashi ? (
           <main style={{ position: "relative", height: "100dvh", overflow: "hidden" }}>
             <EkadashiScreen onBack={goBack} onOpenPath={navigate} />
+          </main>
+        ) : openPath ? (
+          <main style={{ position: "relative", height: "100dvh", overflowX: "hidden", overflowY: "auto", overscrollBehavior: "contain" }}>
+            <PathScreen onBack={goBack} onOpen={navigate} />
           </main>
         ) : openProgress ? (
           <main style={{ position: "relative", height: "100dvh", overflow: "hidden" }}>

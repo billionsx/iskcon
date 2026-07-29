@@ -815,11 +815,28 @@ export async function accountApi(request: Request, env: DB, url: URL): Promise<R
   }
 
   // прогресс чтения (вызывается ридером при открытии главы/стиха)
+  // Ц8: тот же стол несёт отметки пути ученика (work='path', kind='step') —
+  // UNIQUE(user, work, ref) уже готов, миграция не нужна. Отметка снимается
+  // (`remove`) — галочка обязана уметь назад; список читается GET ?work=.
+  if (p === "/api/me/progress" && method === "GET") {
+    const work = clip(url.searchParams.get("work"), 24);
+    if (!work) return err("bad_request");
+    const rows = await env.DB.prepare(
+      `SELECT ref, updated_at FROM reading_progress WHERE user_id = ?1 AND work = ?2 ORDER BY updated_at DESC LIMIT 200`,
+    ).bind(uid, work).all<{ ref: string; updated_at: string }>();
+    return jres({ items: rows.results ?? [] });
+  }
   if (p === "/api/me/progress" && method === "POST") {
     const b = await body();
     const work = clip(b.work, 24);
     const ref = clip(b.ref, 80);
     if (!work || !ref) return err("bad_request");
+    if (b.remove === true) {
+      await env.DB.prepare(
+        `DELETE FROM reading_progress WHERE user_id = ?1 AND work = ?2 AND ref = ?3`,
+      ).bind(uid, work, ref).run();
+      return jres({ ok: true });
+    }
     const label = clip(b.label, 160) || null;
     const kind = clip(b.kind, 16) || "chapter";
     const href = clip(b.href, 200) || null;
