@@ -2,6 +2,9 @@
    Полностью изолирована от приложения ONE LOVE: монтируется из main.tsx
    вместо App, живёт по адресам /play/*, своя история и свой док. */
 import React, { useEffect, useMemo, useRef, useState } from "react";
+/* Измеренная база оболочки — один экземпляр на /music и /play. Дальше идут
+   только отличия /play (см. шапку play.css). */
+import "../music/music.css";
 import "./play.css";
 import { I, Menu, MItem, MQuick, ScrollCtx, mutate, storeNow, useStore, shuffled } from "./core";
 import { ALL_SONGS, Song } from "./data";
