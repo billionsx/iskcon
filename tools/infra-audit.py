@@ -636,8 +636,13 @@ def check_pl027() -> list:
     wt = w.read_text(encoding="utf-8") if w.exists() else ""
     if "async function goswamiWatchdog" not in wt or "pipeline_state" not in wt:
         bad.append(("apps/web/worker.ts", "сторож goswamiWatchdog/pipeline_state пропал — ЗКН-Пл027"))
-    elif "goswamiWatchdog(env)" not in wt.split("async scheduled", 1)[-1][:1200]:
-        bad.append(("apps/web/worker.ts", "тик крона не зовёт goswamiWatchdog — сторож есть, но мёртв (ЗКН-Пл027)"))
+    else:
+        # Комментарии срезаем: закомментированный вызов содержит ту же подстроку,
+        # но сторожа НЕ будит (гейты не верят комментариям — общее правило свода).
+        tick = wt.split("async scheduled", 1)[-1][:1200]
+        tick = "\n".join(ln for ln in tick.split("\n") if not ln.lstrip().startswith("//"))
+        if "goswamiWatchdog(env)" not in tick:
+            bad.append(("apps/web/worker.ts", "тик крона не зовёт goswamiWatchdog — сторож есть, но мёртв (ЗКН-Пл027)"))
     y = ROOT / ".github" / "workflows" / "goswami-ingest.yml"
     yt = y.read_text(encoding="utf-8") if y.exists() else ""
     if "Взвести сторожа" not in yt or "'running'" not in yt:
