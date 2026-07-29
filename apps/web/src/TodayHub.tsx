@@ -10,6 +10,7 @@ import { useEffect, useState, type CSSProperties, type ReactNode } from "react";
 import { SCRIPTURE_VOICE } from "./ui/voice";
 import { useAuth } from "./account/store";
 import { effectiveLevel, getLocalDevotee } from "./devotee";
+import { api } from "./api";
 import { readingClient } from "./reading/api";
 import { getPlan } from "./reading/position";
 import { DarshanRings } from "./DarshanStories";
@@ -98,6 +99,10 @@ export default function TodayHub({ onOpenPath, onSub }: { onOpenPath: (path: str
   const [verse, setVerse] = useState<{ label: string; translation: string | null } | null>(null);
   const [japa, setJapa] = useState(() => readJapaToday());
   const [nextEv, setNextEv] = useState<{ title: string; days: number; type: string } | null>(null);
+  /* Ц7 · Лекция дня — одна на всех, детерминированно от дня (сервер), только
+   * настоящие записи Шрилы Прабхупады. Тап ведёт путём ЗКН-Н077 (/katha?t=…):
+   * витрина сама прыгает в очередь цикла — второго механизма не заводим. */
+  const [lec, setLec] = useState<{ title: string; albumTitle: string; durationSec: number; href: string } | null>(null);
 
   useEffect(() => {
     let alive = true;
@@ -106,6 +111,10 @@ export default function TodayHub({ onOpenPath, onSub }: { onOpenPath: (path: str
       const v = u.verses[0];
       if (v) setVerse({ label: v.label, translation: v.translation });
     }).catch(() => {});
+    void fetch(api("/katha/lecture-of-day")).then((r) => r.json())
+      .then((l: { title?: string; albumTitle?: string; durationSec?: number; href?: string }) => {
+        if (alive && l && l.title && l.href) setLec({ title: l.title, albumTitle: l.albumTitle || "Катха", durationSec: l.durationSec || 0, href: l.href });
+      }).catch(() => {});
     void fetchNextEvent().then((e) => { if (alive) setNextEv(e); });
     // Круги могли измениться в счётчике — обновляем при возврате на вкладку.
     const onVis = () => setJapa(readJapaToday());
@@ -143,6 +152,24 @@ export default function TodayHub({ onOpenPath, onSub }: { onOpenPath: (path: str
                 {verse.translation ? `«${verse.translation.length > 210 ? verse.translation.slice(0, 208).trimEnd() + "…" : verse.translation}»` : "Откройте стих дня"}
               </div>
               <div style={{ fontSize: "var(--text-footnote)", fontWeight: 600, color: GOLD, fontFamily: FONT, marginTop: 10 }}>Читать со стихом и комментарием →</div>
+            </div>
+          </Card>
+        </>
+      )}
+
+      {/* Ц7 · Лекция дня — шравана: голос Шрилы Прабхупады каждый день */}
+      {lec && (
+        <>
+          <div style={label}>Лекция дня</div>
+          <Card onClick={() => onOpenPath(lec.href)}>
+            <div style={{ padding: "15px 16px" }}>
+              <Eyebrow>{lec.albumTitle}</Eyebrow>
+              <div style={{ fontFamily: FONT, fontSize: "var(--text-body)", fontWeight: 600, color: INK }}>
+                {lec.title}
+              </div>
+              <div style={{ fontSize: "var(--text-footnote)", fontWeight: 600, color: GOLD, fontFamily: FONT, marginTop: 10 }}>
+                Слушать Шрилу Прабхупаду{lec.durationSec >= 60 ? ` · ${Math.round(lec.durationSec / 60)} мин` : ""} →
+              </div>
             </div>
           </Card>
         </>

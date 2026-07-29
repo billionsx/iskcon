@@ -219,19 +219,21 @@ export async function ensureSchema(env: DB): Promise<void> {
       )`,
     ),
     env.DB.prepare(`CREATE INDEX IF NOT EXISTS idx_japa_user_day ON japa_round(user_id, day)`),
-    // Дневник садханы — чтение/подъём/заметка на (преданный, день). Круги НЕ тут:
+    // Дневник садханы — чтение/слушание/подъём/заметка на (преданный, день). Круги НЕ тут:
     // они берутся из japa_round (источник — счётчик джапы), чтобы метрика была
-    // одна. `day` — локальный день «YYYY-MM-DD». Зеркалирует 0007_sadhana_day.sql.
+    // одна. `day` — локальный день «YYYY-MM-DD». Зеркалирует 0007_sadhana_day.sql
+    // + 0025_sadhana_listening.sql (Ц7: шравана — измерение садханы).
     env.DB.prepare(
       `CREATE TABLE IF NOT EXISTS sadhana_day (
-        user_id     TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-        day         TEXT NOT NULL,
-        reading_min INTEGER NOT NULL DEFAULT 0,
-        rose_at     TEXT,
-        note        TEXT,
-        ekadashi    INTEGER NOT NULL DEFAULT 0,
-        created_at  TEXT NOT NULL DEFAULT (datetime('now')),
-        updated_at  TEXT NOT NULL DEFAULT (datetime('now')),
+        user_id       TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+        day           TEXT NOT NULL,
+        reading_min   INTEGER NOT NULL DEFAULT 0,
+        listening_min INTEGER NOT NULL DEFAULT 0,
+        rose_at       TEXT,
+        note          TEXT,
+        ekadashi      INTEGER NOT NULL DEFAULT 0,
+        created_at    TEXT NOT NULL DEFAULT (datetime('now')),
+        updated_at    TEXT NOT NULL DEFAULT (datetime('now')),
         PRIMARY KEY (user_id, day)
       )`,
     ),
@@ -487,7 +489,7 @@ async function writeGoal(env: DB, uid: string, goal: number): Promise<void> {
   ).bind(uid, JSON.stringify(data)).run();
 }
 
-interface DiaryRow { day: string; reading_min: number; rose_at: string | null; note: string | null; ekadashi: number }
+interface DiaryRow { day: string; reading_min: number; listening_min: number; rose_at: string | null; note: string | null; ekadashi: number }
 
 /** Полное состояние дневника: цель, сегодня, стрики, неделя, история. */
 async function sadhanaState(env: DB, uid: string, today: string, histDays: number) {
@@ -500,11 +502,11 @@ async function sadhanaState(env: DB, uid: string, today: string, histDays: numbe
       `SELECT day, COUNT(*) AS rounds FROM japa_round WHERE user_id = ?1 GROUP BY day`,
     ).bind(uid).all<{ day: string; rounds: number }>(),
     env.DB.prepare(
-      `SELECT day, reading_min, rose_at, note, ekadashi FROM sadhana_day WHERE user_id = ?1`,
+      `SELECT day, reading_min, listening_min, rose_at, note, ekadashi FROM sadhana_day WHERE user_id = ?1`,
     ).bind(uid).all<DiaryRow>(),
     env.DB.prepare(
-      `SELECT COALESCE(SUM(reading_min),0) AS reading FROM sadhana_day WHERE user_id = ?1`,
-    ).bind(uid).first<{ reading: number }>(),
+      `SELECT COALESCE(SUM(reading_min),0) AS reading, COALESCE(SUM(listening_min),0) AS listening FROM sadhana_day WHERE user_id = ?1`,
+    ).bind(uid).first<{ reading: number; listening: number }>(),
   ]);
 
   const roundsByDay = new Map<string, number>();
@@ -535,6 +537,7 @@ async function sadhanaState(env: DB, uid: string, today: string, histDays: numbe
       day,
       rounds: roundsByDay.get(day) ?? 0,
       reading_min: dr?.reading_min ?? 0,
+      listening_min: dr?.listening_min ?? 0,
       rose_at: dr?.rose_at ?? null,
       note: dr?.note ?? null,
       ekadashi: dr?.ekadashi ?? 0,
@@ -552,7 +555,7 @@ async function sadhanaState(env: DB, uid: string, today: string, histDays: numbe
   const allDays = new Set<string>([...roundsByDay.keys(), ...diaryByDay.keys()]);
   const history = [...allDays]
     .map(cell)
-    .filter((c) => c.rounds > 0 || c.reading_min > 0 || c.rose_at || c.note)
+    .filter((c) => c.rounds > 0 || c.reading_min > 0 || c.listening_min > 0 || c.rose_at || c.note)
     .sort((a, b) => (a.day < b.day ? 1 : -1))
     .slice(0, Math.min(Math.max(histDays, 1), 90));
 
@@ -567,6 +570,7 @@ async function sadhanaState(env: DB, uid: string, today: string, histDays: numbe
       totalRounds: jt?.rounds ?? 0,
       daysPracticed: jt?.days ?? 0,
       totalReadingMin: readAgg?.reading ?? 0,
+      totalListeningMin: readAgg?.listening ?? 0,
     },
     week,
     history,
@@ -834,6 +838,29 @@ export async function accountApi(request: Request, env: DB, url: URL): Promise<R
     const source = clip(b.source, 16) || "book";
     const ref = clip(b.ref, 200);
     if (!ref) return err("bad_request");
+    /* ── Ц7 · ШРАВАНА — ИЗМЕРЕНИЕ САДХАНЫ ──
+     * Слушание попадает в дневник по ЗАВЕРШЕНИЮ дорожки (onEnded): биений
+     * позиции у плеера нет, а завершение — честный пол: дослушал — минуты
+     * твои; бросил на середине — не насчитываем (недооценка лучше выдумки,
+     * дух ЗКН-БТ001). Повторное полное прослушивание — снова кредит: человек
+     * реально слушал. Считаем катху (лекции) и книги (шравана текста);
+     * киртан — другой столп, у него в дневнике нет минутной меры.
+     * `day` — ЛОКАЛЬНЫЙ день клиента (та же условность, что у кругов джапы):
+     * вечерняя лекция ложится в тот день, в котором её слушали. */
+    if (b.completed === true) {
+      const sec = Number.isFinite(Number(b.listenedSec)) ? Math.max(0, Math.round(Number(b.listenedSec))) : 0;
+      const day = typeof b.day === "string" && /^\d{4}-\d{2}-\d{2}$/.test(b.day) ? b.day : null;
+      const min = Math.round(sec / 60);
+      if (min > 0 && min <= 600 && day && (source === "katha" || source === "book")) {
+        await env.DB.prepare(
+          `INSERT INTO sadhana_day (user_id, day, listening_min) VALUES (?1, ?2, ?3)
+           ON CONFLICT(user_id, day) DO UPDATE SET
+             listening_min = sadhana_day.listening_min + excluded.listening_min,
+             updated_at = datetime('now')`,
+        ).bind(uid, day, min).run();
+      }
+      return jres({ ok: true });
+    }
     const title = clip(b.title, 200) || null;
     const subtitle = clip(b.subtitle, 200) || null;
     const cover = clip(b.cover, 300) || null;

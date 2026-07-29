@@ -483,6 +483,14 @@ export default function SadhanaScreen({ onBack, onOpenPath }: { onBack: () => vo
                   ))}
                 </div>
 
+                {/* Ц7 · слушание: пишет плеер по дослушанной дорожке (катха/книги) —
+                    ручного ввода нет: источник минуты ОДИН, честный пол без выдумки */}
+                {(st.todayRow.listening_min ?? 0) > 0 && (
+                  <div style={{ marginTop: 12, paddingLeft: 50, fontFamily: FT, fontSize: "var(--text-footnote)", color: L2 }}>
+                    Слушание лекций · <span style={{ fontWeight: 700, color: L1 }}>{fmtMin(st.todayRow.listening_min ?? 0)}</span>
+                  </div>
+                )}
+
                 <div style={{ height: 1, background: HAIR, margin: "14px 0" }} />
 
                 {/* подъём */}
@@ -545,6 +553,7 @@ export default function SadhanaScreen({ onBack, onOpenPath }: { onBack: () => vo
                 <Tile value={st.stats.totalRounds.toLocaleString("ru-RU")} label="Кругов всего" />
                 <Tile value={String(st.stats.daysPracticed)} label="Дней практики" />
                 <Tile value={fmtMin(st.stats.totalReadingMin)} label="Чтение всего" accent={GOLDT} />
+                {(st.stats.totalListeningMin ?? 0) > 0 && <Tile value={fmtMin(st.stats.totalListeningMin ?? 0)} label="Слушание всего" accent={GOLDT} />}
               </div>
 
               {/* история */}
@@ -563,6 +572,8 @@ export default function SadhanaScreen({ onBack, onOpenPath }: { onBack: () => vo
                             {d.rounds} {plural(d.rounds, "круг", "круга", "кругов")}
                           </span>
                           {d.reading_min > 0 && <span style={{ fontFamily: FT, fontSize: "var(--text-caption)", color: L2 }}>чтение {fmtMin(d.reading_min)}</span>}
+                          {/* Ц7: шравана — дослушанные лекции/аудиокниги (пишет плеер по onEnded) */}
+                          {(d.listening_min ?? 0) > 0 && <span style={{ fontFamily: FT, fontSize: "var(--text-caption)", color: L2 }}>слушание {fmtMin(d.listening_min ?? 0)}</span>}
                           {d.rose_at && <span style={{ fontFamily: FT, fontSize: "var(--text-caption)", color: L2 }}>подъём {d.rose_at}</span>}
                           {d.note && <span style={{ flexBasis: "100%", fontFamily: FT, fontSize: "var(--text-caption)", color: L3, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{d.note}</span>}
                         </span>

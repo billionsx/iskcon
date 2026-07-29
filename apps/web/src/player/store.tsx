@@ -17,7 +17,7 @@ import { bookSlug } from "../books";
 import { BOOKS, bookFullTitle } from "../books";
 import { albumById, artistBySlug, albumCover } from "../kirtans";
 import { kathaAlbumById, speakerBySlug } from "../katha";
-import { recordListen } from "../account/track";
+import { recordListen, recordListenDone } from "../account/track";
 import { replaceUrl } from "../nav";
 import { createWebEngine, type AudioEngine } from "./engine";
 // ЗКН-Н092: адрес книги строит один модуль.
@@ -766,6 +766,17 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
   // advance: auto=true — окончание трека (учитывает «повтор одного»); false — кнопка «вперёд»
   function advance(auto: boolean) {
     const m = manifestRef.current; if (!m) return;
+    /* Ц7: onEnded — дорожка ДОСЛУШАНА. Кредит шраваны в дневник — до любых
+     * ветвлений (сон/повтор/переход): факт прослушивания уже состоялся.
+     * Киртан — другой столп: у него в дневнике нет минутной меры. */
+    if (auto) {
+      const cur = (m.modes[modeRef.current] ?? m.modes.plain).tracks[indexRef.current];
+      const src = sourceRef.current;
+      if (cur && (src === "katha" || src === "book") && (cur.durationSec ?? 0) > 0) {
+        let ref = cur.url; try { ref = new URL(cur.url).pathname; } catch { /* абсолютный url */ }
+        recordListenDone({ source: src, ref, listenedSec: cur.durationSec ?? 0 });
+      }
+    }
     // «Уснуть после этой записи»: киртан не обрывают на середине.
     if (auto && sleepEndRef.current) {
       engineRef.current?.pause(); setPlaying(false);

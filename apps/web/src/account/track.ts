@@ -141,6 +141,18 @@ export function recordListen(ev: ListenEvent): void {
   });
 }
 
+/* ── Ц7 · ШРАВАНА — ИЗМЕРЕНИЕ САДХАНЫ ──
+ * Дорожка ДОСЛУШАНА (onEnded) → минуты уходят в дневник. Биений позиции у
+ * плеера нет, и это сознательно: завершение — честный пол (бросил на середине —
+ * не считаем; недооценка лучше выдумки). День — ЛОКАЛЬНЫЙ, той же условности,
+ * что у кругов джапы: вечерняя лекция ложится в день, когда её слушали. */
+export function recordListenDone(ev: { source: string; ref: string; listenedSec: number }): void {
+  if (!ev.ref || !authed) return;
+  const d = new Date();
+  const day = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+  post("/me/listen", { source: ev.source || "book", ref: ev.ref, completed: true, listenedSec: ev.listenedSec, day });
+}
+
 /* ─────────────────────── джапа (садхана) ─────────────────────── */
 
 export interface JapaRoundDTO {

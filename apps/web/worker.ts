@@ -2798,6 +2798,30 @@ export default {
      * каждая страница живёт отдельной записью, страницы не подменяют друг друга. */
     const mAfter = Math.max(0, parseInt(url.searchParams.get("after") || "0", 10) || 0);
     const mLimit = Math.max(0, Math.min(20000, parseInt(url.searchParams.get("limit") || "0", 10) || 0));
+    /* ── Ц7 · ЛЕКЦИЯ ДНЯ ──
+     * Одна на всех, детерминированно от НОМЕРА UTC-дня: (день % счёт) — место
+     * в KATHA_ORDER среди дорожек Шрилы Прабхупады. Ноль состояния, ноль
+     * кураторских рук, ноль выдумки: только настоящие записи, по кругу через
+     * весь архив (1234 дня — весь архив без повторов). Кэш края 5 минут —
+     * внутри дня формула стабильна, смена в полночь UTC доедет с тем же лагом.
+     * Ссылка — путь ЗКН-Н077 (/katha?t=…): витрина сама прыгнет в очередь цикла. */
+    if (url.pathname === "/api/katha/lecture-of-day") {
+      return edgeCached(request, ctx, async () => {
+        const W = "WHERE t.speaker_slug='prabhupada'";
+        const cnt = await kathaCount(env, W);
+        if (!cnt) return json({});
+        const off = Math.floor(Date.now() / 86400000) % cnt;
+        const r = (await kathaTrackRows(env, W, [], 1, off))[0];
+        if (!r) return json({});
+        const tail = `${r.identifier}/${r.file}`;
+        return json({
+          title: r.title, albumId: r.album_id, albumTitle: r.album ?? "Катха",
+          speaker: r.speaker ?? "Шрила Прабхупада", durationSec: r.duration || 0,
+          href: `/katha?t=${encodeURIComponent(tail)}`,
+        });
+      });
+    }
+
     if (url.pathname === "/api/katha/all/audio") {
       return edgeCached(request, ctx, () => kathaAllManifest(env, url.origin, mAfter, mLimit));
     }

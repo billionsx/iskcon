@@ -48,7 +48,7 @@ export interface Overview {
   bookmarks: BookmarkItem[];
 }
 
-export interface SadhanaDay { day: string; rounds: number; reading_min: number; rose_at: string | null; note: string | null; ekadashi?: number }
+export interface SadhanaDay { day: string; rounds: number; reading_min: number; listening_min?: number; rose_at: string | null; note: string | null; ekadashi?: number }
 export interface SadhanaWeekDay { day: string; rounds: number; done: boolean; today: boolean }
 export interface SadhanaState {
   goal: number;
@@ -61,6 +61,7 @@ export interface SadhanaState {
     totalRounds: number;
     daysPracticed: number;
     totalReadingMin: number;
+    totalListeningMin?: number;
   };
   week: SadhanaWeekDay[];
   history: SadhanaDay[];
