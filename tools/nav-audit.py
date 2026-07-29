@@ -1873,13 +1873,30 @@ _ALLOWED = {"routes.ts", "books.ts", "nav.ts"}
 
 
 def check_second_path_builder():
-    """ЗКН-Н060: путь книги строит ТОЛЬКО routes.ts/books.ts."""
+    """ЗКН-Н060: путь книги строит ТОЛЬКО routes.ts/books.ts.
+
+    Эндпоинты сервера (`/books/<шифр>/audio`) — не маршруты человека; их гейт
+    узнаёт по соседству с `api(`/`fetch(` в окне ±строка. Ц12·остаток разорвал
+    окно: строитель адресов манифестов вынесен в ЧИСТУЮ функцию `manifestPath`
+    (store.tsx), а fetch стоит у вызывающих (ensureManifest И extendQueue — ради
+    этого и выносили: один перевод book id→URL на двоих). Тело ровно ЭТОЙ
+    функции — территория api(). Второго строителя под другим именем окно
+    поймает как прежде; переименование manifestPath снимет льготу и честно
+    уронит гейт — обновлять признание придётся осознанно."""
     bad = []
     for f in sorted(_SRC.rglob("*.tsx")) + sorted(_SRC.rglob("*.ts")):
         if f.name in _ALLOWED:
             continue
-        lines = f.read_text(encoding="utf-8").split("\n")
+        t = f.read_text(encoding="utf-8")
+        lines = t.split("\n")
+        exempt: range = range(0)
+        if f.name == "store.tsx":
+            m = _re.search(r"function manifestPath\([\s\S]*?\n  \}", t)
+            if m:
+                exempt = range(t[:m.start()].count("\n") + 1, t[:m.end()].count("\n") + 2)
         for i, ln in enumerate(lines, 1):
+            if i in exempt:
+                continue
             if ln.strip().startswith(("*", "//")):
                 continue
             # `api("/books/…")` — это ЭНДПОИНТ сервера, а не маршрут экрана.
