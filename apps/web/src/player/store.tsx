@@ -69,6 +69,10 @@ interface Manifest {
   lilas?: { lila: string; label: string }[];
   scope?: string;      // ШБ: песнь, которой ограничен манифест
   cantos?: CantoRef[]; // ШБ: песни, где озвучка уже есть
+  /* Ц12·остаток: сколько дорожек ВО ВСЕЙ очереди. Если больше загруженного —
+   * плеер доклеивает страницы по мере проигрывания (extendQueue). Манифесты
+   * без total (книги, киртаны, циклы) ведут себя как раньше: их очередь целая. */
+  total?: number;
 }
 
 /** Книги, чей манифест приходит НЕ целиком, а разделом (ШБ: одна песнь = 784…3662 дорожки;
@@ -385,12 +389,16 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  function ensureManifest(): Promise<Manifest> {
-    const want = bookRef.current;
-    const src = sourceRef.current;
-    const scope = scopeRef.current;
-    const cur = manifestRef.current;
-    if (cur && cur.book === want && (cur.scope ?? "") === scope) return Promise.resolve(cur);
+  /* Ц12·остаток: какие очереди приходят СТРАНИЦАМИ. Только большие ленты катхи —
+   * «всё», голос, найденное. Цикл (`a:`) целый: ≤50 дорожек. */
+  const KATHA_PAGE = 500;       // шаг доклейки — тот же, что у ленты витрины
+  const QUEUE_PREFETCH = 20;    // за сколько дорожек до края начинаем доклейку (≈15 часов звука)
+  function kathaSliced(src: Source, want: string): boolean {
+    return src === "katha" && (want === "all" || want.startsWith("s:") || want.startsWith("q:"));
+  }
+  /** Путь манифеста очереди — ЕДИНСТВЕННОЕ место, где book id превращается в URL.
+   *  Им же пользуется доклейка страниц: второго перевода id→адрес не заводим. */
+  function manifestPath(src: Source, want: string, scope: string): string {
     const bhajIsLec = src === "bhajan" && want.endsWith("::lec");
     const bhajBase = bhajIsLec ? want.slice(0, -5) : want;
     // ПОИСК — свой альбом (`q:<запрос>`). В путь его класть нельзя: регулярка
@@ -398,7 +406,7 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
     // Очереди киртанов: `all` — вся коллекция, `f:<слаг>` — папка исполнителя,
     // `fav:<msg_id,…>` — избранное, `q:<запрос>` — найденное. В путь адреса их
     // класть нельзя: регулярка воркера пускает туда только латиницу и цифры.
-    const path = src === "kirtan"
+    return src === "kirtan"
       ? (want.startsWith("q:")
           ? `/kirtans/find/audio?q=${encodeURIComponent(want.slice(2))}`
           : want.startsWith("f:")
@@ -418,6 +426,25 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
           : `/katha/all/audio`)
       : src === "bhajan" ? `/bhajans/audio?slug=${encodeURIComponent(bhajBase)}${bhajIsLec ? "&set=lectures" : ""}`
       : `/books/${want}/audio${scope ? `?canto=${encodeURIComponent(scope)}` : ""}`;
+  }
+
+  function ensureManifest(): Promise<Manifest> {
+    const want = bookRef.current;
+    const src = sourceRef.current;
+    const scope = scopeRef.current;
+    const cur = manifestRef.current;
+    if (cur && cur.book === want && (cur.scope ?? "") === scope) return Promise.resolve(cur);
+    let path = manifestPath(src, want, scope);
+    /* Ц12·остаток: большая лента катхи берётся НЕ целиком, а срезом от нуля до
+     * потребности. Потребность — куда собираемся встать (pending.index: тап по
+     * витрине, восстановление места после перезагрузки) плюс запас на доклейку.
+     * Тап в №700 → одна страница 0..1000, а не весь мегабайтный список и не
+     * три запроса подряд. Остальное доклеит extendQueue по мере проигрывания. */
+    if (kathaSliced(src, want)) {
+      const need = (pendingRef.current?.index ?? 0) + 1 + QUEUE_PREFETCH;
+      const lim = Math.min(20000, Math.max(KATHA_PAGE, Math.ceil(need / KATHA_PAGE) * KATHA_PAGE));
+      path += (path.includes("?") ? "&" : "?") + `after=0&limit=${lim}`;
+    }
     return fetch(api(path))
       .then((r) => r.json())
       .then((m: Manifest & { title?: string; cover?: string; artist?: string }) => {
@@ -426,6 +453,54 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
         if (m.scope) { scopeRef.current = m.scope; setScopeId(m.scope); } // раздел не задали — воркер выбрал первый
         manifestRef.current = m; setManifest(m); return m;
       });
+  }
+
+  /* ═══ Ц12·остаток — ДОКЛЕЙКА ОЧЕРЕДИ ═══
+   *
+   * Очередь ОДНА (ЗКН-Б011): страница — не вторая очередь, а продолжение той же
+   * (book не меняется, порядок тот же ORDER BY). Плеер видит `total` манифеста
+   * и, подходя к краю загруженного, тихо доклеивает следующую страницу — за
+   * QUEUE_PREFETCH дорожек до конца (одна дорожка ≈ 45 минут: запас на сеть
+   * исполинский). Манифесты без total (книги, киртаны, циклы) сюда не попадают.
+   *
+   * Охраны: (1) очередь сменили, пока страница летела, — чужой срез в чужую
+   * очередь не клеим; (2) конвейер заливки мог сдвинуть границу страницы —
+   * задвоенную на стыке дорожку срезаем по file (пропуск одной при обратном
+   * сдвиге не ловится — принято: окно 5 минут TTL, после заливки порядок
+   * заморожен); (3) ПОКАЗАННЫЙ порядок не пересобираем (ЗКН-Н090) — новые
+   * индексы ПРОДОЛЖАЮТ seq: вперёд/назад — как есть, перемешка — перемешанным
+   * хвостом (уже показанное «Далее» не перетасовывается под рукой). */
+  const extendingRef = useRef(false);
+  function extendQueue(): Promise<boolean> {
+    const m = manifestRef.current; if (!m) return Promise.resolve(false);
+    const list = (m.modes[modeRef.current] ?? m.modes.plain).tracks;
+    if (m.total == null || list.length >= m.total || extendingRef.current) return Promise.resolve(false);
+    if (!kathaSliced(sourceRef.current, bookRef.current)) return Promise.resolve(false);
+    const base = manifestPath(sourceRef.current, bookRef.current, scopeRef.current);
+    const url = base + (base.includes("?") ? "&" : "?") + `after=${list.length}&limit=${KATHA_PAGE}`;
+    extendingRef.current = true;
+    return fetch(api(url))
+      .then((r) => r.json())
+      .then((mm: Manifest) => {
+        extendingRef.current = false;
+        if (manifestRef.current !== m) return false;               // охрана 1: очередь уже другая
+        let add = mm.modes?.plain?.tracks ?? [];
+        const lastFile = list[list.length - 1]?.file;
+        while (add.length && add[0].file === lastFile) add = add.slice(1); // охрана 2: стык задвоил
+        if (!add.length) return false;
+        const merged = [...list, ...add];
+        const plain = { ...m.modes.plain, tracks: merged };
+        const next: Manifest = { ...m, total: mm.total ?? m.total, modes: { ...m.modes, plain } };
+        manifestRef.current = next; setManifest(next);
+        if (seqRef.current.length === list.length) {               // охрана 3: продолжаем порядок
+          const fresh = add.map((_, k) => list.length + k);
+          if (orderModeRef.current === "shuffle")
+            for (let i = fresh.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [fresh[i], fresh[j]] = [fresh[j], fresh[i]]; }
+          setSeq([...seqRef.current, ...fresh]);
+        }
+        return true;
+      })
+      .catch(() => { extendingRef.current = false; return false; });
   }
 
   /* ЗКН-Н091 — ПЛЕЕР ПОМНИТ, ЧТО ИГРАЛО, ДЛЯ ЛЮБОГО ЗВУКА, А НЕ ТОЛЬКО ДЛЯ КНИГИ.
@@ -495,6 +570,9 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
       });
     }
     persist();
+    /* Ц12·остаток: подошли к краю загруженного — тихо доклеиваем следующую
+     * страницу. Не await: звук уже идёт, страница успеет за часы. */
+    if (m.total != null && list.length < m.total && list.length - 1 - i <= QUEUE_PREFETCH) void extendQueue();
   }
 
   function applyPending(m: Manifest, autoplay: boolean) {
@@ -702,6 +780,14 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
     const ni = relIndex(1);
     if (ni >= 0) { loadIndex(m, modeRef.current, ni, true); return; }
     if (advanceScope(m)) return;   // ШБ: конец песни — не конец книги
+    /* Ц12·остаток: край ЗАГРУЖЕННОГО — не край ОЧЕРЕДИ. Страховка на случай,
+     * когда упреждающая доклейка не успела (сеть легла на 15 часов звука):
+     * доклеиваем и шагаем. Не вышло (офлайн/правда конец) — честная пауза. */
+    const list = (m.modes[modeRef.current] ?? m.modes.plain).tracks;
+    if (m.total != null && list.length < m.total) {
+      void extendQueue().then((ok) => { if (ok) advance(auto); else setPlaying(false); });
+      return;
+    }
     setPlaying(false);
   }
   /** ШБ: манифест ограничен песнью. Дойдя до её конца, подхватываем следующую песнь с

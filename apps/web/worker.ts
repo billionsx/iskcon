@@ -1171,7 +1171,10 @@ async function kirtanAllManifest(env: Env, origin: string): Promise<Response> {
  *  очереди; два места с «почти таким же» ORDER BY — и заиграет не то. */
 const KATHA_ORDER = "COALESCE(b.sort, 9999), b.title, t.sort, t.file";
 
-async function kathaTrackRows(env: Env, where = "", binds: unknown[] = []) {
+async function kathaTrackRows(env: Env, where = "", binds: unknown[] = [], limit = 0, offset = 0) {
+  /* Ц12: страничный срез — тем же ORDER BY, что и полный список; страница —
+   * окно того же порядка, а не другой порядок. */
+  const lim = limit > 0 ? ` LIMIT ${limit} OFFSET ${offset}` : "";
   const stmt = env.DB.prepare(
     `SELECT t.identifier, t.file, t.title, t.duration, t.album_id, t.speaker_slug,
             b.title AS album, b.sort AS bsort, s.name AS speaker
@@ -1179,7 +1182,7 @@ async function kathaTrackRows(env: Env, where = "", binds: unknown[] = []) {
        LEFT JOIN katha_albums b ON b.id = t.album_id
        LEFT JOIN katha_speakers s ON s.slug = t.speaker_slug
       ${where}
-      ORDER BY ${KATHA_ORDER}`
+      ORDER BY ${KATHA_ORDER}${lim}`
   );
   const res = await (binds.length ? stmt.bind(...binds) : stmt).all<{
     identifier: string; file: string; title: string; duration: number | null;
@@ -1188,14 +1191,21 @@ async function kathaTrackRows(env: Env, where = "", binds: unknown[] = []) {
   return res.results || [];
 }
 
-function kathaTracksToAudio(rows: Awaited<ReturnType<typeof kathaTrackRows>>, origin: string): AudioTrack[] {
+function kathaTracksToAudio(
+  rows: Awaited<ReturnType<typeof kathaTrackRows>>, origin: string,
+  base = 0, manyOverride?: boolean,
+): AudioTrack[] {
   /* Раздел очереди называется циклом — но «Шри Ишопанишад» читали и Шрила
      Прабхупада, и Пурначандра Госвами, и в общей очереди два таких раздела
      неразличимы. Пока голос один, имя рассказчика — лишний шум; как только
-     голосов больше, оно становится единственным различителем. */
-  const many = new Set(rows.map((r) => r.speaker_slug)).size > 1;
+     голосов больше, оно становится единственным различителем.
+     Ц12: у СРЕЗА «многоголосость» считать по срезу нельзя — страница может
+     целиком лечь в один голос, и подписи начнут мигать от страницы к странице.
+     Срез получает ответ снаружи (по всему WHERE), полный список — как раньше.
+     `base` — смещение среза: pos у дорожки ГЛОБАЛЬНЫЙ, страница его не обнуляет. */
+  const many = manyOverride ?? new Set(rows.map((r) => r.speaker_slug)).size > 1;
   return rows.map((r, i) => ({
-    kind: "song" as const, pos: i, chapter: null,
+    kind: "song" as const, pos: base + i, chapter: null,
     title: r.title, file: r.file,
     url: `${origin}/audio/${r.identifier}/${encodeURIComponent(r.file)}${AUDIO_CACHE_BUST}`,
     durationSec: r.duration || 0,
@@ -1206,23 +1216,47 @@ function kathaTracksToAudio(rows: Awaited<ReturnType<typeof kathaTrackRows>>, or
   }));
 }
 
-async function kathaAllManifest(env: Env, origin: string): Promise<Response> {
-  const rows = await kathaTrackRows(env);
-  return json({ book: "all", kind: "katha", modes: { plain: { identifier: "katha-all", tracks: kathaTracksToAudio(rows, origin) } } });
+/* ── Ц12·остаток · СТРАНИЧНЫЙ МАНИФЕСТ ОЧЕРЕДИ ──
+ * «Играть всё» тянуло ВСЕ дорожки разом: при 6900 это ~1,7 МБ JSON в главный
+ * поток телефона — по нажатию одной кнопки. Манифест научился срезу
+ * (`after`/`limit`): плеер берёт первую страницу и доклеивает следующие по мере
+ * проигрывания (одна дорожка ≈ 45 минут — запас на доклейку огромен). Очередь
+ * при этом ОДНА (ЗКН-Б011): страница — окно того же порядка, book тот же.
+ * `total` в ответе — сколько всего: без него плееру не знать, что доклеивать.
+ * Без параметров — прежний полный ответ (совместимость на время выката).
+ * ⚠️ OFFSET при живом конвейере: вставка в середину порядка сдвигает границы
+ * страниц, стык может задвоить/пропустить одну дорожку в течение TTL кэша
+ * (5 мин) — самолечится, после окончания заливки порядок заморожен. */
+async function kathaCount(env: Env, where = "", binds: unknown[] = []): Promise<number> {
+  const stmt = env.DB.prepare(`SELECT COUNT(*) AS n FROM katha_tracks t ${where}`);
+  const row = await (binds.length ? stmt.bind(...binds) : stmt).first<{ n: number }>();
+  return row?.n ?? 0;
+}
+async function kathaManyVoices(env: Env, where = "", binds: unknown[] = []): Promise<boolean> {
+  const stmt = env.DB.prepare(`SELECT COUNT(DISTINCT t.speaker_slug) AS n FROM katha_tracks t ${where}`);
+  const row = await (binds.length ? stmt.bind(...binds) : stmt).first<{ n: number }>();
+  return (row?.n ?? 0) > 1;
+}
+async function kathaAllManifest(env: Env, origin: string, after = 0, limit = 0): Promise<Response> {
+  const rows = await kathaTrackRows(env, "", [], limit, after);
+  const total = limit > 0 ? await kathaCount(env) : rows.length;
+  const many = limit > 0 ? await kathaManyVoices(env) : undefined;
+  return json({ book: "all", kind: "katha", total, modes: { plain: { identifier: "katha-all", tracks: kathaTracksToAudio(rows, origin, after, many) } } });
 }
 
 async function kathaAlbumManifest(env: Env, origin: string, id: string): Promise<Response> {
   const rows = await kathaTrackRows(env, "WHERE t.album_id = ?1", [id]);
-  return json({ book: `a:${id}`, kind: "katha", modes: { plain: { identifier: "katha-" + id, tracks: kathaTracksToAudio(rows, origin) } } });
+  return json({ book: `a:${id}`, kind: "katha", total: rows.length, modes: { plain: { identifier: "katha-" + id, tracks: kathaTracksToAudio(rows, origin) } } });
 }
 
 /* ЗКН-Н090 — ОЧЕРЕДЬ РАССКАЗЧИКА. Её НЕ БЫЛО, и это корень свалки: единственной
  * общей очередью катхи была `all` — 857 записей четырёх голосов вперемешку, где
  * «дальше» уводило от Шрилы Прабхупады к другому рассказчику посреди цикла.
  * Голос — это контекст слушания, а не фильтр показа: значит у него своя очередь. */
-async function kathaSpeakerManifest(env: Env, origin: string, slug: string): Promise<Response> {
-  const rows = await kathaTrackRows(env, "WHERE t.speaker_slug = ?1", [slug]);
-  return json({ book: `s:${slug}`, kind: "katha", modes: { plain: { identifier: "katha-s-" + slug, tracks: kathaTracksToAudio(rows, origin) } } });
+async function kathaSpeakerManifest(env: Env, origin: string, slug: string, after = 0, limit = 0): Promise<Response> {
+  const rows = await kathaTrackRows(env, "WHERE t.speaker_slug = ?1", [slug], limit, after);
+  const total = limit > 0 ? await kathaCount(env, "WHERE t.speaker_slug = ?1", [slug]) : rows.length;
+  return json({ book: `s:${slug}`, kind: "katha", total, modes: { plain: { identifier: "katha-s-" + slug, tracks: kathaTracksToAudio(rows, origin, after, false) } } });
 }
 
 /* ── Ц12 · ПРОВОД БЕЗ ПОВТОРОВ (тот же принцип, что у /api/katha) ──
@@ -1284,10 +1318,12 @@ async function kathaFindParts(env: Env, q: string): Promise<{ where: string; bin
   };
 }
 
-async function kathaFindManifest(env: Env, origin: string, q: string): Promise<Response> {
+async function kathaFindManifest(env: Env, origin: string, q: string, after = 0, limit = 0): Promise<Response> {
   const parts = await kathaFindParts(env, q);
-  const rows = parts ? await kathaTrackRows(env, parts.where, parts.binds) : [];
-  return json({ book: `q:${q}`, kind: "katha", modes: { plain: { identifier: "katha-find", tracks: kathaTracksToAudio(rows, origin) } } });
+  const rows = parts ? await kathaTrackRows(env, parts.where, parts.binds, limit, after) : [];
+  const total = parts ? (limit > 0 ? await kathaCount(env, parts.where, parts.binds) : rows.length) : 0;
+  const many = parts && limit > 0 ? await kathaManyVoices(env, parts.where, parts.binds) : undefined;
+  return json({ book: `q:${q}`, kind: "katha", total, modes: { plain: { identifier: "katha-find", tracks: kathaTracksToAudio(rows, origin, after, many) } } });
 }
 
 /**
@@ -2722,19 +2758,23 @@ export default {
       return noStore(json({ n: row?.n ?? 0 }));
     }
 
+    /* Ц12·остаток: срез манифеста. Кэш края ключуется ПОЛНЫМ URL запроса —
+     * каждая страница живёт отдельной записью, страницы не подменяют друг друга. */
+    const mAfter = Math.max(0, parseInt(url.searchParams.get("after") || "0", 10) || 0);
+    const mLimit = Math.max(0, Math.min(20000, parseInt(url.searchParams.get("limit") || "0", 10) || 0));
     if (url.pathname === "/api/katha/all/audio") {
-      return edgeCached(request, ctx, () => kathaAllManifest(env, url.origin));
+      return edgeCached(request, ctx, () => kathaAllManifest(env, url.origin, mAfter, mLimit));
     }
     if (url.pathname === "/api/katha/album/audio") {
       return edgeCached(request, ctx, () => kathaAlbumManifest(env, url.origin, url.searchParams.get("id") || ""));
     }
     if (url.pathname === "/api/katha/speaker/audio") {
-      return edgeCached(request, ctx, () => kathaSpeakerManifest(env, url.origin, url.searchParams.get("slug") || ""));
+      return edgeCached(request, ctx, () => kathaSpeakerManifest(env, url.origin, url.searchParams.get("slug") || "", mAfter, mLimit));
     }
     if (url.pathname === "/api/katha/find/audio") {
       const q = url.searchParams.get("q") || "";
-      if (!q.trim()) return json({ book: "q:", kind: "katha", modes: { plain: { identifier: "", tracks: [] } } });
-      return kathaFindManifest(env, url.origin, q);
+      if (!q.trim()) return json({ book: "q:", kind: "katha", total: 0, modes: { plain: { identifier: "", tracks: [] } } });
+      return kathaFindManifest(env, url.origin, q, mAfter, mLimit);
     }
 
     // GET /api/kirtans/:albumId/audio → трек-лист альбома киртанов/бхаджанов (live из IA)
