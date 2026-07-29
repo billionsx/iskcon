@@ -412,7 +412,7 @@
   --color-tile: #8e8e93;  /* 🕳 */
 
   /* Движение — DESIGN-LAW §10 (выверено по Apple HIG Motion / WWDC) */
-  --ease-measured: cubic-bezier(.32, .72, 0, 1);  /* 📐 замер: products/music.md §движение — снято покадрово с записи 60 fps. ЕДИНСТВЕННАЯ кривая здесь, за которой стоит замер, а не подбор на глаз. От 200 мс движение обязано идти по ней (советник AE8). */
+  --ease-ios: cubic-bezier(0.32, 0.72, 0, 1);  /* ⚙️ · §7 — принятое приближение системной пружины iOS (response ≈ 0.35, damping ≈ 0.9): быстрый старт, мягкая посадка, без отскока. Имя и значение взяты из §7 стандарта, а не заведены заново. От 200 мс движение обязано идти по ней (советник AE8). */
   --ease-standard: cubic-bezier(0.2, 0.8, 0.2, 1);  /* 🕳 · дефолт переходов (≈ .smooth) */
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1);  /* 🕳 · появления, раскрытия */
   --ease-in: cubic-bezier(0.7, 0, 0.84, 0);  /* 🕳 · исчезновения */
@@ -532,7 +532,7 @@
     /* Smooth color transition when theme is toggled at runtime.
        0 by default to avoid first-paint flash; useTheme.ts enables
        transition only AFTER initial mount. */
-    transition: background-color 200ms var(--ease-measured), color 200ms var(--ease-measured);
+    transition: background-color 200ms var(--ease-ios), color 200ms var(--ease-ios);
   }
 
   body {
@@ -549,7 +549,7 @@
     height: 100dvh;
     overflow: hidden;
     overscroll-behavior: none;
-    transition: background-color 200ms var(--ease-measured);
+    transition: background-color 200ms var(--ease-ios);
   }
 
   #root { height: 100dvh; overflow: hidden; }
@@ -1068,7 +1068,7 @@ body.gtab-off .gtab-wrap { display: none; }
   display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px;
   background: none; border: none; padding: 0; cursor: pointer;
   color: rgba(255, 255, 255, 0.94);
-  -webkit-tap-highlight-color: transparent; transition: color 0.28s var(--ease-measured);
+  -webkit-tap-highlight-color: transparent; transition: color 0.28s var(--ease-ios);
 }
 .gtab-slot.on { color: var(--gt-accent); }
 .gtab-ic {
