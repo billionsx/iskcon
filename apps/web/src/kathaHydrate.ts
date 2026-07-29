@@ -9,7 +9,7 @@ import { useEffect, useSyncExternalStore } from "react";
 import { api } from "./api";
 import {
   setKathaData, subscribeKatha, kathaDataVersion,
-  type KathaSpeaker, type KathaAlbum, type KathaTrack,
+  type KathaSpeaker, type KathaAlbum, type KathaTrackWire,
 } from "./katha";
 
 let started = false;
@@ -20,7 +20,7 @@ async function load(): Promise<void> {
   try {
     const r = await fetch(api("/katha"), { credentials: "same-origin" });
     if (!r.ok) return;
-    const j = (await r.json()) as { speakers?: KathaSpeaker[]; albums?: KathaAlbum[]; tracks?: KathaTrack[] };
+    const j = (await r.json()) as { speakers?: KathaSpeaker[]; albums?: KathaAlbum[]; tracks?: KathaTrackWire[] };
     if (j && Array.isArray(j.speakers) && Array.isArray(j.albums)) {
       setKathaData(j.speakers, j.albums, j.tracks ?? []);
     }

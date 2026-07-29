@@ -2517,10 +2517,33 @@ export default {
       // именем нет ни одной лекции. Пока не залито, в витрине его нет.
       const voiced = new Set(albums.map((a) => a.speaker));
       const speakers = allSpeakers.filter((s) => voiced.has(s.slug));
-      const tracks = (tRes.results || []).map((r) => ({
-        id: r.id, speaker: r.speaker_slug, album: r.album_id, identifier: r.identifier,
-        file: r.file, title: r.title, duration: r.duration ?? 0,
-      }));
+      const albById = new Map(albums.map((a) => [a.id, a]));
+      const tracks = (tRes.results || []).map((r) => {
+        /* ПОЛОВИНА ОТВЕТА БЫЛА ПОВТОРОМ ТОГО, ЧТО УЖЕ ЕСТЬ У ЦИКЛА (Ц12).
+         *
+         * Замер на 3151 записи: массив дорожек весил 0,96 МБ, из них
+         *   id (218 КБ) — это буквально `identifier + "/" + file`, склейка
+         *     двух соседних полей той же строки: 3151 из 3151 совпали;
+         *   identifier (154 КБ) — идентификатор архива, он у ЦИКЛА, а не у
+         *     части: 3135 из 3151 равны `album.archive`;
+         *   speaker (92 КБ) — рассказчик тоже у цикла: 3146 из 3151 равны.
+         * Итого 464 КБ из 960 телефон разбирал, чтобы получить то, что у него
+         * уже лежало в списке циклов.
+         *
+         * Исключения настоящие и их надо было сохранить, а не «упростить»:
+         * «Упадешамриту» читали ДВА рассказчика, у цикла два элемента архива —
+         * 16 дорожек с чужим identifier и 5 с чужим голосом. Поэтому поле
+         * пишется, только когда оно ОТЛИЧАЕТСЯ от значения цикла. Витрина
+         * собирает исходный вид обратно (`katha.ts`), и ниже по коду ничего
+         * не меняется. */
+        const a = albById.get(r.album_id);
+        const t: Record<string, unknown> = {
+          album: r.album_id, file: r.file, title: r.title, duration: r.duration ?? 0,
+        };
+        if (!a || r.identifier !== a.archive) t.identifier = r.identifier;
+        if (!a || r.speaker_slug !== a.speaker) t.speaker = r.speaker_slug;
+        return t;
+      });
       return json({ speakers, albums, tracks });
       });
     }

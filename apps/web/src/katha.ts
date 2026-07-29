@@ -82,10 +82,45 @@ export function albumHours(id: string): number {
   return sec / 3600;
 }
 
-export function setKathaData(speakers: KathaSpeaker[], albums: KathaAlbum[], tracks: KathaTrack[]): void {
+/** Дорожка, КАК ЕЁ ПРИСЫЛАЕТ ВОРКЕР: без полей, которые выводятся из цикла.
+ *  `identifier` и `speaker` приходят, только если отличаются от цикла (два
+ *  рассказчика на одну «Упадешамриту»); `id` не приходит никогда — это склейка. */
+export interface KathaTrackWire {
+  album: string;
+  file: string;
+  title: string;
+  duration: number;
+  identifier?: string;
+  speaker?: string;
+}
+
+/** Собрать полный вид дорожки обратно. Всё, что ниже по коду ждёт `KathaTrack`,
+ *  продолжает получать его целиком — экономия живёт только на проводе. */
+function hydrateTracks(wire: KathaTrackWire[], albums: KathaAlbum[]): KathaTrack[] {
+  const byId = new Map(albums.map((a) => [a.id, a]));
+  const out: KathaTrack[] = [];
+  for (const w of wire) {
+    const a = byId.get(w.album);
+    const identifier = w.identifier ?? a?.archive;
+    const speaker = w.speaker ?? a?.speaker;
+    /* Без идентификатора архива дорожку НЕ СОБРАТЬ: из него строится адрес звука.
+       Молча подставить пустую строку значит выдать в витрину карточку, которая
+       при нажатии не заиграет. Такую строку пропускаем — лучше её отсутствие,
+       чем мёртвая кнопка. */
+    if (!identifier || !speaker) continue;
+    out.push({
+      id: `${identifier}/${w.file}`,
+      speaker, album: w.album, identifier,
+      file: w.file, title: w.title, duration: w.duration || 0,
+    });
+  }
+  return out;
+}
+
+export function setKathaData(speakers: KathaSpeaker[], albums: KathaAlbum[], tracks: KathaTrackWire[]): void {
   if (Array.isArray(speakers)) _speakers = speakers;
   if (Array.isArray(albums)) _albums = albums;
-  if (Array.isArray(tracks)) _tracks = tracks;
+  if (Array.isArray(tracks)) _tracks = hydrateTracks(tracks, _albums);
   _version++;
   _subs.forEach((f) => f());
 }
