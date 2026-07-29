@@ -80,6 +80,39 @@ function json(data: unknown, status = 200): Response {
   });
 }
 
+/* КРАЙ ДЕРЖИТ ЧИТАЕМОЕ (ЗКН-Ф026, тот же приём, что у книг).
+ *
+ * Каталог катхи одинаков для всех и меняется только когда отработал конвейер
+ * заливки. При этом КАЖДОЕ открытие раздела шло полным путём воркер → D1: три
+ * запроса, из них один на 3151 строку, и ответ приходил за 0.8–1.5 с. Заголовок
+ * `max-age` тут не помогал: он говорит браузеру, а край Cloudflare сам по себе
+ * ответы воркера не кэширует — нужен явный `caches.default`.
+ *
+ * Теперь первый заход в регионе греет край, остальные берут готовое. D1 при
+ * этом перестаёт получать по три запроса на каждого пришедшего — это и есть
+ * настоящая цена при росте аудитории, а не миллисекунды одного человека.
+ *
+ * Срок 300 с уже объявлен браузеру в `json()`; край живёт по тому же сроку,
+ * так что заливка доезжает до слушателя за пять минут, как и обещано.
+ */
+async function edgeCached(
+  request: Request,
+  ctx: { waitUntil(p: Promise<unknown>): void },
+  make: () => Promise<Response>,
+): Promise<Response> {
+  if (request.method !== "GET") return make();
+  const cache = caches.default;
+  const hit = await cache.match(request);
+  if (hit) return hit;
+  const res = await make();
+  // Кэшируем ТОЛЬКО удачный ответ: положить на край ошибку или пустоту значит
+  // раздавать её всем следующим пять минут.
+  if (res.status !== 200) return res;
+  const out = new Response(res.body, res);
+  ctx.waitUntil(cache.put(request, out.clone()));
+  return out;
+}
+
 // Запрет кэширования (браузер + край Cloudflare) — для динамики вроде поиска,
 // чтобы устаревший/пустой ответ никогда не «залипал» по URL запроса.
 function noStore(r: Response): Response {
@@ -2452,6 +2485,7 @@ export default {
 
     // ── КАТХА: реестр и очереди (вся катха · один цикл · найденное) ──
     if (url.pathname === "/api/katha") {
+      return edgeCached(request, ctx, async () => {
       const [sRes, aRes, tRes] = await Promise.all([
         env.DB.prepare(
           `SELECT slug, name, full, role, era, origin, bio, mono, accent, entity_id
@@ -2488,12 +2522,14 @@ export default {
         file: r.file, title: r.title, duration: r.duration ?? 0,
       }));
       return json({ speakers, albums, tracks });
+      });
     }
     /* ЛЁГКИЙ СПИСОК ЦИКЛОВ. `/api/katha` отдаёт 1,68 МБ и разбирается на телефоне
        заметным подвисом (Ц12 в UX_AUDIT). Плееру для очереди нужен не весь
        каталог, а перечень циклов: 326 строк по пять полей — около 30 КБ.
        Дорожки тянутся отдельно и только для выбранного цикла. */
     if (url.pathname === "/api/katha/albums") {
+      return edgeCached(request, ctx, async () => {
       const res = await env.DB.prepare(
         `SELECT b.id, b.title, s.name AS speaker, COUNT(t.file) AS n,
                 SUM(COALESCE(t.duration, 0)) AS secs
@@ -2505,15 +2541,16 @@ export default {
           ORDER BY COALESCE(b.sort, 9999), b.title`
       ).all<{ id: string; title: string; speaker: string | null; n: number; secs: number }>();
       return json({ albums: res.results || [] });
+      });
     }
     if (url.pathname === "/api/katha/all/audio") {
-      return kathaAllManifest(env, url.origin);
+      return edgeCached(request, ctx, () => kathaAllManifest(env, url.origin));
     }
     if (url.pathname === "/api/katha/album/audio") {
-      return kathaAlbumManifest(env, url.origin, url.searchParams.get("id") || "");
+      return edgeCached(request, ctx, () => kathaAlbumManifest(env, url.origin, url.searchParams.get("id") || ""));
     }
     if (url.pathname === "/api/katha/speaker/audio") {
-      return kathaSpeakerManifest(env, url.origin, url.searchParams.get("slug") || "");
+      return edgeCached(request, ctx, () => kathaSpeakerManifest(env, url.origin, url.searchParams.get("slug") || ""));
     }
     if (url.pathname === "/api/katha/find/audio") {
       const q = url.searchParams.get("q") || "";
