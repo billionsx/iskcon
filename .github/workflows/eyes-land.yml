@@ -55,10 +55,29 @@ jobs:
           python3 -c "import ast;[ast.parse(open(f).read()) for f in ['bin/watch.py','bin/lint.py','bin/eyes.py']];print('синтаксис чист')"
           python3 bin/watch.py --selftest
           git config user.email "eyes@billionsx"; git config user.name "eyes"
-          git add -A
+          # ПЕРВЫЙ ЗАХОД: всё, кроме файлов воркфлоу — для них ключу нужна
+          # отдельная область, и смешивать две причины отказа нельзя.
+          git add -A -- . ':!.github/workflows'
           printf '%b' "M1-Б · надзор по коммитам: департамент перестал зависеть от обычая клиента\n\nПроект, пишущий прямо в ветку, оставался без надзора: PR-гейт ждал повода,\nкоторого не бывает, и его молчание читалось как чистота (ЗКН-Э001).\n\n- bin/watch.py — надзор по коммиту: сравнение было-стало, находки только по\n  добавленным строкам, комментарий к коммиту с адресами файл:строка\n- .github/workflows/eyes-watch-reusable.yml — подключение клиента 10 строками\n- templates/eyes-client-push.yml — шаблон подключения без pull request\n- bin/lint.py — отдаёт просмотренные пути: область надзора считается меркой\n  самого линта, а не второй, расходящейся\n- правило области: тронуто пушем и просмотрено департаментом названы порознь\n- правило тишины: вердикт в журнал всегда, комментарий — когда есть что сказать\n- ст. 57.1 конституции; docs/CONNECT.md; BUSINESS/APP-SETUP.md\n- суд: 81 проверка, зелёный (было 70)" > /tmp/msg.txt
           git commit -q -F /tmp/msg.txt
-          git push -q origin HEAD:main 2>/dev/null && echo "ДОСТАВЛЕНО: $(git rev-parse --short=9 HEAD)" || { echo "ПУШ ОТБИТ"; exit 1; }
+          if git push origin HEAD:main 2>&1 | sed -E 's#https://[^@]*@#https://#g'; then
+            echo "ДОСТАВЛЕНО (органы и законы): $(git rev-parse --short=9 HEAD)"
+          else
+            echo "ПУШ ОТБИТ на органах"; exit 1
+          fi
+          # ВТОРОЙ ЗАХОД: файл воркфлоу отдельно — если ключ не вправе,
+          # отказ будет назван словами, а не спрятан.
+          git add -A
+          if git diff --cached --quiet; then
+            echo "воркфлоу доставлять нечего"
+          else
+            git commit -q -m "eyes-watch-reusable: точка подключения проекта без PR (ст. 57.1)"
+            if git push origin HEAD:main 2>&1 | sed -E 's#https://[^@]*@#https://#g'; then
+              echo "ДОСТАВЛЕН И ВОРКФЛОУ: $(git rev-parse --short=9 HEAD)"
+            else
+              echo "ВОРКФЛОУ НЕ ПРИНЯТ: ключу не хватает области workflow"
+            fi
+          fi
       - name: "Донесение"
         if: always()
         env:
