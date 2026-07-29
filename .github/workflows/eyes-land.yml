@@ -14,6 +14,7 @@ on:
   workflow_dispatch:
 permissions:
   contents: read
+  issues: write
 jobs:
   land:
     runs-on: ubuntu-latest
@@ -21,11 +22,14 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: "Доставка"
+        id: land
+        continue-on-error: true
         env:
           A: ${{ secrets.GH_TOKEN }}
           B: ${{ secrets.ADMIN_TOKEN }}
         run: |
           set -u
+          exec > >(tee -a /tmp/report.txt) 2>&1
           PICK=""
           for n in A B; do
             v="${!n:-}"
@@ -55,3 +59,12 @@ jobs:
           printf '%b' "M1-Б · надзор по коммитам: департамент перестал зависеть от обычая клиента\n\nПроект, пишущий прямо в ветку, оставался без надзора: PR-гейт ждал повода,\nкоторого не бывает, и его молчание читалось как чистота (ЗКН-Э001).\n\n- bin/watch.py — надзор по коммиту: сравнение было-стало, находки только по\n  добавленным строкам, комментарий к коммиту с адресами файл:строка\n- .github/workflows/eyes-watch-reusable.yml — подключение клиента 10 строками\n- templates/eyes-client-push.yml — шаблон подключения без pull request\n- bin/lint.py — отдаёт просмотренные пути: область надзора считается меркой\n  самого линта, а не второй, расходящейся\n- правило области: тронуто пушем и просмотрено департаментом названы порознь\n- правило тишины: вердикт в журнал всегда, комментарий — когда есть что сказать\n- ст. 57.1 конституции; docs/CONNECT.md; BUSINESS/APP-SETUP.md\n- суд: 81 проверка, зелёный (было 70)" > /tmp/msg.txt
           git commit -q -F /tmp/msg.txt
           git push -q origin HEAD:main 2>/dev/null && echo "ДОСТАВЛЕНО: $(git rev-parse --short=9 HEAD)" || { echo "ПУШ ОТБИТ"; exit 1; }
+      - name: "Донесение"
+        if: always()
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          RES: ${{ steps.land.outcome }}
+        run: |
+          set -u
+          sed -E 's#(ghp_|github_pat_)[A-Za-z0-9_]+#***#g' /tmp/report.txt > /tmp/clean.txt || echo "(журнал пуст)" > /tmp/clean.txt
+          gh issue create --title "eyes-land · доставка: $RES" --body-file /tmp/clean.txt
