@@ -124,6 +124,7 @@ export const ROUTES = {
   kirtans: (slug?: string) => (slug ? `/kirtans/${slug}` : "/kirtans"),
   katha: (albumId?: string) => (albumId ? `/katha/${albumId}` : "/katha"),
   prasad: () => "/prasad",
+  puja: () => "/puja",             // Ц9 · Пуджа и Божества (Садхана)
   dhama: (dhamaId?: string, tirthaId?: string) =>
     ["/dhama", dhamaId, tirthaId].filter(Boolean).join("/"),
 

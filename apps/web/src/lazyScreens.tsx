@@ -53,6 +53,7 @@ export const DailyVerseScreen = lazy(() => import("./DailyVerseScreen"));
 export const EkadashiScreen = lazy(() => import("./EkadashiScreen"));
 export const MyProgressScreen = lazy(() => import("./MyProgressScreen"));
 export const PathScreen = lazy(() => import("./PathScreen"));   // Ц8 · Путь ученика
+export const PujaScreen = lazy(() => import("./PujaScreen"));   // Ц9 · Пуджа и Божества
 
 // — центры —
 export const CenterScreen = lazy(() => import("./centers/CenterScreen"));

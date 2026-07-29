@@ -125,6 +125,15 @@ export default function PathScreen({ onBack, onOpen }: { onBack: () => void; onO
         );
       })}
 
+      {/* Ц9: ступень пуджари — гайд поклонения */}
+      <div style={label}><span>Служение Божествам</span></div>
+      <button type="button" onClick={() => onOpen("/puja")}
+        style={{ display: "block", width: "100%", textAlign: "left", border: "none", cursor: "pointer", background: CARD, borderRadius: 14, padding: "14px 16px", WebkitTapHighlightColor: "transparent" }}>
+        <span style={{ display: "block", fontFamily: FONT, fontSize: "var(--text-callout)", fontWeight: 600, color: INK }}>Пуджа и Божества</span>
+        <span style={{ display: "block", marginTop: 4, fontFamily: FONT, fontSize: "var(--text-footnote)", color: INK3 }}>Главные Божества ИСККОН, порядок арати и мантры предложения</span>
+        <span style={{ display: "block", marginTop: 6, fontFamily: FONT, fontSize: "var(--text-footnote)", fontWeight: 600, color: GOLD }}>Открыть гайд →</span>
+      </button>
+
       <div style={{ margin: "18px 4px 0", fontFamily: FONT, fontSize: "var(--text-footnote)", color: INK3 }}>
         Сроки и порядок рекомендаций различаются по ятрам — уточняйте у наставника и совета своей общины. Полный справочник курсов — в разделе «Обучение».
       </div>

@@ -2805,6 +2805,19 @@ export default {
      * весь архив (1234 дня — весь архив без повторов). Кэш края 5 минут —
      * внутри дня формула стабильна, смена в полночь UTC доедет с тем же лагом.
      * Ссылка — путь ЗКН-Н077 (/katha?t=…): витрина сама прыгнет в очередь цикла. */
+    /* ── Ц9 · БОЖЕСТВА ──
+     * Карточки Божеств ИСККОН из D1 (истина одна — та же таблица, к которой
+     * привязаны алтари центров через center_deities). Контент — канонические
+     * prose-факты, наполнены Ц9; кэш края: меняется редко. */
+    if (url.pathname === "/api/deities") {
+      return edgeCached(request, ctx, async () => {
+        const rows = await env.DB.prepare(
+          `SELECT id, name_ru, about_ru, entity_id, pranama_slug FROM deities ORDER BY rowid`,
+        ).all<{ id: string; name_ru: string | null; about_ru: string | null; entity_id: string | null; pranama_slug: string | null }>();
+        return json({ deities: rows.results ?? [] });
+      });
+    }
+
     if (url.pathname === "/api/katha/lecture-of-day") {
       return edgeCached(request, ctx, async () => {
         const W = "WHERE t.speaker_slug='prabhupada'";
