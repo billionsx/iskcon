@@ -77,6 +77,26 @@ jobs:
             --paths apps/web > /tmp/eyes-new.txt 2>&1 || true
           cat /tmp/eyes-new.txt
 
+      # Долг советника — смесь ошибок и осознанных расхождений с корпусом
+      # департамента. Пока они в одной куче, число не значит ничего. Реестр
+      # раскладывает вердикт на две стопки по признаку АДРЕСА (тот же признак,
+      # что несёт ЗКН-Д028 для токенов) и краснеет, только если ЭТОТ пуш
+      # добавил число без адреса. Прошлое им не вменяется — правило запрещает
+      # копить, а не требует чинить задним числом.
+      - name: "Реестр расхождений: число без адреса — не число"
+        id: divg
+        if: always()
+        run: |
+          set +e
+          python3 tools/eyes-divergence.py \
+            --report /tmp/eyes-report.md \
+            --before "${{ github.event.before }}" \
+            --after "${{ github.sha }}" \
+            --paths apps/web > /tmp/eyes-divg.txt 2>&1
+          echo "rc=$?" >> "$GITHUB_OUTPUT"
+          set -e
+          cat /tmp/eyes-divg.txt
+
       - name: "Хроника прогона"
         if: always()
         env:
@@ -95,6 +115,8 @@ jobs:
             echo
             cat /tmp/eyes-new.txt 2>/dev/null || true
             echo
+            cat /tmp/eyes-divg.txt 2>/dev/null || true
+            echo
             echo "Область надзора — глобы паспорта \`adapters/iskcon.json\` в репозитории"
             echo "департамента. Строки вне её не смотрели и чистыми не объявляем."
             echo
@@ -107,8 +129,14 @@ jobs:
 
       - name: "Вердикт"
         run: |
+          BAD=0
           if [ "${{ steps.lint.outputs.rc }}" != "0" ]; then
             echo "долг по правилу вырос — смотри хронику прогона"
-            exit 1
+            BAD=1
           fi
-          echo "долг не вырос"
+          if [ "${{ steps.divg.outputs.rc }}" != "0" ]; then
+            echo "этот пуш добавил число без адреса — смотри реестр расхождений"
+            BAD=1
+          fi
+          [ "$BAD" = "0" ] && echo "долг не вырос, чисел без адреса не добавлено"
+          exit "$BAD"
