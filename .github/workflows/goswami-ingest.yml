@@ -57,6 +57,20 @@ jobs:
       - name: Зависимости
         run: pip install internetarchive requests
 
+      # ЗКН-Пл027: любой запуск звена — ручной, самоцепочный, сторожевой —
+      # объявляет конвейер ЖИВЫМ. Сторож в кроне Cloudflare (worker.ts::
+      # goswamiWatchdog) дёргает порванную цепь, пока состояние 'running';
+      # 'done' ставит шаг «Продолжить» при пустой очереди. Так ручной перезапуск
+      # взводит сторожа сам — без рук в D1.
+      - name: Взвести сторожа (ЗКН-Пл027)
+        env:
+          CF: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: |
+          curl -sf -X POST -H "Authorization: Bearer $CF" -H "Content-Type: application/json" \
+            "https://api.cloudflare.com/client/v4/accounts/d5cbe19470dc38599873eabfe148e6d1/d1/database/6226aded-dd03-4e74-977f-9cd0b509e73d/query" \
+            -d '{"sql":"INSERT INTO pipeline_state(name,state,updated_at) VALUES('"'"'goswami-ingest'"'"','"'"'running'"'"',datetime('"'"'now'"'"')) ON CONFLICT(name) DO UPDATE SET state='"'"'running'"'"', updated_at=datetime('"'"'now'"'"')"}' \
+            >/dev/null && echo "сторож взведён" || echo "::warning::взвод сторожа не прошёл — цепь жива, но без страховки на этот прогон"
+
       - name: Место на диске
         run: df -h / | tail -1
 
@@ -102,10 +116,17 @@ jobs:
         if: ${{ always() && !inputs.dry_run }}
         env:
           GH_TOKEN: ${{ secrets.GH_TOKEN || github.token }}
+          CF: ${{ secrets.CLOUDFLARE_API_TOKEN }}
         run: |
           LEFT="${{ steps.verify.outputs.left || steps.run.outputs.left }}"
           if [ -z "$LEFT" ] || [ "$LEFT" = "0" ]; then
             echo "::notice::очередь пуста — цепочка закончена"
+            # ЗКН-Пл027: объявляем «готово» — сторож в кроне замолкает и не
+            # дёргает пустые прогоны каждые полчаса до скончания века.
+            curl -sf -X POST -H "Authorization: Bearer $CF" -H "Content-Type: application/json" \
+              "https://api.cloudflare.com/client/v4/accounts/d5cbe19470dc38599873eabfe148e6d1/d1/database/6226aded-dd03-4e74-977f-9cd0b509e73d/query" \
+              -d '{"sql":"UPDATE pipeline_state SET state='"'"'done'"'"', updated_at=datetime('"'"'now'"'"') WHERE name='"'"'goswami-ingest'"'"'"}' \
+              >/dev/null && echo "сторож усыплён" || echo "::warning::не смог усыпить сторожа — он продолжит дёргать пустые прогоны; усыпить рукой: pipeline_state → done"
             exit 0
           fi
           echo "::notice::осталось $LEFT записей — перезапускаю себя"

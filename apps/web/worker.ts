@@ -2157,6 +2157,40 @@ async function igRun(env: Env, url: URL): Promise<Response> {
 // GitHub (который массово пропускал слоты на :00, и свежие сторис висели часами).
 // Идемпотентно: concurrency-группа воркфлоу сериализует прогоны, забор пропускает
 // уже залитое. GH_TOKEN/GH_REPO — те же секреты, что у /api/stories-sync.
+/* ЗКН-Пл027 · БЕССМЕРТНАЯ ЦЕПОЧКА ЗАЛИВКИ.
+ * Самоцепочка goswami-ingest смертна ровно одним способом — ОТМЕНОЙ: у GitHub
+ * `always()` на cancelled не выполняется, отменил ран — и хвост в 4000 записей
+ * молча стоит (так и стоял: отмена 19.07 13:17 → десять дней тишины при живом
+ * плане). Крон Cloudflare — единственный надёжный планировщик (см.
+ * dispatchStories) — раз в 30 минут смотрит: конвейер объявлен живым
+ * (pipeline_state='running'), а ранов нет ни в очереди, ни в работе — значит
+ * цепь порвана, дёргаем заново. «Готово» объявляет САМ воркфлоу (LEFT=0 →
+ * state='done'), и сторож замолкает; ручной запуск воркфлоу снова ставит
+ * 'running' — взводит сторожа без рук в D1. GitHub не ответил — не дёргаем
+ * вслепую: лучше пропустить тик, чем плодить раны по слепоте. */
+async function goswamiWatchdog(env: Env): Promise<void> {
+  if (!env.GH_TOKEN) return;
+  const st = await env.DB.prepare(`SELECT state FROM pipeline_state WHERE name='goswami-ingest'`)
+    .first<{ state: string }>().catch(() => null);
+  if (st?.state !== "running") return;
+  const repo = env.GH_REPO || "billionsx/iskcon";
+  const gh = {
+    Authorization: `Bearer ${env.GH_TOKEN}`,
+    Accept: "application/vnd.github+json",
+    "X-GitHub-Api-Version": "2022-11-28",
+    "User-Agent": `${SITE_HOST}-goswami-watchdog`,
+  };
+  const runs = await fetch(`https://api.github.com/repos/${repo}/actions/workflows/goswami-ingest.yml/runs?per_page=5`, { headers: gh })
+    .then((r) => r.json() as Promise<{ workflow_runs?: { status: string }[] }>).catch(() => null);
+  if (!runs?.workflow_runs) return;
+  if (runs.workflow_runs.some((r) => r.status === "queued" || r.status === "in_progress" || r.status === "waiting")) return;
+  await fetch(`https://api.github.com/repos/${repo}/actions/workflows/goswami-ingest.yml/dispatches`, {
+    method: "POST",
+    headers: { ...gh, "content-type": "application/json" },
+    body: JSON.stringify({ ref: "main", inputs: { note: "watchdog" } }),
+  });
+}
+
 async function dispatchStories(env: Env): Promise<void> {
   if (!env.GH_TOKEN) return;
   const repo = env.GH_REPO || "billionsx/iskcon";
@@ -2182,6 +2216,8 @@ export default {
   async scheduled(event: { cron?: string; scheduledTime?: number }, env: Env, ctx: { waitUntil(p: Promise<unknown>): void }): Promise<void> {
     // Сторис — на каждом тике (каждые 30 мин, надёжный планировщик Cloudflare).
     ctx.waitUntil(dispatchStories(env).catch(() => undefined));
+    // ЗКН-Пл027: сторож самоцепочки заливки — порванную цепь дёргает заново.
+    ctx.waitUntil(goswamiWatchdog(env).catch(() => undefined));
     // Уведомления преданных (Ц3) — каждый тик: генерация по локальному времени
     // подписок + пустой web-push. Дедуп внутри (UNIQUE user/cat/day). Изолировано.
     ctx.waitUntil(runNotifications(env).catch(() => undefined));

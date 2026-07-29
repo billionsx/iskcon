@@ -622,11 +622,37 @@ def check_pl026() -> list:
     return bad
 
 
+def check_pl027() -> list:
+    """ЗКН-Пл027: самоцепочка заливки бессмертна — порванную цепь дёргает сторож.
+
+    Цепь смертна ровно одним способом: ОТМЕНОЙ (у GitHub `always()` на cancelled
+    не идёт). Отмена 19.07 → десять дней тишины при хвосте в 4000 записей.
+    Проводка из четырёх звеньев, и пропажа ЛЮБОГО убивает страховку молча:
+    сторож в воркере · вызов на тике крона · взвод 'running' на старте звена ·
+    усыпление 'done' при пустой очереди.
+    """
+    bad = []
+    w = ROOT / "apps" / "web" / "worker.ts"
+    wt = w.read_text(encoding="utf-8") if w.exists() else ""
+    if "async function goswamiWatchdog" not in wt or "pipeline_state" not in wt:
+        bad.append(("apps/web/worker.ts", "сторож goswamiWatchdog/pipeline_state пропал — ЗКН-Пл027"))
+    elif "goswamiWatchdog(env)" not in wt.split("async scheduled", 1)[-1][:1200]:
+        bad.append(("apps/web/worker.ts", "тик крона не зовёт goswamiWatchdog — сторож есть, но мёртв (ЗКН-Пл027)"))
+    y = ROOT / ".github" / "workflows" / "goswami-ingest.yml"
+    yt = y.read_text(encoding="utf-8") if y.exists() else ""
+    if "Взвести сторожа" not in yt or "'running'" not in yt:
+        bad.append((".github/workflows/goswami-ingest.yml", "звено не взводит сторожа ('running') — ручной запуск без страховки (ЗКН-Пл027)"))
+    if "'done'" not in yt:
+        bad.append((".github/workflows/goswami-ingest.yml", "пустая очередь не усыпляет сторожа ('done') — он будет дёргать пустые прогоны вечно (ЗКН-Пл027)"))
+    return bad
+
+
 CHECKS = [
     ("ЗКН-Н087", "домен только из реестра routes.ts", check_n087),
     ("ЗКН-Ф026", "чтения книг кэшируются на краю", check_f026),
     ("ЗКН-Пл025", "видео мирроринг частый + лента с зеркала без Telegram-виджета", check_pl025),
     ("ЗКН-Пл026", "самоцепочка умирает, если счётчик не движется", check_pl026),
+    ("ЗКН-Пл027", "порванную самоцепочку дёргает сторож в кроне", check_pl027),
     ("ЗКН-Пл016", "источник смертен — проверять живость", check_pl015),
     ("ЗКН-Ф013", "батч D1 не превышает 100 переменных", check_f013),
     ("ЗКН-Ф009", "не более 3 крон-триггеров", check_f009),
