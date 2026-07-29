@@ -419,7 +419,7 @@
 /* ── Полноэкранный плеер ────────────────────────────────────────────────── */
 .amx-pl { position: absolute; inset: 0; z-index: 50; display: flex; flex-direction: column; border-radius: 0; overflow: hidden; touch-action: none;
   transition: border-radius .2s ease;  /* морф ведёт WAAPI: linear() из open_013–047 (§5.2) */ }
-.amx-pl.closing, .amx-pl.pre { transform: translateY(104%); border-radius: 40px; }
+.amx-pl.closing, .amx-pl.pre { transform: translateY(104%); border-radius: 40px; }  /* 📐 IMG_1983 · LAW_MUSIC §4.7: R40 — профиль края шторки. То же число, что у .amx-sheet и .amx-osheet: уезжающий плеер держит радиус шторки, иначе на выезде угол щёлкает. */
 .amx-pl .pl-bg { position: absolute; inset: -40px; filter: blur(0px); }
 .amx-pl .pl-in { position: relative; flex: 1; display: flex; flex-direction: column; padding: calc(var(--sat) + 8px) 32px calc(var(--sab) + 14px); }  /* 📐 pl_q15: полоса x32…361, капсулы x32…361.4 — врезка 32 */
 .amx-pl .pl-grab { width: 56px; height: 5px; border-radius: 3px; background: rgba(255,255,255,.32); margin: 6px auto 14px; flex: 0 0 auto; }  /* 📐 pl_q15 y66: 56×5, luma 116 на 52 */
@@ -539,7 +539,7 @@
 
 /* §5.2 нижний слой сжимается под листом плеера */
 .amx-under { position: absolute; inset: 0; transition: transform .42s var(--sheet), filter .42s var(--sheet), border-radius .42s var(--sheet); }
-.amx-under.dip { transform: scale(.94) translateY(6px); filter: brightness(.6); border-radius: 40px; overflow: hidden; }
+.amx-under.dip { transform: scale(.94) translateY(6px); filter: brightness(.6); border-radius: 40px; overflow: hidden; }  /* 📐 IMG_1983 · LAW_MUSIC §4.7: слой ПОД шторкой скругляется тем же R40 — их края видны рядом. */
 
 /* §5.10 морф дока */
 .amx-dockwrap { animation: amx-rise .3s var(--ease-out); }
