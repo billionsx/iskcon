@@ -107,9 +107,12 @@ jobs:
 
           import urllib.parse
           geom, failed = {}, []
+          first = True
           for name in WANT:
               path = STATES.get(name)
               if not path: print(f"  ? неизвестное состояние {name}"); continue
+              if not first: time.sleep(20)   # охлаждение серийного лимита CF-браузера (429)
+              first = False
               print(f"— {name}: {path}", flush=True)
               raw = shot(path, "both", "&sel=" + urllib.parse.quote(SEL))
               if not raw:

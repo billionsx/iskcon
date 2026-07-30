@@ -14,7 +14,7 @@ import { usePlayer as useCore } from "../player/store";
 /* Параметры съёмки захватываются СИНХРОННО при загрузке модуля: эффект
    нормализации истории заменяет URL раньше, чем успевает отработать эффект
    съёмки, и query исчезала (плеер переставал открываться в кадре). */
-const SHOT_QS = typeof window !== "undefined" ? window.location.search : "";
+const SHOT_QS = typeof window !== "undefined" ? ((window as unknown as { __SHOT?: string }).__SHOT ?? window.location.search) : "";
 import {
   FindScreen, GenreScreen, HomeScreen, HubScreen, LinksScreen, NewScreen,
   BookScreen, PlistScreen, RadioScreen, SearchTab, ShowScreen, SongsScreen,

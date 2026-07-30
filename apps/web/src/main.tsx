@@ -15,6 +15,13 @@ import { lazy, Suspense } from "react";
    законы ONE LOVE внутри оболочки не действуют — правит LAW_MUSIC. Демо-клон
    Apple Music ушёл в ветку archive/music-demo как эталон-референс; /play
    остаётся рабочим алиасом того же дерева (закладки и съёмка не ломаются). */
+/* СЪЁМКА: query захватывается ЗДЕСЬ — самой ранней точкой, до lazy-чанков и
+   любых нормализаций истории. Чанк оболочки читает window.__SHOT, а не
+   location.search: между стартом и загрузкой чанка URL уже мог быть переписан
+   (гонка, которую кадр player поймал 30.07: слой не поднялся). */
+if (typeof window !== "undefined" && window.location.search.includes("shot=")) {
+  (window as unknown as { __SHOT?: string }).__SHOT = window.location.search;
+}
 const PlayShell = lazy(() => import("./play/MusicApp"));
 function Root() {
   const path = typeof window !== "undefined" ? window.location.pathname : "";
