@@ -10,16 +10,15 @@ import { lazy, Suspense } from "react";
    экранами стали Катха и Киртаны. 21.07.2026 основатель распорядился снести
    и её. Развилка ушла вместе с ней — точка входа снова одна, и приложение
    больше не платит за второе дерево ни байтом, ни ветвлением. */
-/* КЛОН APPLE MUSIC — /music. Изолированная оболочка (распоряжение основателя
-   21.07.2026): развилка стоит ЗДЕСЬ, а не внутри App. Приложение о /music не
-   знает и не меняется; законы ONE LOVE внутри оболочки не действуют. */
-const MusicShell = lazy(() => import("./music/MusicApp"));
+/* МУЗЫКАЛЬНАЯ ОБОЛОЧКА — /music (В7 «Смена караула», 30.07.2026). Изолирована
+   (распоряжение основателя 21.07.2026): развилка стоит ЗДЕСЬ, а не внутри App;
+   законы ONE LOVE внутри оболочки не действуют — правит LAW_MUSIC. Демо-клон
+   Apple Music ушёл в ветку archive/music-demo как эталон-референс; /play
+   остаётся рабочим алиасом того же дерева (закладки и съёмка не ломаются). */
 const PlayShell = lazy(() => import("./play/MusicApp"));
 function Root() {
-  if (typeof window !== "undefined" && (window.location.pathname === "/music" || window.location.pathname.startsWith("/music/"))) {
-    return <Suspense fallback={null}><MusicShell /></Suspense>;
-  }
-  if (typeof window !== "undefined" && (window.location.pathname === "/play" || window.location.pathname.startsWith("/play/"))) {
+  const path = typeof window !== "undefined" ? window.location.pathname : "";
+  if (path === "/music" || path.startsWith("/music/") || path === "/play" || path.startsWith("/play/")) {
     return <Suspense fallback={null}><PlayShell /></Suspense>;
   }
   return <App />;

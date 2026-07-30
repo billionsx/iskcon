@@ -18,6 +18,10 @@ on:
       - 'apps/web/**'
       - '.github/workflows/deploy-web.yml'
 
+permissions:
+  contents: read
+  actions: write
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
@@ -395,3 +399,18 @@ jobs:
             exit 1
           fi
           echo "::notice::ЗКН-Пл021 OK — локатор отдаёт каталог"
+
+      # В7 «Смена караула»: каждый деплой сам себя фотографирует — съёмка семи
+      # состояний оболочки уходит хвостом (fire-and-forget: кадры и рамки лягут
+      # в ветку shots своим воркфлоу; лимиты CF-браузера деплой не роняют).
+      - name: Съёмка оболочки (shot.yml, семь состояний)
+        if: success()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          curl -s -X POST \
+            -H "Authorization: Bearer $GH_TOKEN" \
+            -H "Accept: application/vnd.github+json" \
+            "https://api.github.com/repos/${{ github.repository }}/actions/workflows/shot.yml/dispatches" \
+            -d '{"ref":"main","inputs":{"states":"root,book,player,mini,lectures,kirtans,bhajans"}}' \
+            -o /dev/null -w "shot dispatch=%{http_code}\n" || true

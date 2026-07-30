@@ -60,26 +60,26 @@ export type UI = {
 const slug = (s: string) => s.toLowerCase().replace(/[^a-zа-яё0-9]+/gi, "-").replace(/^-+|-+$/g, "");
 function urlFor(pg: Pg): string {
   switch (pg.k) {
-    case "tab": return pg.t === "home" ? "/play" : pg.t === "search" ? "/play/browse" : `/play/${pg.t}`;
-    case "hub": return "/play/summertime-sounds";
-    case "plist": return "/play/summer-escapes";
-    case "songs": return pg.id === "bns" ? "/play/best-new-songs" : "/play/summer-anthems";
-    case "book": return `/play/book/${pg.b}`;
-    case "speaker": return `/play/speaker/${pg.slug}`;
-    case "kalbum": return `/play/katha/${encodeURIComponent(pg.id)}`;
-    case "kart": return `/play/kirtan-artist/${pg.slug}`;
-    case "kalb": return `/play/kirtan/${encodeURIComponent(pg.id)}`;
-    case "my": return "/play/my";
-    case "genre": return `/play/station/${slug(pg.g)}`;
-    case "show": return "/play/radio-takeover";
-    case "links": return "/play/explore";
-    case "lib": return `/play/library/${pg.id}`;
-    case "upl": return `/play/playlist/${pg.id}`;
-    case "find": return "/play/search";
+    case "tab": return pg.t === "home" ? "/music" : pg.t === "search" ? "/music/browse" : `/music/${pg.t}`;
+    case "hub": return "/music/summertime-sounds";
+    case "plist": return "/music/summer-escapes";
+    case "songs": return pg.id === "bns" ? "/music/best-new-songs" : "/music/summer-anthems";
+    case "book": return `/music/book/${pg.b}`;
+    case "speaker": return `/music/speaker/${pg.slug}`;
+    case "kalbum": return `/music/katha/${encodeURIComponent(pg.id)}`;
+    case "kart": return `/music/kirtan-artist/${pg.slug}`;
+    case "kalb": return `/music/kirtan/${encodeURIComponent(pg.id)}`;
+    case "my": return "/music/my";
+    case "genre": return `/music/station/${slug(pg.g)}`;
+    case "show": return "/music/radio-takeover";
+    case "links": return "/music/explore";
+    case "lib": return `/music/library/${pg.id}`;
+    case "upl": return `/music/playlist/${pg.id}`;
+    case "find": return "/music/search";
   }
 }
 function parseStack(path: string): Pg[] {
-  const p = path.replace(/^\/play\/?/, "").replace(/\/+$/, "");
+  const p = path.replace(/^\/(?:music|play)\/?/, "").replace(/\/+$/, "");
   const tab = (t: Tab): Pg => ({ k: "tab", t });
   if (!p) return [tab("home")];
   if (p === "new") return [tab("new")];
