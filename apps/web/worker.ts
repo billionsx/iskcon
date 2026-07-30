@@ -2276,7 +2276,13 @@ export default {
         const page = await browser.newPage();
         await page.setViewport({ width: w, height: h, deviceScaleFactor: dpr });
         await page.setExtraHTTPHeaders({ "x-shot-key": given });
-        await page.goto(`${url.origin}${path}`, { waitUntil: "networkidle0", timeout: 45000 });
+        /* Телеметрия причин: консоль страницы, её ошибки и статус goto — без
+           них пустой кадр неотличим от гонки (диагноз 30.07: book=белый). */
+        const logs: string[] = []; const errs: string[] = [];
+        page.on("console", (m) => { if (logs.length < 12) logs.push(m.type() + ": " + m.text().slice(0, 160)); });
+        page.on("pageerror", (e) => { if (errs.length < 6) errs.push(String(e).slice(0, 200)); });
+        const resp = await page.goto(`${url.origin}${path}`, { waitUntil: "networkidle0", timeout: 45000 });
+        const gotoStatus = resp ? resp.status() : 0;
         await new Promise((r) => setTimeout(r, wait));
         // Диагностика: куда мы реально попали (защита зоны умеет подменять
         // страницу молча) и ожил ли SPA.
@@ -2287,6 +2293,7 @@ export default {
           amx: !!document.querySelector(".amx"),
           scripts: document.querySelectorAll("script").length,
         }));
+        Object.assign(meta, { gotoStatus, logs, errs });
         if (fmt === "meta") {
           return new Response(JSON.stringify(meta, null, 1), {
             headers: { "Content-Type": "application/json; charset=utf-8", "Cache-Control": "no-store" },

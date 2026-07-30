@@ -148,6 +148,7 @@ function Shell() {
     const shot = q.get("shot");
     if (!shot) return;
     shotDone.current = true;
+    document.title = "EFF:" + shot;
     document.querySelector(".amx")?.classList.add("shot");
     const book = q.get("book") || "bg";
     const ch = Number(q.get("ch") || "1");

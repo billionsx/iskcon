@@ -21,6 +21,7 @@ import { lazy, Suspense } from "react";
    (гонка, которую кадр player поймал 30.07: слой не поднялся). */
 if (typeof window !== "undefined" && window.location.search.includes("shot=")) {
   (window as unknown as { __SHOT?: string }).__SHOT = window.location.search;
+  document.title = "CAP" + window.location.search.slice(0, 40);
 }
 const PlayShell = lazy(() => import("./play/MusicApp"));
 function Root() {
