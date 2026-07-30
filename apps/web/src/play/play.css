@@ -48,3 +48,18 @@
   transition-duration: .001s !important; transition-delay: 0s !important;
 }
 .amx-pl .pl-rate { height: 16px; padding: 0 7px; border-radius: 8px; background: rgba(255,255,255,.16); color: rgba(255,255,255,.8); font-size: 11px; font-weight: 700; font-variant-numeric: tabular-nums; }  /* В2: бейдж скорости между временами — паттерн AM Podcasts */
+
+/* В3 — hero «Продолжить слушать» (паттерн Continue Watching AM) */
+.amx-cont { display: flex; align-items: center; gap: 12px; margin: 4px 20px 8px; padding: 10px; border-radius: 12px; background: var(--card2); cursor: pointer; }
+.amx-cont .c-cov { width: 64px; height: 64px; border-radius: 8px; object-fit: cover; flex: 0 0 auto; }
+.amx-cont .c-c { min-width: 0; flex: 1; }
+.amx-cont .c-t { font-size: 15px; font-weight: 600; letter-spacing: -.24px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.amx-cont .c-s { font-size: 13px; color: var(--g2); margin-top: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.amx-cont .c-bar { height: 4px; border-radius: 8px; background: rgba(235,235,245,.18); margin-top: 8px; overflow: hidden; }
+.amx-cont .c-fill { height: 100%; border-radius: 8px; background: var(--red); }
+.amx-cont .c-play { color: var(--red); flex: 0 0 auto; padding-right: 2px; }
+
+/* В3 — чипы песней ШБ: горизонтальная лента */
+.amx-cantos { display: flex; gap: 8px; overflow-x: auto; padding: 16px 20px 0; scrollbar-width: none; -webkit-overflow-scrolling: touch; }
+.amx-cantos::-webkit-scrollbar { display: none; }
+.amx-cantos .amx-chip { flex: 0 0 auto; }

@@ -1,9 +1,10 @@
 /* /play — экраны вкладок и внутренние страницы. */
 import React, { useMemo, useState } from "react";
-import { Ava, Cover, Dots, E, H2, I, PagedSongs, Scr, Shelf, ShelfCard, SongRow, menuAt, mutate, useLongPress, useStore } from "./core";
-import { BOOKS } from "../books";
+import { Ava, Cover, Dots, E, H2, I, Menu, PagedSongs, Scr, Shelf, ShelfCard, SongRow, menuAt, mutate, useLongPress, useStore, type MItem } from "./core";
+import { BOOKS, bookFullTitle } from "../books";
+import { SHELVES } from "./shelves";
 import { BookHeroCard } from "../BookHeroCard";
-import { usePlayer as useCore, type AudioMode, type Track as CoreTrack } from "../player/store";
+import { mediaTrackKey, usePlayer as useCore, type AudioMode, type Track as CoreTrack } from "../player/store";
 import { api } from "../api";
 import { bookSlug } from "../books";
 import type { Card, Song } from "./data";
@@ -17,7 +18,9 @@ import {
 } from "./data";
 import type { UI } from "./MusicApp";
 // ЗКН-Н092: адрес книги строит один модуль.
-import { bookPath } from "../bookPath";
+import { bookPath, chapterPath } from "../bookPath";
+import { addFavorite, isFavorite, removeFavorite } from "../cardActions";
+import { useAuth } from "../account/store";
 
 export const ANTH: Song[] = SUMMER_ANTHEMS.map((s) => (ANTHEMS_E.has(s.id) ? { ...s, e: true } : s));
 
@@ -59,26 +62,81 @@ function CardShelf({ items, ui, wide, tall, src }: { items: Card[]; ui: UI; wide
 }
 
 /* ── HOME ─────────────────────────────────────────────────────────────── */
-export function HomeScreen({ ui }: { ui: UI }) {
-  /* Первая категория раздела — автор. Витрина книг Шрилы Прабхупады идёт
-     слайдером тем же модулем BookHeroCard, что и в основном приложении
-     (ЗКН-К002: сердце · наушники · корзина · ⋯ — единый юнит-стандарт). */
-  const byPrabhupada = React.useMemo(
-    () => Object.values(BOOKS).filter((b) => b.author.includes("Прабхупада")),
-    [],
+/* В3 · Hero «Продолжить слушать». Источник — persist боевого движка
+   (iol.player.v2): книга · глава · секунды. Полоса — время в главе против её
+   длительности из манифеста (тот же /books/<b>/audio, что и плеер). Тап не
+   перезапускает главу: движок УЖЕ восстановил позицию на маунте — hero лишь
+   раскрывает полноэкранный слой (ui.openPlayer). Гость без следа — hero нет. */
+function ContinueHero({ ui }: { ui: UI }) {
+  const [st] = useState<{ book: string; chapter: number | null; scope: string | null; time: number; mode: AudioMode } | null>(() => {
+    try {
+      const raw = localStorage.getItem("iol.player.v2");
+      if (!raw) return null;
+      const s = JSON.parse(raw) as { kind?: string; book?: string; scope?: string | null; mode?: AudioMode; chapter?: number | null; time?: number };
+      if (s.kind !== "book" || !s.book || !BOOKS[s.book]) return null;
+      return { book: s.book, chapter: s.chapter ?? null, scope: s.scope ?? null, time: Math.max(0, s.time ?? 0), mode: s.mode === "commentary" ? "commentary" : "plain" };
+    } catch { return null; }
+  });
+  const [tr, setTr] = useState<{ title: string; dur: number; lilaLabel?: string } | null>(null);
+  React.useEffect(() => {
+    if (!st) return;
+    let dead = false;
+    fetch(api(`/books/${st.book}/audio${st.scope ? `?canto=${encodeURIComponent(st.scope)}` : ""}`))
+      .then((r) => r.json())
+      .then((m: { modes?: Record<string, { tracks?: CoreTrack[] }> }) => {
+        if (dead) return;
+        const list = m.modes?.[st.mode]?.tracks ?? m.modes?.plain?.tracks ?? [];
+        const t = list.find((x) => x.chapter === st.chapter) ?? list[0];
+        if (t) setTr({ title: t.title, dur: t.durationSec ?? 0, lilaLabel: t.lilaLabel });
+      }).catch(() => {});
+    return () => { dead = true; };
+  }, [st]);
+  if (!st) return null;
+  const book = BOOKS[st.book];
+  const pct = tr && tr.dur > 0 ? Math.min(1, st.time / tr.dur) : 0;
+  return (
+    <>
+      <H2 t="Продолжить слушать" />
+      <div className="amx-cont" onClick={() => ui.openPlayer()}>
+        <img className="c-cov" src={book.covers[0]} alt="" />
+        <div className="c-c">
+          <div className="c-t">{bookFullTitle(book)}</div>
+          <div className="c-s">
+            {tr ? tr.title : st.chapter != null ? `Глава ${st.chapter}` : "…"}
+            {tr?.lilaLabel ? ` · ${tr.lilaLabel}` : ""}
+          </div>
+          <div className="c-bar"><div className="c-fill" style={{ width: `${Math.round(pct * 100)}%` }} /></div>
+        </div>
+        <span className="c-play">{I.play({ s: 22 })}</span>
+      </div>
+    </>
   );
+}
+
+export function HomeScreen({ ui }: { ui: UI }) {
+  /* В3: раздел «Книги» — вся аудиобиблиотека полками авторов (shelves.ts),
+     витрины тем же модулем BookHeroCard (ЗКН-К002: сердце · наушники ·
+     корзина · ⋯ — единый юнит-стандарт). Шеврон персональной полки ведёт на
+     карточку личности в основном приложении. */
   return (
     <Scr>
       <div className="amx-top"><div className="amx-h1">Книги</div><Ava /></div>
-
-      <H2 t="Шрила Прабхупада" />
-      <div className="amx-showcase">
-        {byPrabhupada.map((b) => (
-          <div key={b.work} className="amx-showcase-i">
-            <BookHeroCard book={b} onOpen={() => ui.push({ k: "book", b: b.work })} />
+      <ContinueHero ui={ui} />
+      {SHELVES.map((sh) => (
+        <div key={sh.id}>
+          <H2
+            t={sh.title}
+            onOpen={sh.entityId ? () => window.location.assign(`/${sh.entityId}`) : undefined}
+          />
+          <div className="amx-showcase">
+            {sh.ids.filter((id) => BOOKS[id]).map((id) => (
+              <div key={id} className="amx-showcase-i">
+                <BookHeroCard book={BOOKS[id]} onOpen={() => ui.push({ k: "book", b: id })} />
+              </div>
+            ))}
           </div>
-        ))}
-      </div>
+        </div>
+      ))}
     </Scr>
   );
 }
@@ -546,25 +604,121 @@ export function FindScreen({ ui, onClose }: { ui: UI; onClose: () => void }) {
   );
 }
 
-/* П-Ф3: страница книги — обложка, Слушать/Читать, тумблер режима, главы-треклист.
-   Манифест читается тем же эндпоинтом, что и боевой плеер (/books/<id>/audio). */
+/* П-Ф3 → В3: страница книги — обложка, Слушать/Читать, тумблер режима,
+   канто-секции для ШБ (манифест несёт `cantos`, треки грузятся по ?canto=),
+   треклист ГЛАВАМИ (ШБ озвучен стих-за-стихом — 784 ряда на песнь были бы
+   свалкой; ряд = глава, счёт стихов в подписи), кольцо прослушанности
+   (авторизованному — /api/me/list?type=listening; ref трека = pathname его
+   url — то же, что пишет recordListen), ⋯-меню ряда: Скачать · Избранное ·
+   К тексту (адрес — только chapterPath, ЗКН-Н092). */
+
+interface ListenMark { p: number; d: number }
+
+function Ring({ frac }: { frac: number }) {
+  const R = 8, C = 2 * Math.PI * R;
+  const f = Math.max(0, Math.min(1, frac));
+  return (
+    <svg width="20" height="20" viewBox="0 0 20 20" style={{ flex: "0 0 auto", transform: "rotate(-90deg)" }}>
+      <circle cx="10" cy="10" r={R} fill="none" stroke="rgba(235,235,245,.28)" strokeWidth="2" />
+      {f > 0.005 ? (
+        <circle cx="10" cy="10" r={R} fill="none" stroke="var(--red)" strokeWidth="2"
+          strokeDasharray={`${C * f} ${C}`} strokeLinecap="round" />
+      ) : null}
+    </svg>
+  );
+}
+
 export function BookScreen({ ui, b }: { ui: UI; b: string }) {
   const core = useCore();
+  const { user } = useAuth();
   const book = BOOKS[b];
   const [mode, setMode] = useState<AudioMode>("plain");
+  const [canto, setCanto] = useState<number | null>(null);
+  const [cantos, setCantos] = useState<{ canto: number; label: string }[] | null>(null);
   const [tracks, setTracks] = useState<CoreTrack[] | null>(null);
   const [meta, setMeta] = useState<{ hasCommentary?: boolean }>({});
+  const [marks, setMarks] = useState<Record<string, ListenMark>>({});
+  const [menu, setMenu] = useState<{ at: { x: number; y: number }; items: MItem[] } | null>(null);
+
   React.useEffect(() => {
     let dead = false;
-    fetch(api(`/books/${b}/audio`)).then((r) => r.json()).then((m) => {
+    const q = canto != null ? `?canto=${canto}` : "";
+    fetch(api(`/books/${b}/audio${q}`)).then((r) => r.json()).then((m) => {
       if (dead) return;
       const md = mode === "commentary" && m.modes?.commentary ? "commentary" : "plain";
       const list = (m.modes?.[md]?.tracks ?? []) as CoreTrack[];
       setTracks(Array.isArray(list) ? list : []);
       setMeta({ hasCommentary: !!m.modes?.commentary });
+      if (Array.isArray(m.cantos) && m.cantos.length) {
+        setCantos(m.cantos as { canto: number; label: string }[]);
+        if (canto == null) setCanto((m.cantos[0] as { canto: number }).canto);
+      }
     }).catch(() => { if (!dead) setTracks([]); });
     return () => { dead = true; };
-  }, [b, mode]);
+  }, [b, mode, canto]);
+
+  /* Кольца: след прослушивания вошедшего. Ключ — pathname URL записи. */
+  React.useEffect(() => {
+    if (!user) return;
+    let dead = false;
+    fetch(api("/me/list?type=listening&limit=200"), { credentials: "same-origin" })
+      .then((r) => (r.ok ? r.json() : null))
+      .then((d: { items?: { ref: string; position_sec: number | null; duration_sec: number | null }[] } | null) => {
+        if (dead || !d?.items) return;
+        const m: Record<string, ListenMark> = {};
+        for (const it of d.items) m[it.ref] = { p: it.position_sec ?? 0, d: it.duration_sec ?? 0 };
+        setMarks(m);
+      }).catch(() => {});
+    return () => { dead = true; };
+  }, [user]);
+
+  const refOf = (tr: CoreTrack) => { try { return new URL(tr.url).pathname; } catch { return tr.url; } };
+
+  /* Ряды: у ШБ (стих-за-стихом) — главами; у остальных трек и есть глава. */
+  const rows = React.useMemo(() => {
+    const list = (tracks ?? []).filter((t) => t.kind !== "song");
+    if (b !== "sb") return list.map((t) => ({ t, verses: 0, done: 0 }));
+    const by = new Map<number, { t: CoreTrack; verses: number; done: number }>();
+    for (const t of list) {
+      const ch = t.chapter ?? 0;
+      const cur = by.get(ch);
+      const heard = marks[refOf(t)] ? 1 : 0;
+      if (cur) { cur.verses += 1; cur.done += heard; }
+      else by.set(ch, { t, verses: 1, done: heard });
+    }
+    return [...by.values()];
+  }, [tracks, b, marks]);
+
+  const ringFor = (r: { t: CoreTrack; verses: number; done: number }): number | null => {
+    if (!user) return null;
+    if (r.verses > 1) return r.done > 0 ? r.done / r.verses : null;   /* глава ШБ: доля стихов */
+    const m = marks[refOf(r.t)];
+    if (!m) return null;
+    return m.d > 0 ? m.p / m.d : 1;                                    /* запись: позиция/длительность */
+  };
+
+  const rowMenu = (e: React.MouseEvent, r: { t: CoreTrack }) => {
+    e.stopPropagation();
+    const tr = r.t;
+    const key = mediaTrackKey(tr, "book");
+    const fav = isFavorite(key);
+    const text = tr.chapter == null ? bookPath(b)
+      : chapterPath(b, { divisionId: tr.lila ? `${b}.${tr.lila}.${tr.chapter}` : null, number: tr.chapter });
+    setMenu({
+      at: menuAt(e),
+      items: [
+        { label: fav ? "Убрать из избранного" : "В избранное", icon: fav ? I.starF({ s: 22 }) : I.star({ s: 22 }),
+          onTap: () => { if (fav) removeFavorite(key); else addFavorite(key, { t: tr.title, s: book ? bookFullTitle(book) : undefined }); } },
+        { sep: true },
+        { label: "Скачать запись", icon: I.listAdd({ s: 22 }),
+          onTap: () => { const a = document.createElement("a"); a.href = tr.url; a.download = tr.file; a.click(); } },
+        { sep: true },
+        { label: "К тексту", sub: tr.title, icon: I.album({ s: 22 }),
+          onTap: () => window.location.assign(text) },
+      ],
+    });
+  };
+
   if (!book) return null;
   return (
     <Scr>
@@ -577,7 +731,7 @@ export function BookScreen({ ui, b }: { ui: UI; b: string }) {
         <div style={{ fontSize: 22, fontWeight: 700, letterSpacing: "-.26px", marginTop: 16 }}>{book.titleLine1}{book.titleLine2 ? ` ${book.titleLine2}` : ""}</div>
         <div style={{ fontSize: 15, color: "var(--g2)", marginTop: 2 }}>{book.author}</div>
         <div style={{ display: "flex", gap: 9, marginTop: 16 }}>
-          <button className="amx-capsule" onClick={() => { core.playBook({ book: b, mode, expand: false }); }}>
+          <button className="amx-capsule" onClick={() => { if (canto != null) core.playChapter(b, rows[0]?.t.chapter ?? 1, mode, String(canto)); else core.playBook({ book: b, mode, expand: false }); }}>
             {I.play({ s: 18 })}<span>Слушать</span>
           </button>
           <button className="amx-capsule" onClick={() => window.location.assign(bookPath(book.work))}>
@@ -594,16 +748,40 @@ export function BookScreen({ ui, b }: { ui: UI; b: string }) {
           </div>
         ) : null}
       </div>
+
+      {/* В3: песни ШБ — чипы канто, треки грузятся по ?canto= */}
+      {cantos && cantos.length > 1 ? (
+        <div className="amx-cantos">
+          {cantos.map((c) => (
+            <button key={c.canto} className={"amx-chip" + (canto === c.canto ? " on" : "")}
+              onClick={() => { setTracks(null); setCanto(c.canto); }}>
+              {`Песнь ${c.canto}`}
+            </button>
+          ))}
+        </div>
+      ) : null}
+
       <div style={{ marginTop: 18 }}>
-        {tracks === null ? null : tracks.filter((tr) => tr.kind !== "song").map((tr, i) => (
-          <div key={tr.file + i} className="amx-row" onClick={() => { core.playChapter(b, tr.chapter ?? 0, mode, tr.lila, tr.ref ?? null); }}>
-            <div className="r-num">{tr.chapter ?? "·"}</div>
-            <div className="r-c"><div className="r-t">{tr.title}</div>
-              {tr.lilaLabel ? <div className="r-s">{tr.lilaLabel}</div> : null}</div>
-            <Dots onTap={() => {}} />
-          </div>
-        ))}
+        {rows.map((r, i) => {
+          const frac = ringFor(r);
+          return (
+            <div key={r.t.file + i} className="amx-row"
+              onClick={() => { core.playChapter(b, r.t.chapter ?? 0, mode, r.t.lila, r.t.ref ?? null); }}>
+              <div className="r-num">{r.t.chapter ?? "·"}</div>
+              <div className="r-c">
+                <div className="r-t">{r.verses > 1 && r.t.groupLabel ? r.t.groupLabel : r.t.title}</div>
+                {r.verses > 1
+                  ? <div className="r-s">{`Стихов: ${r.verses}`}{r.done > 0 ? ` · прослушано ${r.done}` : ""}</div>
+                  : r.t.lilaLabel ? <div className="r-s">{r.t.lilaLabel}</div> : null}
+              </div>
+              {frac != null ? <Ring frac={frac} /> : null}
+              <Dots onTap={(e) => rowMenu(e, r)} />
+            </div>
+          );
+        })}
       </div>
+
+      {menu ? <Menu at={menu.at} items={menu.items} onClose={() => setMenu(null)} /> : null}
     </Scr>
   );
 }

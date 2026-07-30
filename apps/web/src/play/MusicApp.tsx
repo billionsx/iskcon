@@ -44,6 +44,9 @@ export type UI = {
   fav: (id: string) => void;
   isFav: (id: string) => boolean;
   addToPl: (songId: string) => void;
+  /* В3: hero «Продолжить слушать» раскрывает полноэкранный плеер — движок уже
+     стоит на месте (persist восстановлен), нужен только слой. */
+  openPlayer: () => void;
 };
 
 const slug = (s: string) => s.toLowerCase().replace(/[^a-zа-яё0-9]+/gi, "-").replace(/^-+|-+$/g, "");
@@ -174,6 +177,7 @@ function Shell() {
 
   const ui: UI = useMemo(() => ({
     push, back,
+    openPlayer: () => setPlOpen(true),
     play: (songs, i, src) => player.playList(songs, i, src),
     fav, isFav: (id) => !!storeNow().fav[id],
     addToPl: (songId) => setAddFor(songId),
