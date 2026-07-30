@@ -1,7 +1,7 @@
 /* /play — экраны вкладок и внутренние страницы. */
 import React, { useMemo, useState } from "react";
 import { Ava, Cover, Dots, E, H2, I, Menu, PagedSongs, Scr, Shelf, ShelfCard, SongRow, menuAt, mutate, useLongPress, useStore, type MItem } from "./core";
-import { BOOKS, bookFullTitle } from "../books";
+import { AUDIO_WORKS, BOOKS, bookFullTitle } from "../books";
 import { SHELVES } from "./shelves";
 import { BookHeroCard } from "../BookHeroCard";
 import { mediaTrackKey, usePlayer as useCore, type AudioMode, type Track as CoreTrack } from "../player/store";
@@ -20,6 +20,12 @@ import type { UI } from "./MusicApp";
 // ЗКН-Н092: адрес книги строит один модуль.
 import { bookPath, chapterPath } from "../bookPath";
 import { addFavorite, isFavorite, removeFavorite } from "../cardActions";
+import { ROUTES } from "../routes";
+import { VoiceDot } from "./core";
+import { kathaAlbums, kathaSpeakers } from "../katha";
+import { loadCatalog, useKatha } from "../kathaHydrate";
+import { KIRTAN_ARTISTS, kirtanAlbums, kirtanTracks } from "../kirtans";
+import { useKirtans } from "../kirtansHydrate";
 import { useAuth } from "../account/store";
 
 export const ANTH: Song[] = SUMMER_ANTHEMS.map((s) => (ANTHEMS_E.has(s.id) ? { ...s, e: true } : s));
@@ -532,51 +538,135 @@ export function ShowScreen({ ui }: { ui: UI }) {
 }
 
 /* ── Оверлей поиска ───────────────────────────────────────────────────── */
+/* В6 · Поиск по четырём мирам базы: голоса (катха + киртании) → книги →
+   циклы лекций → киртаны → бхаджаны. Источники — те же клиентские реестры,
+   что кормят вкладки (каталог Ц12, kirtans.ts, BOOKS, /api/bhajans одним
+   кэшем); дорожки катхи глубоким поиском здесь НЕ ищем — 6 908 названий на
+   каждый ввод дороги, глубокий поиск остаётся у раздела Катхи. Недавние
+   запросы — MStore.rec. Deep-link: /play/search?q=… наполняет строку. */
+const tracksIdx = (albumId: string, trackId: string): number => {
+  const alb = kirtanAlbums().find((a) => a.id === albumId);
+  const list = alb ? kirtanTracks().filter((t) => t.identifier === alb.archive) : [];
+  return Math.max(0, list.findIndex((t) => t.id === trackId));
+};
+let _bhCache: { slug: string; name: string; author: string | null; has_recordings: boolean }[] | null = null;
+function ensureBhajans(bump: () => void): void {
+  if (_bhCache) return;
+  fetch(api("/bhajans")).then((r) => r.json())
+    .then((d: { bhajans?: typeof _bhCache }) => { if (d?.bhajans) { _bhCache = d.bhajans; bump(); } })
+    .catch(() => {});
+}
+
 export function FindScreen({ ui, onClose }: { ui: UI; onClose: () => void }) {
-  const [seg, setSeg] = useState<"am" | "lib">("am");
-  const [q, setQ] = useState("");
+  const [q, setQ] = useState(() => {
+    try { return new URLSearchParams(window.location.search).get("q") ?? ""; } catch { return ""; }
+  });
+  const [, bump] = useState(0);
   const store = useStore();
+  const core = useCore();
+  useKatha();
+  useKirtans();
+  React.useEffect(() => { void loadCatalog(); ensureBhajans(() => bump((n) => n + 1)); }, []);
+
   const res = useMemo(() => {
     const n = q.trim().toLowerCase();
-    if (!n) return [];
-    return ALL_SONGS.filter((s) => s.t.toLowerCase().includes(n) || s.a.toLowerCase().includes(n)).slice(0, 40);
-  }, [q]);
+    if (!n) return null;
+    const hit = (s?: string | null) => !!s && s.toLowerCase().includes(n);
+    const strong = (s?: string | null) => !!s && s.toLowerCase().startsWith(n);
+    const voices = [
+      ...kathaSpeakers().map((s) => ({ kind: "speaker" as const, slug: s.slug, name: s.name, full: s.full, accent: s.accent })),
+      ...KIRTAN_ARTISTS.map((a) => ({ kind: "kart" as const, slug: a.slug, name: a.name, full: a.full, accent: a.accent })),
+    ].filter((v) => hit(v.name) || hit(v.full));
+    const books = Object.values(BOOKS)
+      .filter((b) => AUDIO_WORKS[b.work] && (hit(bookFullTitle(b)) || hit(b.author)));
+    const kalbums = kathaAlbums().filter((a) => hit(a.title));
+    const kirtA = kirtanAlbums().filter((a) => a.archive && hit(a.title));
+    const kirtT = kirtanTracks().filter((t) => hit(t.title)).slice(0, 8);
+    const bh = (_bhCache ?? []).filter((b) => hit(b.name) || hit(b.author));
+    type Top = { label: string; sub: string; onTap: () => void };
+    const top: Top | null =
+      voices.find((v) => strong(v.name)) ? (() => { const v = voices.find((x) => strong(x.name))!; return { label: v.name, sub: "Голос", onTap: () => ui.push(v.kind === "speaker" ? { k: "speaker", slug: v.slug } : { k: "kart", slug: v.slug }) }; })()
+      : books.find((b) => strong(bookFullTitle(b))) ? (() => { const b = books.find((x) => strong(bookFullTitle(x)))!; return { label: bookFullTitle(b), sub: "Книга", onTap: () => ui.push({ k: "book", b: b.work }) }; })()
+      : kalbums.find((a) => strong(a.title)) ? (() => { const a = kalbums.find((x) => strong(x.title))!; return { label: a.title, sub: "Цикл лекций", onTap: () => ui.push({ k: "kalbum", id: a.id }) }; })()
+      : bh.find((b) => strong(b.name)) ? (() => { const b = bh.find((x) => strong(x.name))!; return { label: b.name, sub: "Бхаджан", onTap: () => b.has_recordings ? core.playBhajan(b.slug, 0) : window.location.assign(ROUTES.bhajans(b.slug)) }; })()
+      : null;
+    return { voices: voices.slice(0, 8), books: books.slice(0, 8), kalbums: kalbums.slice(0, 8), kirtA: kirtA.slice(0, 8), kirtT, bh: bh.slice(0, 10), top };
+  }, [q, ui, core]);
+
   const commit = () => {
     const n = q.trim();
     if (!n) return;
     mutate((s) => ({ ...s, rec: [n, ...s.rec.filter((r) => r !== n)].slice(0, 12) }));
   };
+  const Row = ({ t, s, onTap, red }: { t: string; s?: string; onTap: () => void; red?: boolean }) => (
+    <div className="amx-row" onClick={() => { commit(); onTap(); }}>
+      <div className="r-c" style={{ paddingLeft: 20 }}>
+        <div className="r-t">{t}</div>{s ? <div className="r-s">{s}</div> : null}
+      </div>
+      <span style={{ color: red ? "var(--red)" : "var(--g2)", paddingRight: 16 }}>{red ? I.play({ s: 18 }) : I.chev({ s: 16 })}</span>
+    </div>
+  );
+
   return (
     <div style={{ position: "absolute", inset: 0, background: "#000" }}>
-      <div className="amx-seg">
-        <button className={seg === "am" ? "on" : ""} onClick={() => setSeg("am")}>Apple Music</button>
-        <button className={seg === "lib" ? "on" : ""} onClick={() => setSeg("lib")}>Library</button>
-      </div>
-
-      {q.trim() ? (
+      {q.trim() && res ? (
         <div className="amx-results">
-          {res.map((s, i) => (
-            <SongRow key={s.id + i} s={s}
-              onPlay={() => { commit(); ui.play(res, i, "Search"); }}
-              onDots={(e) => ui.dots("track", s, menuAt(e))} />
-          ))}
-          {res.length === 0 ? (
+          {res.top ? (<>
+            <div className="amx-h2 plain" style={{ paddingTop: 10 }}>Топ-результат</div>
+            <Row t={res.top.label} s={res.top.sub} onTap={res.top.onTap} />
+          </>) : null}
+          {res.voices.length ? (<>
+            <div className="amx-h2 plain">Голоса</div>
+            <div className="amx-sprow">
+              {res.voices.map((v) => (
+                <VoiceDot key={v.kind + v.slug} name={v.name} accent={v.accent}
+                  onTap={() => { commit(); ui.push(v.kind === "speaker" ? { k: "speaker", slug: v.slug } : { k: "kart", slug: v.slug }); }} />
+              ))}
+            </div>
+          </>) : null}
+          {res.books.length ? (<>
+            <div className="amx-h2 plain">Книги</div>
+            {res.books.map((b) => <Row key={b.work} t={bookFullTitle(b)} s={b.author.split(",")[0]} onTap={() => ui.push({ k: "book", b: b.work })} />)}
+          </>) : null}
+          {res.kalbums.length ? (<>
+            <div className="amx-h2 plain">Циклы лекций</div>
+            {res.kalbums.map((a) => <Row key={a.id} t={a.title} s={`${a.n} зап.`} onTap={() => ui.push({ k: "kalbum", id: a.id })} />)}
+          </>) : null}
+          {res.kirtA.length ? (<>
+            <div className="amx-h2 plain">Киртаны</div>
+            {res.kirtA.map((a) => <Row key={a.id} t={a.title} s={a.year} onTap={() => ui.push({ k: "kalb", id: a.id })} />)}
+          </>) : null}
+          {res.kirtT.length ? (<>
+            <div className="amx-h2 plain">Записи киртанов</div>
+            {res.kirtT.map((t) => {
+              const alb = kirtanAlbums().find((a) => a.archive === t.identifier);
+              return alb ? <Row key={t.id} t={t.title} red onTap={() => core.playKirtan(alb.id, tracksIdx(alb.id, t.id))} /> : null;
+            })}
+          </>) : null}
+          {res.bh.length ? (<>
+            <div className="amx-h2 plain">Бхаджаны</div>
+            {res.bh.map((b) => (
+              <Row key={b.slug} t={b.name} s={b.author ?? undefined} red={b.has_recordings}
+                onTap={() => b.has_recordings ? core.playBhajan(b.slug, 0) : window.location.assign(ROUTES.bhajans(b.slug))} />
+            ))}
+          </>) : null}
+          {!res.top && !res.voices.length && !res.books.length && !res.kalbums.length && !res.kirtA.length && !res.kirtT.length && !res.bh.length ? (
             <div className="amx-find-empty" style={{ position: "static", marginTop: "26vh" }}>
-              <div className="et">No Results</div>
-              <div className="ed">Try a new search.</div>
+              <div className="et">Ничего не нашлось</div>
+              <div className="ed">Попробуй другое слово.</div>
             </div>
           ) : null}
         </div>
       ) : store.rec.length ? (
         <div className="amx-results">
-          <div className="amx-h2 plain" style={{ paddingTop: 10 }}>Recently Searched</div>
+          <div className="amx-h2 plain" style={{ paddingTop: 10 }}>Недавние запросы</div>
           {store.rec.map((r) => (
             <button key={r} className="amx-row" style={{ width: "100%", minHeight: 56 }} onClick={() => setQ(r)}>
               <span style={{ color: "var(--g2)" }}>{I.search({ s: 18 })}</span>
               <div className="r-c" style={{ textAlign: "left" }}><div className="r-t">{r}</div></div>
             </button>
           ))}
-          <button className="amx-link amx-pad" onClick={() => mutate((s) => ({ ...s, rec: [] }))}>Clear Recent Searches</button>
+          <button className="amx-link amx-pad" onClick={() => mutate((s) => ({ ...s, rec: [] }))}>Очистить недавние</button>
         </div>
       ) : (
         <div className="amx-find-empty">
@@ -590,7 +680,7 @@ export function FindScreen({ ui, onClose }: { ui: UI; onClose: () => void }) {
         <div className="amx-sfield">
           <span style={{ color: "rgba(235,235,245,.5)" }}>{I.search({ s: 19 })}</span>
           <input autoFocus value={q} onChange={(e) => setQ(e.target.value)}
-            placeholder={seg === "am" ? "Artists, Songs, Lyrics and More" : "Your Library"}
+            placeholder="Книги, лекции, киртаны, бхаджаны"
             onKeyDown={(e) => { if (e.key === "Enter") commit(); }} />
           {q ? (
             <button onClick={() => setQ("")} style={{ color: "rgba(235,235,245,.5)" }}>{I.x({ s: 17 })}</button>

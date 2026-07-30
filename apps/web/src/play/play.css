@@ -76,3 +76,8 @@
 .amx-spdot .d { border-radius: 50%; background: var(--card2); display: grid; place-items: center; font-weight: 700; }
 .amx-spdot .n { font-size: 12px; color: rgba(235,235,245,.85); max-width: 96px; text-align: center; line-height: 1.2; }
 .amx-spdot.big { display: inline-flex; }
+
+/* В6 — «Моё»: липкая стеклянная полоса фильтра (паттерн FavoritesScreen) */
+.amx-myfilter { position: sticky; top: 0; z-index: 5; display: flex; gap: 8px; overflow-x: auto; padding: 8px 20px 10px; background: rgba(0,0,0,.62); backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px); scrollbar-width: none; -webkit-overflow-scrolling: touch; }
+.amx-myfilter::-webkit-scrollbar { display: none; }
+.amx-myfilter .amx-chip { flex: 0 0 auto; }

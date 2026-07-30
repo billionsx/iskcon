@@ -21,6 +21,7 @@ import {
 } from "./screens";
 import { KAlbumScreen, LecturesScreen, SpeakerScreen } from "./lectures";
 import { BhajansScreen, KArtistScreen, KirtanAlbumScreen, KirtansScreen } from "./kirtansb";
+import { MyScreen } from "./my";
 import { LibListScreen, LibraryScreen, NewPlaylistSheet, PlaylistPicker, UserPlaylistScreen } from "./library";
 
 export type Tab = "home" | "new" | "radio" | "library" | "search";
@@ -30,6 +31,7 @@ export type Pg =
   | { k: "kalbum"; id: string }
   | { k: "kart"; slug: string }
   | { k: "kalb"; id: string }
+  | { k: "my" }
   | { k: "hub" }
   | { k: "plist" }
   | { k: "songs"; id: string; title: string; kind: "editorial" | "track" }
@@ -67,6 +69,7 @@ function urlFor(pg: Pg): string {
     case "kalbum": return `/play/katha/${encodeURIComponent(pg.id)}`;
     case "kart": return `/play/kirtan-artist/${pg.slug}`;
     case "kalb": return `/play/kirtan/${encodeURIComponent(pg.id)}`;
+    case "my": return "/play/my";
     case "genre": return `/play/station/${slug(pg.g)}`;
     case "show": return "/play/radio-takeover";
     case "links": return "/play/explore";
@@ -93,6 +96,7 @@ function parseStack(path: string): Pg[] {
   if (p.startsWith("katha/")) return [tab("new"), { k: "kalbum", id: decodeURIComponent(p.slice(6)) }];
   if (p.startsWith("kirtan-artist/")) return [tab("radio"), { k: "kart", slug: p.slice(14) }];
   if (p.startsWith("kirtan/")) return [tab("radio"), { k: "kalb", id: decodeURIComponent(p.slice(7)) }];
+  if (p === "my" || p === "fav") return [tab("library"), { k: "my" }];
   if (p === "radio-takeover") return [tab("home"), { k: "show" }];
   if (p === "explore") return [tab("new"), { k: "links", title: "More to explore", items: [] }];
   if (p.startsWith("library/")) {
@@ -166,8 +170,10 @@ function Shell() {
     };
     window.addEventListener("popstate", onPop);
     const onAdd = (e: Event) => setAddFor((e as CustomEvent<string>).detail);
+    const onMy = () => { setPlOpen(false); push({ k: "my" }); };
+    window.addEventListener("amx:open-my", onMy);
     window.addEventListener("amx:add-to-pl", onAdd);
-    return () => { window.removeEventListener("popstate", onPop); window.removeEventListener("amx:add-to-pl", onAdd); };
+    return () => { window.removeEventListener("popstate", onPop); window.removeEventListener("amx:add-to-pl", onAdd); window.removeEventListener("amx:open-my", onMy); };
   }, []);
 
   const push = (pg: Pg) => {
@@ -265,6 +271,7 @@ function Shell() {
             : top.k === "kalbum" ? <KAlbumScreen ui={ui} id={top.id} />
             : top.k === "kart" ? <KArtistScreen ui={ui} slug={top.slug} />
             : top.k === "kalb" ? <KirtanAlbumScreen ui={ui} id={top.id} />
+            : top.k === "my" ? <MyScreen ui={ui} />
             : top.k === "genre" ? <GenreScreen ui={ui} g={top.g} />
             : top.k === "show" ? <ShowScreen ui={ui} />
             : top.k === "links" ? <LinksScreen ui={ui} title={top.title} items={top.items} />

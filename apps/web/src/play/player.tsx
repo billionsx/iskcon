@@ -381,6 +381,8 @@ export function FullPlayer({ open, onClose, onFav, favOn }: {
       onTap: () => { const a = document.createElement("a"); a.href = p.dlUrl; a.download = ""; a.click(); } }] as MItem[] : []),
     ...(p.textPath ? [{ label: "К тексту", sub: cur.a, icon: I.album({ s: 22 }),
       onTap: () => { onClose(); window.location.assign(p.textPath!); } }] as MItem[] : []),
+    { label: "Моё — избранное", icon: I.star({ s: 22 }),
+      onTap: () => { onClose(); window.dispatchEvent(new CustomEvent("amx:open-my")); } },
     { label: "Share Lyrics", icon: I.quote({ s: 22 }) },
     { sep: true, thick: true },
     { label: "Report a Concern", icon: I.report({ s: 22 }) },
