@@ -20,6 +20,7 @@ import {
   BookScreen, PlistScreen, RadioScreen, SearchTab, ShowScreen, SongsScreen,
 } from "./screens";
 import { KAlbumScreen, LecturesScreen, SpeakerScreen } from "./lectures";
+import { BhajansScreen, KArtistScreen, KirtanAlbumScreen, KirtansScreen } from "./kirtansb";
 import { LibListScreen, LibraryScreen, NewPlaylistSheet, PlaylistPicker, UserPlaylistScreen } from "./library";
 
 export type Tab = "home" | "new" | "radio" | "library" | "search";
@@ -27,6 +28,8 @@ export type Pg =
   | { k: "tab"; t: Tab }
   | { k: "speaker"; slug: string }
   | { k: "kalbum"; id: string }
+  | { k: "kart"; slug: string }
+  | { k: "kalb"; id: string }
   | { k: "hub" }
   | { k: "plist" }
   | { k: "songs"; id: string; title: string; kind: "editorial" | "track" }
@@ -62,6 +65,8 @@ function urlFor(pg: Pg): string {
     case "book": return `/play/book/${pg.b}`;
     case "speaker": return `/play/speaker/${pg.slug}`;
     case "kalbum": return `/play/katha/${encodeURIComponent(pg.id)}`;
+    case "kart": return `/play/kirtan-artist/${pg.slug}`;
+    case "kalb": return `/play/kirtan/${encodeURIComponent(pg.id)}`;
     case "genre": return `/play/station/${slug(pg.g)}`;
     case "show": return "/play/radio-takeover";
     case "links": return "/play/explore";
@@ -86,6 +91,8 @@ function parseStack(path: string): Pg[] {
   if (p.startsWith("book/")) return [tab("home"), { k: "book", b: p.slice(5) }];
   if (p.startsWith("speaker/")) return [tab("new"), { k: "speaker", slug: p.slice(8) }];
   if (p.startsWith("katha/")) return [tab("new"), { k: "kalbum", id: decodeURIComponent(p.slice(6)) }];
+  if (p.startsWith("kirtan-artist/")) return [tab("radio"), { k: "kart", slug: p.slice(14) }];
+  if (p.startsWith("kirtan/")) return [tab("radio"), { k: "kalb", id: decodeURIComponent(p.slice(7)) }];
   if (p === "radio-takeover") return [tab("home"), { k: "show" }];
   if (p === "explore") return [tab("new"), { k: "links", title: "More to explore", items: [] }];
   if (p.startsWith("library/")) {
@@ -247,8 +254,8 @@ function Shell() {
           {top.k === "tab" ? (
             top.t === "home" ? <HomeScreen ui={ui} /> :
             top.t === "new" ? <LecturesScreen ui={ui} /> :
-            top.t === "radio" ? <RadioScreen ui={ui} /> :
-            top.t === "library" ? <LibraryScreen ui={ui} /> :
+            top.t === "radio" ? <KirtansScreen ui={ui} /> :
+            top.t === "library" ? <BhajansScreen ui={ui} /> :
             <SearchTab ui={ui} />
           ) : top.k === "hub" ? <HubScreen ui={ui} />
             : top.k === "plist" ? <PlistScreen ui={ui} />
@@ -256,6 +263,8 @@ function Shell() {
             : top.k === "book" ? <BookScreen ui={ui} b={top.b} />
             : top.k === "speaker" ? <SpeakerScreen ui={ui} slug={top.slug} />
             : top.k === "kalbum" ? <KAlbumScreen ui={ui} id={top.id} />
+            : top.k === "kart" ? <KArtistScreen ui={ui} slug={top.slug} />
+            : top.k === "kalb" ? <KirtanAlbumScreen ui={ui} id={top.id} />
             : top.k === "genre" ? <GenreScreen ui={ui} g={top.g} />
             : top.k === "show" ? <ShowScreen ui={ui} />
             : top.k === "links" ? <LinksScreen ui={ui} title={top.title} items={top.items} />

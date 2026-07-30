@@ -13,7 +13,7 @@
  */
 
 import React, { useEffect, useMemo, useState } from "react";
-import { Ava, Cover, H2, I, Scr } from "./core";
+import { Ava, Cover, H2, I, Scr, VoiceDot, initials } from "./core";
 import type { UI } from "./MusicApp";
 import { api } from "../api";
 import { usePlayer as useCore } from "../player/store";
@@ -25,21 +25,6 @@ import { ensureAlbum, loadCatalog, useKatha } from "../kathaHydrate";
 
 const fmtH = (h: number) => (h >= 10 ? `${Math.round(h)} ч` : `${Math.round(h * 10) / 10} ч`);
 
-/* ── Круг голоса. Фото у лекций нет — и мы не выдумываем: инициалы имени на
-   поверхности карточки; `accent` каталога (флаг старшинства) красит инициалы
-   фирменным красным. ── */
-const initials = (name: string) =>
-  name.split(/\s+/).filter(Boolean).slice(0, 2).map((w) => w[0]).join("");
-function SpeakerDot({ s, size = 88, onTap }: { s: KathaSpeaker; size?: number; onTap?: () => void }) {
-  return (
-    <button className="amx-spdot" style={{ width: size }} onClick={onTap}>
-      <span className="d" style={{ width: size, height: size, fontSize: size * 0.3, color: s.accent ? "var(--red)" : "#fff" }}>
-        {initials(s.name)}
-      </span>
-      <span className="n">{s.name}</span>
-    </button>
-  );
-}
 
 /* ── Ряд цикла в полке ────────────────────────────────────────────────── */
 function AlbumCard({ a, ui }: { a: KathaAlbum; ui: UI }) {
@@ -107,7 +92,7 @@ export function LecturesScreen({ ui }: { ui: UI }) {
           <H2 t="Голоса" />
           <div className="amx-sprow">
             {speakers.map((s) => (
-              <SpeakerDot key={s.slug} s={s} onTap={() => ui.push({ k: "speaker", slug: s.slug })} />
+              <VoiceDot key={s.slug} name={s.name} accent={s.accent} onTap={() => ui.push({ k: "speaker", slug: s.slug })} />
             ))}
           </div>
         </>

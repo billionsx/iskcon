@@ -274,6 +274,22 @@ export function shuffled<T>(arr: T[]): T[] {
   return a;
 }
 
+
+/* ── Круг голоса/исполнителя: инициалы на поверхности; accent — фирменный
+   красный (фото у записей нет — и мы не выдумываем). Общий узел В4/В5. ── */
+export const initials = (name: string) =>
+  name.split(/\s+/).filter(Boolean).slice(0, 2).map((w) => w[0]).join("");
+export function VoiceDot({ name, accent, size = 88, onTap }: { name: string; accent?: boolean; size?: number; onTap?: () => void }) {
+  return (
+    <button className="amx-spdot" style={{ width: size }} onClick={onTap}>
+      <span className="d" style={{ width: size, height: size, fontSize: size * 0.3, color: accent ? "var(--red)" : "white" }}>
+        {initials(name)}
+      </span>
+      <span className="n">{name}</span>
+    </button>
+  );
+}
+
 /* ── Аватар BX ────────────────────────────────────────────────────────── */
 export const Ava = () => (
   <button className="amx-cir amx-exit" aria-label="В главное приложение" onClick={() => window.location.assign("/")}>

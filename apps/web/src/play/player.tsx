@@ -7,6 +7,8 @@ import { LYRICS, Song } from "./data";
 import { PlayerProvider as CoreProvider, usePlayer as useCore, mediaTrackKey, type Track as CoreTrack } from "../player/store";
 import { HeartIcon } from "../ui/icons";
 import { useFavorite } from "../cardActions";
+import { api } from "../api";
+import { SCRIPTURE_VOICE } from "../ui/voice";
 import { bookSlug } from "../books";
 // ЗКН-Н092: адрес книги строит один модуль.
 import { bookPath, chapterPath } from "../bookPath";
@@ -27,6 +29,8 @@ type Api = P & {
   rate: number; cycleRate: () => void;
   sleepOn: boolean; setSleep: (v: number | "track" | null) => void;
   dismiss: () => void; favKey: string; dlUrl: string; textPath: string | null;
+  /* В5: лирика бхаджана — читалка настоящего текста (verses из prayers). */
+  kind: "book" | "kirtan" | "bhajan" | "katha"; srcSlug: string;
 };
 const Ctx = createContext<Api | null>(null);
 export const usePlayer = () => useContext(Ctx)!;
@@ -71,6 +75,7 @@ function Bridge({ children }: { children: React.ReactNode }) {
     sleepOn: c.sleepAt != null || c.sleepEnd,
     setSleep: c.setSleep,
     dismiss: c.dismiss,
+    kind: c.kind, srcSlug: c.book,
     favKey: c.track ? mediaTrackKey(c.track, c.kind) : "",
     dlUrl: c.track?.url || "",
     // ЗКН-Н092: адрес книги/главы — только общий построитель.
@@ -185,6 +190,22 @@ export function FullPlayer({ open, onClose, onFav, favOn }: {
      режимы, куда переходят кнопками внизу. Клон открывался сразу в лирику и
      большой обложки не показывал ни разу. */
   const [view, setViewRaw] = useState<"art" | "lyrics" | "queue">("art");
+  /* В5: куплеты бхаджана — лениво при первом открытии лирики; null=ещё не тянули */
+  const [bh, setBh] = useState<string[] | null>(null);
+  React.useEffect(() => {
+    if (p.kind !== "bhajan" || view !== "lyrics" || bh !== null) return;
+    let dead = false;
+    const slug = p.srcSlug.replace(/::lec$/, "");
+    fetch(api(`/bhajans/detail?slug=${encodeURIComponent(slug)}`))
+      .then((r) => (r.ok ? r.json() : null))
+      .then((d: { verses?: { translit?: string }[]; translit?: string } | null) => {
+        if (dead) return;
+        const vs = (d?.verses ?? []).map((v) => (v.translit ?? "").trim()).filter(Boolean);
+        setBh(vs.length ? vs : (d?.translit ? d.translit.split(/\n{2,}/).map((s) => s.trim()).filter(Boolean) : []));
+      }).catch(() => { if (!dead) setBh([]); });
+    return () => { dead = true; };
+  }, [p.kind, p.srcSlug, view, bh]);
+  React.useEffect(() => { setBh(null); }, [p.srcSlug]);
   const [outV, setOutV] = useState<"art" | "lyrics" | "queue" | null>(null);
   const outTm = useRef<number | null>(null);
   const setView = (v: "art" | "lyrics" | "queue") => {
@@ -425,13 +446,22 @@ export function FullPlayer({ open, onClose, onFav, favOn }: {
             <>
               <div ref={li === arr.length - 1 ? lyrRef : undefined} className="amx-lyr" style={{ position: "absolute", inset: 0, overflowY: "auto" }}>
                 <div className="pl-dots"><i /><i /><i /></div>
-                {LYRICS.map((l, i) => (
+                {p.kind === "bhajan" ? (
+                  /* В5: настоящие куплеты бхаджана (prayers). Таймингов у куплетов
+                     нет — актив не подсвечиваем: правдоподобная подсветка была бы
+                     выдумкой. Читалка, а не караоке. */
+                  bh === null ? null : bh.length === 0 ? (
+                    <div className="ln" style={{ opacity: .6 }}>Текст готовится</div>
+                  ) : bh.map((v, i) => (
+                    <div key={i} className="ln bh" style={{ ...SCRIPTURE_VOICE, whiteSpace: "pre-line" }}>{v}</div>
+                  ))
+                ) : LYRICS.map((l, i) => (
                   <div key={i} className={"ln" + (i === lineIdx ? " on" : i === lineIdx + 1 ? " next" : "")}
                     onClick={() => p.seek(l.at)}>{l.s}</div>
                 ))}
                 <div style={{ height: 90 }} />
               </div>
-              <button className="amx-kara" onClick={() => document.querySelector(".amx-lyr .ln.on")?.scrollIntoView({ behavior: "smooth", block: "center" })}>{I.karaoke({ s: 26 })}</button>
+              <button className="amx-kara" onClick={() => document.querySelector(".amx-lyr .ln.on, .amx-lyr .ln.bh")?.scrollIntoView({ behavior: "smooth", block: "center" })}>{I.karaoke({ s: 26 })}</button>
             </>
           ) : (
             <div style={{ position: "absolute", inset: 0, overflowY: "auto" }}>
