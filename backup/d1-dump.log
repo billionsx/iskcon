@@ -1,4 +1,4 @@
-таблиц всего: 89; пропускаем FTS: ['verse_fts', 'verse_fts_config', 'verse_fts_content', 'verse_fts_data', 'verse_fts_docsize', 'verse_fts_idx']
+таблиц всего: 96; пропускаем FTS: ['verse_fts', 'verse_fts_config', 'verse_fts_content', 'verse_fts_data', 'verse_fts_docsize', 'verse_fts_idx']
   app_config: 11
   auth_codes: 1
   auth_identities: 1
@@ -14,9 +14,9 @@
   collective_vows: 1
   content_blocks: 1470
   content_items: 170
-  darshan: 82
+  darshan: 84
   deities: 4
-  deploy_checks: 3150
+  deploy_checks: 3248
   dhama_clusters: 35
   dhamas: 3
   divisions: 1084
@@ -36,11 +36,17 @@
   gcal_meta: 1
   home_documents: 15
   ig_config: 2
-  ig_darshan: 13
+  ig_darshan: 15
   japa_round: 0
   katha_albums: 326
+  katha_fts: 6908
+  katha_fts_config: 1
+  katha_fts_content: 6908
+  katha_fts_data: 456
+  katha_fts_docsize: 6908
+  katha_fts_idx: 438
   katha_speakers: 5
-  katha_tracks: 3151
+  katha_tracks: 6908
   kirtan_albums: 50
   kirtan_artists: 124
   kirtan_tracks: 1062
@@ -52,6 +58,7 @@
   notes: 0
   oauth_states: 1
   page_text: 170
+  pipeline_state: 1
   places: 956
   prayer_media: 446
   prayer_verses: 1989
@@ -68,7 +75,7 @@
   sessions: 2
   shop_groups: 3
   shop_products: 9
-  tilda_assets: 94238
+  tilda_assets: 100129
   tilda_pages: 148
   tirtha_persons: 289
   tirthas: 660
@@ -82,6 +89,6 @@
   verses: 68816
   vraja_raw: 578
   works: 39
-✓ дамп готов за 398 c; строк всего: 593179
+✓ дамп готов за 280 c; строк всего: 624549
 rc=0
--rw-r--r-- 1 runner runner 40M Jul 29 05:38 d1.sql.gz
+-rw-r--r-- 1 runner runner 41M Jul 30 05:23 d1.sql.gz
