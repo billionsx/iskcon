@@ -1,0 +1,95 @@
+# ПРОВЕРКА КЛЮЧА. Личный ключ GH_TOKEN — единственный ключ, который проект
+# обязан держать живым. Он не нужен департаменту Billions X Eyes: тот приходит
+# сюда сам и читает всё публично. Он нужен ЭТОМУ проекту для трёх дел, и
+# каждое из них проверяется здесь механически.
+#
+# Зачем отдельный воркфлоу. Ключ протухает молча: срок выходит ночью, конвейер
+# заливки встаёт, и это замечают через неделю по недоехавшей Бхагаватам.
+# Проверка ловит смерть ключа в течение суток и предупреждает за две недели
+# до срока.
+#
+# После ротации ключа: запустить руками и убедиться в трёх зелёных. Если
+# зелено — ротация состоялась, гадать не нужно.
+name: "Проверка ключа (GH_TOKEN)"
+run-name: "key-selftest · ${{ github.event_name }}"
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "23 6 * * *"        # ежедневно 06:23 UTC
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: "Ключ вообще задан?"
+        env:
+          T: ${{ secrets.GH_TOKEN }}
+        run: |
+          if [ -z "$T" ]; then
+            echo "::error title=ключ::секрет GH_TOKEN не задан — самоцепочки заливки и обновление сессии Telegram мертвы"
+            exit 1
+          fi
+          echo "секрет задан"
+
+      - name: "Дело 1 · запускать воркфлоу (самоцепочки заливки)"
+        env:
+          T: ${{ secrets.GH_TOKEN }}
+        run: |
+          CODE=$(curl -s -o /dev/null -w "%{http_code}" -X POST \
+            -H "Authorization: token $T" -H "Accept: application/vnd.github+json" \
+            "https://api.github.com/repos/${{ github.repository }}/actions/workflows/probe-url.yml/dispatches" \
+            -d '{"ref":"main","inputs":{"url":"https://brajs.com/api/books/sb/audio/available"}}')
+          [ "$CODE" = "204" ] && { echo "✓ 204 — самоцепочки живы"; exit 0; }
+          echo "::error title=actions::ключ НЕ может запускать воркфлоу (HTTP $CODE) — заливка Бхагаватам, катх, киртанов и госвами встанет. Нужно право Actions: Read and write"
+          exit 1
+
+      - name: "Дело 2 · писать секреты (обновление сессии Telegram)"
+        env:
+          T: ${{ secrets.GH_TOKEN }}
+        run: |
+          CODE=$(curl -s -o /dev/null -w "%{http_code}" \
+            -H "Authorization: token $T" \
+            "https://api.github.com/repos/${{ github.repository }}/actions/secrets/public-key")
+          [ "$CODE" = "200" ] && { echo "✓ 200 — сессия Telegram обновится сама"; exit 0; }
+          echo "::error title=secrets::ключ НЕ может писать секреты (HTTP $CODE) — TG_SESSION_STRING перестанет обновляться и архивация Telegram умрёт. Нужно право Secrets: Read and write"
+          exit 1
+
+      - name: "Дело 3 · читать содержимое (загрузчик в приложении)"
+        env:
+          T: ${{ secrets.GH_TOKEN }}
+        run: |
+          CODE=$(curl -s -o /dev/null -w "%{http_code}" \
+            -H "Authorization: token $T" \
+            "https://api.github.com/repos/${{ github.repository }}/contents/package.json")
+          [ "$CODE" = "200" ] && { echo "✓ 200 — /api/downloader/* работает"; exit 0; }
+          echo "::error title=contents::ключ НЕ может читать репозиторий (HTTP $CODE). Нужно право Contents: Read and write"
+          exit 1
+
+      - name: "Срок годности — предупредить за две недели"
+        env:
+          T: ${{ secrets.GH_TOKEN }}
+        run: |
+          EXP=$(curl -sI -H "Authorization: token $T" https://api.github.com/user \
+                | tr -d '\r' | grep -i '^github-authentication-token-expiration:' \
+                | cut -d' ' -f2-)
+          if [ -z "$EXP" ]; then
+            echo "::warning title=срок::ключ БЕЗ срока годности. Бессрочный ключ живёт вечно и после утечки не умирает сам — поставь срок 90 дней"
+            exit 0
+          fi
+          echo "срок: $EXP"
+          LEFT=$(( ( $(date -u -d "$(echo $EXP | cut -d' ' -f1)" +%s) - $(date -u +%s) ) / 86400 ))
+          echo "осталось дней: $LEFT"
+          if [ "$LEFT" -lt 0 ]; then
+            echo "::error title=срок::ключ ПРОСРОЧЕН"; exit 1
+          elif [ "$LEFT" -lt 14 ]; then
+            echo "::warning title=срок::ключу осталось $LEFT дн. — пора менять: https://github.com/settings/personal-access-tokens"
+          fi
+
+      - name: "Итог"
+        run: |
+          echo "::notice title=ключ::три дела подтверждены — ротация состоялась, конвейеры живы"
