@@ -174,7 +174,6 @@
   /* Radius */
   --radius-glass: 20px;  /* 📐 4.2 */
   --radius-glass-lg: 28px;  /* 🕳 */
-  --radius-squircle: 13px;  /* 🕳 */
 
   /* ───────────────────────────────────────────────────────────
    * Spacing scale — стандарт ISKCON ONE LOVE (сетка 4pt, ЗКН-Д004).
@@ -740,7 +739,9 @@
 :where(button, a, [role='button'], [role='tab'], input, textarea, select):focus-visible {
   outline: 2px solid var(--color-gold-deep);
   outline-offset: 2px;
-  border-radius: var(--radius-squircle);
+  /* border-radius здесь НЕ задаётся: outline и так идёт по скруглению элемента,
+     а литерал 13px (без адреса) ПЕРЕНАЗНАЧАЛ радиус капсульной кнопки на время
+     фокуса — то есть менял форму, а не рисовал обводку. */
 }
 
 /* sheet / toast entrance */
@@ -934,7 +935,10 @@ body.gtab-off .gtab-wrap { display: none; }
   -webkit-user-select: none; user-select: none; -webkit-touch-callout: none;
 }
 .gtab-bg {                  /* материал капсулы — прозрачное живое стекло */
-  position: absolute; inset: 0; border-radius: 31px; overflow: hidden;
+  /* 📐 4.2 · плавающий таб-бар = КАПСУЛА (профиль совпал с окружностью h/2 до
+     пикселя, apple_files с.4). Литерал 31px был вторым экземпляром факта
+     «высота 62»: правка --gtab-h молча оставила бы радиус прежним. */
+  position: absolute; inset: 0; border-radius: var(--radius-pill); overflow: hidden;
   pointer-events: none; z-index: 0;
   background: rgba(24, 24, 26, 0.40);
   -webkit-backdrop-filter: blur(16px) saturate(180%) brightness(1.02);
@@ -959,7 +963,7 @@ body.gtab-off .gtab-wrap { display: none; }
   mask-composite: exclude;
 }
 .gtab-glint {               /* голограмма капсулы: спектральное кольцо + живой блик */
-  position: absolute; inset: 0; border-radius: 31px; overflow: hidden;
+  position: absolute; inset: 0; border-radius: var(--radius-pill); overflow: hidden;  /* 📐 4.2 · капсула */
   pointer-events: none; z-index: 0;
 }
 .gtab-glint::before {       /* спектральное кольцо по кромке (холод сверху-слева, тепло снизу-справа) */
@@ -987,7 +991,7 @@ body.gtab-off .gtab-wrap { display: none; }
   will-change: transform;
 }
 .gtab-pill {                /* линза покоя за активным табом — полированное стекло, едет пружиной */
-  position: absolute; top: 9px; left: 0; height: 44px; width: 54px; border-radius: 22px;
+  position: absolute; top: 9px; left: 0; height: 44px; width: 54px; border-radius: var(--radius-pill);  /* 📐 4.2 · капсула = h/2 */
   z-index: 1; pointer-events: none;
   background: rgba(255, 255, 255, 0.10);
   -webkit-backdrop-filter: blur(1px) brightness(1.25) saturate(1.5);
@@ -1017,7 +1021,7 @@ body.gtab-off .gtab-wrap { display: none; }
 .gtab.pressing .gtab-pill { opacity: 0; transition: opacity 0.1s ease; }  /* линза оторвалась каплей */
 /* ── Капля (drag/press): выпуклая линза над иконками. Геометрию ведёт пружина в JS. ── */
 .gtab-lens {
-  position: absolute; top: 0; left: 0; width: 76px; height: 76px; border-radius: 38px;
+  position: absolute; top: 0; left: 0; width: 76px; height: 76px; border-radius: var(--radius-pill);  /* 📐 4.2 · капсула = h/2 */
   z-index: 3; pointer-events: none; visibility: hidden; opacity: 0;
   overflow: hidden; transform-origin: 50% 50%;
   will-change: transform, width, height;
@@ -1280,5 +1284,5 @@ body.gtab-off .gtab-wrap { display: none; }
 }
 .sq-full { border-radius: var(--radius-card-full); }
 @supports (corner-shape: squircle) {
-  .sq-full { corner-shape: squircle; border-radius: 25px; }
+  .sq-full { corner-shape: squircle; border-radius: 25px; }  /* 📐 4.2 · непрерывная пара к круглым 37.8: то же отношение, что 16 к 24 (37.8 x 16/24 = 25.2) */
 }
