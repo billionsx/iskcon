@@ -8,7 +8,9 @@
    "amx": true,
    "scripts": 2,
    "gotoStatus": 200,
-   "logs": [],
+   "logs": [
+    "error: Error while trying to use the following icon from the Manifest: https://iskcon-web.ceo-5cb.workers.dev/icon-192.png (Download error or resource isn't a valid im"
+   ],
    "errs": []
   },
   ".amx": [
@@ -503,497 +505,12 @@
    ]
   }
  },
- "mini": {
-  "__meta": {
-   "href": "https://iskcon-web.ceo-5cb.workers.dev/music",
-   "title": "ISKCON ONE LOVE. ИСККОН.",
-   "bodyLen": 7612,
-   "head": "Книги\nПродолжить слушать\nБхагавад-гита как она есть\nОбзор армий на поле битвы Курукшетра\nШрила Прабхупада\n2 / 7\nБхагавад-гита\nкак она есть\nBhagavad-gītā·Песнь Бога\n\nЕго Божественная Милость Абхай Чара",
-   "amx": true,
-   "scripts": 2,
-   "gotoStatus": 200,
-   "logs": [],
-   "errs": []
-  },
-  ".amx": [
-   {
-    "left": 0,
-    "top": 0,
-    "width": 393,
-    "height": 852,
-    "fontSize": "16px",
-    "lineHeight": "normal",
-    "letterSpacing": "normal",
-    "fontWeight": "400",
-    "color": "rgb(255, 255, 255)",
-    "text": "Книги\nПродолжить слушать\nБхагавад-гита к"
-   }
-  ],
-  ".amx-top": [
-   {
-    "left": 0,
-    "top": 10,
-    "width": 393,
-    "height": 58,
-    "fontSize": "16px",
-    "lineHeight": "normal",
-    "letterSpacing": "normal",
-    "fontWeight": "400",
-    "color": "rgb(255, 255, 255)",
-    "text": "Книги"
-   }
-  ],
-  ".amx-h1": [
-   {
-    "left": 20,
-    "top": 19.5,
-    "width": 111.7,
-    "height": 41,
-    "fontSize": "34px",
-    "lineHeight": "41px",
-    "letterSpacing": "-1px",
-    "fontWeight": "700",
-    "color": "rgb(255, 255, 255)",
-    "text": "Книги"
-   }
-  ],
-  ".amx-h2": [
-   {
-    "left": 0,
-    "top": 68,
-    "width": 393,
-    "height": 65,
-    "fontSize": "20px",
-    "lineHeight": "25px",
-    "letterSpacing": "-0.45px",
-    "fontWeight": "700",
-    "color": "rgb(255, 255, 255)",
-    "text": "Продолжить слушать"
-   },
-   {
-    "left": 0,
-    "top": 229,
-    "width": 393,
-    "height": 65,
-    "fontSize": "20px",
-    "lineHeight": "25px",
-    "letterSpacing": "-0.45px",
-    "fontWeight": "700",
-    "color": "rgb(255, 255, 255)",
-    "text": "Шрила Прабхупада"
-   },
-   {
-    "left": 0,
-    "top": 741.25,
-    "width": 393,
-    "height": 65,
-    "fontSize": "20px",
-    "lineHeight": "25px",
-    "letterSpacing": "-0.45px",
-    "fontWeight": "700",
-    "color": "rgb(255, 255, 255)",
-    "text": "Бхактивинода Тхакур"
-   },
-   {
-    "left": 0,
-    "top": 1302.33,
-    "width": 393,
-    "height": 65,
-    "fontSize": "20px",
-    "lineHeight": "25px",
-    "letterSpacing": "-0.45px",
-    "fontWeight": "700",
-    "color": "rgb(255, 255, 255)",
-    "text": "Гаудия-классика"
-   },
-   {
-    "left": 0,
-    "top": 1814.58,
-    "width": 393,
-    "height": 65,
-    "fontSize": "20px",
-    "lineHeight": "25px",
-    "letterSpacing": "-0.45px",
-    "fontWeight": "700",
-    "color": "rgb(255, 255, 255)",
-    "text": "Жизнеописания ачарьев"
-   },
-   {
-    "left": 0,
-    "top": 2421.86,
-    "width": 393,
-    "height": 65,
-    "fontSize": "20px",
-    "lineHeight": "25px",
-    "letterSpacing": "-0.45px",
-    "fontWeight": "700",
-    "color": "rgb(255, 255, 255)",
-    "text": "Современные учители"
-   }
-  ],
-  ".amx-showcase-i": [
-   {
-    "left": 20,
-    "top": 294,
-    "width": 353,
-    "height": 441.25,
-    "fontSize": "16px",
-    "lineHeight": "normal",
-    "letterSpacing": "normal",
-    "fontWeight": "400",
-    "color": "rgb(255, 255, 255)",
-    "text": "2 / 7\nБхагавад-гита\nкак она есть\nBhagava"
-   },
-   {
-    "left": 385,
-    "top": 294,
-    "width": 353,
-    "height": 441.25,
-    "fontSize": "16px",
-    "lineHeight": "normal",
-    "letterSpacing": "normal",
-    "fontWeight": "400",
-    "color": "rgb(255, 255, 255)",
-    "text": "2 / 25\nШримад-\nБхагаватам\nЗрелый плод др"
-   },
-   {
-    "left": 750,
-    "top": 294,
-    "width": 353,
-    "height": 441.25,
-    "fontSize": "16px",
-    "lineHeight": "normal",
-    "letterSpacing": "normal",
-    "fontWeight": "400",
-    "color": "rgb(255, 255, 255)",
-    "text": "2 / 20\nШри Чайтанья-\nчаритамрита\nНектар "
-   },
-   {
-    "left": 1115,
-    "top": 294,
-    "width": 353,
-    "height": 441.25,
-    "fontSize": "16px",
-    "lineHeight": "normal",
-    "letterSpacing": "normal",
-    "fontWeight": "400",
-    "color": "rgb(255, 255, 255)",
-    "text": "1 / 1\nНектар\nпреданности\nBhakti-rasāmṛta"
-   },
-   {
-    "left": 1480,
-    "top": 294,
-    "width": 353,
-    "height": 441.25,
-    "fontSize": "16px",
-    "lineHeight": "normal",
-    "letterSpacing": "normal",
-    "fontWeight": "400",
-    "color": "rgb(255, 255, 255)",
-    "text": "1 / 1\nНектар\nнаставлений\nUpadeśāmṛta·Нас"
-   },
-   {
-    "left": 1845,
-    "top": 294,
-    "width": 353,
-    "height": 441.25,
-    "fontSize": "16px",
-    "lineHeight": "normal",
-    "letterSpacing": "normal",
-    "fontWeight": "400",
-    "color": "rgb(255, 255, 255)",
-    "text": "1 / 1\nШри\nИшопанишад\nŚrī Īśopaniṣad·Мант"
-   },
-   {
-    "left": 2210,
-    "top": 294,
-    "width": 353,
-    "height": 441.25,
-    "fontSize": "16px",
-    "lineHeight": "normal",
-    "letterSpacing": "normal",
-    "fontWeight": "400",
-    "color": "rgb(255, 255, 255)",
-    "text": "1 / 0\nШри\nНамамрита\nŚrī Nāmāmṛta·Нектар "
-   },
-   {
-    "left": 2575,
-    "top": 294,
-    "width": 353,
-    "height": 441.25,
-    "fontSize": "16px",
-    "lineHeight": "normal",
-    "letterSpacing": "normal",
-    "fontWeight": "400",
-    "color": "rgb(255, 255, 255)",
-    "text": "1 / 0\nВриндаване\nбхаджана\nVṛndāvana-bhaj"
-   },
-   {
-    "left": 20,
-    "top": 806.25,
-    "width": 353,
-    "height": 441.25,
-    "fontSize": "16px",
-    "lineHeight": "normal",
-    "letterSpacing": "normal",
-    "fontWeight": "400",
-    "color": "rgb(255, 255, 255)",
-    "text": "1 / 0\nХаринама-\nчинтамани\nHarināma-cintā"
-   },
-   {
-    "left": 385,
-    "top": 806.25,
-    "width": 353,
-    "height": 441.25,
-    "fontSize": "16px",
-    "lineHeight": "normal",
-    "letterSpacing": "normal",
-    "fontWeight": "400",
-    "color": "rgb(255, 255, 255)",
-    "text": "1 / 0\nЧайтанья-\nшикшамрита\nCaitanya-śikṣ"
-   },
-   {
-    "left": 750,
-    "top": 806.25,
-    "width": 353,
-    "height": 441.25,
-    "fontSize": "16px",
-    "lineHeight": "normal",
-    "letterSpacing": "normal",
-    "fontWeight": "400",
-    "color": "rgb(255, 255, 255)",
-    "text": "1 / 0\nБхактьялока\nBhaktyāloka·Свет преда"
-   },
-   {
-    "left": 1115,
-    "top": 806.25,
-    "width": 353,
-    "height": 441.25,
-    "fontSize": "16px",
-    "lineHeight": "normal",
-    "letterSpacing": "normal",
-    "fontWeight": "400",
-    "color": "rgb(255, 255, 255)",
-    "text": "1 / 0\nБхакти-таттва-\nвивека\nBhakti-tattv"
-   }
-  ],
-  ".amx-dock": [
-   {
-    "left": 0,
-    "top": 713,
-    "width": 393,
-    "height": 139,
-    "fontSize": "16px",
-    "lineHeight": "normal",
-    "letterSpacing": "normal",
-    "fontWeight": "400",
-    "color": "rgb(255, 255, 255)",
-    "text": "Not Playing\nКниги\nЛекции\nКиртаны\nБхаджан"
-   }
-  ],
-  "[data-amx-mini]": [
-   {
-    "left": 21,
-    "top": 713,
-    "width": 351,
-    "height": 48,
-    "fontSize": "16px",
-    "lineHeight": "normal",
-    "letterSpacing": "normal",
-    "fontWeight": "400",
-    "color": "rgb(255, 255, 255)",
-    "text": "Not Playing"
-   }
-  ],
-  ".m-art": [
-   {
-    "left": 28,
-    "top": 719,
-    "width": 36,
-    "height": 36,
-    "fontSize": "16px",
-    "lineHeight": "normal",
-    "letterSpacing": "normal",
-    "fontWeight": "400",
-    "color": "rgba(235, 235, 245, 0.75)",
-    "text": ""
-   }
-  ],
-  ".m-t": [
-   {
-    "left": 76,
-    "top": 727.5,
-    "width": 186,
-    "height": 19,
-    "fontSize": "16px",
-    "lineHeight": "normal",
-    "letterSpacing": "-0.31px",
-    "fontWeight": "600",
-    "color": "rgb(255, 255, 255)",
-    "text": "Not Playing"
-   }
-  ],
-  ".m-b": [
-   {
-    "left": 274,
-    "top": 717,
-    "width": 40,
-    "height": 40,
-    "fontSize": "16px",
-    "lineHeight": "normal",
-    "letterSpacing": "normal",
-    "fontWeight": "400",
-    "color": "rgb(255, 255, 255)",
-    "text": ""
-   },
-   {
-    "left": 326,
-    "top": 717,
-    "width": 40,
-    "height": 40,
-    "fontSize": "16px",
-    "lineHeight": "normal",
-    "letterSpacing": "normal",
-    "fontWeight": "400",
-    "color": "rgba(235, 235, 245, 0.4)",
-    "text": ""
-   }
-  ],
-  ".amx-tab": [
-   {
-    "left": 29.69,
-    "top": 777.7,
-    "width": 65.91,
-    "height": 44.59,
-    "fontSize": "10px",
-    "lineHeight": "normal",
-    "letterSpacing": "0.12px",
-    "fontWeight": "600",
-    "color": "rgb(250, 45, 75)",
-    "text": "Книги"
-   },
-   {
-    "left": 95.59,
-    "top": 777.7,
-    "width": 65.91,
-    "height": 44.59,
-    "fontSize": "10px",
-    "lineHeight": "normal",
-    "letterSpacing": "0.12px",
-    "fontWeight": "500",
-    "color": "rgba(235, 235, 245, 0.85)",
-    "text": "Лекции"
-   },
-   {
-    "left": 161.5,
-    "top": 777.7,
-    "width": 65.91,
-    "height": 44.59,
-    "fontSize": "10px",
-    "lineHeight": "normal",
-    "letterSpacing": "0.12px",
-    "fontWeight": "500",
-    "color": "rgba(235, 235, 245, 0.85)",
-    "text": "Киртаны"
-   },
-   {
-    "left": 227.41,
-    "top": 777.7,
-    "width": 65.91,
-    "height": 44.59,
-    "fontSize": "10px",
-    "lineHeight": "normal",
-    "letterSpacing": "0.12px",
-    "fontWeight": "500",
-    "color": "rgba(235, 235, 245, 0.85)",
-    "text": "Бхаджаны"
-   }
-  ],
-  ".amx-tab span": [
-   {
-    "left": 45.17,
-    "top": 809.5,
-    "width": 34.92,
-    "height": 11,
-    "fontSize": "10px",
-    "lineHeight": "normal",
-    "letterSpacing": "0.12px",
-    "fontWeight": "600",
-    "color": "rgb(250, 45, 75)",
-    "text": "Книги"
-   },
-   {
-    "left": 108.42,
-    "top": 809.5,
-    "width": 40.25,
-    "height": 11,
-    "fontSize": "10px",
-    "lineHeight": "normal",
-    "letterSpacing": "0.12px",
-    "fontWeight": "500",
-    "color": "rgba(235, 235, 245, 0.85)",
-    "text": "Лекции"
-   },
-   {
-    "left": 170.86,
-    "top": 809.5,
-    "width": 47.19,
-    "height": 11,
-    "fontSize": "10px",
-    "lineHeight": "normal",
-    "letterSpacing": "0.12px",
-    "fontWeight": "500",
-    "color": "rgba(235, 235, 245, 0.85)",
-    "text": "Киртаны"
-   },
-   {
-    "left": 232.17,
-    "top": 809.5,
-    "width": 56.36,
-    "height": 11,
-    "fontSize": "10px",
-    "lineHeight": "normal",
-    "letterSpacing": "0.12px",
-    "fontWeight": "500",
-    "color": "rgba(235, 235, 245, 0.85)",
-    "text": "Бхаджаны"
-   }
-  ],
-  ".amx-scir": [
-   {
-    "left": 310,
-    "top": 769,
-    "width": 62,
-    "height": 62,
-    "fontSize": "16px",
-    "lineHeight": "normal",
-    "letterSpacing": "normal",
-    "fontWeight": "400",
-    "color": "rgb(255, 255, 255)",
-    "text": ""
-   }
-  ],
-  ".amx-cir": [
-   {
-    "left": 329,
-    "top": 18,
-    "width": 44,
-    "height": 44,
-    "fontSize": "16px",
-    "lineHeight": "normal",
-    "letterSpacing": "normal",
-    "fontWeight": "400",
-    "color": "rgb(255, 255, 255)",
-    "text": ""
-   }
-  ]
- },
  "lectures": {
   "__meta": {
    "href": "https://iskcon-web.ceo-5cb.workers.dev/music/new",
    "title": "ISKCON ONE LOVE. ИСККОН.",
-   "bodyLen": 2102,
-   "head": "Лекции\nЛЕКЦИЯ ДНЯ\n29 июня 1974 · Мельбурн · Реинкарнация\nУтренние прогулки · 13 мин\nСлушать\nГолоса\nБВ\nБхакти Вигьяна Госвами Махарадж\nРГ\nРадха Говинда Госвами Махарадж\nПд\nПурначандра дас Госвами Махар",
+   "bodyLen": 2130,
+   "head": "Лекции\nЛЕКЦИЯ ДНЯ\n4 февраля 1975 · Гавайи · Гавайи · Утренние прогулки — С учениками\nУтренние прогулки · 13 мин\nСлушать\nГолоса\nБВ\nБхакти Вигьяна Госвами Махарадж\nРГ\nРадха Говинда Госвами Махарадж\nПд\nП",
    "amx": true,
    "scripts": 2,
    "gotoStatus": 200,
@@ -1011,7 +528,7 @@
     "letterSpacing": "normal",
     "fontWeight": "400",
     "color": "rgb(255, 255, 255)",
-    "text": "Лекции\nЛЕКЦИЯ ДНЯ\n29 июня 1974 · Мельбур"
+    "text": "Лекции\nЛЕКЦИЯ ДНЯ\n4 февраля 1975 · Гавай"
    }
   ],
   ".amx-top": [
@@ -1045,7 +562,7 @@
   ".amx-h2": [
    {
     "left": 0,
-    "top": 238,
+    "top": 263,
     "width": 393,
     "height": 65,
     "fontSize": "20px",
@@ -1057,7 +574,7 @@
    },
    {
     "left": 0,
-    "top": 468.56,
+    "top": 493.56,
     "width": 393,
     "height": 90,
     "fontSize": "20px",
@@ -1069,7 +586,7 @@
    },
    {
     "left": 0,
-    "top": 741.95,
+    "top": 766.95,
     "width": 393,
     "height": 90,
     "fontSize": "20px",
@@ -1081,7 +598,7 @@
    },
    {
     "left": 0,
-    "top": 1015.34,
+    "top": 1040.34,
     "width": 393,
     "height": 65,
     "fontSize": "20px",
@@ -1093,7 +610,7 @@
    },
    {
     "left": 0,
-    "top": 1263.73,
+    "top": 1288.73,
     "width": 393,
     "height": 90,
     "fontSize": "20px",
@@ -1105,7 +622,7 @@
    },
    {
     "left": 0,
-    "top": 1537.13,
+    "top": 1562.13,
     "width": 393,
     "height": 90,
     "fontSize": "20px",
@@ -1329,7 +846,7 @@
   ".amx-cardw": [
    {
     "left": 0,
-    "top": 558.56,
+    "top": 583.56,
     "width": 141,
     "height": 179.39,
     "fontSize": "16px",
@@ -1341,7 +858,7 @@
    },
    {
     "left": 153,
-    "top": 558.56,
+    "top": 583.56,
     "width": 141,
     "height": 179.39,
     "fontSize": "16px",
@@ -1353,7 +870,7 @@
    },
    {
     "left": 306,
-    "top": 558.56,
+    "top": 583.56,
     "width": 141,
     "height": 179.39,
     "fontSize": "16px",
@@ -1365,7 +882,7 @@
    },
    {
     "left": 459,
-    "top": 558.56,
+    "top": 583.56,
     "width": 141,
     "height": 179.39,
     "fontSize": "16px",
@@ -1377,7 +894,7 @@
    },
    {
     "left": 612,
-    "top": 558.56,
+    "top": 583.56,
     "width": 141,
     "height": 179.39,
     "fontSize": "16px",
@@ -1389,7 +906,7 @@
    },
    {
     "left": 765,
-    "top": 558.56,
+    "top": 583.56,
     "width": 141,
     "height": 179.39,
     "fontSize": "16px",
@@ -1401,7 +918,7 @@
    },
    {
     "left": 918,
-    "top": 558.56,
+    "top": 583.56,
     "width": 141,
     "height": 179.39,
     "fontSize": "16px",
@@ -1413,7 +930,7 @@
    },
    {
     "left": 1071,
-    "top": 558.56,
+    "top": 583.56,
     "width": 141,
     "height": 179.39,
     "fontSize": "16px",
@@ -1425,7 +942,7 @@
    },
    {
     "left": 1224,
-    "top": 558.56,
+    "top": 583.56,
     "width": 141,
     "height": 179.39,
     "fontSize": "16px",
@@ -1437,7 +954,7 @@
    },
    {
     "left": 1377,
-    "top": 558.56,
+    "top": 583.56,
     "width": 141,
     "height": 179.39,
     "fontSize": "16px",
@@ -1449,7 +966,7 @@
    },
    {
     "left": 0,
-    "top": 831.95,
+    "top": 856.95,
     "width": 141,
     "height": 179.39,
     "fontSize": "16px",
@@ -1461,7 +978,7 @@
    },
    {
     "left": 153,
-    "top": 831.95,
+    "top": 856.95,
     "width": 141,
     "height": 179.39,
     "fontSize": "16px",
@@ -1475,7 +992,7 @@
   ".amx-cov": [
    {
     "left": 0,
-    "top": 558.56,
+    "top": 583.56,
     "width": 141,
     "height": 141,
     "fontSize": "16px",
@@ -1487,7 +1004,7 @@
    },
    {
     "left": 153,
-    "top": 558.56,
+    "top": 583.56,
     "width": 141,
     "height": 141,
     "fontSize": "16px",
@@ -1499,7 +1016,7 @@
    },
    {
     "left": 306,
-    "top": 558.56,
+    "top": 583.56,
     "width": 141,
     "height": 141,
     "fontSize": "16px",
@@ -1511,7 +1028,7 @@
    },
    {
     "left": 459,
-    "top": 558.56,
+    "top": 583.56,
     "width": 141,
     "height": 141,
     "fontSize": "16px",
@@ -1523,7 +1040,7 @@
    },
    {
     "left": 612,
-    "top": 558.56,
+    "top": 583.56,
     "width": 141,
     "height": 141,
     "fontSize": "16px",
@@ -1535,7 +1052,7 @@
    },
    {
     "left": 765,
-    "top": 558.56,
+    "top": 583.56,
     "width": 141,
     "height": 141,
     "fontSize": "16px",
@@ -1547,7 +1064,7 @@
    },
    {
     "left": 918,
-    "top": 558.56,
+    "top": 583.56,
     "width": 141,
     "height": 141,
     "fontSize": "16px",
@@ -1559,7 +1076,7 @@
    },
    {
     "left": 1071,
-    "top": 558.56,
+    "top": 583.56,
     "width": 141,
     "height": 141,
     "fontSize": "16px",
@@ -1571,7 +1088,7 @@
    },
    {
     "left": 1224,
-    "top": 558.56,
+    "top": 583.56,
     "width": 141,
     "height": 141,
     "fontSize": "16px",
@@ -1583,7 +1100,7 @@
    },
    {
     "left": 1377,
-    "top": 558.56,
+    "top": 583.56,
     "width": 141,
     "height": 141,
     "fontSize": "16px",
@@ -1595,7 +1112,7 @@
    },
    {
     "left": 0,
-    "top": 831.95,
+    "top": 856.95,
     "width": 141,
     "height": 141,
     "fontSize": "16px",
@@ -1607,7 +1124,7 @@
    },
    {
     "left": 153,
-    "top": 831.95,
+    "top": 856.95,
     "width": 141,
     "height": 141,
     "fontSize": "16px",
@@ -1621,7 +1138,7 @@
   ".cw-t": [
    {
     "left": 0,
-    "top": 708.95,
+    "top": 733.95,
     "width": 141,
     "height": 15,
     "fontSize": "15px",
@@ -1633,7 +1150,7 @@
    },
    {
     "left": 153,
-    "top": 708.95,
+    "top": 733.95,
     "width": 141,
     "height": 15,
     "fontSize": "15px",
@@ -1645,7 +1162,7 @@
    },
    {
     "left": 306,
-    "top": 708.95,
+    "top": 733.95,
     "width": 141,
     "height": 15,
     "fontSize": "15px",
@@ -1657,7 +1174,7 @@
    },
    {
     "left": 459,
-    "top": 708.95,
+    "top": 733.95,
     "width": 141,
     "height": 15,
     "fontSize": "15px",
@@ -1669,7 +1186,7 @@
    },
    {
     "left": 612,
-    "top": 708.95,
+    "top": 733.95,
     "width": 141,
     "height": 15,
     "fontSize": "15px",
@@ -1681,7 +1198,7 @@
    },
    {
     "left": 765,
-    "top": 708.95,
+    "top": 733.95,
     "width": 141,
     "height": 15,
     "fontSize": "15px",
@@ -1693,7 +1210,7 @@
    },
    {
     "left": 918,
-    "top": 708.95,
+    "top": 733.95,
     "width": 141,
     "height": 15,
     "fontSize": "15px",
@@ -1705,7 +1222,7 @@
    },
    {
     "left": 1071,
-    "top": 708.95,
+    "top": 733.95,
     "width": 141,
     "height": 15,
     "fontSize": "15px",
@@ -1717,7 +1234,7 @@
    },
    {
     "left": 1224,
-    "top": 708.95,
+    "top": 733.95,
     "width": 141,
     "height": 15,
     "fontSize": "15px",
@@ -1729,7 +1246,7 @@
    },
    {
     "left": 1377,
-    "top": 708.95,
+    "top": 733.95,
     "width": 141,
     "height": 15,
     "fontSize": "15px",
@@ -1741,7 +1258,7 @@
    },
    {
     "left": 0,
-    "top": 982.34,
+    "top": 1007.34,
     "width": 141,
     "height": 15,
     "fontSize": "15px",
@@ -1753,7 +1270,7 @@
    },
    {
     "left": 153,
-    "top": 982.34,
+    "top": 1007.34,
     "width": 141,
     "height": 15,
     "fontSize": "15px",
@@ -1774,7 +1291,9 @@
    "amx": true,
    "scripts": 2,
    "gotoStatus": 200,
-   "logs": [],
+   "logs": [
+    "error: Error while trying to use the following icon from the Manifest: https://iskcon-web.ceo-5cb.workers.dev/icon-192.png (Download error or resource isn't a valid im"
+   ],
    "errs": []
   },
   ".amx": [
@@ -2503,9 +2022,7 @@
    "amx": true,
    "scripts": 2,
    "gotoStatus": 200,
-   "logs": [
-    "error: Error while trying to use the following icon from the Manifest: https://iskcon-web.ceo-5cb.workers.dev/icon-192.png (Download error or resource isn't a valid im"
-   ],
+   "logs": [],
    "errs": []
   },
   ".amx": [
