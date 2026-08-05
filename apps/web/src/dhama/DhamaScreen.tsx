@@ -136,7 +136,7 @@ export default function DhamaScreen({ onOpen, onOpenTirtha }: { onOpen: (id: str
             onOpen={() => onOpenTirtha(tod.dhama.id, tod.tirtha.id)}
             onMenuSelect={onMenuTirtha(tod.dhama, tod.tirtha)}
             topLeft={
-              <span style={{ display: "inline-flex", alignItems: "center", gap: 6, height: 28, padding: "0 11px", borderRadius: "var(--radius-pill)", background: "rgba(255,255,255,0.22)", backdropFilter: "blur(6px)", WebkitBackdropFilter: "blur(6px)", fontFamily: "var(--font-text)", fontSize: "var(--text-caption2)", fontWeight: "var(--weight-bold)", letterSpacing: "0.5px", textTransform: "uppercase", color: "#fff" }}>
+              <span style={{ display: "inline-flex", alignItems: "center", gap: 6, height: 28, padding: "0 11px", borderRadius: "var(--radius-pill)", background: "rgba(255,255,255,0.22)", backdropFilter: "blur(6px)", WebkitBackdropFilter: "blur(6px)", fontFamily: "var(--font-text)", fontSize: "var(--text-caption2)", fontWeight: "var(--weight-bold)", letterSpacing: "var(--ls-caption2)", textTransform: "uppercase", color: "#fff" }}>
                 <span aria-hidden style={{ width: 5, height: 5, borderRadius: "50%", background: "#fff" }} />Место дня
               </span>
             }

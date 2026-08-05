@@ -136,7 +136,7 @@ const programLabel = (t: string) => PROGRAM_LABEL[t] || t.replace(/_/g, " ");
 
 /* ───────────────────── переиспользуемые ───────────────────── */
 const eyebrow: CSSProperties = {
-  fontFamily: FT, fontSize: "var(--text-caption2)", fontWeight: 700, letterSpacing: "0.6px",
+  fontFamily: FT, fontSize: "var(--text-caption2)", fontWeight: 700, letterSpacing: "var(--ls-caption2)",
   textTransform: "uppercase", color: L3, margin: "0 2px 9px",
 };
 const card: CSSProperties = { padding: 16, borderRadius: 18, background: FILL };

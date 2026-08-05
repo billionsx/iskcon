@@ -80,7 +80,7 @@ const numOrNull = (s: string): number | null => {
 
 /* ───────────────────── поля ───────────────────── */
 const groupLabel: CSSProperties = {
-  fontFamily: FT, fontSize: "var(--text-caption2)", fontWeight: 700, letterSpacing: "0.6px",
+  fontFamily: FT, fontSize: "var(--text-caption2)", fontWeight: 700, letterSpacing: "var(--ls-caption2)",
   textTransform: "uppercase", color: L3, margin: "0 4px 8px",
 };
 const inputStyle: CSSProperties = {

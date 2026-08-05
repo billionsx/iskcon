@@ -630,8 +630,12 @@
       background: color-mix(in srgb, var(--color-label) 3%, var(--color-bg));
     }
     .app-shell {
-      border-left: 0.5px solid var(--color-hairline);
-      border-right: 0.5px solid var(--color-hairline);
+      /* 📐 4.3 · линия — 1pt. Полпикселя не существует: на 1x браузер округляет
+         её то в 0, то в 1, и рамка оболочки мигает от масштаба. Замер 217 кадров
+         даёт моду sep_h = 1.0 (55 кадров), и токен --color-separator уже несёт
+         ту же оговорку «1px, НЕ волосяная». */
+      border-left: 1px solid var(--color-hairline);
+      border-right: 1px solid var(--color-hairline);
       box-shadow: 0 8px 40px color-mix(in srgb, var(--color-label) 8%, transparent);
     }
   }
@@ -650,7 +654,7 @@
     background-color: var(--color-glass-regular);
     backdrop-filter: blur(40px) saturate(180%);
     -webkit-backdrop-filter: blur(40px) saturate(180%);
-    border: 0.5px solid var(--color-glass-stroke);
+    border: 1px solid var(--color-glass-stroke);  /* 📐 4.3 · линия 1pt, не полпикселя */
     box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.18);
   }
 
@@ -683,7 +687,7 @@
      (UnitSubTabs / UnitSubSubTabs), отделяя навигацию от контента.
      Промежуточные слои границы не имеют → стекло непрерывно. */
   .glass-nav-edge {
-    border-bottom: 0.5px solid var(--color-glass-stroke);
+    border-bottom: 1px solid var(--color-glass-stroke);  /* 📐 4.3 · линия 1pt */
   }
 
   /* DESIGN-LAW §8.4a — accessibility fallback for Liquid Glass.

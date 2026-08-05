@@ -39,7 +39,7 @@ const Cal = ({ size = 26 }: { size?: number }) => (
 );
 
 const card: CSSProperties = { padding: 16, borderRadius: 18, background: FILL };
-const eyebrow: CSSProperties = { fontFamily: FT, fontSize: "var(--text-caption2)", fontWeight: 700, letterSpacing: "0.6px", textTransform: "uppercase", color: L3, margin: "0 4px 8px" };
+const eyebrow: CSSProperties = { fontFamily: FT, fontSize: "var(--text-caption2)", fontWeight: 700, letterSpacing: "var(--ls-caption2)", textTransform: "uppercase", color: L3, margin: "0 4px 8px" };
 const inputStyle: CSSProperties = { width: "100%", boxSizing: "border-box", fontFamily: FT, fontSize: "var(--text-callout)", color: L1, background: FILL2, border: "none", outline: "none", borderRadius: 12, padding: "11px 13px", WebkitTapHighlightColor: "transparent" };
 const dtStyle: CSSProperties = { fontFamily: FD, fontSize: "var(--text-subhead)", fontWeight: 600, color: L1, background: FILL2, border: "none", borderRadius: 10, padding: "9px 12px", WebkitTapHighlightColor: "transparent" };
 

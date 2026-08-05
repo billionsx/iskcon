@@ -133,7 +133,7 @@ function ExactCard({ ex, active, onTap }: { ex: ExactHit; active: boolean; onTap
         </svg>
       </span>
       <span style={{ minWidth: 0, flex: 1 }}>
-        <span style={{ display: "block", fontFamily: "var(--font-text)", fontSize: "var(--text-caption)", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.5px", color: "var(--color-label-3)" }}>{eyebrow}</span>
+        <span style={{ display: "block", fontFamily: "var(--font-text)", fontSize: "var(--text-caption)", fontWeight: 600, textTransform: "uppercase", letterSpacing: "var(--ls-caption)", color: "var(--color-label-3)" }}>{eyebrow}</span>
         <span style={{ display: "flex", alignItems: "baseline", gap: 7 }}>
           <span style={{ fontFamily: "var(--font-text)", fontSize: "var(--text-body)", fontWeight: 600, color: "var(--color-label)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{ex.book}</span>
           {ex.kind === "verse" && ex.ref && <span style={{ flexShrink: 0, fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)", fontWeight: 500, color: "var(--color-label-3)", fontVariantNumeric: "tabular-nums" }}>{ex.ref}</span>}

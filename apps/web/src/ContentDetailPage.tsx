@@ -293,7 +293,7 @@ export default function ContentDetailPage({ slug, onBack, onOpenContent, onOpenB
                   {data.kind}
                 </div>
               )}
-              <h1 style={{ margin: 0, fontFamily: "var(--font-display)", fontSize: "var(--text-title1)", lineHeight: 'var(--lh-title1)', fontWeight: "var(--weight-heavy)", letterSpacing: "-0.5px", color: "var(--color-label)" }}>
+              <h1 style={{ margin: 0, fontFamily: "var(--font-display)", fontSize: "var(--text-title1)", lineHeight: 'var(--lh-title1)', fontWeight: "var(--weight-heavy)", letterSpacing: "var(--ls-title1)", color: "var(--color-label)" }}>
                 {data.name}
               </h1>
 

@@ -191,7 +191,7 @@ function EventRow({ e, brief, parana, first, today, picked, onOpenEntity, innerR
       {!first && <span aria-hidden style={{ position: "absolute", top: 0, left: 62, right: 0, height: "0.5px", background: "var(--color-hairline)" }} />}
       <div style={{ flexShrink: 0, width: 38, textAlign: "center" }}>
         <div style={{ fontFamily: "var(--font-display)", fontSize: "var(--text-title2)", fontWeight: 700, lineHeight: 1, letterSpacing: "-0.02em", color: accent ? GOLD : "var(--color-label)" }}>{f.d}</div>
-        <div style={{ marginTop: 3, fontFamily: "var(--font-text)", fontSize: "var(--text-caption2)", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.5px", color: accent ? GOLD : "var(--color-label-3)" }}>{f.wd}</div>
+        <div style={{ marginTop: 3, fontFamily: "var(--font-text)", fontSize: "var(--text-caption2)", fontWeight: 700, textTransform: "uppercase", letterSpacing: "var(--ls-caption2)", color: accent ? GOLD : "var(--color-label-3)" }}>{f.wd}</div>
       </div>
       <TypeIcon type={e.type} date={e.date} title={e.title} today={accent} />
       <div style={{ minWidth: 0, flex: 1 }}>

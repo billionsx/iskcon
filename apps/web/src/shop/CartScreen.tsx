@@ -308,7 +308,7 @@ function PayRow({ icon, title, sub, on, onClick, withTop }: { icon: ReactNode; t
     </button>
   );
 }
-function SbpMark() { return <span style={{ display: "inline-grid", placeItems: "center", width: 21, height: 21, borderRadius: 5, background: "linear-gradient(135deg,#f9a01b,#7b1fa2 55%,#1aa5b8)", color: "#fff", fontSize: "var(--text-caption2)", fontWeight: 800, letterSpacing: "-0.5px" }}>СБП</span>; }
+function SbpMark() { return <span style={{ display: "inline-grid", placeItems: "center", width: 21, height: 21, borderRadius: 5, background: "linear-gradient(135deg,#f9a01b,#7b1fa2 55%,#1aa5b8)", color: "#fff", fontSize: "var(--text-caption2)", fontWeight: 800, letterSpacing: "var(--ls-caption2)" }}>СБП</span>; }
 function UsdtMark() { return <span style={{ display: "inline-grid", placeItems: "center", width: 21, height: 21, borderRadius: "50%", background: "#26a17b", color: "#fff", fontSize: "var(--text-footnote)", fontWeight: 800 }}>₮</span>; }
 const brandGlyph = (b: string) => b === "visa" ? "VISA" : b === "mc" ? "MC" : b === "mir" ? "Мир" : b === "amex" ? "AMEX" : b === "unionpay" ? "UP" : "Карта";
 

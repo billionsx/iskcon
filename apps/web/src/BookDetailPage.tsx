@@ -1821,7 +1821,7 @@ function CommentaryLabel({ demo }: { demo?: boolean }) {
   return <LayerLabel>Комментарий{demo && <DemoBadge />}</LayerLabel>;
 }
 function DemoBadge() {
-  return <span style={{ marginLeft: 8, padding: "1px 7px", borderRadius: 999, background: FILL, color: INK2, fontSize: "var(--text-caption2)", fontWeight: 700, letterSpacing: ".5px", verticalAlign: "middle" }}>демо</span>;
+  return <span style={{ marginLeft: 8, padding: "1px 7px", borderRadius: 999, background: FILL, color: INK2, fontSize: "var(--text-caption2)", fontWeight: 700, letterSpacing: "var(--ls-caption2)", verticalAlign: "middle" }}>демо</span>;
 }
 
 interface VerseToken { term: string; gloss: string | null; }

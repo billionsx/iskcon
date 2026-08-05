@@ -461,7 +461,7 @@ export default function BhajanDetailPage({ slug, onBack, onOpenEntity, onOpenBha
             {/* ШАПКА — чистая, выразительная */}
             <div style={{ padding: "64px var(--pad-card) 0" }}>
               {data.category && <Eyebrow blue>{data.category}</Eyebrow>}
-              <h1 style={{ margin: data.category ? "var(--space-2) 0 0" : 0, fontFamily: "var(--font-display)", fontSize: "var(--text-title1)", lineHeight: 'var(--lh-title1)', fontWeight: "var(--weight-heavy)", letterSpacing: "-0.5px", color: "var(--color-label)" }}>{data.name}</h1>
+              <h1 style={{ margin: data.category ? "var(--space-2) 0 0" : 0, fontFamily: "var(--font-display)", fontSize: "var(--text-title1)", lineHeight: 'var(--lh-title1)', fontWeight: "var(--weight-heavy)", letterSpacing: "var(--ls-title1)", color: "var(--color-label)" }}>{data.name}</h1>
               {data.author && (
                 data.author_entity && onOpenEntity ? (
                   <button onClick={() => onOpenEntity(data.author_entity || "", "personality")} aria-label={`Об авторе: ${data.author}`}

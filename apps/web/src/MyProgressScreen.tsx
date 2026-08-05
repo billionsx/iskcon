@@ -88,7 +88,7 @@ export default function MyProgressScreen({ onBack, onOpen }: { onBack: () => voi
     background: "color-mix(in srgb, var(--color-bg) 82%, transparent)", backdropFilter: "saturate(180%) blur(20px)", WebkitBackdropFilter: "saturate(180%) blur(20px)", borderBottom: `0.5px solid ${HAIR}`,
   };
   const card: CSSProperties = { borderRadius: 20, background: FILL, padding: "18px 16px" };
-  const sectionLabel: CSSProperties = { margin: "26px 2px 10px", fontFamily: FT, fontSize: "var(--text-caption2)", fontWeight: 700, letterSpacing: "0.6px", textTransform: "uppercase", color: L3 };
+  const sectionLabel: CSSProperties = { margin: "26px 2px 10px", fontFamily: FT, fontSize: "var(--text-caption2)", fontWeight: 700, letterSpacing: "var(--ls-caption2)", textTransform: "uppercase", color: L3 };
 
   return (
     <div style={{ display: "flex", flexDirection: "column", height: "100dvh", background: "var(--color-bg)", fontFamily: FT }}>
