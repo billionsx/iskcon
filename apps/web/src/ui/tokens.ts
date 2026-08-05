@@ -85,12 +85,11 @@ export const tk = {
   },
   /** Радиусы. */
   radius: {
-    xs: 'var(--radius-xs)', //   8
-    sm: 'var(--radius-sm)', //   10
-    md: 'var(--radius-md)', //   14
-    lg: 'var(--radius-lg)', //   18
+    xs: 'var(--radius-xs)', //   8  · миниатюра (концентричность 24 − 16)
+    sm: 'var(--radius-sm)', //   8  · обложка в строке
+    md: 'var(--radius-md)', //  16  · карточка-герой с изображением
+    lg: 'var(--radius-lg)', //  20  · панель/лист/меню
     glass: 'var(--radius-glass)', // 20
-    xl: 'var(--radius-xl)', //   22
     /** ЗКН-Д018 — карточка сгруппированного экрана iOS 26.5 (замер: 24). */
     card: 'var(--radius-card)', // 24
     /** ЗКН-Д018 — крупная медиа-карточка App Store (замер: 20). */
