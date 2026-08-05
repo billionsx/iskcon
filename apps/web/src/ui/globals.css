@@ -1220,6 +1220,23 @@ body.gtab-off .gtab-wrap { display: none; }
 .t-caption{font-family:var(--font-text);font-size:var(--text-caption);line-height:var(--lh-caption);letter-spacing:var(--ls-caption)}
 .t-caption2{font-family:var(--font-text);font-size:var(--text-caption2);line-height:var(--lh-caption2);letter-spacing:var(--ls-caption2)}
 
+/* ═══ МИКРО-ЗАГОЛОВОК СЕКЦИИ (капитель) — ОДНА РОЛЬ, ОДНО ЧИСЛО ═══
+ * 05.08.2026. В дереве нашлось 100 объявлений ОДНОЙ И ТОЙ ЖЕ роли — Caption 1
+ * + вес 700 + uppercase — с ДЕСЯТЬЮ разными трекингами, набранными руками:
+ * 0.4 · 0.5 · 0.6 · 0.7 · 0.8 · 1.0 · 1.4 · 1.6 · 2.0 · 3.0 px. Ни у одного
+ * числа нет адреса, и разошлись они ровно так, как расходятся копии (ЗКН-Д002):
+ * в одном файле BookDetailPage их было шесть штук на один и тот же элемент.
+ *
+ * Трекинг берётся из РОЛИ, а не из настроения: --ls-caption = +0.0000em
+ * (📐 3.2, Caption 1). Отдельного замера «капители» в корпусе 217 кадров нет,
+ * поэтому своего числа у неё быть не может — выдумать его значило бы поставить
+ * число без адреса, а именно от этого мы и уходим.
+ *
+ * ПЕЧАТЬ НЕ ТРОГАЕМ: в *Print-компонентах (ChapterPrint, ProsePrint,
+ * ProseChapterPrint) разрядка 2–3px принадлежит КНИЖНОЙ вёрстке BBT, у неё
+ * свой набор ролей — так решено ещё на шаге 2 храповика моста. */
+.t-kicker{font-family:var(--font-text);font-size:var(--text-caption);line-height:var(--lh-caption);letter-spacing:var(--ls-caption);font-weight:700;text-transform:uppercase}
+
 /* ═══ ЗКН-Д028 · ФОРМА УГЛА ═══
  * §4.2: суперэллипс |x/R|ⁿ + |y/R|ⁿ = 1 точнее дуги окружности во ВСЕХ девяти
  * продуктах — в 1.7–3.5 раза по RMSE, — а показатель держится в узком коридоре

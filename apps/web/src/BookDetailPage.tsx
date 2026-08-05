@@ -115,7 +115,7 @@ function NavBtn({ ariaLabel, onClick, active, children, size = 40 }: { ariaLabel
 
 /* ───────── section header (muted caps) ───────── */
 function SectionTitle({ children }: { children: ReactNode }) {
-  return <div style={{ fontSize: "var(--text-caption)", fontWeight: 700, letterSpacing: "0.7px", textTransform: "uppercase", color: INK2, margin: "0 0 14px" }}>{children}</div>;
+  return <div className="t-kicker" style={{ color: INK2, margin: "0 0 14px" }}>{children}</div>;
 }
 
 /* ───────── key/value row (hairline, no box) ───────── */
@@ -209,7 +209,7 @@ function AudiobookOverview({ book }: { book: BookData }) {
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 36, padding: "26px 20px 12px" }}>
       <section>
-        <div style={{ fontSize: "var(--text-caption)", fontWeight: 700, letterSpacing: "0.8px", textTransform: "uppercase", color: GOLDT, marginBottom: 12 }}>Аудиокнига</div>
+        <div className="t-kicker" style={{ color: GOLDT, marginBottom: 12 }}>Аудиокнига</div>
         {paras.map((t, i) => (
           <p key={i} style={{ margin: i === 0 ? 0 : "14px 0 0", fontSize: i === 0 ? 17.5 : 16, lineHeight: 1.58, color: i === 0 ? INK : INK2 }}>{renderTerms(t)}</p>
         ))}
@@ -235,7 +235,7 @@ function GenericOverview({ book }: { book: BookData }) {
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 36, padding: "26px 20px 12px" }}>
       <section>
-        <div style={{ fontSize: "var(--text-caption)", fontWeight: 700, letterSpacing: "0.8px", textTransform: "uppercase", color: GOLDT, marginBottom: 12 }}>{book.prose ? "Книга Шрилы Прабхупады" : "Ведическое писание"}</div>
+        <div className="t-kicker" style={{ color: GOLDT, marginBottom: 12 }}>{book.prose ? "Книга Шрилы Прабхупады" : "Ведическое писание"}</div>
         {paras.map((t, i) => (
           <p key={i} style={{ margin: i === 0 ? 0 : "14px 0 0", fontSize: i === 0 ? 17.5 : 16, lineHeight: 1.58, color: i === 0 ? INK : INK2 }}>{renderTerms(t)}</p>
         ))}
@@ -262,7 +262,7 @@ function Overview({ book }: { book: BookData }) {
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 36, padding: "26px 20px 12px" }}>
       <section>
-        <div style={{ fontSize: "var(--text-caption)", fontWeight: 700, letterSpacing: "0.8px", textTransform: "uppercase", color: GOLDT, marginBottom: 12 }}>Ведическое писание</div>
+        <div className="t-kicker" style={{ color: GOLDT, marginBottom: 12 }}>Ведическое писание</div>
         <p style={{ margin: 0, fontSize: "var(--text-body)", lineHeight: 1.55, color: INK }}>
           «Бхагавад-гита» («Песнь Бога») — вершина ведической мысли и одно из самых читаемых священных писаний мира. Это беседа Верховной Личности Бога, Шри Кришны, и воина Арджуны на поле Курукшетра, перед началом великой битвы.
         </p>
@@ -362,7 +362,7 @@ function CcOverview({ book }: { book: BookData }) {
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 36, padding: "26px 20px 12px" }}>
       <section>
-        <div style={{ fontSize: "var(--text-caption)", fontWeight: 700, letterSpacing: "0.8px", textTransform: "uppercase", color: GOLDT, marginBottom: 12 }}>Ведическое писание</div>
+        <div className="t-kicker" style={{ color: GOLDT, marginBottom: 12 }}>Ведическое писание</div>
         <p style={{ margin: 0, fontSize: "var(--text-body)", lineHeight: 1.55, color: INK }}>
           «Шри Чайтанья-чаритамрита» («Нектар деяний Шри Чайтаньи») — главное и наиболее авторитетное произведение о жизни и учении Гауранги Махапрабху, золотого воплощения Господа, явившегося в Бенгалии около пятисот лет назад.
         </p>
@@ -470,7 +470,7 @@ function SplAuthor() {
         <div style={{ marginBottom: 18 }}>
           <LogoMark src="/iskcon-sign.svg" label="ИСККОН" height={36} color={INK} />
         </div>
-        <div style={{ fontSize: "var(--text-caption)", fontWeight: 700, letterSpacing: "0.8px", textTransform: "uppercase", color: INK2, marginBottom: 10 }}>Автор жизнеописания</div>
+        <div className="t-kicker" style={{ color: INK2, marginBottom: 10 }}>Автор жизнеописания</div>
         <h1 style={{ margin: 0, fontSize: "var(--text-title1)", lineHeight: 1.14, fontWeight: 800, letterSpacing: "-0.02em", color: INK }}>
           Сатсварупа Дас<br />Госвами
         </h1>
@@ -511,7 +511,7 @@ export function Author() {
         <div style={{ marginBottom: 18 }}>
           <LogoMark src="/iskcon-sign.svg" label="ИСККОН" height={36} color={INK} />
         </div>
-        <div style={{ fontSize: "var(--text-caption)", fontWeight: 700, letterSpacing: "0.8px", textTransform: "uppercase", color: INK2, marginBottom: 10 }}>Автор перевода и комментариев</div>
+        <div className="t-kicker" style={{ color: INK2, marginBottom: 10 }}>Автор перевода и комментариев</div>
         <h1 style={{ margin: 0, fontSize: "var(--text-title1)", lineHeight: 1.14, fontWeight: 800, letterSpacing: "-0.02em", color: INK }}>
           А.&nbsp;Ч. Бхактиведанта<br />Свами Прабхупада
         </h1>
@@ -613,7 +613,7 @@ function Reviews() {
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 34, padding: "26px 20px 12px" }}>
       <section>
-        <div style={{ fontSize: "var(--text-caption)", fontWeight: 700, letterSpacing: "0.8px", textTransform: "uppercase", color: GOLDT, marginBottom: 12 }}>Признание</div>
+        <div className="t-kicker" style={{ color: GOLDT, marginBottom: 12 }}>Признание</div>
         <p style={{ margin: 0, fontSize: "var(--text-body)", lineHeight: 1.55, color: INK }}>
           За полвека «Бхагавад-гита как она есть» получила отзывы учёных-индологов, религиоведов и деятелей культуры по всему миру.
         </p>
@@ -678,7 +678,7 @@ function CcReviews() {
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 34, padding: "26px 20px 12px" }}>
       <section>
-        <div style={{ fontSize: "var(--text-caption)", fontWeight: 700, letterSpacing: "0.8px", textTransform: "uppercase", color: GOLDT, marginBottom: 12 }}>Признание</div>
+        <div className="t-kicker" style={{ color: GOLDT, marginBottom: 12 }}>Признание</div>
         <p style={{ margin: 0, fontSize: "var(--text-body)", lineHeight: 1.55, color: INK }}>
           С выходом английского издания (BBT, 1973-1975) «Шри Чайтанья-чаритамриту» в переводе Шрилы Прабхупады приветствовали ведущие индологи и религиоведы Гарварда, Корнелла, Беркли и других университетов.
         </p>
@@ -752,7 +752,7 @@ function SbOverview({ book }: { book: BookData }) {
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 36, padding: "26px 20px 12px" }}>
       <section>
-        <div style={{ fontSize: "var(--text-caption)", fontWeight: 700, letterSpacing: "0.8px", textTransform: "uppercase", color: GOLDT, marginBottom: 12 }}>Ведическое писание</div>
+        <div className="t-kicker" style={{ color: GOLDT, marginBottom: 12 }}>Ведическое писание</div>
         <p style={{ margin: 0, fontSize: "var(--text-body)", lineHeight: 1.55, color: INK }}>
           «Шримад-Бхагаватам» («Бхагавата-пурана») — величайшая из восемнадцати главных Пуран и, по слову самого писания, зрелый плод древа ведической литературы. Её составил мудрец Вьясадева как свой собственный естественный комментарий к «Веданта-сутре».
         </p>
@@ -849,7 +849,7 @@ function SbReviews() {
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 34, padding: "26px 20px 12px" }}>
       <section>
-        <div style={{ fontSize: "var(--text-caption)", fontWeight: 700, letterSpacing: "0.8px", textTransform: "uppercase", color: GOLDT, marginBottom: 12 }}>Признание</div>
+        <div className="t-kicker" style={{ color: GOLDT, marginBottom: 12 }}>Признание</div>
         <p style={{ margin: 0, fontSize: "var(--text-body)", lineHeight: 1.55, color: INK }}>
           О величии «Шримад-Бхагаватам» прежде всего говорит само писание и многовековая традиция вайшнавов; перевод Шрилы Прабхупады (BBT) изучают на курсах по религиям Индии в университетах по всему миру.
         </p>
@@ -906,7 +906,7 @@ function NodOverview({ book }: { book: BookData }) {
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 36, padding: "26px 20px 12px" }}>
       <section>
-        <div style={{ fontSize: "var(--text-caption)", fontWeight: 700, letterSpacing: "0.8px", textTransform: "uppercase", color: GOLDT, marginBottom: 12 }}>Наука преданности</div>
+        <div className="t-kicker" style={{ color: GOLDT, marginBottom: 12 }}>Наука преданности</div>
         <p style={{ margin: 0, fontSize: "var(--text-body)", lineHeight: 1.55, color: INK }}>
           «Нектар преданности» — это изложение «Бхакти-расамрита-синдху», классического труда, написанного на санскрите Шрилой Рупой Госвами, главным из шести Госвами Вриндавана и ближайшим спутником Господа Чайтаньи Махапрабху.
         </p>
@@ -1041,7 +1041,7 @@ function GenericReviews({ data }: { data: ReviewsData }) {
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 34, padding: "26px 20px 12px" }}>
       <section>
-        <div style={{ fontSize: "var(--text-caption)", fontWeight: 700, letterSpacing: "0.8px", textTransform: "uppercase", color: GOLDT, marginBottom: 12 }}>Признание</div>
+        <div className="t-kicker" style={{ color: GOLDT, marginBottom: 12 }}>Признание</div>
         <p style={{ margin: 0, fontSize: "var(--text-body)", lineHeight: 1.55, color: INK }}>{data.intro}</p>
       </section>
       {data.endorsements && data.endorsements.length > 0 && (
@@ -1067,7 +1067,7 @@ function SeventhGoswamiReviews() {
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 34, padding: "26px 20px 12px" }}>
       <section>
-        <div style={{ fontSize: "var(--text-caption)", fontWeight: 700, letterSpacing: "0.8px", textTransform: "uppercase", color: GOLDT, marginBottom: 12 }}>Признание</div>
+        <div className="t-kicker" style={{ color: GOLDT, marginBottom: 12 }}>Признание</div>
         <p style={{ margin: 0, fontSize: "var(--text-body)", lineHeight: 1.55, color: INK }}>
           «Седьмой Госвами» — первая полная биография Шрилы Саччидананды Бхактивиноды Тхакура на английском языке; новое, дополненное издание выпущено Бхактиведанта Бук Траст.
         </p>
@@ -1103,7 +1103,7 @@ function NodReviews() {
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 34, padding: "26px 20px 12px" }}>
       <section>
-        <div style={{ fontSize: "var(--text-caption)", fontWeight: 700, letterSpacing: "0.8px", textTransform: "uppercase", color: GOLDT, marginBottom: 12 }}>Признание</div>
+        <div className="t-kicker" style={{ color: GOLDT, marginBottom: 12 }}>Признание</div>
         <p style={{ margin: 0, fontSize: "var(--text-body)", lineHeight: 1.55, color: INK }}>
           «Нектар преданности» опирается на высший авторитет гаудия-вайшнавской традиции в науке о бхакти — труд Шрилы Рупы Госвами, которому Сам Господь Чайтанья поручил раскрыть науку преданного служения.
         </p>
@@ -1715,7 +1715,7 @@ function ChapterPage({ chapter, chapters, hierOrder, hierWeights, divisionInfo, 
         style={{ flex: 1, overflowY: "auto", overscrollBehavior: "contain", WebkitOverflowScrolling: "touch" }}>
         <div style={{ margin: "0 auto", padding: "16px 22px calc(40px + env(safe-area-inset-bottom) + var(--player-extra))" }}>
           <div style={{ textAlign: "center", marginBottom: 2 }}>
-            <div style={{ fontSize: "var(--text-caption)", fontWeight: 700, letterSpacing: "2px", textTransform: "uppercase", color: GOLDT, marginBottom: 12 }}>Глава {chapter.number}{divEyebrow ? ` · ${divEyebrow}` : ""}</div>
+            <div className="t-kicker" style={{ color: GOLDT, marginBottom: 12 }}>Глава {chapter.number}{divEyebrow ? ` · ${divEyebrow}` : ""}</div>
             <h1 style={{ margin: 0, fontSize: "var(--text-display)", lineHeight: 1.1, fontWeight: 800, letterSpacing: "-0.025em", color: INK }}>{renderTitle(chapter.title_ru)}</h1>
             <div style={{ marginTop: 10, fontSize: "var(--text-footnote)", color: INK2 }}>{verses?.length ?? chapter.verses} стихов</div>
           </div>
@@ -1733,7 +1733,7 @@ function ChapterPage({ chapter, chapters, hierOrder, hierWeights, divisionInfo, 
                   <li key={v.ref} data-vref={v.ref} style={{ position: "relative", background: flashVref === v.ref ? "rgba(210,170,27,0.13)" : "transparent", borderRadius: 12, transition: "background 0.5s ease", scrollMarginTop: 14 }}>
                     <Pressable onClick={() => onOpenVerse(v.ref)} style={{ display: "flex", alignItems: "center", gap: 12, padding: "16px 0" }}>
                       <span style={{ flex: 1, minWidth: 0 }}>
-                        <span style={{ display: "block", fontSize: "var(--text-caption)", fontWeight: 700, letterSpacing: "0.4px", textTransform: "uppercase", color: GOLDT, marginBottom: 5 }}>{v.label}{isDemo && <DemoBadge />}</span>
+                        <span className="t-kicker" style={{ display: "block", color: GOLDT, marginBottom: 5 }}>{v.label}{isDemo && <DemoBadge />}</span>
                         <span style={{ display: "block", fontSize: "var(--text-body)", lineHeight: 1.5, color: tr ? INK : INK2, fontStyle: tr ? "normal" : "italic", fontFamily: tr ? undefined : "var(--font-scripture)" }}>
                           {tr ?? "перевод готовится"}
                         </span>
@@ -1872,7 +1872,7 @@ export function VerseBody({ v }: { v: ChapterVerse }) {
   return (
     <div style={{ marginBottom: 34 }}>
       <div data-pdf-block>
-      <div style={{ fontSize: "var(--text-caption)", fontWeight: 700, letterSpacing: "0.4px", textTransform: "uppercase", color: GOLDT, textAlign: "center", marginBottom: 12 }}>{r.label}</div>
+      <div className="t-kicker" style={{ color: GOLDT, textAlign: "center", marginBottom: 12 }}>{r.label}</div>
       {r.deva && (
         <div style={{ fontFamily: "var(--font-deva)", fontSize: "var(--text-title3)", lineHeight: 1.6, textAlign: "center", color: INK, whiteSpace: "pre-line", marginBottom: r.translit ? 16 : 22 }}>{scriptLines(r.deva)}</div>
       )}
@@ -2282,7 +2282,7 @@ function ProseChapterPage({ chapter, chapters, bookTitle, work = "brs", onBack, 
         style={{ flex: 1, overflowY: "auto", overscrollBehavior: "contain", WebkitOverflowScrolling: "touch" }}>
         <div style={{ margin: "0 auto", padding: "16px 24px calc(48px + env(safe-area-inset-bottom) + var(--player-extra))" }}>
           <div style={{ textAlign: "center", marginBottom: 2 }}>
-            {numbered && <div style={{ fontSize: "var(--text-caption)", fontWeight: 700, letterSpacing: "2px", textTransform: "uppercase", color: GOLDT, marginBottom: 12 }}>Глава {chapter.number}</div>}
+            {numbered && <div className="t-kicker" style={{ color: GOLDT, marginBottom: 12 }}>Глава {chapter.number}</div>}
             <h1 style={{ margin: 0, fontSize: "var(--text-title1)", lineHeight: 1.14, fontWeight: 800, letterSpacing: "-0.022em", color: INK }}>{renderTitle(chapter.title_ru)}</h1>
           </div>
           <Ornament />
