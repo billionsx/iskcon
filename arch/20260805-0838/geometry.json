@@ -8,9 +8,7 @@
    "amx": true,
    "scripts": 2,
    "gotoStatus": 200,
-   "logs": [
-    "error: Error while trying to use the following icon from the Manifest: https://iskcon-web.ceo-5cb.workers.dev/icon-192.png (Download error or resource isn't a valid im"
-   ],
+   "logs": [],
    "errs": []
   },
   ".amx": [
