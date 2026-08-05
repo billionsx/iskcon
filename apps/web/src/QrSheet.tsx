@@ -165,7 +165,7 @@ function Identity({ data }: { data: QrData }) {
     return (
       <>
         <div style={{ marginTop: 16, fontSize: "var(--text-footnote)", fontWeight: 600, color: INK2 }}>{data.bookTitle}</div>
-        <div style={{ marginTop: 12, fontSize: "var(--text-caption2)", fontWeight: 700, letterSpacing: "2px", textTransform: "uppercase", color: GOLDT }}>
+        <div className="t-kicker2" style={{ marginTop: 12, color: GOLDT }}>
           Глава {data.chapterNumber}
         </div>
         <h1 style={{ margin: "6px 0 0", fontSize: "var(--text-title2)", lineHeight: 1.15, fontWeight: 800, letterSpacing: "-0.02em", color: INK, fontFamily: "var(--font-display, var(--font-text))" }}>
@@ -183,7 +183,7 @@ function Identity({ data }: { data: QrData }) {
       <div style={{ marginTop: 4, fontSize: "var(--text-footnote)", color: INK3 }}>
         Глава {data.chapterNumber}{data.chapterTitle ? ` · ${data.chapterTitle}` : ""}
       </div>
-      <div style={{ marginTop: 12, fontSize: "var(--text-caption)", fontWeight: 700, letterSpacing: "1.4px", textTransform: "uppercase", color: GOLDT }}>
+      <div className="t-kicker" style={{ marginTop: 12, color: GOLDT }}>
         {data.verseLabel}
       </div>
       {data.verseText && (

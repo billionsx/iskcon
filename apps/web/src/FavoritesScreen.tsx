@@ -372,7 +372,7 @@ function Section({ title, accent, items, onNavigate, reduce, notesByRef }: { tit
       {title && (
         <div style={{ display: "flex", alignItems: "center", gap: 7, padding: "0 4px 8px" }}>
           <span style={{ width: 7, height: 7, borderRadius: 2, background: accent }} aria-hidden />
-          <span style={{ fontFamily: "var(--font-text)", fontSize: "var(--text-caption)", fontWeight: 700, letterSpacing: "0.6px", textTransform: "uppercase", color: INK2 }}>{title}</span>
+          <span className="t-kicker" style={{ color: INK2 }}>{title}</span>
           <span style={{ fontFamily: "var(--font-text)", fontSize: "var(--text-caption)", fontWeight: 600, color: INK3 }}>{items.length}</span>
         </div>
       )}

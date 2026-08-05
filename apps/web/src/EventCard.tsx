@@ -249,7 +249,7 @@ function EventFeedCard({ e, brief, parana, onOpenEntity }: {
         style={{ display: "block", width: "100%", textAlign: "left", background: "none", border: "none", padding: 0, cursor: "pointer", WebkitTapHighlightColor: "transparent" }}>
         <div style={{ display: "flex", alignItems: "center", gap: 7 }}>
           <svg width="13" height="13" viewBox="0 0 24 24" aria-hidden style={{ color: GOLD }}><path d="M9 4h6l-1 6 4 4H6l4-4-1-6Z M12 14v6" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinejoin="round" strokeLinecap="round" /></svg>
-          <span style={{ fontFamily: "var(--font-text)", fontSize: "var(--text-caption2)", fontWeight: 700, letterSpacing: "0.6px", textTransform: "uppercase", color: GOLD }}>Закреплено · Сегодня</span>
+          <span className="t-kicker2" style={{ color: GOLD }}>Закреплено · Сегодня</span>
           <span style={{ fontFamily: "var(--font-text)", fontSize: "var(--text-caption2)", fontWeight: 600, color: "var(--color-label-3)" }}>· {TYPE_LABEL[e.type]}</span>
         </div>
 

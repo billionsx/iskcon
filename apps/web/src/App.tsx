@@ -674,7 +674,7 @@ function BhajanCatalog({ onOpen, onBack }: { onOpen: (slug: string) => void; onB
               <h2 style={{ margin: "0 0 10px", fontSize: "var(--text-body)", fontWeight: 800, letterSpacing: "-0.2px", color: "var(--color-label)" }}>{g.author}</h2>
               {g.books.map((bk) => (
                 <div key={(g.author) + "|" + (bk.book ?? "_")} style={{ marginBottom: 12 }}>
-                  {bk.book && <div style={{ fontSize: "var(--text-caption2)", fontWeight: 600, letterSpacing: "1px", textTransform: "uppercase", color: "var(--color-gold-deep)", margin: "8px 2px 6px" }}>{bk.book}</div>}
+                  {bk.book && <div className="t-kicker2" style={{ fontWeight: 600, color: "var(--color-gold-deep)", margin: "8px 2px 6px" }}>{bk.book}</div>}
                   <ul style={{ margin: 0, padding: 0, listStyle: "none", borderRadius: 14, overflow: "hidden", background: "var(--color-bg-2)", border: "0.5px solid var(--color-hairline)" }}>
                     {bk.rows.map((it, i) => (
                       <li key={it.slug} style={{ borderBottom: i === bk.rows.length - 1 ? "none" : "0.5px solid var(--color-hairline)" }}>

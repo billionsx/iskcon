@@ -113,7 +113,7 @@ export default function MyProgressScreen({ onBack, onOpen }: { onBack: () => voi
               </div>
             </div>
             <div style={{ minWidth: 0, flex: 1 }}>
-              <div style={{ fontFamily: FT, fontSize: "var(--text-caption2)", fontWeight: 700, letterSpacing: "0.5px", textTransform: "uppercase", color: GOLD }}>Системное чтение</div>
+              <div className="t-kicker2" style={{ fontFamily: FT, color: GOLD }}>Системное чтение</div>
               <div style={{ marginTop: 4, fontFamily: FD, fontSize: "var(--text-title3)", fontWeight: 800, letterSpacing: "-0.02em", color: L1, lineHeight: 1.15 }}>
                 {planErr ? "Прабхупада" : `${fmt(corpusRead)} из ${fmt(corpusTotal || 25016)}`}
               </div>

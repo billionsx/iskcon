@@ -447,7 +447,7 @@ export default function JapaScreen({ onBack }: { onBack: () => void }) {
                       strokeDasharray={C} strokeDashoffset={C * (1 - ringFrac)} style={{ transition: "stroke-dashoffset .25s ease" }} />
                   </svg>
                   <div style={{ position: "absolute", inset: 0, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", pointerEvents: "none" }}>
-                    <div style={{ fontFamily: FT, fontSize: "var(--text-caption)", fontWeight: 700, letterSpacing: "0.6px", textTransform: "uppercase", color: GOLDT }}>Круг {roundsToday + 1}</div>
+                    <div className="t-kicker" style={{ fontFamily: FT, color: GOLDT }}>Круг {roundsToday + 1}</div>
                     <div style={{ fontFamily: FD, fontSize: "clamp(56px, 19vw, 88px)", fontWeight: 800, letterSpacing: "-0.04em", lineHeight: 1, color: L1 }}>{st.curBeads}</div>
                     <div style={{ fontFamily: FT, fontSize: "var(--text-subhead)", color: L2 }}>из {st.bpr}</div>
                   </div>
@@ -491,7 +491,7 @@ export default function JapaScreen({ onBack }: { onBack: () => void }) {
               {/* метроном Маха-мантры */}
               <div style={{ marginTop: 20, padding: 16, borderRadius: 18, background: FILL }}>
                 <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-                  <div style={{ fontFamily: FT, fontSize: "var(--text-caption2)", fontWeight: 700, letterSpacing: "0.5px", textTransform: "uppercase", color: GOLD }}>Маха-мантра</div>
+                  <div className="t-kicker2" style={{ fontFamily: FT, color: GOLD }}>Маха-мантра</div>
                   <button type="button" aria-label={sound ? "Звук включён" : "Звук выключен"} onClick={() => setSound((v) => !v)}
                     style={{ display: "inline-flex", alignItems: "center", gap: 5, padding: "5px 10px", borderRadius: 999, border: "none", background: sound ? `color-mix(in srgb, ${GOLD} 16%, transparent)` : FILL2, color: sound ? GOLDT : L3, cursor: "pointer", fontFamily: FT, fontSize: "var(--text-caption)", fontWeight: 600, WebkitTapHighlightColor: "transparent" }}>
                     <Bell /> {sound ? "Звук" : "Без звука"}
@@ -565,7 +565,7 @@ export default function JapaScreen({ onBack }: { onBack: () => void }) {
 
               {/* график */}
               <div style={{ marginTop: 16, padding: 16, borderRadius: 18, background: FILL }}>
-                <div style={{ fontFamily: FT, fontSize: "var(--text-caption2)", fontWeight: 700, letterSpacing: "0.5px", textTransform: "uppercase", color: L3, marginBottom: 12 }}>
+                <div className="t-kicker2" style={{ fontFamily: FT, color: L3, marginBottom: 12 }}>
                   {mode === "day" ? "Круги по часам" : mode === "year" ? "Круги по месяцам" : "Круги по дням"}
                 </div>
                 {an.totals.rounds > 0

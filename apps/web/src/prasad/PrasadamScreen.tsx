@@ -155,7 +155,7 @@ export default function PrasadamScreen({
 /* ═══════════════════ общие примитивы ═══════════════════ */
 
 function Eyebrow({ children }: { children: ReactNode }) {
-  return <div style={{ fontFamily: "var(--font-text)", fontSize: "var(--text-caption2)", fontWeight: 700, letterSpacing: "0.6px", textTransform: "uppercase", color: GOLD }}>{children}</div>;
+  return <div className="t-kicker2" style={{ color: GOLD }}>{children}</div>;
 }
 function SectionTitle({ children, sub }: { children: ReactNode; sub?: string }) {
   return (
@@ -363,7 +363,7 @@ function DeitiesSection({ onOpenRecipe, onOpenEntity, flash }: { onOpenRecipe: (
               </h3>
               <p style={{ margin: "9px 0 0", fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)", lineHeight: 1.55, color: "var(--color-label-2)" }}>{d.blurb}</p>
 
-              <div style={{ marginTop: 14, display: "flex", alignItems: "center", gap: 7, fontFamily: "var(--font-text)", fontSize: "var(--text-caption2)", fontWeight: 700, letterSpacing: "0.5px", textTransform: "uppercase", color: GOLD }}>
+              <div className="t-kicker2" style={{ marginTop: 14, display: "flex", alignItems: "center", gap: 7, color: GOLD }}>
                 <Lotus size={14} /> Особенно дорого
               </div>
               <ul style={{ margin: "8px 0 0", padding: 0, listStyle: "none", display: "grid", gap: 6 }}>
@@ -429,7 +429,7 @@ function OfferingSection() {
       <div style={{ marginTop: 14, display: "grid", gap: 14 }}>
         {OFFERING_PRAYERS.map((pr) => (
           <div key={pr.to} style={{ padding: "16px 18px", borderRadius: 18, background: "var(--color-glass-thin)", borderLeft: `3px solid ${GOLD}` }}>
-            <div style={{ fontFamily: "var(--font-text)", fontSize: "var(--text-caption2)", fontWeight: 700, letterSpacing: "0.5px", textTransform: "uppercase", color: GOLD }}>{pr.to}</div>
+            <div className="t-kicker2" style={{ color: GOLD }}>{pr.to}</div>
             <div style={{ margin: "10px 0 0", display: "grid", gap: 3 }}>
               {pr.lines.map((ln, i) => (
                 <div key={i} style={{ fontFamily: "var(--font-scripture)", fontStyle: "italic", fontSize: "var(--text-callout)", lineHeight: 1.5, color: "var(--color-label)" }}>{ln}</div>

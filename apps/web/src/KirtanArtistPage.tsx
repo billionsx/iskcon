@@ -138,7 +138,7 @@ export default function KirtanArtistPage({ slug, onBack, onOpenEntity }: { slug:
         <div style={{ display: "flex", alignItems: "center", gap: 16, marginTop: 6 }}>
           <ArtistMono artist={artist} size={84} />
           <div style={{ minWidth: 0, flex: 1 }}>
-            {accent && <div style={{ fontSize: "var(--text-caption2)", fontWeight: 600, letterSpacing: "0.4px", textTransform: "uppercase", color: GOLD, marginBottom: 3 }}>Ачарья-основатель</div>}
+            {accent && <div className="t-kicker2" style={{ fontWeight: 600, color: GOLD, marginBottom: 3 }}>Ачарья-основатель</div>}
             <h1 style={{ margin: 0, fontSize: "var(--text-title1)", fontWeight: 800, letterSpacing: "-0.4px", lineHeight: 1.12, color: "var(--color-label)" }}>{artist.name}</h1>
             <div style={{ marginTop: 4, fontSize: "var(--text-footnote)", color: "var(--color-label-2)" }}>{artist.role}</div>
           </div>
@@ -167,7 +167,7 @@ export default function KirtanArtistPage({ slug, onBack, onOpenEntity }: { slug:
 
         {/* Дискография */}
         <div style={{ marginTop: 28 }}>
-          <div style={{ fontSize: "var(--text-caption2)", fontWeight: 600, letterSpacing: "0.4px", textTransform: "uppercase", color: "var(--color-gold-deep)", marginBottom: 12 }}>
+          <div className="t-kicker2" style={{ fontWeight: 600, color: "var(--color-gold-deep)", marginBottom: 12 }}>
             {albums.some((a) => a.archive) ? "Альбомы" : "Записи"}
           </div>
           {albums.length === 0 && (

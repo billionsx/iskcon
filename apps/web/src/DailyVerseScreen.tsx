@@ -123,7 +123,7 @@ export default function DailyVerseScreen({ onBack, onOpenVerse }: { onBack: () =
               {/* прогресс системного чтения */}
               <div style={{ marginBottom: 22 }}>
                 <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: 10 }}>
-                  <span style={{ fontFamily: FT, fontSize: "var(--text-caption2)", fontWeight: 700, letterSpacing: "0.5px", textTransform: "uppercase", color: GOLD }}>Системное чтение Прабхупады</span>
+                  <span className="t-kicker2" style={{ fontFamily: FT, color: GOLD }}>Системное чтение Прабхупады</span>
                   <span style={{ fontFamily: FT, fontSize: "var(--text-caption)", color: INK3, whiteSpace: "nowrap" }}>{numLabel} из {fmt(unit.total)}</span>
                 </div>
                 <div style={{ marginTop: 8, height: 4, borderRadius: 3, background: FILL, overflow: "hidden" }}>

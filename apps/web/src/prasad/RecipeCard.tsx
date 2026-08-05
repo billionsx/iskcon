@@ -38,7 +38,7 @@ export default function RecipeCard({ slug, onOpen, flash, width = 172 }: {
       <div style={{ position: "relative", height: 126, overflow: "hidden" }}>
         <RecipeCover category={r.category} slug={r.slug} name={r.sanskrit || r.title} glyphSize={40} />
         {cat && (
-          <span style={{ position: "absolute", top: 10, left: 10, padding: "3px 9px", borderRadius: 999, background: "rgba(0,0,0,0.34)", backdropFilter: "blur(8px)", WebkitBackdropFilter: "blur(8px)", fontFamily: "var(--font-text)", fontSize: "var(--text-caption2)", fontWeight: 700, letterSpacing: "0.4px", textTransform: "uppercase", color: coverFor(r.category).accent }}>{cat}</span>
+          <span className="t-kicker2" style={{ position: "absolute", top: 10, left: 10, padding: "3px 9px", borderRadius: 999, background: "rgba(0,0,0,0.34)", backdropFilter: "blur(8px)", WebkitBackdropFilter: "blur(8px)", color: coverFor(r.category).accent }}>{cat}</span>
         )}
         <span style={{ position: "absolute", top: 8, right: 8 }}>
           <CardActionBtns favKey={`recipe:${r.slug}`} meta={favMetaFromCtx(recipeCtx(r))} flash={flash} dark size={30} onMore={() => openCardMenu(recipeCtx(r))} />

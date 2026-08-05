@@ -77,7 +77,7 @@ export function PersonHeroCard({
       {/* INFO — низ */}
       <div style={{ position: "relative", zIndex: 20, padding: 20, fontFamily: "var(--font-text)", pointerEvents: "none" }}>
         {eyebrow && (
-          <div style={{ margin: "0 0 10px", fontSize: "var(--text-caption)", fontWeight: 700, letterSpacing: "1.4px", textTransform: "uppercase", color: GOLD, lineHeight: 1.3 }}>{eyebrow}</div>
+          <div className="t-kicker" style={{ margin: "0 0 10px", color: GOLD, lineHeight: 1.3 }}>{eyebrow}</div>
         )}
         <h1 style={{ margin: 0, fontFamily: "var(--font-display)", fontSize: nameSize, lineHeight: 1.05, fontWeight: 800, letterSpacing: "-0.03em", color: "#fff" }}>{nameRu}</h1>
         {nameIast && (

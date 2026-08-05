@@ -108,7 +108,7 @@ function Section({ title, items, onOpen, reduce }: { title: string; items: Note[
   return (
     <div style={{ margin: "0 0 22px" }}>
       <div style={{ display: "flex", alignItems: "center", gap: 7, padding: "0 4px 8px" }}>
-        <span style={{ fontFamily: "var(--font-text)", fontSize: "var(--text-caption)", fontWeight: 700, letterSpacing: "0.6px", textTransform: "uppercase", color: INK2 }}>{title}</span>
+        <span className="t-kicker" style={{ color: INK2 }}>{title}</span>
         <span style={{ fontFamily: "var(--font-text)", fontSize: "var(--text-caption)", fontWeight: 600, color: INK3 }}>{items.length}</span>
       </div>
       <div style={{ borderRadius: 16, overflow: "hidden", border: `0.5px solid ${LINE}`, background: "var(--color-bg-2)", boxShadow: "0 1px 3px rgba(0,0,0,0.03)" }}>

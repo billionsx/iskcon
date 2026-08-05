@@ -201,7 +201,7 @@ function DateSheet({ open, ym, day, maxYm, dots, loading, onPreview, onPick, onU
 
   return (
     <HomeSheet open={open} label="Выбор даты" onClose={onClose}>
-      <div style={{ fontFamily: "var(--font-text)", fontSize: "var(--text-caption2)", fontWeight: 700, letterSpacing: "0.5px", textTransform: "uppercase", color: GOLD }}>Календарь ИСККОН</div>
+      <div className="t-kicker2" style={{ color: GOLD }}>Календарь ИСККОН</div>
       <h2 style={{ margin: "5px 0 0", fontFamily: "var(--font-display)", fontSize: "var(--text-title2)", fontWeight: 700, letterSpacing: "-0.02em", lineHeight: 1.12, color: "var(--color-label)" }}>Выберите дату</h2>
       <p style={{ margin: "7px 0 0", fontFamily: "var(--font-text)", fontSize: "var(--text-footnote)", lineHeight: 1.5, color: "var(--color-label-2)" }}>
         Доступны {MIN_YM.slice(0, 4)}–{maxYm.slice(0, 4)} годы. Дни с событиями отмечены точкой.
@@ -212,14 +212,14 @@ function DateSheet({ open, ym, day, maxYm, dots, loading, onPreview, onPick, onU
         <button type="button" onClick={() => { onPick("/calendar/" + today); onClose(); }} style={{ ...chip(day === today), flex: 1 }}>Сегодня</button>
       </div>
 
-      <div style={{ margin: "18px 2px 8px", fontFamily: "var(--font-text)", fontSize: "var(--text-caption2)", fontWeight: 700, letterSpacing: "0.5px", textTransform: "uppercase", color: "var(--color-label-3)" }}>Год</div>
+      <div className="t-kicker2" style={{ margin: "18px 2px 8px", color: "var(--color-label-3)" }}>Год</div>
       <div style={{ display: "flex", gap: 7, overflowX: "auto", scrollbarWidth: "none", paddingBottom: 2 }}>
         {years.map((y) => (
           <button key={y} type="button" onClick={() => setPy(y)} style={{ ...chip(y === py), flex: "0 0 auto", padding: "8px 14px" }}>{y}</button>
         ))}
       </div>
 
-      <div style={{ margin: "18px 2px 8px", fontFamily: "var(--font-text)", fontSize: "var(--text-caption2)", fontWeight: 700, letterSpacing: "0.5px", textTransform: "uppercase", color: "var(--color-label-3)" }}>Месяц</div>
+      <div className="t-kicker2" style={{ margin: "18px 2px 8px", color: "var(--color-label-3)" }}>Месяц</div>
       <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 7 }}>
         {MONTH_SHORT.map((mn, i) => {
           const off = monthOff(i + 1);
@@ -230,7 +230,7 @@ function DateSheet({ open, ym, day, maxYm, dots, loading, onPreview, onPick, onU
       </div>
 
       <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", margin: "18px 2px 8px" }}>
-        <div style={{ fontFamily: "var(--font-text)", fontSize: "var(--text-caption2)", fontWeight: 700, letterSpacing: "0.5px", textTransform: "uppercase", color: "var(--color-label-3)" }}>День</div>
+        <div className="t-kicker2" style={{ color: "var(--color-label-3)" }}>День</div>
         {loading && <div style={{ fontFamily: "var(--font-text)", fontSize: "var(--text-caption)", color: "var(--color-label-3)" }}>Загружаем архив…</div>}
       </div>
       <div style={{ display: "grid", gridTemplateColumns: "repeat(7, 1fr)", gap: 4 }}>
@@ -313,7 +313,7 @@ function LocationSheet({ open, current, onPick, onClose }: { open: boolean; curr
   }
   return (
     <HomeSheet open={open} label="Выбор города" onClose={onClose}>
-      <div style={{ fontFamily: "var(--font-text)", fontSize: "var(--text-caption2)", fontWeight: 700, letterSpacing: "0.5px", textTransform: "uppercase", color: GOLD }}>Календарь по городу</div>
+      <div className="t-kicker2" style={{ color: GOLD }}>Календарь по городу</div>
       <h2 style={{ margin: "5px 0 0", fontFamily: "var(--font-display)", fontSize: "var(--text-title2)", fontWeight: 700, letterSpacing: "-0.02em", lineHeight: 1.12, color: "var(--color-label)" }}>Выберите город</h2>
       <p style={{ margin: "7px 0 0", fontFamily: "var(--font-text)", fontSize: "var(--text-footnote)", lineHeight: 1.5, color: "var(--color-label-2)" }}>
         Время экадаши и параны зависит от восхода солнца — календарь рассчитывается для конкретного города. Нет в списке? Введите любой город мира — рассчитаем календарь по нему.
@@ -369,7 +369,7 @@ function LocationSheet({ open, current, onPick, onClose }: { open: boolean; curr
         )}
         {filtered.map((c) => (
           <section key={c.country} style={{ marginTop: 16 }}>
-            <div style={{ margin: "0 2px 8px", fontFamily: "var(--font-text)", fontSize: "var(--text-caption2)", fontWeight: 700, letterSpacing: "0.6px", textTransform: "uppercase", color: "var(--color-label-3)" }}>{c.country}</div>
+            <div className="t-kicker2" style={{ margin: "0 2px 8px", color: "var(--color-label-3)" }}>{c.country}</div>
             <div style={{ overflow: "hidden", ...fill }}>
               {c.cities.map((x, i) => {
                 const on = x.key === current.key;
@@ -562,7 +562,7 @@ export function HomeCalendar({ stickyTop, onOpenEntity }: { stickyTop: number; o
   return (
     <div>
       <div style={{ padding: "20px 0 0" }}>
-        <div style={{ fontFamily: "var(--font-text)", fontSize: "var(--text-caption2)", fontWeight: 700, letterSpacing: "0.5px", textTransform: "uppercase", color: GOLD }}>Вайшнавский календарь</div>
+        <div className="t-kicker2" style={{ color: GOLD }}>Вайшнавский календарь</div>
         <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap", marginTop: 5 }}>
           <h2 style={{ margin: 0, fontFamily: "var(--font-display)", fontSize: "var(--text-title2)", fontWeight: 700, letterSpacing: "-0.02em", lineHeight: 1.1, color: "var(--color-label)" }}>Календарь ИСККОН</h2>
           <button type="button" onClick={() => setPickOpen(true)} aria-label="Сменить город календаря"
@@ -621,7 +621,7 @@ export function HomeCalendar({ stickyTop, onOpenEntity }: { stickyTop: number; o
         };
         return (
           <div style={{ marginTop: 16, padding: 20, borderRadius: 24, background: "var(--color-bg-2)", border: `1px solid color-mix(in srgb, ${GOLD} 30%, transparent)`, boxShadow: "0 1px 2px rgba(0,0,0,0.05), 0 5px 14px rgba(0,0,0,0.05)" }}>
-            <div style={{ fontFamily: "var(--font-text)", fontSize: "var(--text-caption2)", fontWeight: 700, letterSpacing: "0.6px", textTransform: "uppercase", color: GOLD }}>
+            <div className="t-kicker2" style={{ color: GOLD }}>
               {heroIsToday ? "Сегодня" : "Ближайшее"} · {loc.ru}
             </div>
             {single ? (

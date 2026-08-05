@@ -78,14 +78,14 @@ function Contents({ onBack, onOpenChapter, flash }: { onBack: () => void; onOpen
     <div style={{ height: "100dvh", overflowX: "hidden", overflowY: "auto", overscrollBehavior: "contain", WebkitOverflowScrolling: "touch", background: "var(--color-bg)", color: "var(--color-label)" }}>
       <Header onBack={onBack} title="Кухня прасада" right={<CardActionBtns plain favKey="book:cookbook" meta={favMetaFromCtx(cookbookCtx)} flash={flash} size={32} onMore={() => openCardMenu(cookbookCtx)} />} />
       <div style={{ padding: "8px 16px 64px", maxWidth: 600, margin: "0 auto" }}>
-        <div style={{ fontFamily: "var(--font-text)", fontSize: "var(--text-caption2)", fontWeight: 700, letterSpacing: "0.6px", textTransform: "uppercase", color: GOLD }}>Книга библиотеки</div>
+        <div className="t-kicker2" style={{ color: GOLD }}>Книга библиотеки</div>
         <h1 style={{ margin: "6px 0 0", fontFamily: "var(--font-display)", fontSize: "var(--text-display)", fontWeight: 800, letterSpacing: "-0.025em", lineHeight: 1.05, color: "var(--color-label)" }}>{COOKBOOK.title}</h1>
         <div style={{ margin: "6px 0 0", fontFamily: "var(--font-scripture)", fontStyle: "italic", fontSize: "var(--text-body)", color: "var(--color-label-3)" }}>{COOKBOOK.iast}</div>
         <p style={{ margin: "14px 0 0", fontFamily: "var(--font-text)", fontSize: "var(--text-callout)", lineHeight: 1.6, color: "var(--color-label-2)" }}>{COOKBOOK.blurb}</p>
 
         {parts.map((g) => (
           <section key={g.part} style={{ marginTop: 28 }}>
-            <div style={{ margin: "0 2px 10px", fontFamily: "var(--font-text)", fontSize: "var(--text-caption2)", fontWeight: 700, letterSpacing: "0.6px", textTransform: "uppercase", color: "var(--color-label-3)" }}>{g.part}</div>
+            <div className="t-kicker2" style={{ margin: "0 2px 10px", color: "var(--color-label-3)" }}>{g.part}</div>
             <ul style={{ margin: 0, padding: 0, listStyle: "none", borderRadius: 18, overflow: "hidden", background: "var(--color-glass-thin)" }}>
               {g.items.map((ch, i) => (
                 <li key={ch.id} style={{ borderTop: i ? "0.5px solid var(--color-hairline)" : "none" }}>
@@ -121,7 +121,7 @@ function ChapterView({ chapter, onBack, onOpenChapter, onOpenRecipe }: { chapter
     <div style={{ height: "100dvh", overflowX: "hidden", overflowY: "auto", overscrollBehavior: "contain", WebkitOverflowScrolling: "touch", background: "var(--color-bg)", color: "var(--color-label)" }}>
       <Header onBack={onBack} title={COOKBOOK.title} />
       <div style={{ padding: "8px 16px 56px", maxWidth: 600, margin: "0 auto" }}>
-        <div style={{ fontFamily: "var(--font-text)", fontSize: "var(--text-caption2)", fontWeight: 700, letterSpacing: "0.6px", textTransform: "uppercase", color: GOLD }}>
+        <div className="t-kicker2" style={{ color: GOLD }}>
           {chapter.number ? `${chapter.part} · Раздел ${chapter.number}` : chapter.part}
         </div>
         <h1 style={{ margin: "6px 0 0", fontFamily: "var(--font-display)", fontSize: "var(--text-title1)", fontWeight: 800, letterSpacing: "-0.025em", lineHeight: 1.1, color: "var(--color-label)" }}>{chapter.title}</h1>
@@ -158,7 +158,7 @@ function ChapterView({ chapter, onBack, onOpenChapter, onOpenRecipe }: { chapter
           <div style={{ marginTop: 4, display: "grid", gap: 14 }}>
             {COOKBOOK_PRAYERS.map((pr) => (
               <div key={pr.to} style={{ padding: "16px 18px", borderRadius: 18, background: "var(--color-glass-thin)", borderLeft: `3px solid ${GOLD}` }}>
-                <div style={{ fontFamily: "var(--font-text)", fontSize: "var(--text-caption2)", fontWeight: 700, letterSpacing: "0.5px", textTransform: "uppercase", color: GOLD }}>{pr.to}</div>
+                <div className="t-kicker2" style={{ color: GOLD }}>{pr.to}</div>
                 <div style={{ margin: "10px 0 0", display: "grid", gap: 3 }}>
                   {pr.lines.map((ln, i) => <div key={i} style={{ fontFamily: "var(--font-scripture)", fontStyle: "italic", fontSize: "var(--text-callout)", lineHeight: 1.5, color: "var(--color-label)" }}>{ln}</div>)}
                 </div>

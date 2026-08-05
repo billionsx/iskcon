@@ -343,7 +343,7 @@ function PrabhupadaSheet({ open, onClose }: { open: boolean; onClose: () => void
         </div>
         {/* scrollable content */}
         <div style={{ flex: 1, overflowY: "auto", WebkitOverflowScrolling: "touch", padding: "10px 22px 32px", fontFamily: "var(--font-text)" }}>
-          <div style={{ fontFamily: "var(--font-text)", fontSize: "var(--text-caption2)", fontWeight: 700, letterSpacing: "0.5px", textTransform: "uppercase", color: GOLD }}>Ачарья-основатель</div>
+          <div className="t-kicker2" style={{ color: GOLD }}>Ачарья-основатель</div>
           <h2 style={{ margin: "5px 0 0", fontFamily: "var(--font-display)", fontSize: "var(--text-title1)", fontWeight: 800, letterSpacing: TR_HERO, lineHeight: 1.05, color: "var(--color-label)" }}>
             Шрила Прабхупада
           </h2>
@@ -385,7 +385,7 @@ function PrabhupadaSheet({ open, onClose }: { open: boolean; onClose: () => void
 
           <div style={{ marginTop: 24, padding: "14px 16px", ...fill, borderRadius: 14, textAlign: "center" }}>
             <Quote center size={15}>«Повторяйте Харе Кришна и будьте счастливы».</Quote>
-            <div style={{ marginTop: 8, fontFamily: "var(--font-text)", fontSize: "var(--text-caption2)", fontWeight: 700, letterSpacing: "0.5px", textTransform: "uppercase", color: GOLD }}>Шрила Прабхупада</div>
+            <div className="t-kicker2" style={{ marginTop: 8, color: GOLD }}>Шрила Прабхупада</div>
           </div>
         </div>
       </div>
@@ -538,7 +538,7 @@ function IskconPresentation({ onChange, onOpenBook, onOpenEntity, onDonate, onBo
       <Section id="hsec-mantra">
         <div style={{ padding: 22, ...fill }}>
           <div style={{ textAlign: "center" }}>
-            <div style={{ fontFamily: "var(--font-text)", fontSize: "var(--text-caption2)", fontWeight: 700, letterSpacing: "0.5px", textTransform: "uppercase", color: GOLD }}>Маха-мантра</div>
+            <div className="t-kicker2" style={{ color: GOLD }}>Маха-мантра</div>
             <div lang="sa" style={{ marginTop: 12, fontFamily: "var(--font-deva)", fontSize: "var(--text-subhead)", lineHeight: 1.8, color: "var(--color-label-3)" }}>
               हरे कृष्ण हरे कृष्ण<br />कृष्ण कृष्ण हरे हरे<br />हरे राम हरे राम<br />राम राम हरे हरे
             </div>

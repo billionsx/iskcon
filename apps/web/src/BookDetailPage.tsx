@@ -1813,7 +1813,7 @@ function LayerRow({ label, on, onToggle }: { label: string; on: boolean; onToggl
   );
 }
 function LayerLabel({ children }: { children: ReactNode }) {
-  return <div style={{ display: "flex", alignItems: "center", gap: 10, margin: "0 0 12px", fontSize: "var(--text-caption2)", fontWeight: 700, letterSpacing: "1.6px", textTransform: "uppercase", color: INK2, breakAfter: "avoid" }}><span style={{ width: 18, height: 1.5, background: GOLD, borderRadius: 999, flexShrink: 0 }} />{children}</div>;
+  return <div className="t-kicker2" style={{ display: "flex", alignItems: "center", gap: 10, margin: "0 0 12px", color: INK2, breakAfter: "avoid" }}><span style={{ width: 18, height: 1.5, background: GOLD, borderRadius: 999, flexShrink: 0 }} />{children}</div>;
 }
 
 /* Метка «Комментарий» — в том же стиле, что и «Перевод» (LayerLabel). */
@@ -2058,7 +2058,7 @@ export function ProsePrint({ book, chapters, parasByCh }: { book: BookData; chap
         return (
           <div key={c.id} style={{ breakBefore: "page" }}>
             <div data-pdf-block style={{ textAlign: "center", margin: "0 0 8px" }}>
-              {showNum && <div style={{ fontSize: "var(--text-caption)", fontWeight: 700, letterSpacing: "2px", textTransform: "uppercase", color: GOLDT, marginBottom: 12 }}>Глава {c.number}</div>}
+              {showNum && <div className="t-kicker" style={{ color: GOLDT, marginBottom: 12 }}>Глава {c.number}</div>}
               <h2 style={{ margin: 0, fontSize: "var(--text-title1)", lineHeight: 1.1, fontWeight: 800, letterSpacing: "-0.025em", color: INK }}>{c.title_ru}</h2>
               <Ornament />
             </div>
@@ -2079,7 +2079,7 @@ export function ProseChapterPrint({ chapter, paras }: { chapter: ChapterRow; par
   return (
     <div style={{ color: INK }}>
       <div data-pdf-block style={{ textAlign: "center", margin: "0 0 8px" }}>
-        {showNum && <div style={{ fontSize: "var(--text-caption)", fontWeight: 700, letterSpacing: "2px", textTransform: "uppercase", color: GOLDT, marginBottom: 12 }}>Глава {chapter.number}</div>}
+        {showNum && <div className="t-kicker" style={{ color: GOLDT, marginBottom: 12 }}>Глава {chapter.number}</div>}
         <h2 style={{ margin: 0, fontSize: "var(--text-title1)", lineHeight: 1.1, fontWeight: 800, letterSpacing: "-0.025em", color: INK }}>{renderTitle(chapter.title_ru)}</h2>
         <Ornament />
       </div>

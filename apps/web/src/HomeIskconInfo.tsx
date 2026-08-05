@@ -58,7 +58,7 @@ function DocSheet({ d, onClose, flash }: { d: IskconDoc | null; onClose: () => v
     <HomeSheet open={!!d} label={d ? d.title : "Документ"} onClose={onClose}>
       {d && (
         <div style={{ padding: "0 20px 24px" }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 8, fontFamily: "var(--font-text)", fontSize: "var(--text-caption2)", fontWeight: 700, letterSpacing: "0.5px", textTransform: "uppercase" }}>
+          <div className="t-kicker2" style={{ display: "flex", alignItems: "center", gap: 8 }}>
             <span style={{ color: GOLD }}>{DOC_TYPE_LABEL[d.type]}</span>
             <span aria-hidden style={{ color: "var(--color-label-3)" }}>·</span>
             <span style={{ color: "var(--color-label-3)" }}>{d.year}</span>
@@ -99,7 +99,7 @@ function DocCard({ d, onOpen, flash }: { d: IskconDoc; onOpen: () => void; flash
     <article role="button" tabIndex={0} onClick={onOpen}
       onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); onOpen(); } }}
       style={{ padding: 18, ...fill, cursor: "pointer", WebkitTapHighlightColor: "transparent" }}>
-      <div style={{ display: "flex", alignItems: "center", gap: 8, fontFamily: "var(--font-text)", fontSize: "var(--text-caption2)", fontWeight: 700, letterSpacing: "0.5px", textTransform: "uppercase" }}>
+      <div className="t-kicker2" style={{ display: "flex", alignItems: "center", gap: 8 }}>
         <span style={{ color: GOLD }}>{DOC_TYPE_LABEL[d.type]}</span>
         <span aria-hidden style={{ color: "var(--color-label-3)" }}>·</span>
         <span style={{ color: "var(--color-label-3)" }}>{d.year}</span>
@@ -151,7 +151,7 @@ export function HomeDocuments({ stickyTop, flash, openSig }: { stickyTop: number
   return (
     <div>
       <div style={{ padding: "20px 0 0" }}>
-        <div style={{ fontFamily: "var(--font-text)", fontSize: "var(--text-caption2)", fontWeight: 700, letterSpacing: "0.5px", textTransform: "uppercase", color: GOLD }}>Каталог</div>
+        <div className="t-kicker2" style={{ color: GOLD }}>Каталог</div>
         <h2 style={{ margin: "5px 0 0", fontFamily: "var(--font-display)", fontSize: "var(--text-title2)", fontWeight: 800, letterSpacing: "-0.022em", lineHeight: 1.1, color: "var(--color-label)" }}>Документы ИСККОН</h2>
         <p style={{ margin: "8px 0 0", fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)", lineHeight: 1.5, color: "var(--color-label-2)" }}>
           Основополагающие, действующие и исторические документы общества — от Семи целей и Direction of Management до резолюций GBC и Свода законов. Каждый документ читается прямо в приложении.
@@ -206,7 +206,7 @@ export function HomeStructure() {
   return (
     <div>
       <div style={{ padding: "20px 0 0" }}>
-        <div style={{ fontFamily: "var(--font-text)", fontSize: "var(--text-caption2)", fontWeight: 700, letterSpacing: "0.5px", textTransform: "uppercase", color: GOLD }}>Устройство общества</div>
+        <div className="t-kicker2" style={{ color: GOLD }}>Устройство общества</div>
         <h2 style={{ margin: "5px 0 0", fontFamily: "var(--font-display)", fontSize: "var(--text-title2)", fontWeight: 800, letterSpacing: "-0.022em", lineHeight: 1.1, color: "var(--color-label)" }}>Структура ИСККОН</h2>
         <p style={{ margin: "8px 0 0", fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)", lineHeight: 1.5, color: "var(--color-label-2)" }}>
           Шрила Прабхупада сознательно не назначил единого преемника: управление обществом он передал коллегиальному органу — GBC, сохранив за собой положение Ачарьи-основателя навсегда.
@@ -262,7 +262,7 @@ export function HomeLinks() {
   return (
     <div>
       <div style={{ padding: "20px 0 0" }}>
-        <div style={{ fontFamily: "var(--font-text)", fontSize: "var(--text-caption2)", fontWeight: 700, letterSpacing: "0.5px", textTransform: "uppercase", color: GOLD }}>Навигатор</div>
+        <div className="t-kicker2" style={{ color: GOLD }}>Навигатор</div>
         <h2 style={{ margin: "5px 0 0", fontFamily: "var(--font-display)", fontSize: "var(--text-title2)", fontWeight: 800, letterSpacing: "-0.022em", lineHeight: 1.1, color: "var(--color-label)" }}>Ссылки ИСККОН</h2>
         <p style={{ margin: "8px 0 0", fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)", lineHeight: 1.5, color: "var(--color-label-2)" }}>
           Проверенные официальные ресурсы общества — сайты, библиотеки, святые места и миссии служения.
@@ -270,7 +270,7 @@ export function HomeLinks() {
       </div>
       {LINKS.map((g) => (
         <section key={g.group} style={{ marginTop: 26 }}>
-          <div style={{ margin: "0 2px 10px", fontFamily: "var(--font-text)", fontSize: "var(--text-caption2)", fontWeight: 700, letterSpacing: "0.6px", textTransform: "uppercase", color: "var(--color-label-3)" }}>{g.group}</div>
+          <div className="t-kicker2" style={{ margin: "0 2px 10px", color: "var(--color-label-3)" }}>{g.group}</div>
           <ul style={{ margin: 0, padding: 0, listStyle: "none", overflow: "hidden", ...fill }}>
             {g.items.map((it, i) => (
               <li key={it.t} style={{ borderTop: i ? "0.5px solid var(--color-hairline)" : "none" }}>

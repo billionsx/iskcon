@@ -120,7 +120,7 @@ function DarshanCard({ item }: { item: DarshanItem }) {
     <article style={{ borderRadius: 20, overflow: "hidden", background: FILL, border: `0.5px solid ${HAIR}` }}>
       <Gallery images={item.images} />
       <div style={{ padding: 16 }}>
-        <div style={{ fontFamily: FT, fontSize: "var(--text-caption2)", fontWeight: 700, letterSpacing: "0.5px", textTransform: "uppercase", color: GOLDT }}>{item.templeName}</div>
+        <div className="t-kicker2" style={{ fontFamily: FT, color: GOLDT }}>{item.templeName}</div>
         {item.deities && <div style={{ marginTop: 5, fontFamily: FD, fontSize: "var(--text-body)", fontWeight: 800, letterSpacing: "-0.02em", lineHeight: 1.2, color: L1 }}>{item.deities}</div>}
         <div style={{ marginTop: 4, fontFamily: FT, fontSize: "var(--text-footnote)", color: L3 }}>{humanDate(item.date)}</div>
         {item.caption && <div style={{ marginTop: 12 }}><Caption text={item.caption} /></div>}
@@ -148,7 +148,7 @@ function Lightbox({ item, onClose }: { item: DarshanItem; onClose: () => void })
           <img key={i} src={px(src, 2560)} alt="Даршан" loading="lazy" style={{ width: "100%", height: "auto", display: "block", borderRadius: 14, marginBottom: 10 }} />
         ))}
         <div style={{ marginTop: 8, color: "#fff" }}>
-          <div style={{ fontFamily: FT, fontSize: "var(--text-caption2)", fontWeight: 700, letterSpacing: "0.5px", textTransform: "uppercase", color: "rgba(255,255,255,0.6)" }}>{item.templeName}</div>
+          <div className="t-kicker2" style={{ fontFamily: FT, color: "rgba(255,255,255,0.6)" }}>{item.templeName}</div>
           {item.deities && <div style={{ marginTop: 5, fontFamily: FD, fontSize: "var(--text-title3)", fontWeight: 800, letterSpacing: "-0.02em", color: "#fff" }}>{item.deities}</div>}
           <div style={{ marginTop: 4, fontFamily: FT, fontSize: "var(--text-footnote)", color: "rgba(255,255,255,0.55)" }}>{humanDate(item.date)}</div>
           {item.caption && <p style={{ marginTop: 12, fontFamily: FT, fontSize: "var(--text-footnote)", lineHeight: 1.55, color: "rgba(255,255,255,0.82)", whiteSpace: "pre-line" }}>{item.caption}</p>}
@@ -254,7 +254,7 @@ export default function DarshanScreen({ onBack }: { onBack: () => void }) {
 
               {archive.length > 0 && (
                 <>
-                  <div style={{ fontFamily: FT, fontSize: "var(--text-caption2)", fontWeight: 700, letterSpacing: "0.5px", textTransform: "uppercase", color: L3, margin: "8px 2px 0" }}>Архив даршанов</div>
+                  <div className="t-kicker2" style={{ fontFamily: FT, color: L3, margin: "8px 2px 0" }}>Архив даршанов</div>
                   <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 8 }}>
                     {archive.map((it) => <ArchiveThumb key={it.srcUrl} item={it} onOpen={() => setView(it)} />)}
                   </div>

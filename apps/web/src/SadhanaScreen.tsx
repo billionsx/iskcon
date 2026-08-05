@@ -169,7 +169,7 @@ function Heatmap({ roundsByDay, goal }: { roundsByDay: Map<string, number>; goal
   return (
     <div style={{ padding: 16, borderRadius: 18, background: FILL, marginTop: 12 }}>
       <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", marginBottom: 12 }}>
-        <span style={{ fontFamily: FT, fontSize: "var(--text-caption2)", fontWeight: 700, letterSpacing: "0.5px", textTransform: "uppercase", color: L3 }}>Карта практики</span>
+        <span className="t-kicker2" style={{ fontFamily: FT, color: L3 }}>Карта практики</span>
         <span style={{ fontFamily: FT, fontSize: "var(--text-caption2)", color: L3 }}>10 недель</span>
       </div>
       <div style={{ display: "flex", gap: 7, alignItems: "stretch" }}>
@@ -429,7 +429,7 @@ export default function SadhanaScreen({ onBack, onOpenPath }: { onBack: () => vo
               )}
 
               {/* герой: круги сегодня */}
-              <div style={{ fontFamily: FT, fontSize: "var(--text-caption)", fontWeight: 700, letterSpacing: "0.4px", textTransform: "uppercase", color: L3, margin: "0 2px 10px" }}>
+              <div className="t-kicker" style={{ fontFamily: FT, color: L3, margin: "0 2px 10px" }}>
                 {relDay(st.today)}, {prettyDate(st.today)}
               </div>
               <button type="button" onClick={openJapa} aria-label="Открыть счётчик джапы"
@@ -527,7 +527,7 @@ export default function SadhanaScreen({ onBack, onOpenPath }: { onBack: () => vo
 
               {/* неделя */}
               <div style={{ ...card, marginTop: 12 }}>
-                <div style={{ fontFamily: FT, fontSize: "var(--text-caption2)", fontWeight: 700, letterSpacing: "0.5px", textTransform: "uppercase", color: L3, marginBottom: 14 }}>Эта неделя</div>
+                <div className="t-kicker2" style={{ fontFamily: FT, color: L3, marginBottom: 14 }}>Эта неделя</div>
                 <div style={{ display: "flex", alignItems: "flex-end", gap: 6, height: 96 }}>
                   {st.week.map((w) => {
                     const frac = Math.min(1, w.rounds / Math.max(1, weekMax));
@@ -559,7 +559,7 @@ export default function SadhanaScreen({ onBack, onOpenPath }: { onBack: () => vo
               {/* история */}
               {st.history.length > 0 && (
                 <>
-                  <div style={{ fontFamily: FT, fontSize: "var(--text-caption2)", fontWeight: 700, letterSpacing: "0.5px", textTransform: "uppercase", color: L3, margin: "22px 2px 10px" }}>История</div>
+                  <div className="t-kicker2" style={{ fontFamily: FT, color: L3, margin: "22px 2px 10px" }}>История</div>
                   <div style={{ borderRadius: 16, background: FILL, overflow: "hidden" }}>
                     {st.history.slice(0, 30).map((d, i) => (
                       <button type="button" key={d.day} onClick={() => setEditDay(d)} aria-label={`Изменить день: ${relDay(d.day)}`}

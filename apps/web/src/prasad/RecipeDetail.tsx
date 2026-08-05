@@ -79,7 +79,7 @@ export default function RecipeDetail({ slug, onBack, onOpenRecipe, onOpenOfferin
 
       <div style={{ padding: "8px 16px 56px", maxWidth: 560, margin: "0 auto" }}>
         {/* Заголовок */}
-        <div style={{ fontFamily: "var(--font-text)", fontSize: "var(--text-caption2)", fontWeight: 700, letterSpacing: "0.6px", textTransform: "uppercase", color: GOLD }}>
+        <div className="t-kicker2" style={{ color: GOLD }}>
           {recipe.region ?? "Прасад"}
         </div>
         <h1 style={{ margin: "6px 0 0", fontFamily: "var(--font-display)", fontSize: "var(--text-title1)", fontWeight: 800, letterSpacing: "-0.025em", lineHeight: 1.08, color: "var(--color-label)" }}>
@@ -115,7 +115,7 @@ export default function RecipeDetail({ slug, onBack, onOpenRecipe, onOpenOfferin
         {/* Кому подносят */}
         {cooks.length > 0 && (
           <div style={{ marginTop: 18, padding: "13px 15px", borderRadius: 16, background: `color-mix(in srgb, ${GOLD} 9%, transparent)` }}>
-            <div style={{ display: "flex", alignItems: "center", gap: 7, fontFamily: "var(--font-text)", fontSize: "var(--text-caption)", fontWeight: 700, letterSpacing: "0.4px", textTransform: "uppercase", color: GOLD }}>
+            <div className="t-kicker" style={{ display: "flex", alignItems: "center", gap: 7, color: GOLD }}>
               <Lotus size={15} /> Кому особенно дорого
             </div>
             <div style={{ marginTop: 6, fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)", lineHeight: 1.5, color: "var(--color-label)" }}>
@@ -165,7 +165,7 @@ export default function RecipeDetail({ slug, onBack, onOpenRecipe, onOpenOfferin
         {/* Девотический совет */}
         {recipe.note && (
           <section style={{ marginTop: 8, padding: "18px 18px", borderRadius: 18, background: "var(--color-glass-thin)", borderLeft: `3px solid ${GOLD}` }}>
-            <div style={{ fontFamily: "var(--font-text)", fontSize: "var(--text-caption2)", fontWeight: 700, letterSpacing: "0.6px", textTransform: "uppercase", color: GOLD, marginBottom: 7 }}>
+            <div className="t-kicker2" style={{ color: GOLD, marginBottom: 7 }}>
               Настрой повара
             </div>
             <p style={{ margin: 0, fontFamily: "var(--font-scripture)", fontStyle: "italic", fontSize: "var(--text-callout)", lineHeight: 1.6, color: "var(--color-label)" }}>

@@ -90,7 +90,7 @@ export function MediaCard({ m, flash }: { m: MediaItem; flash: (m: string) => vo
 
       <div style={{ padding: "12px 15px 15px" }}>
         <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 6 }}>
-          <span style={{ padding: "2px 8px", borderRadius: 999, background: "color-mix(in srgb, var(--color-gold) 16%, transparent)", fontFamily: "var(--font-text)", fontSize: "var(--text-caption2)", fontWeight: 700, letterSpacing: "0.4px", textTransform: "uppercase", color: "var(--color-gold-deep)" }}>{m.sourceLabel}</span>
+          <span className="t-kicker2" style={{ padding: "2px 8px", borderRadius: 999, background: "color-mix(in srgb, var(--color-gold) 16%, transparent)", color: "var(--color-gold-deep)" }}>{m.sourceLabel}</span>
           {m.author && <span style={{ fontFamily: "var(--font-text)", fontSize: "var(--text-caption)", color: "var(--color-label-3)" }}>{m.author}</span>}
         </div>
         <h3 style={{ margin: 0, fontFamily: "var(--font-text)", fontSize: "var(--text-callout)", fontWeight: 700, letterSpacing: "-0.01em", lineHeight: 1.32, color: "var(--color-label)" }}>{m.title}</h3>

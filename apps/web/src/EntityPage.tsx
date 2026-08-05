@@ -180,7 +180,7 @@ function Chip({ label, onClick }: { label: string; onClick?: () => void }) {
 function Eyebrow({ children, count }: { children: ReactNode; count?: number }) {
   return (
     <div style={{ display: "flex", alignItems: "baseline", gap: 8, marginBottom: 12 }}>
-      <h3 style={{ margin: 0, fontFamily: "var(--font-text)", fontSize: "var(--text-caption2)", fontWeight: 700, letterSpacing: "0.5px", textTransform: "uppercase", color: GOLD }}>{children}</h3>
+      <h3 className="t-kicker2" style={{ margin: 0, color: GOLD }}>{children}</h3>
       {count != null && count > 1 && <span style={{ fontFamily: "var(--font-text)", fontSize: "var(--text-caption)", fontWeight: 700, color: GOLD, opacity: 0.55 }}>{count}</span>}
     </div>
   );
@@ -460,7 +460,7 @@ function HierarchyDescent({ groups, footer, onOpen, onSub, onTab }: { groups: Hi
             {/* Заголовок обители (мира) — золотая засечка на оси */}
             <div style={{ position: "relative", marginTop: gi === 0 ? 0 : 22, marginBottom: 11 }}>
               <span aria-hidden style={{ position: "absolute", left: SX - PAD - 3, top: 1, width: 6, height: 6, borderRadius: "50%", background: GOLD, opacity: 0.55 }} />
-              <div style={{ fontFamily: "var(--font-text)", fontSize: "var(--text-caption2)", fontWeight: 700, letterSpacing: "0.6px", textTransform: "uppercase", color: GOLD }}>{g.realm}</div>
+              <div className="t-kicker2" style={{ color: GOLD }}>{g.realm}</div>
             </div>
             {g.tiers.map((tier, ti) => {
               const apex = !!tier.apex;
@@ -496,7 +496,7 @@ function HierarchyDescent({ groups, footer, onOpen, onSub, onTab }: { groups: Hi
                       const inner = (
                         <>
                           <span style={{ flex: 1, minWidth: 0 }}>
-                            {tier.eyebrow && <span style={{ display: "block", fontFamily: "var(--font-text)", fontSize: "var(--text-caption2)", fontWeight: 700, letterSpacing: "0.7px", textTransform: "uppercase", color: GOLD, marginBottom: 7 }}>{tier.eyebrow}</span>}
+                            {tier.eyebrow && <span className="t-kicker2" style={{ display: "block", color: GOLD, marginBottom: 7 }}>{tier.eyebrow}</span>}
                             <span style={{ display: "block", fontFamily: "var(--font-text)", fontSize: "var(--text-body)", fontWeight: 600, color: "var(--color-label)", lineHeight: 1.2, letterSpacing: "-0.015em" }}>{tier.abode}</span>
                             {tier.beings && <span style={{ display: "block", fontFamily: "var(--font-text)", fontSize: "var(--text-footnote)", fontWeight: 500, color: apex ? GOLD : "var(--color-label-2)", marginTop: 5, lineHeight: 1.4 }}>{tier.beings}</span>}
                           </span>
@@ -563,7 +563,7 @@ function FormCatalog({ groups, onOpen, onNavigate, onSub, onTab }: { groups: LfC
       {groups.map((g, gi) => (
         <div key={gi} style={{ marginTop: gi === 0 ? 0 : 30 }}>
           <div style={{ display: "flex", alignItems: "baseline", gap: 8 }}>
-            <span style={{ fontFamily: "var(--font-text)", fontSize: "var(--text-caption2)", fontWeight: 700, letterSpacing: "0.6px", textTransform: "uppercase", color: GOLD }}>{g.group}</span>
+            <span className="t-kicker2" style={{ color: GOLD }}>{g.group}</span>
             {g.items && g.items.length > 0 && <span style={{ fontFamily: "var(--font-text)", fontSize: "var(--text-caption2)", fontWeight: 600, color: "var(--color-label-3)", fontVariantNumeric: "tabular-nums" }}>{g.items.length}</span>}
           </div>
           {g.gloss && <div style={{ marginTop: 4, fontFamily: "var(--font-text)", fontSize: "var(--text-footnote)", fontWeight: 400, color: "var(--color-label-2)", lineHeight: 1.4 }}>{renderProse(g.gloss, onSub, onTab)}</div>}
@@ -621,7 +621,7 @@ function LongformArticle({ sections, onOpen, onNavigate, onSub, onTab }: { secti
                 {(s.list ?? []).map((grp, gi) => (
                   <div key={gi} style={{ marginTop: gi === 0 ? 0 : 22 }}>
                     {grp.label && (
-                      <div style={{ fontFamily: "var(--font-text)", fontSize: "var(--text-caption2)", fontWeight: 700, letterSpacing: "0.5px", textTransform: "uppercase", color: GOLD, marginBottom: 9 }}>{grp.label}</div>
+                      <div className="t-kicker2" style={{ color: GOLD, marginBottom: 9 }}>{grp.label}</div>
                     )}
                     {grp.items.map((it) => {
                       n += 1;
@@ -972,7 +972,7 @@ function TabHeader({ tab, flush }: { tab: { kicker?: string; title?: string; lea
   return (
     <header style={{ marginTop: flush ? 0 : 18, marginBottom: 2 }}>
       {tab.kicker && (
-        <div style={{ fontFamily: "var(--font-text)", fontSize: "var(--text-caption2)", fontWeight: 700, letterSpacing: "0.5px", textTransform: "uppercase", color: GOLD }}>
+        <div className="t-kicker2" style={{ color: GOLD }}>
           {tab.kicker}
         </div>
       )}

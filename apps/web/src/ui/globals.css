@@ -1236,6 +1236,11 @@ body.gtab-off .gtab-wrap { display: none; }
  * ProseChapterPrint) разрядка 2–3px принадлежит КНИЖНОЙ вёрстке BBT, у неё
  * свой набор ролей — так решено ещё на шаге 2 храповика моста. */
 .t-kicker{font-family:var(--font-text);font-size:var(--text-caption);line-height:var(--lh-caption);letter-spacing:var(--ls-caption);font-weight:700;text-transform:uppercase}
+/* Тот же микро-заголовок кеглем Caption 2 (11) — в дереве это ОСНОВНАЯ форма
+ * (63 из 100 объявлений). Трекинг снова из роли: --ls-caption2 = +0.0055em
+ * (📐 3.2). Вес 700 задаётся ролью; редкие места с 600 оставляют свой вес
+ * инлайном — инлайн перебивает класс, роль при этом остаётся одна. */
+.t-kicker2{font-family:var(--font-text);font-size:var(--text-caption2);line-height:var(--lh-caption2);letter-spacing:var(--ls-caption2);font-weight:700;text-transform:uppercase}
 
 /* ═══ ЗКН-Д028 · ФОРМА УГЛА ═══
  * §4.2: суперэллипс |x/R|ⁿ + |y/R|ⁿ = 1 точнее дуги окружности во ВСЕХ девяти

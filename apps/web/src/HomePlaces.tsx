@@ -128,7 +128,7 @@ function PlaceCard({ p, onOpen, flash, dist }: { p: PlaceItem; onOpen: (p: Place
       style={{ padding: 18, cursor: "pointer", WebkitTapHighlightColor: "transparent", ...fill }}>
       <div style={{ display: "flex", alignItems: "flex-start", gap: 10 }}>
         <div style={{ minWidth: 0, flex: 1 }}>
-          <div style={{ fontFamily: "var(--font-text)", fontSize: "var(--text-caption2)", fontWeight: 700, letterSpacing: "0.5px", textTransform: "uppercase", color: GOLD }}>{p.category}</div>
+          <div className="t-kicker2" style={{ color: GOLD }}>{p.category}</div>
           <h3 style={{ margin: "4px 0 0", fontFamily: "var(--font-display)", fontSize: "var(--text-body)", fontWeight: 600, letterSpacing: "-0.014em", lineHeight: 1.22, color: "var(--color-label)" }}>{p.nameRu || p.name}</h3>
           <div style={{ marginTop: 3, fontFamily: "var(--font-text)", fontSize: "var(--text-footnote)", color: "var(--color-label-3)" }}>
             {[geoLine(p), dist != null ? kmLabel(dist) : ""].filter(Boolean).join(" · ")}
@@ -164,7 +164,7 @@ function PlaceSheet({ p, onClose, flash }: { p: PlaceItem | null; onClose: () =>
   const site = p.website && /^https?:\/\//.test(p.website) ? p.website : p.website ? `http://${p.website}` : "";
   return (
     <HomeSheet open={!!p} label={p.nameRu || p.name} onClose={onClose}>
-      <div style={{ fontFamily: "var(--font-text)", fontSize: "var(--text-caption2)", fontWeight: 700, letterSpacing: "0.5px", textTransform: "uppercase", color: GOLD }}>
+      <div className="t-kicker2" style={{ color: GOLD }}>
         {p.kind === "restaurant" ? "Ресторан ИСККОН" : `${p.category} ИСККОН`}
       </div>
       <div style={{ display: "flex", alignItems: "flex-start", gap: 10 }}>
@@ -361,7 +361,7 @@ export function HomePlaces({ kind, stickyTop, flash, openSig }: { kind: "centre"
   return (
     <div>
       <div style={{ padding: "20px 0 0" }}>
-        <div style={{ fontFamily: "var(--font-text)", fontSize: "var(--text-caption2)", fontWeight: 700, letterSpacing: "0.5px", textTransform: "uppercase", color: GOLD }}>Каталог</div>
+        <div className="t-kicker2" style={{ color: GOLD }}>Каталог</div>
         <h2 style={{ margin: "5px 0 0", fontFamily: "var(--font-display)", fontSize: "var(--text-title2)", fontWeight: 800, letterSpacing: "-0.022em", lineHeight: 1.1, color: "var(--color-label)" }}>{title}</h2>
         <p style={{ margin: "8px 0 0", fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)", lineHeight: 1.5, color: "var(--color-label-2)" }}>{sub}</p>
       </div>
