@@ -219,7 +219,7 @@ function DayEditor({ day, initial, goal, onClose, onSaved }: { day: string; init
 
   return (
     <div role="dialog" aria-modal="true" onClick={onClose}
-      style={{ position: "fixed", inset: 0, zIndex: 60, background: "rgba(0,0,0,0.42)", display: "flex", alignItems: "flex-end", justifyContent: "center", animation: "sadFade .2s ease" }}>
+      style={{ position: "fixed", inset: 0, zIndex: 60, background: "rgba(0,0,0,0.42)", display: "flex", alignItems: "flex-end", justifyContent: "center", animation: "sadFade .2s var(--ease-ios)" }}>
       <div onClick={(e) => e.stopPropagation()}
         style={{ width: "100%", maxWidth: 480, background: "var(--color-bg-2)", borderTopLeftRadius: 22, borderTopRightRadius: 22, padding: "8px 18px calc(20px + env(safe-area-inset-bottom,0px))", boxShadow: "0 -10px 44px rgba(0,0,0,0.32)", animation: "sadSheet .28s cubic-bezier(.32,.72,0,1)" }}>
         <div style={{ width: 38, height: 5, borderRadius: 3, background: HAIR, margin: "0 auto 14px" }} />
@@ -437,7 +437,7 @@ export default function SadhanaScreen({ onBack, onOpenPath }: { onBack: () => vo
                 <div style={{ position: "relative", flexShrink: 0, width: 96, height: 96 }}>
                   <svg viewBox="0 0 176 176" width="96" height="96" style={{ transform: "rotate(-90deg)" }} aria-hidden>
                     <circle cx="88" cy="88" r={R} fill="none" stroke="color-mix(in srgb, var(--color-label) 9%, transparent)" strokeWidth="11" />
-                    <circle cx="88" cy="88" r={R} fill="none" stroke={ringColor} strokeWidth="11" strokeLinecap="round" strokeDasharray={C} strokeDashoffset={C * (1 - goalPct)} style={{ transition: "stroke-dashoffset .35s ease, stroke .2s" }} />
+                    <circle cx="88" cy="88" r={R} fill="none" stroke={ringColor} strokeWidth="11" strokeLinecap="round" strokeDasharray={C} strokeDashoffset={C * (1 - goalPct)} style={{ transition: "stroke-dashoffset .35s var(--ease-ios), stroke .2s" }} />
                   </svg>
                   <div style={{ position: "absolute", inset: 0, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
                     <span style={{ fontFamily: FD, fontSize: "var(--text-title1)", fontWeight: 800, letterSpacing: "-0.03em", lineHeight: 1, color: L1 }}>{todayRounds}</span>
@@ -537,7 +537,7 @@ export default function SadhanaScreen({ onBack, onOpenPath }: { onBack: () => vo
                     return (
                       <div key={w.day} title={`${prettyDate(w.day)}: ${w.rounds} кр.`} style={{ flex: 1, minWidth: 0, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "flex-end", height: "100%", gap: 6 }}>
                         <div style={{ fontFamily: FT, fontSize: "var(--text-caption2)", fontWeight: 700, color: w.rounds > 0 ? L2 : "transparent", lineHeight: 1 }}>{w.rounds || 0}</div>
-                        <div style={{ width: "100%", maxWidth: 30, height: h, borderRadius: 6, background: col, outline: w.today ? `2px solid ${GOLD}` : "none", outlineOffset: 1, transition: "height .3s ease" }} />
+                        <div style={{ width: "100%", maxWidth: 30, height: h, borderRadius: 6, background: col, outline: w.today ? `2px solid ${GOLD}` : "none", outlineOffset: 1, transition: "height .3s var(--ease-ios)" }} />
                         <div style={{ fontFamily: FT, fontSize: "var(--text-caption2)", fontWeight: w.today ? 800 : 500, color: w.today ? GOLDT : L3, lineHeight: 1 }}>{RU_WD1[wd]}</div>
                       </div>
                     );

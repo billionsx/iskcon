@@ -399,12 +399,12 @@ function DarshanStoryViewer({ items, start, onSeen, onClose }: {
   const longCap = !!curCap && (curCap.length > 140 || curCap.includes("\n"));
   const nextSrc = ii < total - 1 ? imgs[ii + 1] : (ti < items.length - 1 ? items[ti + 1].images[0] : null);
 
-  const chrome = (extra: CSSProperties = {}): CSSProperties => ({ opacity: paused ? 0 : 1, transition: "opacity .2s ease", ...extra });
+  const chrome = (extra: CSSProperties = {}): CSSProperties => ({ opacity: paused ? 0 : 1, transition: "opacity .2s var(--ease-ios)", ...extra });
 
   return (
     <div role="dialog" aria-modal="true" aria-label={`Даршан · ${item.templeName}`}
       onPointerDown={onDown} onPointerUp={onUp} onPointerCancel={onCancel}
-      style={{ position: "fixed", inset: 0, zIndex: 95, background: "#000", overflow: "hidden", touchAction: "none", userSelect: "none", WebkitUserSelect: "none", animation: "storyIn .22s ease" }}>
+      style={{ position: "fixed", inset: 0, zIndex: 95, background: "#000", overflow: "hidden", touchAction: "none", userSelect: "none", WebkitUserSelect: "none", animation: "storyIn .22s var(--ease-ios)" }}>
 
       {/* размытая подложка из того же кадра — заполняет поля по краям, без чёрных полос */}
       <div aria-hidden style={{ position: "absolute", inset: 0, zIndex: 0, backgroundImage: `url("${px(imgs[ii], 96)}")`, backgroundSize: "cover", backgroundPosition: "center", filter: "blur(34px) brightness(0.5)", transform: "scale(1.18)" }} />
@@ -418,7 +418,7 @@ function DarshanStoryViewer({ items, start, onSeen, onClose }: {
             onLoadedMetadata={(e) => { const d = e.currentTarget.duration; if (Number.isFinite(d) && d > 0) { baseDurRef.current = Math.min(Math.max(d * 1000, 2500), 60000); durRef.current = baseDurRef.current / rateRef.current; } }}
             onLoadedData={() => setReady(true)} onCanPlay={() => { setReady(true); setStalled(false); }}
             onPlaying={() => { setReady(true); setStalled(false); }} onWaiting={() => setStalled(true)} onStalled={() => setStalled(true)}
-            style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "contain", objectPosition: "center", opacity: ready ? 1 : 0, transition: "opacity .25s ease" }} />
+            style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "contain", objectPosition: "center", opacity: ready ? 1 : 0, transition: "opacity .25s var(--ease-ios)" }} />
         ) : (
           <img key={`${ti}:${ii}`} src={px(imgs[ii], 2560)} alt="Даршан"
             ref={(el) => { if (el && el.complete && el.naturalWidth > 0) setReady(true); }}
@@ -428,7 +428,7 @@ function DarshanStoryViewer({ items, start, onSeen, onClose }: {
               imageOrientation: "from-image",
               objectFit: "contain",   // целиком, без обрезки мурти (поля закрывает блюр-подложка)
               objectPosition: "center",
-              opacity: ready ? 1 : 0, transition: "opacity .25s ease",
+              opacity: ready ? 1 : 0, transition: "opacity .25s var(--ease-ios)",
             }} />
         )}
         {(!ready || stalled) && (

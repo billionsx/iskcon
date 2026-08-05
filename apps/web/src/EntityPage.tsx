@@ -500,7 +500,7 @@ function HierarchyDescent({ groups, footer, onOpen, onSub, onTab }: { groups: Hi
                             <span style={{ display: "block", fontFamily: "var(--font-text)", fontSize: "var(--text-body)", fontWeight: 600, color: "var(--color-label)", lineHeight: 1.2, letterSpacing: "-0.015em" }}>{tier.abode}</span>
                             {tier.beings && <span style={{ display: "block", fontFamily: "var(--font-text)", fontSize: "var(--text-footnote)", fontWeight: 500, color: apex ? GOLD : "var(--color-label-2)", marginTop: 5, lineHeight: 1.4 }}>{tier.beings}</span>}
                           </span>
-                          {interactive && <span aria-hidden style={{ flexShrink: 0, alignSelf: "center", color: "var(--color-label-3)", fontSize: "var(--text-title3)", lineHeight: 1, transition: "transform .2s ease", transform: hasItems && isOpen ? "rotate(90deg)" : "none" }}>›</span>}
+                          {interactive && <span aria-hidden style={{ flexShrink: 0, alignSelf: "center", color: "var(--color-label-3)", fontSize: "var(--text-title3)", lineHeight: 1, transition: "transform .2s var(--ease-ios)", transform: hasItems && isOpen ? "rotate(90deg)" : "none" }}>›</span>}
                         </>
                       );
                       return interactive
@@ -517,7 +517,7 @@ function HierarchyDescent({ groups, footer, onOpen, onSub, onTab }: { groups: Hi
                     )}
                     {/* раскрывающийся список личностей — выбрать и перейти на ПКЛ */}
                     {hasItems && isOpen && (
-                      <div style={{ marginTop: 13, paddingTop: 4, borderTop: "0.5px solid var(--color-hairline)", animation: "lf-in .2s ease both" }}>
+                      <div style={{ marginTop: 13, paddingTop: 4, borderTop: "0.5px solid var(--color-hairline)", animation: "lf-in .2s var(--ease-ios) both" }}>
                         {tier.items!.map((it) => (
                           <button key={it.ref} type="button" onClick={() => onOpen?.(it.ref, null)}
                             style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10, width: "100%", background: "none", border: "none", borderBottom: "0.5px solid var(--color-hairline)", padding: "10px 0", textAlign: "left", cursor: "pointer", WebkitTapHighlightColor: "transparent" }}>
@@ -825,7 +825,7 @@ function useEdgeFades(ref: React.RefObject<HTMLDivElement>, dep: unknown) {
 
 function EdgeFade({ side, show }: { side: "left" | "right"; show: boolean }) {
   const isLeft = side === "left";
-  const style: React.CSSProperties = { position: "absolute", top: 0, bottom: 0, width: 30, pointerEvents: "none", zIndex: 1, background: `linear-gradient(to ${isLeft ? "right" : "left"}, var(--color-bg), transparent)`, opacity: show ? 1 : 0, transition: "opacity .2s ease" };
+  const style: React.CSSProperties = { position: "absolute", top: 0, bottom: 0, width: 30, pointerEvents: "none", zIndex: 1, background: `linear-gradient(to ${isLeft ? "right" : "left"}, var(--color-bg), transparent)`, opacity: show ? 1 : 0, transition: "opacity .2s var(--ease-ios)" };
   if (isLeft) style.left = 0; else style.right = 0;
   return <span aria-hidden style={style} />;
 }
@@ -954,7 +954,7 @@ function RealmSegment({ realm, onChange, stickyTop = 96 }: { realm: "material" |
           const on = o.id === realm;
           return (
             <button key={o.id} role="tab" aria-selected={on} type="button" onClick={() => onChange(o.id)}
-              style={{ flex: 1, padding: "10px 14px", borderRadius: 9, border: "none", cursor: "pointer", fontSize: "var(--text-subhead)", fontFamily: "var(--font-text)", fontWeight: 600, letterSpacing: "-0.01em", whiteSpace: "nowrap", background: on ? "var(--color-bg)" : "transparent", color: on ? "var(--color-label)" : "var(--color-label-2)", boxShadow: on ? "0 1.5px 4px rgba(0,0,0,0.10), 0 0 0 0.5px color-mix(in srgb, var(--color-label) 5%, transparent)" : "none", transition: "background .22s ease, color .18s ease, box-shadow .22s ease", WebkitTapHighlightColor: "transparent" }}>
+              style={{ flex: 1, padding: "10px 14px", borderRadius: 9, border: "none", cursor: "pointer", fontSize: "var(--text-subhead)", fontFamily: "var(--font-text)", fontWeight: 600, letterSpacing: "-0.01em", whiteSpace: "nowrap", background: on ? "var(--color-bg)" : "transparent", color: on ? "var(--color-label)" : "var(--color-label-2)", boxShadow: on ? "0 1.5px 4px rgba(0,0,0,0.10), 0 0 0 0.5px color-mix(in srgb, var(--color-label) 5%, transparent)" : "none", transition: "background .22s var(--ease-ios), color .18s var(--ease-ios), box-shadow .22s var(--ease-ios)", WebkitTapHighlightColor: "transparent" }}>
               {o.label}
             </button>
           );
@@ -1465,7 +1465,7 @@ export default function EntityPage({ id, onBack, onOpen, onNavigate, onOpenColle
                 <PersonTabs tabs={dossierTabs} active={tab} onChange={setTab} stickyTop={embedded ? 0 : 52} />
                 <div ref={tabContentRef} style={{ marginTop: 4 }}>
                   <style>{LF_ANIM}</style>
-                  <div key={"t:" + tab} style={{ animation: "lf-in .26s ease both" }}>
+                  <div key={"t:" + tab} style={{ animation: "lf-in .26s var(--ease-ios) both" }}>
                     {embedded && data ? (
                       <div style={{ display: "flex", alignItems: "flex-start", gap: 12, marginTop: 18 }}>
                         <div style={{ flex: 1, minWidth: 0 }}>{activeTabObj && <TabHeader tab={activeTabObj} flush />}</div>
@@ -1492,7 +1492,7 @@ export default function EntityPage({ id, onBack, onOpen, onNavigate, onOpenColle
                     />
                   )}
                   {subSections.length > 0 && (
-                    <div key={"s:" + tab + "/" + sub} style={{ marginTop: 18, animation: "lf-in .26s ease both" }}>
+                    <div key={"s:" + tab + "/" + sub} style={{ marginTop: 18, animation: "lf-in .26s var(--ease-ios) both" }}>
                       <LongformArticle sections={subSections} onOpen={onOpen} onNavigate={onNavigate} onSub={handleSubChange} onTab={goToTab} />
                     </div>
                   )}

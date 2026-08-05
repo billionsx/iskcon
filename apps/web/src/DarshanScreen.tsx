@@ -138,7 +138,7 @@ function Lightbox({ item, onClose }: { item: DarshanItem; onClose: () => void })
   const link = srcHref(item);
   return (
     <div role="dialog" aria-modal="true" onClick={onClose}
-      style={{ position: "fixed", inset: 0, zIndex: 70, background: "rgba(0,0,0,0.92)", overflowY: "auto", animation: "darFade .2s ease" }}>
+      style={{ position: "fixed", inset: 0, zIndex: 70, background: "rgba(0,0,0,0.92)", overflowY: "auto", animation: "darFade .2s var(--ease-ios)" }}>
       <button type="button" aria-label="Закрыть" onClick={onClose}
         style={{ position: "fixed", top: "max(14px, env(safe-area-inset-top,0px))", right: 14, zIndex: 2, width: 40, height: 40, borderRadius: "50%", border: "none", background: "rgba(255,255,255,0.14)", color: "#fff", cursor: "pointer", display: "grid", placeItems: "center", backdropFilter: "blur(8px)" }}>
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden><path d="M6 6l12 12M18 6 6 18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" /></svg>

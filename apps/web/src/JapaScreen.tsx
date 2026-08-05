@@ -444,7 +444,7 @@ export default function JapaScreen({ onBack }: { onBack: () => void }) {
                   <svg viewBox="0 0 240 240" width="100%" height="100%" style={{ display: "block", transform: "rotate(-90deg)" }} aria-hidden>
                     <circle cx="120" cy="120" r={R} fill="none" stroke="color-mix(in srgb, var(--color-label) 8%, transparent)" strokeWidth="13" />
                     <circle cx="120" cy="120" r={R} fill="none" stroke={GOLD} strokeWidth="13" strokeLinecap="round"
-                      strokeDasharray={C} strokeDashoffset={C * (1 - ringFrac)} style={{ transition: "stroke-dashoffset .25s ease" }} />
+                      strokeDasharray={C} strokeDashoffset={C * (1 - ringFrac)} style={{ transition: "stroke-dashoffset .25s var(--ease-ios)" }} />
                   </svg>
                   <div style={{ position: "absolute", inset: 0, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", pointerEvents: "none" }}>
                     <div className="t-kicker" style={{ fontFamily: FT, color: GOLDT }}>Круг {roundsToday + 1}</div>
@@ -453,7 +453,7 @@ export default function JapaScreen({ onBack }: { onBack: () => void }) {
                   </div>
                   {flash > 0 && (
                     <div style={{ position: "absolute", inset: 0, display: "grid", placeItems: "center", pointerEvents: "none" }}>
-                      <div style={{ padding: "8px 18px", borderRadius: 999, background: GOLD, color: "#fff", fontFamily: FD, fontSize: "var(--text-body)", fontWeight: 800, letterSpacing: "-0.01em", boxShadow: "0 10px 30px rgba(210,170,27,0.45)", animation: "japaPop .35s ease" }}>+1 круг</div>
+                      <div style={{ padding: "8px 18px", borderRadius: 999, background: GOLD, color: "#fff", fontFamily: FD, fontSize: "var(--text-body)", fontWeight: 800, letterSpacing: "-0.01em", boxShadow: "0 10px 30px rgba(210,170,27,0.45)", animation: "japaPop .35s var(--ease-ios)" }}>+1 круг</div>
                     </div>
                   )}
                 </button>
@@ -474,7 +474,7 @@ export default function JapaScreen({ onBack }: { onBack: () => void }) {
                   <span style={{ fontFamily: FD, fontSize: "var(--text-subhead)", fontWeight: 800, color: roundsToday >= st.goal ? GREEN : L1 }}>{roundsToday} / {st.goal} кругов</span>
                 </div>
                 <div style={{ marginTop: 9, height: 9, borderRadius: 999, background: "color-mix(in srgb, var(--color-label) 9%, transparent)", overflow: "hidden" }}>
-                  <div style={{ width: `${goalPct * 100}%`, height: "100%", borderRadius: 999, background: roundsToday >= st.goal ? GREEN : GOLD, transition: "width .35s ease" }} />
+                  <div style={{ width: `${goalPct * 100}%`, height: "100%", borderRadius: 999, background: roundsToday >= st.goal ? GREEN : GOLD, transition: "width .35s var(--ease-ios)" }} />
                 </div>
               </div>
 

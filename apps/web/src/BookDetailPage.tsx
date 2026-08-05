@@ -1218,7 +1218,7 @@ function Contents({ chapters, onOpenChapter, prose = false, flashId, onConsumeFl
             const n = Number(c.number);
             const showNum = !prose || (n >= 1 && n <= 999);
             return (
-              <li key={c.id} data-chid={c.id} style={{ position: "relative", background: flashCh === c.id ? "rgba(210,170,27,0.13)" : "transparent", borderRadius: 12, transition: "background 0.5s ease", scrollMarginTop: 80 }}>
+              <li key={c.id} data-chid={c.id} style={{ position: "relative", background: flashCh === c.id ? "rgba(210,170,27,0.13)" : "transparent", borderRadius: 12, transition: "background 0.5s var(--ease-ios)", scrollMarginTop: 80 }}>
                 <Pressable onClick={() => onOpenChapter(c)} style={{ display: "flex", alignItems: "center", gap: 16, padding: "14px 0" }}>
                   <span style={{ flexShrink: 0, width: 22, textAlign: "center", fontSize: "var(--text-subhead)", fontWeight: 700, fontVariantNumeric: "tabular-nums", color: GOLDT }}>{showNum ? c.number : ""}</span>
                   <span style={{ flex: 1, minWidth: 0 }}>
@@ -1329,7 +1329,7 @@ function CcContents({ work, onOpenChapter, flashId, onConsumeFlash }: { work: st
         <div ref={listRef} style={{ padding: "10px 20px 0" }}>
           <ol style={{ margin: 0, padding: 0, listStyle: "none" }}>
             {cur.chapters.map((c, i) => (
-              <li key={c.id} data-chid={c.id} style={{ position: "relative", background: flashCh === c.id ? "rgba(210,170,27,0.13)" : "transparent", borderRadius: 12, transition: "background 0.5s ease", scrollMarginTop: 80 }}>
+              <li key={c.id} data-chid={c.id} style={{ position: "relative", background: flashCh === c.id ? "rgba(210,170,27,0.13)" : "transparent", borderRadius: 12, transition: "background 0.5s var(--ease-ios)", scrollMarginTop: 80 }}>
                 <Pressable onClick={() => onOpenChapter({ id: c.id, number: c.number, title_ru: c.title_ru, title_en: "", source_url: "", verses: c.verses })} style={{ display: "flex", alignItems: "center", gap: 16, padding: "14px 0" }}>
                   <span style={{ flexShrink: 0, width: 22, textAlign: "center", fontSize: "var(--text-subhead)", fontWeight: 700, fontVariantNumeric: "tabular-nums", color: GOLDT }}>{c.number}</span>
                   <span style={{ flex: 1, minWidth: 0 }}>
@@ -1730,7 +1730,7 @@ function ChapterPage({ chapter, chapters, hierOrder, hierWeights, divisionInfo, 
                 const tr = v.translation || DEMO_VERSES[v.ref]?.translation || null;
                 const isDemo = !v.translation && !!DEMO_VERSES[v.ref]?.translation;
                 return (
-                  <li key={v.ref} data-vref={v.ref} style={{ position: "relative", background: flashVref === v.ref ? "rgba(210,170,27,0.13)" : "transparent", borderRadius: 12, transition: "background 0.5s ease", scrollMarginTop: 14 }}>
+                  <li key={v.ref} data-vref={v.ref} style={{ position: "relative", background: flashVref === v.ref ? "rgba(210,170,27,0.13)" : "transparent", borderRadius: 12, transition: "background 0.5s var(--ease-ios)", scrollMarginTop: 14 }}>
                     <Pressable onClick={() => onOpenVerse(v.ref)} style={{ display: "flex", alignItems: "center", gap: 12, padding: "16px 0" }}>
                       <span style={{ flex: 1, minWidth: 0 }}>
                         <span className="t-kicker" style={{ display: "block", color: GOLDT, marginBottom: 5 }}>{v.label}{isDemo && <DemoBadge />}</span>
@@ -3120,7 +3120,7 @@ export function BookDetailPage({ book, onBack, onDonate, onOpenCart, initialTarg
             <div style={{ fontSize: "var(--text-callout)", fontWeight: 700, lineHeight: 1.3, letterSpacing: "-0.01em", color: "#1d1d1f", padding: "0 8px", textWrap: "balance" }}>{bookPctTitle}</div>
             <div style={{ fontSize: "var(--text-caption)", color: "#8e8e93", marginTop: 5 }}>Это может занять 1–2 минуты</div>
             <div style={{ marginTop: 16, height: 8, borderRadius: 999, background: "#ececed", overflow: "hidden" }}>
-              <div style={{ width: `${bookPct}%`, height: "100%", background: "var(--color-gold)", borderRadius: 999, transition: "width 0.4s ease" }} />
+              <div style={{ width: `${bookPct}%`, height: "100%", background: "var(--color-gold)", borderRadius: 999, transition: "width 0.4s var(--ease-ios)" }} />
             </div>
             <div style={{ marginTop: 8, fontSize: "var(--text-footnote)", fontWeight: 700, color: "#9c7c15" }}>{bookPct}%</div>
             <button type="button" onClick={() => setPdfHidden(true)} style={{ marginTop: 14, width: "100%", padding: "10px 0", borderRadius: 12, border: "none", background: "#f2f2f7", color: "#1d1d1f", fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)", fontWeight: 600, cursor: "pointer", WebkitTapHighlightColor: "transparent" }}>Свернуть</button>

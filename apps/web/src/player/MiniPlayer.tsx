@@ -97,7 +97,7 @@ export function MiniPlayer({ tabBarVisible }: { tabBarVisible: boolean }) {
         <div aria-hidden style={{ position: "absolute", left: 12, right: 12, bottom: 4, height: 2,
           borderRadius: 2, background: "var(--color-fill-2)" }}>
           <div style={{ height: "100%", width: `${pct}%`, borderRadius: 2,
-            background: "var(--color-gold)", transition: "width .25s linear" }} />
+            background: "var(--color-gold)", transition: "width .25s var(--ease-ios)" }} />
         </div>
       </div>
     </div>

@@ -184,7 +184,7 @@ export function Disclosure({ id, title, count, note, open, onToggle, children }:
           padding: "12px 0", background: "none", border: "none",
           borderTop: "0.5px solid var(--color-hairline)", cursor: "pointer", WebkitTapHighlightColor: "transparent" }}>
         <span aria-hidden style={{ flexShrink: 0, width: 15, color: "var(--color-label-3)",
-          transform: open ? "rotate(90deg)" : "none", transition: "transform .2s ease" }}>›</span>
+          transform: open ? "rotate(90deg)" : "none", transition: "transform .2s var(--ease-ios)" }}>›</span>
         <span style={{ flex: 1, minWidth: 0, fontFamily: 'var(--font-text)', fontSize: 'var(--text-subhead)', lineHeight: 'var(--lh-subhead)', letterSpacing: 'var(--ls-subhead)',
           fontWeight: 600, color: "var(--color-label)" }}>
           {title}<Sup n={count} tone="on" />

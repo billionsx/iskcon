@@ -51,7 +51,7 @@ export function BookHeroCard({ book, topLeft, onOpen, flash, onMenuSelect, prese
         {n === 0 && <CoverFallback dark />}
         {book.covers.map((src, i) => (
           <img key={src} src={src} alt={bookFullTitle(book)} loading={i === 0 ? "eager" : "lazy"} decoding="async" draggable={false}
-            style={{ position: "absolute", inset: 0, height: "100%", width: "100%", objectFit: "cover", opacity: i === idx ? 1 : 0, transition: "opacity .35s ease" }} />
+            style={{ position: "absolute", inset: 0, height: "100%", width: "100%", objectFit: "cover", opacity: i === idx ? 1 : 0, transition: "opacity .35s var(--ease-ios)" }} />
         ))}
         <div aria-hidden style={{ position: "absolute", insetInline: 0, top: 0, height: 120, pointerEvents: "none", background: "linear-gradient(to bottom, rgba(0,0,0,.55) 0%, rgba(0,0,0,0) 100%)" }} />
         <div aria-hidden style={{ position: "absolute", insetInline: 0, bottom: 0, height: "78%", pointerEvents: "none", background: "linear-gradient(to top, rgba(0,0,0,.92) 0%, rgba(0,0,0,.6) 42%, rgba(0,0,0,0) 100%)" }} />

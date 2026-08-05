@@ -117,7 +117,7 @@ function RoundsRow({ state, onOpen }: { state: SadhanaState; onOpen: () => void 
           <circle cx="70" cy="70" r={RAD} fill="none" stroke={done ? "var(--color-success-text)" : GOLD}
             strokeWidth="12" strokeLinecap="round"
             strokeDasharray={CIRC} strokeDashoffset={CIRC * (1 - frac)}
-            style={{ transition: "stroke-dashoffset .35s ease" }} />
+            style={{ transition: "stroke-dashoffset .35s var(--ease-ios)" }} />
         </svg>
         <span style={{ position: "absolute", inset: 0, display: "grid", placeItems: "center", fontFamily: FONT, fontSize: "var(--text-subhead)", fontWeight: 600, letterSpacing: "-0.02em", color: INK }}>{r}</span>
       </span>

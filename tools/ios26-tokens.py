@@ -65,6 +65,19 @@
             завести второе дерево дёшево, и в день, когда оно появится, запрет
             должен уже быть на месте, а не писаться заново.
 
+ПРАВИЛО 10 — движение идёт по ИЗМЕРЕННОЙ кривой, а не по дефолтной. Переход или
+             анимация длиннее 200 мс с голым `ease`/`linear` — это «как получится»:
+             у системы iOS кривая одна и она замерена, токен `--ease-ios`
+             (cubic-bezier(0.32, 0.72, 0, 1), §7) стоял в `globals.css` с самого
+             начала и просто не звался. Храповик держит счёт от роста.
+             ИСКЛЮЧЕНИЕ — НЕПРЕРЫВНОЕ ВРАЩЕНИЕ. У спиннера `linear infinite`
+             линейность обязательна: любая кривая с ускорением даёт дёрганый
+             оборот. Требовать здесь `--ease-ios` значило бы требовать поломки
+             (ЗКН-Ц007: гейт, который требует нарушить другой закон, — не гейт),
+             поэтому `infinite` из счёта исключён явно, а не «забыт».
+             ОБЛАСТЬ: `/music/` и `/play/` не считаются — клон Apple Music живёт
+             по стандарту Apple распоряжением основателя от 21.07.2026.
+
 ПРАВИЛО 9 — JSX-комментарий закрыт. `{/*` без `*/}` роняет сборку сообщением
             «Unterminated regular expression» с указанием на строку ЗА ДЕСЯТКИ
             строк от настоящей причины: пропущенная `}` превращает `*/` в начало
@@ -203,6 +216,25 @@ def main() -> int:
                     depth -= 1
             jsx_bad.append(f"{f.name}:{mark}")
 
+    # правило 10 — движение на дефолтной кривой (без /music/ и /play/, без infinite)
+    ease_bad = []
+    _ms = re.compile(r'([0-9.]+)\s*(ms|s)\b')
+    _word = re.compile(r'(?<![-\w])(ease|linear)(?![-\w(])')
+    for f in sorted(list(web.rglob('*.tsx')) + list(web.rglob('*.css'))):
+        rp = f.relative_to(web).as_posix()
+        if rp.startswith('music/') or rp.startswith('play/'):
+            continue
+        for ln, line in enumerate(f.read_text(encoding='utf-8').split('\n'), 1):
+            if 'infinite' in line:
+                continue
+            for m in re.finditer(r'(?:transition|animation)\s*:\s*"?([^";}]+)', line):
+                v = m.group(1)
+                if 'var(' in v:
+                    continue
+                dur = max((float(x) * (1000 if u == 's' else 1) for x, u in _ms.findall(v)), default=0)
+                if dur >= 200 and _word.search(v):
+                    ease_bad.append(f"{rp}:{ln}")
+
     # правило 3 — храповик
     base = json.loads(BASELINE.read_text(encoding="utf-8")) if BASELINE.exists() else {}
     cap_h, cap_d = base.get("holes", len(holes)), base.get("deviations", len(devs))
@@ -222,6 +254,11 @@ def main() -> int:
     if heavy > cap_hv:
         fail.append(f"храповик пятого начертания: {heavy} > {cap_hv}. Веса 800 в "
                     f"корпусе Apple нет ни разу — берётся Bold 700 (правило 6)")
+    cap_ez = base.get("default_ease", len(ease_bad))
+    if len(ease_bad) > cap_ez:
+        fail.append(f"храповик дефолтной кривой: {len(ease_bad)} > {cap_ez} "
+                    f"({', '.join(ease_bad[:4])}). Движение от 200 мс идёт по "
+                    f"`var(--ease-ios)` — замеренной системной кривой (правило 10)")
     cap_l = base.get("literals", lits)
     if lits > cap_l:
         fail.append(f"храповик литералов: {lits} > {cap_l}. Кегль, интерлиньяж и "
@@ -245,6 +282,7 @@ def main() -> int:
           f"литералов в tsx — {lits}/{cap_l}   "
           f"вес 800 — {heavy}/{cap_hv}   "
           f"мёртвых кирпичей — {len(dead_bricks)}/{cap_db}   "
+          f"дефолтная кривая — {len(ease_bad)}/{cap_ez}   "
           f"сращений — {len(leaks)}")
 
     if fail:

@@ -271,7 +271,7 @@ export function ReadingGoalCard() {
           <span style={{ fontFamily: "var(--font-text)", fontSize: "var(--text-footnote)", color: done ? GOLD : "var(--color-label-2)" }}>{done ? `норма ${goal} мин выполнена` : `из ${goal} мин`}</span>
         </div>
         <div aria-hidden style={{ marginTop: 9, height: 6, borderRadius: 999, background: "var(--color-fill-1)", overflow: "hidden" }}>
-          <span style={{ display: "block", height: "100%", width: `${Math.round(pct * 100)}%`, background: GOLD, borderRadius: 999, transition: "width .3s ease" }} />
+          <span style={{ display: "block", height: "100%", width: `${Math.round(pct * 100)}%`, background: GOLD, borderRadius: 999, transition: "width .3s var(--ease-ios)" }} />
         </div>
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginTop: 11 }}>
           <span style={{ fontFamily: "var(--font-text)", fontSize: "var(--text-footnote)", color: "var(--color-label-3)" }}>Дневная цель</span>

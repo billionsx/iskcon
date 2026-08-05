@@ -41,7 +41,7 @@ function Ring({ pct, size = 88, stroke = 9, accent = SAFFRON }: { pct: number; s
   return (
     <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} aria-hidden>
       <circle cx={size / 2} cy={size / 2} r={r} fill="none" stroke={HAIR} strokeWidth={stroke} />
-      <circle cx={size / 2} cy={size / 2} r={r} fill="none" stroke={accent} strokeWidth={stroke} strokeLinecap="round" strokeDasharray={c} strokeDashoffset={off} transform={`rotate(-90 ${size / 2} ${size / 2})`} style={{ transition: "stroke-dashoffset .5s ease" }} />
+      <circle cx={size / 2} cy={size / 2} r={r} fill="none" stroke={accent} strokeWidth={stroke} strokeLinecap="round" strokeDasharray={c} strokeDashoffset={off} transform={`rotate(-90 ${size / 2} ${size / 2})`} style={{ transition: "stroke-dashoffset .5s var(--ease-ios)" }} />
       <text x="50%" y="50%" textAnchor="middle" dominantBaseline="central" fontFamily={FD} fontSize={size * 0.27} fontWeight={800} fill={L1}>{pct}%</text>
     </svg>
   );
@@ -173,7 +173,7 @@ function VowDashboard({ vow }: { vow: Vow }) {
                 <span style={{ flexShrink: 0, fontFamily: FT, fontSize: 12.5, fontWeight: 700, color: L2 }}>{p.numeric ? `${p.sum}${p.unit ? " " + p.unit : ""} · ${p.pct}%` : `${p.done}/${p.total} · ${p.pct}%`}</span>
               </div>
               <div style={{ height: 7, borderRadius: 999, background: HAIR, overflow: "hidden" }}>
-                <div style={{ height: "100%", width: `${p.pct}%`, borderRadius: 999, background: SAFFRON, transition: "width .5s ease" }} />
+                <div style={{ height: "100%", width: `${p.pct}%`, borderRadius: 999, background: SAFFRON, transition: "width .5s var(--ease-ios)" }} />
               </div>
             </div>
           ))}

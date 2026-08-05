@@ -165,7 +165,7 @@ function BhajanVerseScreen({ verses, idx, bhajanName, onClose, onNav }: { verses
         </div>
       </header>
       <div aria-hidden style={{ flexShrink: 0, height: 2.5, background: "var(--color-hairline)" }}>
-        <div style={{ height: "100%", width: `${((idx + 1) / Math.max(1, verses.length)) * 100}%`, background: "var(--color-gold-deep)", transition: "width .22s ease" }} />
+        <div style={{ height: "100%", width: `${((idx + 1) / Math.max(1, verses.length)) * 100}%`, background: "var(--color-gold-deep)", transition: "width .22s var(--ease-ios)" }} />
       </div>
       <div ref={scRef} onTouchStart={onTouchStart} onTouchEnd={onTouchEnd} style={{ flex: 1, minHeight: 0, overflowX: "hidden", overflowY: "auto", overscrollBehavior: "contain", WebkitOverflowScrolling: "touch" }}>
         <div style={{ maxWidth: 680, margin: "0 auto", padding: "var(--space-6) var(--pad-card) calc(env(safe-area-inset-bottom,0px) + var(--space-8) + var(--player-extra))" }}>
