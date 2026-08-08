@@ -14,9 +14,9 @@
   collective_vows: 1
   content_blocks: 1470
   content_items: 170
-  darshan: 99
+  darshan: 100
   deities: 4
-  deploy_checks: 3360
+  deploy_checks: 3361
   dhama_clusters: 35
   dhamas: 3
   divisions: 1084
@@ -42,9 +42,9 @@
   katha_fts: 6908
   katha_fts_config: 1
   katha_fts_content: 6908
-  katha_fts_data: 182
+  katha_fts_data: 156
   katha_fts_docsize: 6908
-  katha_fts_idx: 180
+  katha_fts_idx: 161
   katha_speakers: 5
   katha_tracks: 6908
   kirtan_albums: 50
@@ -75,7 +75,7 @@
   sessions: 2
   shop_groups: 3
   shop_products: 9
-  tilda_assets: 141366
+  tilda_assets: 147199
   tilda_pages: 148
   tirtha_persons: 289
   tirthas: 660
@@ -89,6 +89,6 @@
   verses: 68816
   vraja_raw: 578
   works: 39
-✓ дамп готов за 420 c; строк всего: 665382
+✓ дамп готов за 449 c; строк всего: 671172
 rc=0
--rw-r--r-- 1 runner runner 42M Aug  7 04:40 d1.sql.gz
+-rw-r--r-- 1 runner runner 42M Aug  8 03:51 d1.sql.gz
