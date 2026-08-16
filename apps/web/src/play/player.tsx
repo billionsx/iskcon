@@ -49,6 +49,10 @@ function Bridge({ children }: { children: React.ReactNode }) {
     a: c.kind === "book" ? c.bookTitle : (t.artist || c.artist || c.bookTitle),
     d: i === c.index ? (c.duration || t.durationSec || 0) : (t.durationSec || 0),
     cov: c.cover,
+    /* Источник — книга, цикл лекций или альбом киртанов. Нужен большому арту:
+       когда обложки-картинки нет, он набирает НАЗВАНИЕ ИСТОЧНИКА, а не имя
+       трека (имя трека и так напечатано строкой ниже) — ЗКН-Д025. */
+    al: c.bookTitle || c.artist || undefined,
   });
   const api: Api = {
     q: c.tracks.map(toSong),
@@ -408,7 +412,7 @@ export function FullPlayer({ open, onClose, onFav, favOn }: {
           <button className="pl-grab" onClick={onClose} aria-label="close" style={{ display: "block" }} />
           {view === "art" ? null : (
           <div className="pl-head pl-head-anim" key={view}>
-            <Cover id={cur.id} cls="p-art" />
+            <Cover id={cur.id} src={cur.cov} title={cur.al} cls="p-art" />
             <div style={{ minWidth: 0 }}>
               <div className="p-t">{cur.t}</div>
               <div className="p-s">{cur.a}</div>
@@ -435,7 +439,7 @@ export function FullPlayer({ open, onClose, onFav, favOn }: {
           {vv === "art" ? (
             <div style={{ position: "absolute", inset: 0, display: "flex",
               flexDirection: "column", justifyContent: "flex-start", margin: "0 -4px" }}>  {/* 📐 IMG_1950: врезка меты 24. Паспорт 23.07: контейнер видов уже стоит на 28 (pl-mid −4), поэтому здесь −4, а не −8 — иначе мета выезжала на 20 */}
-              <Cover id={cur.id} src={cur.cov} cls="pl-art morph" />
+              <Cover id={cur.id} src={cur.cov} title={cur.al} cls="pl-art morph" />
               <div className="pl-meta">
                 <div style={{ minWidth: 0, flex: 1 }}>
                   <div className="mt">{cur.t}</div>

@@ -121,7 +121,7 @@ export function KirtanAlbumScreen({ ui, id }: { ui: UI; id: string }) {
         <div className="nv-title" />
       </div>
       <div style={{ padding: "0 20px", textAlign: "center" }}>
-        <Cover id={a.id} style={{ width: 232, height: 232, margin: "0 auto", borderRadius: 10, boxShadow: "0 14px 40px rgba(0,0,0,.5)" }} />
+        <Cover id={a.id} title={a.title} style={{ width: 232, height: 232, margin: "0 auto", borderRadius: 10, boxShadow: "0 14px 40px rgba(0,0,0,.5)" }} />
         <div style={{ fontSize: 22, fontWeight: 700, letterSpacing: "-.26px", marginTop: 16 }}>{a.title}</div>
         <div style={{ fontSize: 15, color: "var(--red)", marginTop: 2 }} onClick={() => ui.push({ k: "kart", slug: a.artist })}>{artistName(a.artist)}</div>
         <div style={{ fontSize: 13, color: "var(--g2)", marginTop: 4 }}>{[a.year, `${list.length} записей`].filter(Boolean).join(" · ")}</div>

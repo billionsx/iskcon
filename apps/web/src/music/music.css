@@ -140,6 +140,31 @@
 }
 .amx-cov .brand { position: absolute; top: 7px; right: 9px; font-size: 10.5px; font-weight: 600; color: rgba(28,28,30,.55); }
 
+/* ── Типографская обложка (ЗКН-Д025) ─────────────────────────────────────
+   Кегль ведёт длина названия: --tc задаётся в TSX и меряется в 1cqw —
+   сотой ширины САМОЙ обложки. Поэтому один расчёт верен и на полке 141,
+   и на странице альбома 232: набор растёт вместе с плиткой, а не ломается.
+   Поле белое, краска графит и золото — разноцветья по id нет (распоряжение
+   основателя 21.07.2026). */
+.amx-cov.tc { container-type: size; }
+.amx-cov .tw { position: absolute; inset: 0; display: flex; flex-direction: column;
+  justify-content: center; padding: 9.5cqw 8.5cqw; text-align: left; }
+.amx-cov .tw .th { font-size: calc(var(--tc, 10) * 1cqw); line-height: 1.12;
+  font-weight: 700; letter-spacing: -0.02em; color: #1C1C1E;
+  display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 4; overflow: hidden; }
+.amx-cov .tw .tt { margin-top: 3.5cqw; font-size: calc(var(--tc, 10) * 0.56cqw);
+  font-weight: 600; letter-spacing: 0.01em; color: rgba(28,28,30,.5);
+  display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 1; overflow: hidden; }
+/* Знак остаётся на обложке, но уходит в угол отметкой авторства: он больше
+   не главное, что видно, — главное название работы. */
+.amx-cov .tw .tm { position: absolute; right: 7.5cqw; bottom: 7cqw;
+  width: 11cqw; height: 11cqw; background: var(--gold);
+  -webkit-mask: url(/iskcon-one-love-mark.svg) center / contain no-repeat;
+          mask: url(/iskcon-one-love-mark.svg) center / contain no-repeat; }
+/* В мелких плитках набор не читается — там знак по-прежнему один на всех,
+   и это честно: 41px не место для названия. */
+.amx-cov.r-art .tw .th, .amx-cov.sm .tw .th { -webkit-line-clamp: 2; }
+
 /* ── Ряд песни ──────────────────────────────────────────────────────────── */
 .amx-row { display: flex; align-items: center; gap: 12px; padding: 0 20px; min-height: 49.33px; position: relative; }  /* 📐 шаг строки 49.33 — IMG_2347+2381+2382 */
 .amx-row .r-art { width: 41.33px; height: 41.33px; border-radius: 5px; }  /* 📐 обложка 41.33 — IMG_2347+2381+2382 */

@@ -112,7 +112,7 @@ export function LibListScreen({ ui, id, onNewPlaylist }: { ui: UI; id: LibId; on
           <div className="amx-cats" style={{ gridTemplateColumns: "1fr 1fr", gap: 16 }}>
             {store.pl.map((p) => (
               <div key={p.id} onClick={() => ui.push({ k: "upl", id: p.id })}>
-                <Cover id={p.id} style={{ aspectRatio: "1", borderRadius: 10 }} />
+                <Cover id={p.id} title={p.title} style={{ aspectRatio: "1", borderRadius: 10 }} />
                 <div style={{ fontSize: 15, fontWeight: 400, letterSpacing: -.23, marginTop: 8 }}>{p.title}</div>
                 <div style={{ fontSize: 13, letterSpacing: -.08, color: "var(--g2)", marginTop: 1 }}>{p.ids.length} songs</div>
               </div>

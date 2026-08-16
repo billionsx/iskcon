@@ -30,7 +30,7 @@ const fmtH = (h: number) => (h >= 10 ? `${Math.round(h)} ч` : `${Math.round(h *
 function AlbumCard({ a, ui }: { a: KathaAlbum; ui: UI }) {
   return (
     <div className="amx-cardw" onClick={() => ui.push({ k: "kalbum", id: a.id })}>
-      <Cover id={a.id} />
+      <Cover id={a.id} title={a.title} />
       <div className="cw-t"><span style={{ overflow: "hidden", textOverflow: "ellipsis" }}>{a.title}</span></div>
       <div className="cw-s">{a.n} зап. · {fmtH(albumHours(a.id))}</div>
     </div>
@@ -183,7 +183,7 @@ export function KAlbumScreen({ ui, id }: { ui: UI; id: string }) {
         <div className="nv-title" />
       </div>
       <div style={{ padding: "0 20px", textAlign: "center" }}>
-        <Cover id={a.id} style={{ width: 232, height: 232, margin: "0 auto", borderRadius: 10, boxShadow: "0 14px 40px rgba(0,0,0,.5)" }} />
+        <Cover id={a.id} title={a.title} style={{ width: 232, height: 232, margin: "0 auto", borderRadius: 10, boxShadow: "0 14px 40px rgba(0,0,0,.5)" }} />
         <div style={{ fontSize: 22, fontWeight: 700, letterSpacing: "-.26px", marginTop: 16 }}>{a.title}</div>
         {sp ? <div style={{ fontSize: 15, color: "var(--red)", marginTop: 2 }} onClick={() => ui.push({ k: "speaker", slug: sp.slug })}>{sp.name}</div> : null}
         <div style={{ fontSize: 13, color: "var(--g2)", marginTop: 4 }}>{[a.year, `${a.n} записей`, fmtH(albumHours(a.id))].filter(Boolean).join(" · ")}</div>

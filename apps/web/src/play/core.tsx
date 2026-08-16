@@ -7,13 +7,50 @@ import type { Song } from "./data";
    ЕДИНЫЙ СТИЛЬ (распоряжение основателя 21.07.2026). Цвет больше НЕ выводится
    из id: обложки были все разные, и экран рябил. Поле, знак и его размер
    заданы в CSS одним правилом — здесь остаётся только разметка. */
-export function Cover({ cls, style, label, wm, brand, src, onClick, children }: {
+/* ── Типографская обложка (ЗКН-Д025) ──────────────────────────────────────
+   ПОЧЕМУ. Знак ИСККОН на белом — единый стиль по распоряжению основателя
+   21.07.2026, и он остаётся. Но когда РЯДОМ стоят двадцать циклов и у всех
+   двадцати один и тот же знак, обложка не различает ничего: «Бхакти-сангама
+   2007» и «Веданта Сутра (1998)» выглядят одинаково. Повторяющийся арт не
+   несёт информации (ЗКН-Д025) — ровно та же поломка, что ловил гейт на
+   COVER_FALLBACK внутри .map().
+
+   ЧТО ДЕЛАЕМ. Обложка без картинки набирает СОБСТВЕННОЕ название работы.
+   Это не выдуманная графика: буквы — настоящие данные записи, как на
+   обложках ББТ. Распоряжение основателя не нарушено — поле остаётся белым,
+   краска золотая и графитовая, разноцветья по id нет и не возвращается.
+
+   Скобочный хвост («(Латвия, 2015)», «(1999-2000)») уходит второй строкой
+   мелко: он и есть то, чем два одноимённых цикла отличаются друг от друга.
+
+   Кегль ведёт длина: чем длиннее название, тем мельче набор. Единица —
+   1cqw (сотая ширины самой обложки), поэтому один и тот же расчёт верен и
+   на полке 141, и на странице альбома 232, и в hero. */
+const TAIL = /\s*[(（]([^)）]+)[)）]\s*$/;
+export function coverType(title: string): { head: string; tail?: string; tc: number } {
+  const m = title.match(TAIL);
+  const head = (m ? title.slice(0, m.index) : title).trim();
+  const n = head.length;
+  const tc = n <= 10 ? 15 : n <= 18 ? 12.5 : n <= 28 ? 10 : n <= 44 ? 8.2 : 6.8;
+  return { head, tail: m ? m[1].trim() : undefined, tc };
+}
+
+export function Cover({ cls, style, label, wm, brand, src, title, onClick, children }: {
   id?: string; cls?: string; style?: React.CSSProperties; src?: string;
-  label?: string; wm?: boolean; brand?: boolean; onClick?: () => void; children?: React.ReactNode;
+  label?: string; wm?: boolean; brand?: boolean; title?: string;
+  onClick?: () => void; children?: React.ReactNode;
 }) {
+  const t = !src && title ? coverType(title) : null;
   return (
-    <div className={"amx-cov " + (cls || "")} style={style} onClick={onClick}>
-      {src ? <img className="real" src={src} alt="" loading="lazy" /> : wm ? <div className="wm" /> : <div className="mk" />}
+    <div className={"amx-cov " + (t ? "tc " : "") + (cls || "")} style={style} onClick={onClick}>
+      {src ? <img className="real" src={src} alt="" loading="lazy" />
+        : t ? (
+          <div className="tw" style={{ ["--tc" as string]: String(t.tc) }}>
+            <span className="th">{t.head}</span>
+            {t.tail ? <span className="tt">{t.tail}</span> : null}
+            <span className="tm" />
+          </div>
+        ) : wm ? <div className="wm" /> : <div className="mk" />}
       {brand ? <div className="brand">Music</div> : null}
       {label ? <div className="lab">{label}</div> : null}
       {children}
