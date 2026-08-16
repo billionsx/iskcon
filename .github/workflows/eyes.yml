@@ -1,0 +1,22 @@
+# BILLIONS X EYES · надзор департамента над этим проектом.
+# Департамент живёт в своём репозитории billionsx/eyes и приходит сюда сам
+# на каждый pull request: построчные замечания числами измеренных законов.
+name: eyes
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+    paths: ["apps/web/**"]
+# ПРАВА. Без этого блока прогон умирает ДО первого шага: GitHub по умолчанию
+# выдаёт токену только чтение, а контур департамента просит право писать
+# замечания в pull request. Превышение гасит запуск целиком, и надзор молчит
+# так, будто код чист. Поймано 04.08.2026 первым живым PR: контур имел ноль
+# прогонов за всё время.
+permissions:
+  contents: read
+  pull-requests: write
+jobs:
+  review:
+    uses: billionsx/eyes/.github/workflows/eyes-review-reusable.yml@main
+    with:
+      project: iskcon
+      globs: "apps/web/src/**/*.css,apps/web/src/**/*.tsx"

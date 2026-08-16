@@ -1,0 +1,166 @@
+name: eyes-watch
+# BILLIONS X EYES · НАДЗОР НА КАЖДЫЙ КОММИТ ПО apps/web + ЕЖЕДНЕВНО.
+#
+# ⚠️ ЗАГОЛОВОК ЛГАЛ ДО 05.08.2026: здесь стояло «НА КАЖДЫЙ КОММИТ», а триггер
+# ждал пуша в `apps/web`. Коммит в `tools/` или `docs/` надзор не будил вовсе.
+# Формулировка исправлена по факту, а сама дыра закрыта расписанием ниже —
+# документ описывает механизм, а не намерение (ЗКН-Ц012).
+#
+# Зачем этот файл рядом с `eyes.yml`. Тот приходит на pull request — а этот
+# проект пишет прямо в main: за всё время здесь один PR при тысяче с лишним
+# деплоев. Значит надзор департамента молчал не потому, что код чист, а
+# потому, что не наступал повод, которого он ждал. Молчание нельзя
+# предъявлять как чистоту.
+#
+# Как устроено. Департамент живёт в своём репозитории и сюда не переезжает:
+# он берётся ТОЛЬКО НА ЧТЕНИЕ, разреженным клоном (bin, adapters,
+# registry/standards). Ни одной строки инструмента в этом репозитории нет и
+# не появится — иначе получилось бы две копии департамента: судит один,
+# чинят другой.
+#
+# Храповик долга берётся оттуда же — `registry/state/ae-baseline.json`,
+# одна база на всех. Копии здесь нет намеренно: две базы разошлись бы, и
+# было бы не понять, какая настоящая. Ужать базу вправе только сам
+# департамент у себя; здесь она только читается.
+#
+# Правило: гейт НЕ роняет деплой. Он говорит красным на коммите, когда долг
+# по правилу вырос. Перевод правил в строгий режим — решением основателя
+# (паспорт `adapters/iskcon.json`, ст. 7.4 конституции департамента).
+on:
+  push:
+    branches: [main]
+    paths: ["apps/web/**"]
+  schedule:
+    # ⚠️ ПОЧЕМУ ЗДЕСЬ РАСПИСАНИЕ, А НЕ ТОЛЬКО ПУШ (05.08.2026).
+    #
+    # Храповик долга живёт У ДЕПАРТАМЕНТА, и это правильно: одна база на всех.
+    # Но следствие такое: департамент вправе расширить зрение или ужать базу
+    # У СЕБЯ — и проект в ту же секунду оказывается в долгу, ничего не сделав.
+    # А надзор здесь ждал пуша в `apps/web`. Пока фронтенд не трогали, он
+    # молчал — и молчание читалось как чистота.
+    #
+    # Так и вышло: 04–05.08 департамент добавил AE18 и пересчитал базу
+    # 204 → 774, грейд ушёл B → D. В этом репозитории об этом не сказал никто;
+    # увидели, только заглянув в оба репозитория руками.
+    #
+    # Расписание закрывает ровно этот сценарий: правка НА ЧУЖОЙ СТОРОНЕ
+    # доезжает сюда максимум за сутки. Пуш-триггер остаётся адресным (правка
+    # вне `apps/web` находок советника не меняет — департамент смотрит только
+    # туда), группа `eyes-watch-*` своя, с чужими расписаниями не сталкивается
+    # (ЗКН-Ф024).
+    - cron: "41 6 * * *"
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: eyes-watch-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  watch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: "Департамент — на чтение, без переезда"
+        run: |
+          git clone -q --depth 1 --filter=blob:none --sparse \
+            https://github.com/billionsx/eyes.git __eyes
+          cd __eyes
+          git sparse-checkout set bin adapters registry/standards
+          echo "инструмент: $(git rev-parse --short=9 HEAD) · органов $(ls bin | wc -l)"
+
+      - name: "Храповик долга — база департамента, одна на всех"
+        run: |
+          curl -fsS --retry 3 \
+            https://raw.githubusercontent.com/billionsx/eyes/main/registry/state/ae-baseline.json \
+            -o /tmp/ae-baseline.json
+          python3 -c "import json;d=json.load(open('/tmp/ae-baseline.json'))['iskcon'];print('база долга:',sum(d.values()),'по',len(d),'правилам')"
+
+      - name: "Надзор по измеренным законам"
+        id: lint
+        run: |
+          set +e
+          python3 __eyes/bin/eyes.py lint --adapter iskcon --mode report \
+            --project-root . --ratchet /tmp/ae-baseline.json \
+            --out /tmp/eyes-report.md > /tmp/eyes-out.txt 2>&1
+          RC=$?
+          set -e
+          grep -E "^Файлов просмотрено|ХРАПОВИК|храповик" /tmp/eyes-out.txt || true
+          echo "rc=$RC" >> "$GITHUB_OUTPUT"
+          exit 0
+
+      - name: "Новые нарушения этого пуша (адресно)"
+        id: newf
+        if: always()
+        run: |
+          python3 tools/eyes-newfindings.py \
+            --report /tmp/eyes-report.md \
+            --before "${{ github.event.before }}" \
+            --after "${{ github.sha }}" \
+            --paths apps/web > /tmp/eyes-new.txt 2>&1 || true
+          cat /tmp/eyes-new.txt
+
+      # Долг советника — смесь ошибок и осознанных расхождений с корпусом
+      # департамента. Пока они в одной куче, число не значит ничего. Реестр
+      # раскладывает вердикт на две стопки по признаку АДРЕСА (тот же признак,
+      # что несёт ЗКН-Д028 для токенов) и краснеет, только если ЭТОТ пуш
+      # добавил число без адреса. Прошлое им не вменяется — правило запрещает
+      # копить, а не требует чинить задним числом.
+      - name: "Реестр расхождений: число без адреса — не число"
+        id: divg
+        if: always()
+        run: |
+          set +e
+          python3 tools/eyes-divergence.py \
+            --report /tmp/eyes-report.md \
+            --before "${{ github.event.before }}" \
+            --after "${{ github.sha }}" \
+            --paths apps/web > /tmp/eyes-divg.txt 2>&1
+          echo "rc=$?" >> "$GITHUB_OUTPUT"
+          set -e
+          cat /tmp/eyes-divg.txt
+
+      - name: "Хроника прогона"
+        if: always()
+        env:
+          RC: ${{ steps.lint.outputs.rc }}
+        run: |
+          {
+            if [ "${RC:-1}" = "0" ]; then
+              echo "## BXE · надзор: долг не вырос"
+            else
+              echo "## BXE · надзор: ДОЛГ ВЫРОС — красный"
+            fi
+            echo
+            grep -E "^Файлов просмотрено" /tmp/eyes-report.md 2>/dev/null || true
+            echo
+            grep -E "ХРАПОВИК" /tmp/eyes-out.txt 2>/dev/null || true
+            echo
+            cat /tmp/eyes-new.txt 2>/dev/null || true
+            echo
+            cat /tmp/eyes-divg.txt 2>/dev/null || true
+            echo
+            echo "Область надзора — глобы паспорта \`adapters/iskcon.json\` в репозитории"
+            echo "департамента. Строки вне её не смотрели и чистыми не объявляем."
+            echo
+            echo "<details><summary>Полный отчёт советника</summary>"
+            echo
+            head -c 900000 /tmp/eyes-report.md 2>/dev/null || echo "(отчёт не собран)"
+            echo
+            echo "</details>"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: "Вердикт"
+        run: |
+          BAD=0
+          if [ "${{ steps.lint.outputs.rc }}" != "0" ]; then
+            echo "долг по правилу вырос — смотри хронику прогона"
+            BAD=1
+          fi
+          if [ "${{ steps.divg.outputs.rc }}" != "0" ]; then
+            echo "этот пуш добавил число без адреса — смотри реестр расхождений"
+            BAD=1
+          fi
+          [ "$BAD" = "0" ] && echo "долг не вырос, чисел без адреса не добавлено"
+          exit "$BAD"
