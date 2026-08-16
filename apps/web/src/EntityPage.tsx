@@ -1630,7 +1630,7 @@ export default function EntityPage({ id, onBack, onOpen, onNavigate, onOpenColle
                         ].map((v) => (
                           <button key={v.kind + v.slug} type="button"
                             onClick={onNavigate ? () => onNavigate(v.href) : undefined}
-                            style={{ textAlign: "left", display: "flex", alignItems: "center", gap: 12, padding: "11px 13px", borderRadius: 14, border: "0.5px solid var(--color-hairline)", background: "var(--color-bg-2)", cursor: "pointer", color: "inherit", font: "inherit", width: "100%" }}>
+                            style={{ textAlign: "left", display: "flex", alignItems: "center", gap: 12, padding: "11px 13px", borderRadius: "var(--radius-md)", border: "0.5px solid var(--color-hairline)", background: "var(--color-bg-2)", cursor: "pointer", color: "inherit", font: "inherit", width: "100%" }}>
                             <span style={{ minWidth: 0, flex: 1 }}>
                               <span style={{ display: "block", fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)", fontWeight: 600, color: "var(--color-label)" }}>{v.kind}</span>
                               <span style={{ display: "block", marginTop: 2, fontFamily: "var(--font-text)", fontSize: "var(--text-footnote)", color: "var(--color-label-3)" }}>{v.n} записей · {v.name}</span>
