@@ -365,7 +365,11 @@
 .amx-tab { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; border-radius: 22.3px; height: 44.6px; font-size: 10px; font-weight: 500; letter-spacing: .12px; color: rgba(235,235,245,.85); }
 .amx-tab span { display: block; max-height: 12px; transition: max-height .3s var(--ease-out), opacity .2s ease, margin .3s var(--ease-out); }
 .cmp .amx-tabs { padding: 7px 8.7px; }              /* 57 ≈ 7 + 43 + 7 */
-.cmp .amx-tab { height: 43px; gap: 0; }
+.cmp .amx-tab { height: 43px; gap: 0; position: relative; }  /* 📐 57 = 7 + 43 + 7; цель касания 44 несёт ::after ниже */
+/* Тот же приём: компактный таб видимо 43 (57 = 7 + 43 + 7 — замер),
+   цель касания 44. Форма не трогается. */
+.cmp .amx-tab::after { content: ""; position: absolute; left: 0; right: 0;
+  top: 50%; height: 44px; transform: translateY(-50%); }
 .cmp .amx-tab span { max-height: 0; opacity: 0; margin-top: -4px; }  /* подписи гаснут */
 .amx-tab.on { background: transparent; color: var(--red); font-weight: 600; }  /* 📐 IMG_2336: активная = красный глиф #FF4C68 без подложки (скан y795: капсулы нет) */
 .amx-scir { width: 62px; height: 62px; border-radius: 50%;  /* 📐 [310 + 62] */ flex: 0 0 auto; display: flex; align-items: center; justify-content: center;
@@ -418,7 +422,7 @@
 
 /* ── Полноэкранный плеер ────────────────────────────────────────────────── */
 .amx-pl { position: absolute; inset: 0; z-index: 50; display: flex; flex-direction: column; border-radius: 0; overflow: hidden; touch-action: none;
-  transition: border-radius .2s ease;  /* морф ведёт WAAPI: linear() из open_013–047 (§5.2) */ }
+  transition: border-radius .2s var(--ease-out);  /* 🎞 морф ведёт WAAPI: linear() из open_013–047 (§5.2); кривая на переходе CSS */ }
 .amx-pl.closing, .amx-pl.pre { transform: translateY(104%); border-radius: 40px; }  /* 📐 IMG_1983 · LAW_MUSIC §4.7: R40 — профиль края шторки. То же число, что у .amx-sheet и .amx-osheet: уезжающий плеер держит радиус шторки, иначе на выезде угол щёлкает. */
 .amx-pl .pl-bg { position: absolute; inset: -40px; filter: blur(0px); }
 .amx-pl .pl-in { position: relative; flex: 1; display: flex; flex-direction: column; padding: calc(var(--sat) + 8px) 32px calc(var(--sab) + 14px); }  /* 📐 pl_q15: полоса x32…361, капсулы x32…361.4 — врезка 32 */
@@ -428,7 +432,7 @@
 .amx-pl .pl-head .p-t { font-size: 17px; font-weight: 700; letter-spacing: -.43px; }  /* 📐 IMG_2350: ink 13 ⇒ 17 */
 .amx-pl .pl-head .p-s { font-size: 11px; letter-spacing: 0; color: rgba(255,255,255,.66); margin-top: 3px; }  /* 📐 IMG_2350: ink 8.3+десц 1.3 ⇒ 11, зазор 4 */
 .amx-pl .pl-head .hb { margin-left: auto; display: flex; gap: 16px; }  /* 📐 звезда x281.3, ⋯ x329.3: зазор 16 */
-.amx-pl .pl-head .amx-cir { width: 32px; height: 32px; background: rgba(255,255,255,.09); box-shadow: inset 0 1px 0 rgba(255,255,255,.12); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); }  /* 📐 круги шапки d32, НЕ 48 */
+.amx-pl .pl-head .amx-cir { width: 32px; height: 32px; background: rgba(255,255,255,.09); box-shadow: inset 0 1px 0 rgba(255,255,255,.12); -webkit-backdrop-filter: blur(10px) saturate(180%); backdrop-filter: blur(10px) saturate(180%); }  /* 📐 круги шапки d32, НЕ 48 · стекло = размытие + насыщение */
 .amx-pl .pl-mid { flex: 1; min-height: 0; overflow: hidden; position: relative; margin: 10px -4px 0; }
 .amx-pl .pl-dots { display: flex; gap: 10px; padding: 22px 4px 8px; }
 .amx-pl .pl-dots i { width: 13px; height: 13px; border-radius: 50%; background: rgba(255,255,255,.9); animation: amx-dot 1.4s ease-in-out infinite; }
@@ -452,7 +456,7 @@
 .amx-pl .pl-tog { display: flex; gap: 13px; padding: 0; margin-top: 32px; }  /* 📐 pl_q15: капсулы x32/117.7/203.3/288.7 — зазор 13; верх 179 при низе арта 146.7 */
 .amx-pl .pl-tog button { flex: 1; height: 38.3px; border-radius: 19.2px; background: transparent; display: flex; align-items: center; justify-content: center; color: rgba(255,255,255,.8); }  /* 📐 pl_q15: 72.5 × 38 (4 шт. на 329) · LAW_MUSIC §1.3 */
 .amx-pl .pl-tog button.on { background: rgba(255,255,255,.55); color: rgba(40,36,28,.92); box-shadow: none; }  /* 📐 заливка ~50 % белого (159/164/146 на 69), глиф ТЁМНЫЙ (46/51/37) */
-.amx-tip { position: relative; margin-top: 16px; background: rgba(30,24,18,.55); -webkit-backdrop-filter: blur(20px); backdrop-filter: blur(20px); border-radius: 18px; padding: 14px 40px 14px 14px; display: flex; gap: 12px; align-items: center; box-shadow: inset 0 0 0 .5px rgba(255,255,255,.12); animation: amx-pop .3s ease; }
+.amx-tip { position: relative; margin-top: 16px; background: rgba(30,24,18,.55); -webkit-backdrop-filter: blur(20px) saturate(180%); backdrop-filter: blur(20px) saturate(180%); border-radius: 18px; padding: 14px 40px 14px 14px; display: flex; gap: 12px; align-items: center; box-shadow: inset 0 0 0 .5px rgba(255,255,255,.12); animation: amx-pop .3s var(--ease-out); }  /* 🎞 от 200 мс — измеренная кривая */
 .amx-tip::before { content: ""; position: absolute; right: 34px; top: -9px; width: 18px; height: 18px; transform: rotate(45deg); background: inherit; border-radius: 4px; box-shadow: inset .5px .5px 0 rgba(255,255,255,.12); }
 .amx-tip .tt { font-size: 17px; font-weight: 700; letter-spacing: -.43px; }
 .amx-tip .td { font-size: 15px; letter-spacing: -.23px; color: rgba(255,255,255,.72); margin-top: 2px; line-height: 1.3; }
@@ -520,7 +524,7 @@
 @keyframes amx-tabpop { from { transform: scale(.78); } 60% { transform: scale(1.06); } to { transform: none; } }
 
 /* строки: вспышка мгновенно, гаснет 350 мс */
-.amx :where(.amx-row, .amx-ep, .amx-librow, .amx-link, .q-row, .amx-menu .mi, .amx-osheet .or) { transition: background-color .35s ease; }
+.amx :where(.amx-row, .amx-ep, .amx-librow, .amx-link, .q-row, .amx-menu .mi, .amx-osheet .or) { transition: background-color .35s var(--ease-out); }  /* 🎞 от 200 мс — измеренная кривая, не дефолтная ease */
 .amx :where(.amx-row, .amx-ep, .amx-librow, .amx-link, .q-row, .amx-menu .mi, .amx-osheet .or):active { background: rgba(255,255,255,.07); transition-duration: 0s; }
 
 /* карточки полок садятся под пальцем */
@@ -592,6 +596,8 @@
   -webkit-mask: linear-gradient(90deg, transparent, #000 12px, #000 calc(100% - 12px), transparent);
           mask: linear-gradient(90deg, transparent, #000 12px, #000 calc(100% - 12px), transparent); }
 .amx-marq { display: flex; gap: 40px; width: max-content;
+  /* ЗКН-Ц007: на БЕСКОНЕЧНОМ равномерном ходу кривая запрещена — она
+     даёт рывок на стыке цикла. Та же оговорка, что у спиннеров. */
   animation: amx-marq var(--marq-d, 9s) linear 1.2s infinite; }
 @keyframes amx-marq { from { transform: translateX(0); } to { transform: translateX(calc(-1 * var(--marq-w, 200px))); } }
 

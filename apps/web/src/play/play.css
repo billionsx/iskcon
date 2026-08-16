@@ -23,8 +23,15 @@
 .amx-cov .real { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; }
 /* П-Ф3 — страница книги */
 .amx .amx-capsule { flex: 1; height: 50px; border-radius: 12px; background: var(--card2); color: var(--red); font-size: 17px; font-weight: 600; letter-spacing: -.43px; display: flex; align-items: center; justify-content: center; gap: 8px; }
-.amx .amx-chip { height: 35px; padding: 0 16px; border-radius: 17.5px; background: #2C2C2C; color: #fff; font-size: 15px; font-weight: 500; display: flex; align-items: center; }  /* чип 35 #2C2C2C — канон */
+.amx .amx-chip { height: 35px; padding: 0 16px; border-radius: 17.5px; background: #2C2C2C; color: #fff; font-size: 15px; font-weight: 500; display: flex; align-items: center; }  /* 📐 чип 35 #2C2C2C — канон (на 3pt выше капсулы 32, 18 замеров); радиус 17.5 = высота/2, это капсула, а не карточка: лестница радиусов карточек к ней не применима. Цель касания 44 несёт ::after ниже. */
 .amx .amx-chip.on { background: #fff; color: #000; }
+/* Область касания 44×44 при видимой высоте 35 (📐 чип 35 — канон Apple,
+   на 3pt выше капсулы). HIG требует 44pt ЦЕЛИ, а не 44pt формы: у Apple
+   форма остаётся малой, а слой попадания растянут. Видимая геометрия
+   не сдвигается ни на пиксель. */
+.amx .amx-chip { position: relative; }
+.amx .amx-chip::after { content: ""; position: absolute; left: 0; right: 0;
+  top: 50%; height: 44px; transform: translateY(-50%); }
 .amx .amx-row .r-num { width: 41.33px; flex: 0 0 41.33px; text-align: center; font-size: 17px; color: var(--g2); font-variant-numeric: tabular-nums; }
 
 /* Витрина книг слайдером (первый экран «Книги») */
@@ -78,6 +85,6 @@
 .amx-spdot.big { display: inline-flex; }
 
 /* В6 — «Моё»: липкая стеклянная полоса фильтра (паттерн FavoritesScreen) */
-.amx-myfilter { position: sticky; top: 0; z-index: 5; display: flex; gap: 8px; overflow-x: auto; padding: 8px 20px 10px; background: rgba(0,0,0,.62); backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px); scrollbar-width: none; -webkit-overflow-scrolling: touch; }
+.amx-myfilter { position: sticky; top: 0; z-index: 5; display: flex; gap: 8px; overflow-x: auto; padding: 8px 20px 10px; background: rgba(0,0,0,.62); backdrop-filter: blur(18px) saturate(180%); -webkit-backdrop-filter: blur(18px) saturate(180%); scrollbar-width: none; -webkit-overflow-scrolling: touch; }
 .amx-myfilter::-webkit-scrollbar { display: none; }
 .amx-myfilter .amx-chip { flex: 0 0 auto; }
