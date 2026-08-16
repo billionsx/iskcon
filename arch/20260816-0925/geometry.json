@@ -497,7 +497,9 @@
    "amx": true,
    "scripts": 2,
    "gotoStatus": 200,
-   "logs": [],
+   "logs": [
+    "error: Error while trying to use the following icon from the Manifest: https://iskcon-web.ceo-5cb.workers.dev/icon-192.png (Download error or resource isn't a valid im"
+   ],
    "errs": []
   },
   ".amx": [
@@ -1452,7 +1454,7 @@
   "__meta": {
    "href": "https://iskcon-web.ceo-5cb.workers.dev/music/new",
    "title": "ISKCON ONE LOVE. ИСККОН.",
-   "bodyLen": 2090,
+   "bodyLen": 3075,
    "head": "Лекции\nЛЕКЦИЯ ДНЯ\n19 апреля 1975 · Вриндаван\nУтренние прогулки · 24 мин\nСлушать\nГолоса\nБВ\nБхакти Вигьяна Госвами Махарадж\nРГ\nРадха Говинда Госвами Махарадж\nПд\nПурначандра дас Госвами Махарадж\nШП\nШрила",
    "amx": true,
    "scripts": 2,
@@ -1797,7 +1799,7 @@
     "letterSpacing": "normal",
     "fontWeight": "400",
     "color": "rgb(255, 255, 255)",
-    "text": "Бхакти Шастри. Бхагавад-гита (1999)\n56 з"
+    "text": "Бхакти Шастри. Бхагавад-гита\n1999\nБхакти"
    },
    {
     "left": 153,
@@ -1809,7 +1811,7 @@
     "letterSpacing": "normal",
     "fontWeight": "400",
     "color": "rgb(255, 255, 255)",
-    "text": "Бхакти Шастри. Нектар преданности (1999)"
+    "text": "Бхакти Шастри. Нектар преданности\n1999\nБ"
    },
    {
     "left": 306,
@@ -1821,7 +1823,7 @@
     "letterSpacing": "normal",
     "fontWeight": "400",
     "color": "rgb(255, 255, 255)",
-    "text": "Навадвипа Мандала парикрама (2013)\n25 за"
+    "text": "Навадвипа Мандала парикрама\n2013\nНавадви"
    },
    {
     "left": 459,
@@ -1833,7 +1835,7 @@
     "letterSpacing": "normal",
     "fontWeight": "400",
     "color": "rgb(255, 255, 255)",
-    "text": "Путешествие по местам Мадхвачарьи (2015)"
+    "text": "Путешествие по местам Мадхвачарьи\n2015\nП"
    },
    {
     "left": 612,
@@ -1845,7 +1847,7 @@
     "letterSpacing": "normal",
     "fontWeight": "400",
     "color": "rgb(255, 255, 255)",
-    "text": "Ретрит актива учеников 2014\n24 зап. · 11"
+    "text": "Ретрит актива учеников 2014\nРетрит актив"
    },
    {
     "left": 765,
@@ -1857,7 +1859,7 @@
     "letterSpacing": "normal",
     "fontWeight": "400",
     "color": "rgb(255, 255, 255)",
-    "text": "Живые эфиры на радио \"Кришналока\" (1997)"
+    "text": "Живые эфиры на радио \"Кришналока\"\n1997\nЖ"
    },
    {
     "left": 918,
@@ -1869,7 +1871,7 @@
     "letterSpacing": "normal",
     "fontWeight": "400",
     "color": "rgb(255, 255, 255)",
-    "text": "Рагануга-бхакти (2003)\n23 зап. · 14 ч"
+    "text": "Рагануга-бхакти\n2003\nРагануга-бхакти (20"
    },
    {
     "left": 1071,
@@ -1881,7 +1883,7 @@
     "letterSpacing": "normal",
     "fontWeight": "400",
     "color": "rgb(255, 255, 255)",
-    "text": "Вриндаван (2007)\n22 зап. · 16 ч"
+    "text": "Вриндаван\n2007\nВриндаван (2007)\n22 зап. "
    },
    {
     "left": 1224,
@@ -1893,7 +1895,7 @@
     "letterSpacing": "normal",
     "fontWeight": "400",
     "color": "rgb(255, 255, 255)",
-    "text": "Даша-мула-шикша\n21 зап. · 38 ч"
+    "text": "Даша-мула-шикша\nДаша-мула-шикша\n21 зап. "
    },
    {
     "left": 1377,
@@ -1905,7 +1907,7 @@
     "letterSpacing": "normal",
     "fontWeight": "400",
     "color": "rgb(255, 255, 255)",
-    "text": "Джаганнатха Пури (1999)\n21 зап. · 7.3 ч"
+    "text": "Джаганнатха Пури\n1999\nДжаганнатха Пури ("
    },
    {
     "left": 0,
@@ -1917,7 +1919,7 @@
     "letterSpacing": "normal",
     "fontWeight": "400",
     "color": "rgb(255, 255, 255)",
-    "text": "Упадешамрита\n21 зап. · 31 ч"
+    "text": "Упадешамрита\nУпадешамрита\n21 зап. · 31 ч"
    },
    {
     "left": 153,
@@ -1929,7 +1931,7 @@
     "letterSpacing": "normal",
     "fontWeight": "400",
     "color": "rgb(255, 255, 255)",
-    "text": "Сочи · 1997\n10 зап. · 13 ч"
+    "text": "Сочи · 1997\nСочи · 1997\n10 зап. · 13 ч"
    }
   ],
   ".amx-cov": [
@@ -1943,7 +1945,7 @@
     "letterSpacing": "normal",
     "fontWeight": "400",
     "color": "rgb(255, 255, 255)",
-    "text": ""
+    "text": "Бхакти Шастри. Бхагавад-гита\n1999"
    },
    {
     "left": 153,
@@ -1955,7 +1957,7 @@
     "letterSpacing": "normal",
     "fontWeight": "400",
     "color": "rgb(255, 255, 255)",
-    "text": ""
+    "text": "Бхакти Шастри. Нектар преданности\n1999"
    },
    {
     "left": 306,
@@ -1967,7 +1969,7 @@
     "letterSpacing": "normal",
     "fontWeight": "400",
     "color": "rgb(255, 255, 255)",
-    "text": ""
+    "text": "Навадвипа Мандала парикрама\n2013"
    },
    {
     "left": 459,
@@ -1979,7 +1981,7 @@
     "letterSpacing": "normal",
     "fontWeight": "400",
     "color": "rgb(255, 255, 255)",
-    "text": ""
+    "text": "Путешествие по местам Мадхвачарьи\n2015"
    },
    {
     "left": 612,
@@ -1991,7 +1993,7 @@
     "letterSpacing": "normal",
     "fontWeight": "400",
     "color": "rgb(255, 255, 255)",
-    "text": ""
+    "text": "Ретрит актива учеников 2014"
    },
    {
     "left": 765,
@@ -2003,7 +2005,7 @@
     "letterSpacing": "normal",
     "fontWeight": "400",
     "color": "rgb(255, 255, 255)",
-    "text": ""
+    "text": "Живые эфиры на радио \"Кришналока\"\n1997"
    },
    {
     "left": 918,
@@ -2015,7 +2017,7 @@
     "letterSpacing": "normal",
     "fontWeight": "400",
     "color": "rgb(255, 255, 255)",
-    "text": ""
+    "text": "Рагануга-бхакти\n2003"
    },
    {
     "left": 1071,
@@ -2027,7 +2029,7 @@
     "letterSpacing": "normal",
     "fontWeight": "400",
     "color": "rgb(255, 255, 255)",
-    "text": ""
+    "text": "Вриндаван\n2007"
    },
    {
     "left": 1224,
@@ -2039,7 +2041,7 @@
     "letterSpacing": "normal",
     "fontWeight": "400",
     "color": "rgb(255, 255, 255)",
-    "text": ""
+    "text": "Даша-мула-шикша"
    },
    {
     "left": 1377,
@@ -2051,7 +2053,7 @@
     "letterSpacing": "normal",
     "fontWeight": "400",
     "color": "rgb(255, 255, 255)",
-    "text": ""
+    "text": "Джаганнатха Пури\n1999"
    },
    {
     "left": 0,
@@ -2063,7 +2065,7 @@
     "letterSpacing": "normal",
     "fontWeight": "400",
     "color": "rgb(255, 255, 255)",
-    "text": ""
+    "text": "Упадешамрита"
    },
    {
     "left": 153,
@@ -2075,7 +2077,7 @@
     "letterSpacing": "normal",
     "fontWeight": "400",
     "color": "rgb(255, 255, 255)",
-    "text": ""
+    "text": "Сочи · 1997"
    }
   ],
   ".cw-t": [
