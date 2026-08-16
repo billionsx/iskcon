@@ -17,7 +17,7 @@ import { bookSlug } from "../books";
 import { BOOKS, bookFullTitle } from "../books";
 import { albumById, artistBySlug, albumCover } from "../kirtans";
 import { kathaAlbumById, speakerBySlug } from "../katha";
-import { recordListen, recordListenDone } from "../account/track";
+import { recordListen, recordListenDone, recordPosition, fetchLastPosition } from "../account/track";
 import { replaceUrl } from "../nav";
 import { createWebEngine, type AudioEngine } from "./engine";
 // ЗКН-Н092: адрес книги строит один модуль.
@@ -334,6 +334,7 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
   const restoreRef = useRef<{ time: number } | null>(null);
 
   const primedRef = useRef<string>("");   /* адрес уже согретого следующего трека */
+  const lastBeatRef = useRef<number>(0); /* когда последний раз слали место на сервер */
   const tracks = manifest ? (manifest.modes[mode] ?? manifest.modes.plain).tracks : [];
   const track = tracks[index] ?? null;
 
@@ -410,6 +411,31 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
         }
       }
     } catch { /* ignore */ }
+
+    /* ── В13 · СВЕРКА С СЕРВЕРОМ ─────────────────────────────────────────
+       Локальное место уже применено выше — оно приходит мгновенно и не ждёт
+       сети. Сервер спрашиваем следом и правим позицию ТОЛЬКО если он знает
+       ту же самую дорожку и ушёл ВПЕРЁД больше чем на 10 секунд. Три
+       ограничителя намеренные:
+         · та же дорожка — иначе чужое место перебросило бы человека с того,
+           что он слушает сейчас, на то, что слушал вчера с ноутбука;
+         · только вперёд — на этом устройстве он мог отмотать назад
+           сознательно, и сервер не вправе это отменять;
+         · порог 10 секунд — биение идёт раз в 20 секунд, и расхождение
+           меньше порога это не «другое устройство», а обычное запаздывание.
+       Гость и офлайн — тихо ничего не делают, локальное место остаётся. */
+    void fetchLastPosition().then((sv) => {
+      if (!sv || sv.positionSec == null) return;
+      const m = manifestRef.current; if (!m) return;
+      const t = (m.modes[modeRef.current] ?? m.modes.plain).tracks[indexRef.current];
+      if (!t?.url) return;
+      let ref = t.url; try { ref = new URL(t.url).pathname; } catch { /* абсолютный */ }
+      if (sv.ref !== ref) return;
+      if (sv.positionSec <= timeRef.current + 10) return;
+      engineRef.current?.seek(sv.positionSec);
+      timeRef.current = sv.positionSec; setCurrentTime(sv.positionSec);
+    });
+
     return () => eng.destroy();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -547,6 +573,32 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
         index: indexRef.current, file: t?.file ?? null,
         time: Math.floor(timeRef.current), rate: rateRef.current,
       }));
+    } catch { /* ignore */ }
+  }
+
+  /* ── В13 · БИЕНИЕ ПОЗИЦИИ НА СЕРВЕР ──────────────────────────────────
+     Отдельно от persist(): тот пишет ЛОКАЛЬНЫЙ снимок и обязан остаться
+     коротким и синхронным (его стережёт ЗКН-Н091). Сеть — другая забота
+     и другой ритм: тик плеера идёт раз в 5 секунд, а слать столько незачем
+     — шлём раз в 20 секунд и только пока ЗВУК ИДЁТ (на паузе место не
+     меняется, слать нечего). Признак игры спрашиваем у ДВИЖКА: он и есть
+     источник правды, а состояние React в замыкании интервала устареет.
+     Ключ — тот же `ref`, что у телеметрии старта (путь дорожки), иначе
+     UPDATE на сервере не нашёл бы строку. */
+  function beatPosition() {
+    try {
+      const src = sourceRef.current;
+      if (src === "bhajan") return;
+      if (!engineRef.current || engineRef.current.paused) return;
+      const now = Date.now();
+      if (now - lastBeatRef.current < 20000) return;
+      const m = manifestRef.current; if (!m) return;
+      const t = (m.modes[modeRef.current] ?? m.modes.plain).tracks[indexRef.current];
+      if (!t?.url) return;
+      lastBeatRef.current = now;
+      let ref = t.url; try { ref = new URL(t.url).pathname; } catch { /* абсолютный url */ }
+      const isK = src === "kirtan" || src === "katha";
+      recordPosition(src === "katha" ? "katha" : (isK ? "kirtan" : "book"), ref, timeRef.current);
     } catch { /* ignore */ }
   }
 
@@ -965,7 +1017,7 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
 
   // периодически сохраняем позицию
   useEffect(() => {
-    const id = setInterval(() => { if (active) persist(); }, 5000);
+    const id = setInterval(() => { if (active) { persist(); beatPosition(); } }, 5000);
     return () => clearInterval(id);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [active]);

@@ -141,6 +141,37 @@ export function recordListen(ev: ListenEvent): void {
   });
 }
 
+/* ── В13 · ПОЗИЦИЯ СКВОЗЬ УСТРОЙСТВА ─────────────────────────────────────
+ * Место в записи жило только в localStorage: начал лекцию в метро с телефона,
+ * сел за стол — и она начинается сначала, потому что второе устройство о
+ * первом не знает. Биение шлёт позицию отдельной веткой (`position: true`):
+ * она только ОБНОВЛЯЕТ место и не считает прослушивание вторым разом.
+ * Гость молчит — писать некуда. */
+export function recordPosition(source: string, ref: string, positionSec: number): void {
+  if (!ref || !authed || !Number.isFinite(positionSec) || positionSec < 0) return;
+  post("/me/listen", { source: source || "book", ref, position: true, positionSec: Math.round(positionSec) });
+}
+
+/** Последнее место этого человека на сервере — для сверки с локальным. */
+export async function fetchLastPosition(): Promise<
+  { source: string; ref: string; positionSec: number | null; lastAt: string } | null
+> {
+  if (!authed) return null;
+  try {
+    const r = await fetch(api("/me/list?type=listening&limit=1"), { credentials: "include" });
+    if (!r.ok) return null;
+    const d = await r.json() as { items?: Array<Record<string, unknown>> };
+    const it = d?.items?.[0];
+    if (!it || !it.ref) return null;
+    return {
+      source: String(it.source || "book"),
+      ref: String(it.ref),
+      positionSec: it.position_sec == null ? null : Number(it.position_sec),
+      lastAt: String(it.last_at || ""),
+    };
+  } catch { return null; }
+}
+
 /* ── Ц7 · ШРАВАНА — ИЗМЕРЕНИЕ САДХАНЫ ──
  * Дорожка ДОСЛУШАНА (onEnded) → минуты уходят в дневник. Биений позиции у
  * плеера нет, и это сознательно: завершение — честный пол (бросил на середине —

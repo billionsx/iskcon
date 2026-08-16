@@ -878,6 +878,27 @@ export async function accountApi(request: Request, env: DB, url: URL): Promise<R
       }
       return jres({ ok: true });
     }
+    /* ── В13 · ПОЗИЦИЯ СКВОЗЬ УСТРОЙСТВА ────────────────────────────────
+       Биение позиции: плеер шлёт, где человек сейчас, чтобы слушание
+       продолжилось на другом устройстве с той же секунды.
+
+       ⚠️ ЗДЕСЬ ЖЕ ЧИНИТСЯ ЖИВОЙ ДЕФЕКТ. Старт каждой дорожки звал
+       `recordListen` БЕЗ `positionSec`, а `ON CONFLICT` ниже писал
+       `position_sec = excluded.position_sec` — то есть NULL. Сохранённая
+       позиция затиралась при первом же старте, и «продолжить слушать»
+       начинало с нуля. Отсюда правило: биение позиции идёт ОТДЕЛЬНОЙ
+       веткой (только UPDATE), а старт больше не трогает position_sec —
+       COALESCE держит прежнее, если новое не прислали. */
+    if (b.position === true) {
+      const ps = Number.isFinite(Number(b.positionSec)) ? Math.max(0, Math.round(Number(b.positionSec))) : null;
+      if (ps == null) return err("bad_request");
+      await env.DB.prepare(
+        `UPDATE listening SET position_sec = ?4, last_at = datetime('now')
+          WHERE user_id = ?1 AND source = ?2 AND ref = ?3`,
+      ).bind(uid, source, ref, ps).run();
+      return jres({ ok: true });
+    }
+
     const title = clip(b.title, 200) || null;
     const subtitle = clip(b.subtitle, 200) || null;
     const cover = clip(b.cover, 300) || null;
@@ -893,7 +914,9 @@ export async function accountApi(request: Request, env: DB, url: URL): Promise<R
          title = excluded.title, subtitle = excluded.subtitle, cover = excluded.cover,
          album = excluded.album, artist = excluded.artist, href = excluded.href,
          duration_sec = COALESCE(excluded.duration_sec, listening.duration_sec),
-         position_sec = excluded.position_sec,
+         /* COALESCE, а не присваивание: старт дорожки позицию не присылает,
+            и прямое присваивание затирало сохранённое место NULL-ом. */
+         position_sec = COALESCE(excluded.position_sec, listening.position_sec),
          play_count = listening.play_count + 1, last_at = excluded.last_at`,
     ).bind(uid, source, ref, title, subtitle, cover, album, artist, href, dur, pos).run();
     return jres({ ok: true });
