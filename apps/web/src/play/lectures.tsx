@@ -16,6 +16,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import { Ava, Cover, H2, I, Scr, VoiceDot, initials } from "./core";
 import type { UI } from "./MusicApp";
 import { api } from "../api";
+import { ROUTES } from "../routes";
 import { usePlayer as useCore } from "../player/store";
 import {
   albumHours, albumTracks, albumsBySpeaker, kathaAlbumById, kathaSpeakers,
@@ -135,11 +136,23 @@ export function SpeakerScreen({ ui, slug }: { ui: UI; slug: string }) {
         <span className="amx-spdot big"><span className="d" style={{ width: 132, height: 132, fontSize: 40, color: s.accent ? "var(--red)" : "#fff" }}>{initials(s.name)}</span></span>
         <div style={{ fontSize: 22, fontWeight: 700, letterSpacing: "-.26px", marginTop: 12 }}>{s.full || s.name}</div>
         {s.role ? <div style={{ fontSize: 15, color: "var(--g2)", marginTop: 2 }}>{s.role}</div> : null}
-        {albums.length > 0 ? (
-          <div style={{ display: "flex", gap: 9, marginTop: 16 }}>
-            <button className="amx-capsule" onClick={() => core.playKatha(albums[0].id, 0, true)}>
-              {I.play({ s: 18 })}<span>Слушать</span>
-            </button>
+        {/* В8 · СВЯЗЬ С ПКЛ. У киртанов переход на карточку личности стоял
+            с В5, у лекций его не было вовсе: `entityId` доезжал от воркера
+            до типа и там умирал. Голос, у которого в приложении есть
+            карточка, обязан на неё вести — иначе две половины знают друг о
+            друге, а человек нет. Образец тот же, что у киртанов. */}
+        {albums.length > 0 || s.entityId ? (
+          <div style={{ display: "flex", gap: 9, marginTop: 16, justifyContent: "center" }}>
+            {albums.length > 0 ? (
+              <button className="amx-capsule" onClick={() => core.playKatha(albums[0].id, 0, true)}>
+                {I.play({ s: 18 })}<span>Слушать</span>
+              </button>
+            ) : null}
+            {s.entityId ? (
+              <button className="amx-capsule" onClick={() => window.location.assign(ROUTES.entity(s.entityId as string))}>
+                {I.artist({ s: 18 })}<span>О личности</span>
+              </button>
+            ) : null}
           </div>
         ) : null}
         {s.bio ? <div style={{ fontSize: 14, color: "var(--g2)", marginTop: 14, textAlign: "left" }}>{s.bio}</div> : null}

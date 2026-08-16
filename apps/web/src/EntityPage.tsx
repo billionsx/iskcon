@@ -177,6 +177,8 @@ function Chip({ label, onClick }: { label: string; onClick?: () => void }) {
 }
 
 /* Золотой eyebrow — единая грамматика секций (как в HomeMore/LayerLabel). */
+type AudioVoice = { slug: string; name: string; n: number };
+
 function Eyebrow({ children, count }: { children: ReactNode; count?: number }) {
   return (
     <div style={{ display: "flex", alignItems: "baseline", gap: 8, marginBottom: 12 }}>
@@ -1120,6 +1122,25 @@ export default function EntityPage({ id, onBack, onOpen, onNavigate, onOpenColle
     return () => { alive = false; };
   }, [id]);
 
+  /* В8 · ЗВУК ЭТОЙ ЛИЧНОСТИ. Связь была односторонней: из плеера на карточку
+     вела, а карточка молчала. 38 личностей имеют записи — у Шрилы Прабхупады
+     1 234 лекции и 132 киртана — и человек на их карточке об этом не узнавал.
+     Пусто — секции нет: обещания без звука не даём (ЗКН-БТ001). */
+  const [audio, setAudio] = useState<{ katha: AudioVoice[]; kirtan: AudioVoice[] } | null>(null);
+  useEffect(() => {
+    let alive = true;
+    setAudio(null);
+    fetch(api(`/voices?entity=${encodeURIComponent(id)}`))
+      .then((r) => (r.ok ? r.json() : Promise.reject(new Error("http " + r.status))))
+      .then((d) => {
+        if (!alive) return;
+        const ka = (d?.katha as AudioVoice[]) ?? [], ki = (d?.kirtan as AudioVoice[]) ?? [];
+        setAudio(ka.length || ki.length ? { katha: ka, kirtan: ki } : null);
+      })
+      .catch(() => { /* полка просто не показывается */ });
+    return () => { alive = false; };
+  }, [id]);
+
   const groups = (() => {
     if (!data) return [];
     const map = new Map<string, { order: number; items: RelItem[] }>();
@@ -1596,6 +1617,30 @@ export default function EntityPage({ id, onBack, onOpen, onNavigate, onOpenColle
                       </section>
                     );
                   })()}
+                  {audio && (
+                    <section style={{ marginTop: 22 }}>
+                      <Eyebrow count={audio.katha.length + audio.kirtan.length}>Аудио</Eyebrow>
+                      <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+                        {[
+                          /* Пути сверены с parseStack оболочки (`play/MusicApp.tsx`):
+                             голос — `speaker/<slug>`, исполнитель — `kirtan-artist/<slug>`.
+                             Первая редакция писала `kartist` и вела в никуда. */
+                          ...audio.katha.map((v) => ({ ...v, kind: "Лекции", href: `/play/speaker/${v.slug}` })),
+                          ...audio.kirtan.map((v) => ({ ...v, kind: "Киртаны", href: `/play/kirtan-artist/${v.slug}` })),
+                        ].map((v) => (
+                          <button key={v.kind + v.slug} type="button"
+                            onClick={onNavigate ? () => onNavigate(v.href) : undefined}
+                            style={{ textAlign: "left", display: "flex", alignItems: "center", gap: 12, padding: "11px 13px", borderRadius: 14, border: "0.5px solid var(--color-hairline)", background: "var(--color-bg-2)", cursor: "pointer", color: "inherit", font: "inherit", width: "100%" }}>
+                            <span style={{ minWidth: 0, flex: 1 }}>
+                              <span style={{ display: "block", fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)", fontWeight: 600, color: "var(--color-label)" }}>{v.kind}</span>
+                              <span style={{ display: "block", marginTop: 2, fontFamily: "var(--font-text)", fontSize: "var(--text-footnote)", color: "var(--color-label-3)" }}>{v.n} записей · {v.name}</span>
+                            </span>
+                            <span aria-hidden style={{ color: "var(--color-label-3)", fontSize: "var(--text-body)", flexShrink: 0 }}>›</span>
+                          </button>
+                        ))}
+                      </div>
+                    </section>
+                  )}
                   {centers.length > 0 && (
                     <section style={{ marginTop: 22 }}>
                       <Eyebrow count={centers.length}>Центры</Eyebrow>

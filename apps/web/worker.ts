@@ -2715,6 +2715,44 @@ export default {
      * десятки килобайт; дорожки едут отдельно и только для открытого уровня
      * (/api/katha/tracks). «Есть что играть» теперь считается суммой `n` по
      * циклам, а не длиной массива дорожек. */
+    /* В8 · ОБРАТНАЯ ПОЛКА «АУДИО» НА КАРТОЧКЕ ЛИЧНОСТИ.
+       Связь голос↔личность была односторонней: из плеера на карточку вела
+       (у киртанов с В5), а карточка о звуке молчала. 38 личностей имеют
+       записи — Шрила Прабхупада 1 234 лекции и 132 киртана, Бхакти Вигьяна
+       Госвами 5 293 записи — и человек, стоящий на их карточке, не узнавал
+       об этом ничего. Здесь встречный конец: по entity_id считаем, что у
+       личности есть, и отдаём короткую сводку. Считаем ТОЛЬКО по одному
+       id — общий свод по всем личностям читает десять миллионов строк.
+       Пустой ответ — честный: полка не рисуется, обещания нет. */
+    /* Адрес намеренно `/api/voices?entity=`, а не `/api/entity/audio`:
+       `/entity/` — это адрес СТРАНИЦЫ личности, переехавший в корень
+       (ЗКН-Н025), и API не вправе занимать чужой префикс. Форма взята у
+       соседа по смыслу — `/api/centers?entity=`. */
+    if (url.pathname === "/api/voices") {
+      const id = (url.searchParams.get("entity") || "").trim();
+      if (!id) return json({ katha: [], kirtan: [] });
+      return edgeCached(request, ctx, async () => {
+        const [kaRes, kiRes] = await Promise.all([
+          env.DB.prepare(
+            `SELECT s.slug, s.name,
+                    (SELECT COUNT(*) FROM katha_tracks t WHERE t.speaker_slug = s.slug) AS n
+               FROM katha_speakers s WHERE s.entity_id = ?1`
+          ).bind(id).all<{ slug: string; name: string; n: number }>(),
+          env.DB.prepare(
+            `SELECT a.slug, a.name,
+                    (SELECT COUNT(*) FROM kirtan_tracks k
+                      WHERE k.artist_slug = a.slug AND k.broken = 0) AS n
+               FROM kirtan_artists a WHERE a.entity_id = ?1`
+          ).bind(id).all<{ slug: string; name: string; n: number }>(),
+        ]);
+        const keep = (r: { n: number }) => r.n > 0;
+        return json({
+          katha: (kaRes.results || []).filter(keep),
+          kirtan: (kiRes.results || []).filter(keep),
+        });
+      });
+    }
+
     if (url.pathname === "/api/katha/catalog") {
       return edgeCached(request, ctx, async () => {
       const [sRes, aRes] = await Promise.all([
