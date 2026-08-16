@@ -122,14 +122,37 @@ export function MiniPlayer({ onOpen }: { onOpen: () => void }) {
   /* В2: мини закрывается свайпом вниз (>60px) — как MiniPlayer:59 боевого.
      dismiss() останавливает движок; тап по мини по-прежнему раскрывает плеер. */
   const dragFrom = useRef<number | null>(null);
+  const trk = useRef<{ y: number; t: number }[]>([]);
   const [drag, setDrag] = useState(0);
   return (
     <div className="amx-mini" data-amx-mini onClick={() => cur && onOpen()}
-      style={drag > 0 ? { transform: `translateY(${Math.min(drag, 90)}px)`, opacity: Math.max(.25, 1 - drag / 140) } : undefined}
-      onPointerDown={(e) => { dragFrom.current = e.clientY; }}
-      onPointerMove={(e) => { if (dragFrom.current != null) { const d = e.clientY - dragFrom.current; if (d > 6) setDrag(d); } }}
-      onPointerUp={() => { const d = drag; dragFrom.current = null; setDrag(0); if (d > 60) p.dismiss(); }}
-      onPointerCancel={() => { dragFrom.current = null; setDrag(0); }}>
+      style={{
+        transform: drag > 0 ? `translateY(${Math.min(drag, 90)}px)` : undefined,
+        opacity: drag > 0 ? Math.max(.25, 1 - drag / 140) : undefined,
+        transition: dragFrom.current != null ? "none" : "transform .4s cubic-bezier(.32,.72,0,1), opacity .4s cubic-bezier(.32,.72,0,1)",
+      }}
+      onPointerDown={(e) => { dragFrom.current = e.clientY; trk.current = [{ y: e.clientY, t: performance.now() }]; }}
+      onPointerMove={(e) => {
+        if (dragFrom.current == null) return;
+        trk.current.push({ y: e.clientY, t: performance.now() });
+        if (trk.current.length > 12) trk.current.shift();
+        const d = e.clientY - dragFrom.current;
+        if (d > 6) setDrag(d);
+      }}
+      /* 🎞 Тот же закон, что у шторки: решает проекция, а не пройденный путь.
+         Мини — пилюля 48 высотой; требовать от неё 60 px хода значило
+         требовать движения длиннее её самой. */
+      onPointerUp={() => {
+        const tr = trk.current, last = tr[tr.length - 1];
+        let first = tr[0] || last;
+        if (last) for (const s2 of tr) { if (last.t - s2.t <= 100) { first = s2; break; } }
+        const dt = last && first ? last.t - first.t : 0;
+        const v = dt > 0 ? (last.y - first.y) / dt : 0;
+        const d = drag;
+        dragFrom.current = null; trk.current = []; setDrag(0);
+        if (d + v * 499 > 60) p.dismiss();   /* 🎞 та же проекция затухания */
+      }}
+      onPointerCancel={() => { dragFrom.current = null; trk.current = []; setDrag(0); }}>
       {cur && p.playing !== undefined && (p.playing || p.pos > 0) ? (
         <Cover id={cur.id} src={cur.cov} cls="m-art sm" />
       ) : (
@@ -226,9 +249,11 @@ export function FullPlayer({ open, onClose, onFav, favOn }: {
   const tipSeen = useRef(false);
   const [drag, setDrag] = useState(0);
   const dragFrom = useRef<number | null>(null);
+  const dragTrk = useRef<{ y: number; t: number }[]>([]);
   const lyrRef = useRef<HTMLDivElement | null>(null);
   const rootRef = useRef<HTMLDivElement | null>(null);
   const [morphing, setMorphing] = useState(true);
+  const [held, setHeld] = useState(false);   /* палец на стекле — переход выключен */
   const closing = useRef(false);
   const ghostRef = useRef<HTMLDivElement | null>(null);
 
@@ -349,15 +374,57 @@ export function FullPlayer({ open, onClose, onFav, favOn }: {
 
   if (!open || !cur) return null;
 
-  const onTS = (e: React.TouchEvent) => { dragFrom.current = e.touches[0].clientY; };
+  /* 🎞 ЖЕСТ РЕШАЕТСЯ СКОРОСТЬЮ, А НЕ ДЛИНОЙ.
+     Было: закрытие строго при drag > 130. Короткий быстрый флик — самое
+     естественное движение большого пальца — не срабатывал вовсе, и шторка
+     упрямо возвращалась. У Apple порог считается по ПРОЕКЦИИ: куда лист
+     уехал бы, если отпустить его сейчас и дать затухнуть. Формула
+     документирована Apple (WWDC 2018 «Designing Fluid Interfaces»):
+       project(v, rate) = (v / 1000) × rate / (1 − rate),  v в точках/СЕКУНДУ
+     при normal-rate 0.998 множитель равен 499 на скорость в точках/МС.
+     ⚠️ Первая редакция ставила сюда 6.25 — это шаг кадра, а не сумма
+     затухающего ряда; порядок расходился в восемьдесят раз, и проекция
+     не решала ничего. Поймано счётом по семи жестам, а не на глаз.
+     Скорость берётся не по всему жесту, а по последним 100 мс — палец
+     успевает передумать, и старт движения не должен решать за него. */
+  const DECEL_K = 499;
+  const DISMISS_AT = 130;
+  const vel = () => {
+    const tr = dragTrk.current;
+    if (tr.length < 2) return 0;
+    const last = tr[tr.length - 1];
+    let first = tr[0];
+    for (const s2 of tr) { if (last.t - s2.t <= 100) { first = s2; break; } }
+    const dt = last.t - first.t;
+    return dt > 0 ? (last.y - first.y) / dt : 0;   // px/мс
+  };
+  const track = (y: number) => {
+    const now = performance.now();
+    dragTrk.current.push({ y, t: now });
+    if (dragTrk.current.length > 12) dragTrk.current.shift();
+  };
+  /* Вверх лист не едет свободно: сопротивление растёт с ходом (резинка iOS).
+     Без неё шторку можно утащить за верх кадра, чего на iPhone не бывает. */
+  const rubber = (d: number) => (d >= 0 ? d : -Math.pow(-d, 0.72) * 0.5);
+
+  const onTS = (e: React.TouchEvent) => {
+    setHeld(true);
+    dragFrom.current = e.touches[0].clientY;
+    dragTrk.current = [];
+    track(e.touches[0].clientY);
+  };
   const onTM = (e: React.TouchEvent) => {
     if (dragFrom.current == null) return;
-    const d = e.touches[0].clientY - dragFrom.current;
-    if (d > 0) setDrag(d);
+    const y = e.touches[0].clientY;
+    track(y);
+    setDrag(rubber(y - dragFrom.current));
   };
   const onTE = () => {
-    if (drag > 130) requestClose(); else setDrag(0);
+    setHeld(false);
+    const v = vel();
+    if (drag + v * DECEL_K > DISMISS_AT) requestClose(); else setDrag(0);
     dragFrom.current = null;
+    dragTrk.current = [];
   };
 
   const seekFromEvent = (e: React.PointerEvent, cb: (r: number) => void, flag?: (on: boolean) => void) => {
@@ -398,8 +465,12 @@ export function FullPlayer({ open, onClose, onFav, favOn }: {
   return (<>
     <div ref={rootRef} className={"amx-pl" + (p.playing ? "" : " paused") + (morphing ? " morphing" : "")}
       style={{
-        transform: drag > 0 ? `translateY(${drag}px)` : undefined,
+        transform: drag !== 0 ? `translateY(${drag}px)` : undefined,
         borderRadius: drag > 4 ? 40 : 0,
+        /* Пока палец на стекле — лист идёт ЗА пальцем, без сглаживания:
+           перехода здесь нет. Отпустили — возврат едет измеренной кривой
+           (§5.2, 383 мс ровного выбега), а не прыгает в ноль. */
+        transition: held ? "none" : `transform ${CLOSE_MS}ms ${CLOSE_EASE}`,
       }}>
       {/* Фон плеера — тёплый золотой сумрак, ОДИН на все записи. Прежде он
           выводился из id обложки и менялся от песни к песне; при едином
