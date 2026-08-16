@@ -8,10 +8,27 @@ billionsx/eyes. Механизм закона переехал туда вмес
 репозитории закон остался бы документом без гейта. Здесь тот гейт, который
 охраняет то, что охранять осталось: САМУ СВЯЗЬ.
 
+⚠️ РЕДАКЦИЯ 16.08.2026 — ГЕЙТ ТРЕБОВАЛ МЁРТВЫЙ АДРЕС.
+
+10.08 департамент снял у себя все контуры, включая три reusable. Здесь тем
+же днём снесли три клиентских файла. Но этот гейт продолжал требовать
+`eyes.yml` с вызовом `eyes-review-reusable.yml` — файла, которого больше
+нет ни у кого. Требовать вызов мёртвого адреса значит держать `laws-lint`
+красным вечно и при этом не охранять НИЧЕГО: восстановленный `eyes.yml`
+падал бы на старте (startup_failure), и надзор молчал бы так, будто код
+чист. Так и вышло: main стоял красным шесть суток.
+
+Закон: гейт охраняет МЕХАНИЗМ, а не адрес. Контур ревью на pull request
+снят вместе со своим reusable честно — этот проект пишет прямо в main
+(один PR на тысячу деплоев), и ревью PR тут ничего не охраняло. Единственный
+живой надзор — `eyes-watch.yml`, он самодостаточен: сам клонирует
+департамент разреженно и сам зовёт `bin/eyes.py`. Его гейт и стережёт.
+
 Что проверяется (без сети, детерминированно):
-  1. `.github/workflows/eyes.yml` есть и зовёт reusable департамента;
-  2. в вызове объявлены `project` и `globs`, и глобы НЕ пустые — то есть
-     ревью правда смотрит на код, а не на воздух;
+  1. `.github/workflows/eyes-watch.yml` есть, берёт департамент из
+     billionsx/eyes разреженным клоном и читает храповик долга у него же;
+  2. надзор идёт по ДВУМ паспортам — приложение и оболочка плеера: пока
+     паспорт один, рост долга оболочки тонет в общем числе;
   3. `docs/EYES.md` есть и называет новый дом;
   4. каталога `bxad/` и воркфлоу `bxad-*.yml` здесь БОЛЬШЕ НЕТ — две копии
      департамента означали бы расщеплённое сознание: судит один, чинят
@@ -38,34 +55,45 @@ def read(p: Path) -> str:
     return p.read_text(encoding="utf-8") if p.exists() else ""
 
 
-# 1–2. вызов reusable департамента
-client = WF / "eyes.yml"
-if not client.exists():
-    errors.append("нет .github/workflows/eyes.yml — проект отключён от департамента; "
-                  "шаблон: billionsx/eyes → templates/eyes-client.yml")
+# 1–2. надзор над main — единственный живой контур департамента
+watch = WF / "eyes-watch.yml"
+if not watch.exists():
+    errors.append("нет .github/workflows/eyes-watch.yml — надзора над main нет вовсе; "
+                  "этот проект пишет прямо в ветку, повода ждать неоткуда, и "
+                  "молчание департамента будет читаться как чистота")
 else:
-    t = read(client)
-    if REUSABLE not in t:
-        errors.append(f"{client.name} не зовёт reusable департамента ({REUSABLE})")
-    m = re.search(r"^\s*project:\s*(\S+)", t, re.M)
-    if not m:
-        errors.append(f"{client.name}: не объявлен вход project — департамент не знает, "
-                      "чей паспорт брать")
-    else:
-        notes.append(f"паспорт проекта: {m.group(1)}")
-    g = re.search(r"^\s*globs:\s*\"?([^\"\n]+)\"?", t, re.M)
-    if not g:
-        errors.append(f"{client.name}: не объявлен вход globs — ревью смотреть некуда")
-    else:
-        pats = [x.strip() for x in g.group(1).split(",") if x.strip()]
-        empty = [x for x in pats
-                 if not globlib.glob(str(ROOT / x), recursive=True)]
-        if empty:
-            errors.append(f"{client.name}: глобы не находят ни одного файла — "
-                          f"связь пустая: {', '.join(empty)}")
+    w = read(watch)
+    if DEPT not in w:
+        errors.append("eyes-watch.yml не берёт департамент из " + DEPT)
+    # Слово «sparse» встречается и в `git sparse-checkout set`, поэтому одной
+    # подстроки мало: клон обязан быть И разреженным, И без блобов — иначе
+    # департамент фактически переезжает сюда целиком.
+    for token, why in (("--sparse", "клон не разреженный"),
+                       ("--filter=blob:none", "клон тянет блобы"),
+                       ("sparse-checkout set", "область клона не сужена")):
+        if token not in w:
+            errors.append(f"eyes-watch.yml: {why} ({token} нет) — копия "
+                          "департамента переезжает в этот репозиторий")
+    if "registry/state/ae-baseline.json" not in w:
+        errors.append("eyes-watch.yml не читает храповик долга у департамента — "
+                      "надзор без базы не отличит рост долга от его погашения")
+    if "raw.githubusercontent.com/billionsx/eyes" not in w:
+        errors.append("храповик берётся не из репозитория департамента — "
+                      "две базы разойдутся, и настоящую будет не найти")
+
+    # ── ДВА ПАСПОРТА (16.08.2026) ────────────────────────────────────────
+    # Оболочка плеера судится каноном iOS 26.5 и обязана иметь СВОЁ число.
+    # При одном паспорте её 131 находка тонула в 643 находках приложения:
+    # долг оболочки мог расти, а вердикт оставался зелёным.
+    for passport in ("iskcon", "iskcon-play"):
+        if f"--adapter {passport} " not in w:
+            errors.append(f"eyes-watch.yml не судит по паспорту {passport} — "
+                          "рост долга по нему был бы невидим")
         else:
-            hit = sum(len(globlib.glob(str(ROOT / x), recursive=True)) for x in pats)
-            notes.append(f"глобов {len(pats)}, под ревью файлов {hit}")
+            notes.append(f"паспорт под надзором: {passport}")
+    if w.count("--ratchet") < 2:
+        errors.append("храповик приложен не к каждому паспорту — паспорт без "
+                      "базы считает находки, но не краснеет на росте")
 
 # 3. дорожный указатель
 eyes_doc = ROOT / "docs" / "EYES.md"
@@ -83,24 +111,8 @@ stale = sorted(p.name for p in WF.glob("bxad-*.yml")) if WF.exists() else []
 if stale:
     errors.append("воркфлоу прежнего дома здесь: " + ", ".join(stale))
 
-# 5. пинг монитора
-# ── надзор на каждый коммит (второй вход: проект пишет прямо в main) ──
-watch = WF / "eyes-watch.yml"
-if not watch.exists():
-    errors.append("нет .github/workflows/eyes-watch.yml — надзор приходит только "
-                  "на pull request, а этот проект пишет прямо в main: департамент "
-                  "молчал бы не от чистоты, а от отсутствия повода")
-else:
-    w = read(watch)
-    if "billionsx/eyes" not in w:
-        errors.append("eyes-watch.yml не берёт департамент из billionsx/eyes")
-    if "registry/state/ae-baseline.json" not in w:
-        errors.append("eyes-watch.yml не читает храповик долга у департамента — "
-                      "надзор без базы не отличит рост долга от его погашения")
-    if "raw.githubusercontent.com/billionsx/eyes" not in w:
-        errors.append("храповик берётся не из репозитория департамента — "
-                      "две базы разойдутся, и настоящую будет не найти")
-
+# 5. слепое пятно надзора и пинг монитора
+if watch.exists():
     # ── СЛЕПОЕ ПЯТНО НАДЗОРА (05.08.2026) ────────────────────────────────
     # База долга живёт у департамента. Значит он может расширить зрение или
     # ужать базу У СЕБЯ — и клиент оказывается в долгу, не тронув ни строки.
