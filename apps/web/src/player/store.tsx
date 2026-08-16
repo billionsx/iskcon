@@ -333,13 +333,38 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
   const pendingRef = useRef<{ mode: AudioMode; chapter: number | null; lila?: string; ref?: string | null; file?: string; expand?: boolean; index?: number } | null>(null);
   const restoreRef = useRef<{ time: number } | null>(null);
 
+  const primedRef = useRef<string>("");   /* адрес уже согретого следующего трека */
   const tracks = manifest ? (manifest.modes[mode] ?? manifest.modes.plain).tracks : [];
   const track = tracks[index] ?? null;
 
   // ── engine (создаётся один раз) ──
   useEffect(() => {
     const eng = createWebEngine({
-      onTime: (t) => { timeRef.current = t; setCurrentTime(t); },
+      onTime: (t) => {
+        timeRef.current = t; setCurrentTime(t);
+        /* ── ПРОГРЕВ СЛЕДУЮЩЕГО (16.08.2026) ────────────────────────────
+           Следующий трек начинал грузиться только ПОСЛЕ конца текущего:
+           на книге по главам и на лекции по частям это тишина в каждом
+           стыке — чтение прерывается там, где в записи паузы нет.
+           За 45 секунд до конца греем следующий адрес на запасном
+           элементе; движок при переходе просто меняет элементы местами.
+           Адрес берётся через relIndex(1) — тот же, что и у перехода,
+           поэтому шаффл, повтор голоса и границы разделов учтены сами.
+           Греем один раз на трек: primedRef держит уже согретый адрес. */
+        const d = durRef.current;
+        if (d > 0 && d - t <= 45 && t > 0) {
+          const ni = relIndex(1);
+          if (ni >= 0) {
+            const m = manifestRef.current;
+            const list = m ? (m.modes[modeRef.current] ?? m.modes.plain).tracks : [];
+            const u = list[ni]?.url;
+            if (u && primedRef.current !== u) {
+              primedRef.current = u;
+              engineRef.current?.prime(u);
+            }
+          }
+        }
+      },
       onDuration: (d) => { if (d && isFinite(d)) { durRef.current = d; setDuration(d); } },
       onPlay: () => setPlaying(true),
       onPause: () => setPlaying(false),
