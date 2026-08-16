@@ -497,9 +497,7 @@
    "amx": true,
    "scripts": 2,
    "gotoStatus": 200,
-   "logs": [
-    "error: Error while trying to use the following icon from the Manifest: https://iskcon-web.ceo-5cb.workers.dev/icon-192.png (Download error or resource isn't a valid im"
-   ],
+   "logs": [],
    "errs": []
   },
   ".amx": [
@@ -966,9 +964,9 @@
  "mini": {
   "__meta": {
    "href": "https://iskcon-web.ceo-5cb.workers.dev/music",
-   "title": "ISKCON ONE LOVE. ИСККОН.",
-   "bodyLen": 7612,
-   "head": "Книги\nПродолжить слушать\nБхагавад-гита как она есть\nОбзор армий на поле битвы Курукшетра\nШрила Прабхупада\n1 / 7\nБхагавад-гита\nкак она есть\nBhagavad-gītā·Песнь Бога\n\nЕго Божественная Милость Абхай Чара",
+   "title": "EFF:mini",
+   "bodyLen": 7529,
+   "head": "Книги\nШрила Прабхупада\n2 / 7\nБхагавад-гита\nкак она есть\nBhagavad-gītā·Песнь Бога\n\nЕго Божественная Милость Абхай Чаранаравинда Бхактиведанта Свами Шрила Прабхупада, Ачарья-основатель Международного об",
    "amx": true,
    "scripts": 2,
    "gotoStatus": 200,
@@ -986,7 +984,7 @@
     "letterSpacing": "normal",
     "fontWeight": "400",
     "color": "rgb(255, 255, 255)",
-    "text": "Книги\nПродолжить слушать\nБхагавад-гита к"
+    "text": "Книги\nШрила Прабхупада\n2 / 7\nБхагавад-ги"
    }
   ],
   ".amx-top": [
@@ -1028,23 +1026,11 @@
     "letterSpacing": "-0.45px",
     "fontWeight": "700",
     "color": "rgb(255, 255, 255)",
-    "text": "Продолжить слушать"
-   },
-   {
-    "left": 0,
-    "top": 229,
-    "width": 393,
-    "height": 65,
-    "fontSize": "20px",
-    "lineHeight": "25px",
-    "letterSpacing": "-0.45px",
-    "fontWeight": "700",
-    "color": "rgb(255, 255, 255)",
     "text": "Шрила Прабхупада"
    },
    {
     "left": 0,
-    "top": 741.25,
+    "top": 580.25,
     "width": 393,
     "height": 65,
     "fontSize": "20px",
@@ -1056,7 +1042,7 @@
    },
    {
     "left": 0,
-    "top": 1302.33,
+    "top": 1141.33,
     "width": 393,
     "height": 65,
     "fontSize": "20px",
@@ -1068,7 +1054,7 @@
    },
    {
     "left": 0,
-    "top": 1814.58,
+    "top": 1653.58,
     "width": 393,
     "height": 65,
     "fontSize": "20px",
@@ -1080,7 +1066,7 @@
    },
    {
     "left": 0,
-    "top": 2421.86,
+    "top": 2260.86,
     "width": 393,
     "height": 65,
     "fontSize": "20px",
@@ -1094,7 +1080,7 @@
   ".amx-showcase-i": [
    {
     "left": 20,
-    "top": 294,
+    "top": 133,
     "width": 353,
     "height": 441.25,
     "fontSize": "16px",
@@ -1102,11 +1088,11 @@
     "letterSpacing": "normal",
     "fontWeight": "400",
     "color": "rgb(255, 255, 255)",
-    "text": "1 / 7\nБхагавад-гита\nкак она есть\nBhagava"
+    "text": "2 / 7\nБхагавад-гита\nкак она есть\nBhagava"
    },
    {
     "left": 385,
-    "top": 294,
+    "top": 133,
     "width": 353,
     "height": 441.25,
     "fontSize": "16px",
@@ -1114,11 +1100,11 @@
     "letterSpacing": "normal",
     "fontWeight": "400",
     "color": "rgb(255, 255, 255)",
-    "text": "1 / 25\nШримад-\nБхагаватам\nЗрелый плод др"
+    "text": "2 / 25\nШримад-\nБхагаватам\nЗрелый плод др"
    },
    {
     "left": 750,
-    "top": 294,
+    "top": 133,
     "width": 353,
     "height": 441.25,
     "fontSize": "16px",
@@ -1126,11 +1112,11 @@
     "letterSpacing": "normal",
     "fontWeight": "400",
     "color": "rgb(255, 255, 255)",
-    "text": "1 / 20\nШри Чайтанья-\nчаритамрита\nНектар "
+    "text": "2 / 20\nШри Чайтанья-\nчаритамрита\nНектар "
    },
    {
     "left": 1115,
-    "top": 294,
+    "top": 133,
     "width": 353,
     "height": 441.25,
     "fontSize": "16px",
@@ -1142,7 +1128,7 @@
    },
    {
     "left": 1480,
-    "top": 294,
+    "top": 133,
     "width": 353,
     "height": 441.25,
     "fontSize": "16px",
@@ -1154,7 +1140,7 @@
    },
    {
     "left": 1845,
-    "top": 294,
+    "top": 133,
     "width": 353,
     "height": 441.25,
     "fontSize": "16px",
@@ -1166,7 +1152,7 @@
    },
    {
     "left": 2210,
-    "top": 294,
+    "top": 133,
     "width": 353,
     "height": 441.25,
     "fontSize": "16px",
@@ -1178,7 +1164,7 @@
    },
    {
     "left": 2575,
-    "top": 294,
+    "top": 133,
     "width": 353,
     "height": 441.25,
     "fontSize": "16px",
@@ -1190,7 +1176,7 @@
    },
    {
     "left": 20,
-    "top": 806.25,
+    "top": 645.25,
     "width": 353,
     "height": 441.25,
     "fontSize": "16px",
@@ -1202,7 +1188,7 @@
    },
    {
     "left": 385,
-    "top": 806.25,
+    "top": 645.25,
     "width": 353,
     "height": 441.25,
     "fontSize": "16px",
@@ -1214,7 +1200,7 @@
    },
    {
     "left": 750,
-    "top": 806.25,
+    "top": 645.25,
     "width": 353,
     "height": 441.25,
     "fontSize": "16px",
@@ -1226,7 +1212,7 @@
    },
    {
     "left": 1115,
-    "top": 806.25,
+    "top": 645.25,
     "width": 353,
     "height": 441.25,
     "fontSize": "16px",
@@ -2234,7 +2220,9 @@
    "amx": true,
    "scripts": 2,
    "gotoStatus": 200,
-   "logs": [],
+   "logs": [
+    "error: Error while trying to use the following icon from the Manifest: https://iskcon-web.ceo-5cb.workers.dev/icon-192.png (Download error or resource isn't a valid im"
+   ],
    "errs": []
   },
   ".amx": [
