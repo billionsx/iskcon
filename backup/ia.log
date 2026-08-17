@@ -1,0 +1,62 @@
+urllib3.exceptions.ResponseError: too many 502 error responses
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/usr/lib/python3/dist-packages/requests/adapters.py", line 486, in send
+    resp = conn.urlopen(
+           ^^^^^^^^^^^^^
+  File "/usr/lib/python3/dist-packages/urllib3/connectionpool.py", line 958, in urlopen
+    return self.urlopen(
+           ^^^^^^^^^^^^^
+  File "/usr/lib/python3/dist-packages/urllib3/connectionpool.py", line 875, in urlopen
+    return self.urlopen(
+           ^^^^^^^^^^^^^
+  File "/usr/lib/python3/dist-packages/urllib3/connectionpool.py", line 958, in urlopen
+    return self.urlopen(
+           ^^^^^^^^^^^^^
+  File "/usr/lib/python3/dist-packages/urllib3/connectionpool.py", line 948, in urlopen
+    retries = retries.increment(method, url, response=response, _pool=self)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3/dist-packages/urllib3/util/retry.py", line 517, in increment
+    raise MaxRetryError(_pool, url, reason) from reason  # type: ignore[arg-type]
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+urllib3.exceptions.MaxRetryError: HTTPSConnectionPool(host='archive.org', port=443): Max retries exceeded with url: /metadata/iskcone-backup-20260817 (Caused by ResponseError('too many 502 error responses'))
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/runner/.local/lib/python3.12/site-packages/internetarchive/session.py", line 431, in get_metadata
+    resp = self.get(url, auth=s3_auth, **request_kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3/dist-packages/requests/sessions.py", line 602, in get
+    return self.request("GET", url, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3/dist-packages/requests/sessions.py", line 589, in request
+    resp = self.send(prep, **send_kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/.local/lib/python3.12/site-packages/internetarchive/session.py", line 806, in send
+    raise e
+  File "/home/runner/.local/lib/python3.12/site-packages/internetarchive/session.py", line 803, in send
+    reraise_modify(e, e.request.url, prepend=False)  # type: ignore
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/.local/lib/python3.12/site-packages/internetarchive/session.py", line 800, in send
+    r = super().send(request, **kwargs)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3/dist-packages/requests/sessions.py", line 703, in send
+    r = adapter.send(request, **kwargs)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3/dist-packages/requests/adapters.py", line 510, in send
+    raise RetryError(e, request=request)
+requests.exceptions.RetryError: (MaxRetryError("HTTPSConnectionPool(host='archive.org', port=443): Max retries exceeded with url: /metadata/iskcone-backup-20260817 (Caused by ResponseError('too many 502 error responses'))"), 'https://archive.org/metadata/iskcone-backup-20260817')
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "<stdin>", line 10, in <module>
+  File "/home/runner/.local/lib/python3.12/site-packages/internetarchive/session.py", line 404, in get_item
+    item_metadata = self.get_metadata(identifier, request_kwargs) or {}
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/.local/lib/python3.12/site-packages/internetarchive/session.py", line 436, in get_metadata
+    raise type(exc)(error_msg)
+requests.exceptions.RetryError: Error retrieving metadata from https://archive.org/metadata/iskcone-backup-20260817, (MaxRetryError("HTTPSConnectionPool(host='archive.org', port=443): Max retries exceeded with url: /metadata/iskcone-backup-20260817 (Caused by ResponseError('too many 502 error responses'))"), 'https://archive.org/metadata/iskcone-backup-20260817')
