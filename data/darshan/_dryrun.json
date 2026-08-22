@@ -1,0 +1,62 @@
+{
+  "mode": "live",
+  "at": "2026-08-22T17:16:48.942Z",
+  "channel": "@iskcone",
+  "db_rows": 130,
+  "progress": [],
+  "items": [
+    {
+      "slug": "mayapur",
+      "kind": "site",
+      "date": "2026-08-22",
+      "temple_name": "ИСККОН Маяпур · Шри Дхама Маяпур",
+      "deities": "Джайа Панча-таттва · Радха-Мадхава и Аштасакхи · Шри Нрисимхадев",
+      "src_channel": "site:mayapur",
+      "src_post_id": "album/656",
+      "src_url": "https://www.mayapur.com/media/album/656",
+      "gallery_name": "Daily Darshan",
+      "photo_count": 10,
+      "albums_planned": 1,
+      "photos": [
+        "https://www.mayapur.com/storage/albums/656/adtJ1qpd_image.jpg",
+        "https://www.mayapur.com/storage/albums/656/3zJHYIeQ_image.jpg",
+        "https://www.mayapur.com/storage/albums/656/AEf3jbRc_image.jpg",
+        "https://www.mayapur.com/storage/albums/656/B9eRgL3g_image.jpg",
+        "https://www.mayapur.com/storage/albums/656/lJmbBIvr_image.jpg",
+        "https://www.mayapur.com/storage/albums/656/Gq9sK5PY_image.jpg",
+        "https://www.mayapur.com/storage/albums/656/e2tTaXSS_image.jpg",
+        "https://www.mayapur.com/storage/albums/656/QoHMkmvP_image.jpg",
+        "https://www.mayapur.com/storage/albums/656/snu1GWkA_image.jpg",
+        "https://www.mayapur.com/storage/albums/656/cF1C9MP6_image.jpg"
+      ],
+      "caption_preview": "<b>Радха-Мадхава и Аштасакхи · Панча-таттва · Прахлада-Нрисимхадев</b>\n\nЕжедневный даршан\n\nИСККОН Маяпур\n\n<a href=\"https://t.me/iskcone\">ISKCON ONE LOVE</a>",
+      "posted": "skip (dedup)"
+    },
+    {
+      "slug": "vrindavan",
+      "kind": "site",
+      "date": "2026-08-22",
+      "temple_name": "ИСККОН Вриндаван · Шри Шри Кришна-Баларам Мандир",
+      "deities": "Джайа Гаура Нитай · Кришна Баларам · Лалита Вишакха Радхе Шьям",
+      "src_channel": "site:iskconvrindavan",
+      "src_post_id": "2026-08-22/2",
+      "src_url": "https://iskconvrindavan.com/daily-darshan-gallery/2026-08-22/2/sringar-darshan",
+      "gallery_name": "Sringar Darshan",
+      "photo_count": 22,
+      "albums_planned": 1,
+      "photos": [
+        "https://cdn.iskconvrindavan.com/static/static-_296a897a0c8141e.jpg",
+        "https://cdn.iskconvrindavan.com/static/static-_256a897a0df05e4.jpg",
+        "https://cdn.iskconvrindavan.com/static/static-_326a897a12721aa.jpg",
+        "https://cdn.iskconvrindavan.com/static/static-_756a897a10e36ae.jpg",
+        "https://cdn.iskconvrindavan.com/static/static-_416a897a1574cb3.jpg",
+        "https://cdn.iskconvrindavan.com/static/static-_636a897a1a02f50.jpg",
+        "https://cdn.iskconvrindavan.com/static/static-_896a897a1b2e3e4.jpg",
+        "https://cdn.iskconvrindavan.com/static/static-_896a897a16d23f7.jpg",
+        "https://cdn.iskconvrindavan.com/static/static-_786a897a18511d1.jpg"
+      ],
+      "caption_preview": "<b>Джайа Гаура Нитай · Кришна Баларам · Лалита Вишакха Радхе Шьям</b>\n\nЕжедневный даршан\n\nИСККОН Вриндаван · Шри Шри Кришна-Баларам Мандир\n\n<a href=\"https://t.me/iskcone\">ISKCON ONE LOVE</a>",
+      "posted": "skip (dedup)"
+    }
+  ]
+}
