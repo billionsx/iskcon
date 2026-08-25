@@ -1,0 +1,97 @@
+name: d1-explain
+
+# Приговор каждому прожорливому запросу из замера.
+#
+# У D1 «прочитанная строка» — это строка, ПРОСМОТРЕННАЯ движком, а не отданная
+# в ответ. Запрос без подходящего индекса читает таблицу целиком: тысячи строк
+# ради одной. Отличить одно от другого умеет только EXPLAIN QUERY PLAN:
+#   SCAN <table>                — проход всей таблицы;
+#   SEARCH <table> USING INDEX  — попадание по индексу.
+# Разница между ними и есть миллиарды из замера.
+#
+# Здесь же снимается схема (sqlite_master): индексы, внешние ключи и триггеры.
+# Триггер с несвязанным подзапросом читает таблицу на КАЖДУЮ вставленную строку —
+# в отчёте аналитики это выглядит как «INSERT прочитал 76 000 строк».
+#
+# Сами эти запросы стоят десятки строк: sqlite_master мал, EXPLAIN ничего не
+# исполняет. Результат коммитится в docs/d1-quota/ — логи Actions лежат на
+# нехостящихся доменах и каналом наблюдения быть не могут.
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: d1-explain
+
+jobs:
+  explain:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Схема и планы
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: d5cbe19470dc38599873eabfe148e6d1
+        run: |
+          set +e
+          DB=6226aded-dd03-4e74-977f-9cd0b509e73d
+          OUT=docs/d1-quota/explain.md
+          mkdir -p docs/d1-quota
+          echo "# Схема и планы запросов — $(date -u +%Y-%m-%dT%H)Z" > "$OUT"
+          echo >> "$OUT"
+
+          q() {
+            echo "## $1" >> "$OUT"
+            echo '```' >> "$OUT"
+            npx -y wrangler@latest d1 execute "$DB" --remote --json \
+              --command "$2" >> "$OUT" 2>&1
+            echo '```' >> "$OUT"
+            echo >> "$OUT"
+          }
+
+          q "Схема katha_* (таблицы, индексы, триггеры)" \
+            "SELECT type,name,tbl_name,sql FROM sqlite_master WHERE tbl_name LIKE 'katha%' OR name LIKE 'katha%'"
+
+          q "Размеры участников" \
+            "SELECT 'katha_tracks' t, COUNT(*) n FROM katha_tracks UNION ALL SELECT 'katha_albums', COUNT(*) FROM katha_albums"
+
+          q "Внешние ключи katha_tracks" \
+            "PRAGMA foreign_key_list(katha_tracks)"
+
+          q "Индексы katha_tracks" \
+            "PRAGMA index_list(katha_tracks)"
+
+          q "ПЛАН · INSERT ... ON CONFLICT(id) DO UPDATE (главный пожиратель, 98.7% чтений)" \
+            "EXPLAIN QUERY PLAN INSERT INTO katha_tracks (id,speaker_slug,album_id,identifier,file,title,duration,msg_id,sort) VALUES ('x','x','x','x','x','x',0,0,0) ON CONFLICT(id) DO UPDATE SET title=excluded.title, duration=excluded.duration, sort=excluded.sort, album_id=excluded.album_id"
+
+          q "ПЛАН · опора ingest на базу (d1_known)" \
+            "EXPLAIN QUERY PLAN SELECT b.id AS aid, t.file, t.duration FROM katha_tracks t JOIN katha_albums b ON b.id = t.album_id WHERE t.speaker_slug = 'x'"
+
+          q "ПЛАН · COUNT(*) katha_tracks" \
+            "EXPLAIN QUERY PLAN SELECT COUNT(*) c FROM katha_tracks"
+
+          q "Схема verse_tokens / tilda_assets (полные выборки без WHERE)" \
+            "SELECT type,name,tbl_name FROM sqlite_master WHERE tbl_name IN ('verse_tokens','tilda_assets','verses','verse_texts')"
+
+          cat "$OUT"
+
+      - name: Отчёт в репозиторий
+        if: always()
+        run: |
+          git config user.email ceo@billionsx.com
+          git config user.name "Billions X"
+          git add docs/d1-quota || true
+          git diff --cached --quiet && echo "нечего коммитить" && exit 0
+          git commit -m "d1: схема и планы запросов [skip ci]"
+          for i in 1 2 3 4 5 6; do
+            git pull --rebase -q origin main && git push origin HEAD:main && exit 0
+            sleep 5
+          done
+          exit 1
