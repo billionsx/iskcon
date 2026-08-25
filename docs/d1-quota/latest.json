@@ -1,10 +1,10 @@
 {
- "measured_at": "2026-08-25T09Z",
+ "measured_at": "2026-08-25T10Z",
  "window_24h": {
-  "from": "2026-08-24T09:00:00Z",
-  "to": "2026-08-25T09:00:00Z",
-  "rowsRead": 7459557715,
-  "rowsWritten": 3222544
+  "from": "2026-08-24T10:00:00Z",
+  "to": "2026-08-25T10:00:00Z",
+  "rowsRead": 7607108237,
+  "rowsWritten": 3268767
  },
  "target": {
   "rowsRead": 500000,
@@ -16,10 +16,10 @@
  },
  "per_day_utc": {
   "2026-08-25": {
-   "rowsRead": 3105552234,
-   "rowsWritten": 1314624,
-   "readQueries": 1504,
-   "writeQueries": 41508,
+   "rowsRead": 3253102756,
+   "rowsWritten": 1360847,
+   "readQueries": 3718,
+   "writeQueries": 42590,
    "hours": 10
   },
   "2026-08-24": {
@@ -30,23 +30,23 @@
    "hours": 24
   },
   "2026-08-23": {
-   "rowsRead": 4939678068,
-   "rowsWritten": 2164173,
-   "readQueries": 575,
-   "writeQueries": 68325,
-   "hours": 15
+   "rowsRead": 4610415188,
+   "rowsWritten": 2019997,
+   "readQueries": 551,
+   "writeQueries": 63767,
+   "hours": 14
   }
  },
  "top_queries": [
   {
-   "count": 101389,
+   "count": 97945,
    "dimensions": {
     "query": "INSERT INTO katha_tracks (id,speaker_slug,album_id,identifier,file,title,duration,msg_id,sort) VALUES (?1,?2,?3,?4,?5,?6,?7,?8,?9),(?10,?11,?12,?13,?14,?15,?16,?17,?18),(?19,?20,?21,?22,?23,?24,?25,?26,?27),(?28,?29,?30,?31,?32,?33,?34,?35,?36),(?37,?38,?39,?40,?41,?42,?43,?44,?45),(?46,?47,?48,?49,?50,?51,?52,?53,?54),(?55,?56,?57,?58,?59,?60,?61,?62,?63),(?64,?65,?66,?67,?68,?69,?70,?71,?72),(?73,?74,?75,?76,?77,?78,?79,?80,?81),(?82,?83,?84,?85,?86,?87,?88,?89,?90),(?91,?92,?93,?94,?95,?96,?97,?98,?99) ON CONFLICT(id) DO UPDATE SET title=excluded.title, duration=excluded.duration,\n           sort=excluded.sort, album_id=excluded.album_id"
    },
    "sum": {
-    "queryDurationMs": 1844760.438,
-    "rowsRead": 7706577890,
-    "rowsWritten": 3345837
+    "queryDurationMs": 1784008.1005000002,
+    "rowsRead": 7444799450,
+    "rowsWritten": 3232185
    }
   },
   {
@@ -66,8 +66,52 @@
     "query": "SELECT * FROM \"tilda_assets\" LIMIT ? OFFSET ?"
    },
    "sum": {
-    "queryDurationMs": 3969.7270999999996,
+    "queryDurationMs": 3969.727100000001,
     "rowsRead": 30852800,
+    "rowsWritten": 0
+   }
+  },
+  {
+   "count": 511,
+   "dimensions": {
+    "query": "SELECT v.id, v.ref, v.devanagari, v.translit, vt.translation, vt.purport\n         FROM verses v\n         LEFT JOIN verse_texts vt ON vt.verse_id = v.id AND vt.edition_id = ?1\n         WHERE v.work_id = ?2 AND v.division_id = ?3\n         ORDER BY v.ordinal"
+   },
+   "sum": {
+    "queryDurationMs": 8545.590800000002,
+    "rowsRead": 6489412,
+    "rowsWritten": 0
+   }
+  },
+  {
+   "count": 12,
+   "dimensions": {
+    "query": "SELECT MAX(0, COUNT(*) - 21) AS n FROM entity_profiles p, json_tree(p.longform) t\n                  WHERE json_valid(p.longform) AND t.key = 'ref'\n                    AND t.path LIKE '%quotes%'\n                    AND NOT EXISTS (\n                      SELECT 1 FROM book_catalog b\n                      WHERE b.readable = 1 AND instr(t.atom, substr(b.title, 1, 12)) > 0)\n                    AND NOT EXISTS (\n                      SELECT 1 FROM prayers pr\n                      WHERE pr.name IS NOT NULL AND length(pr.name) > 8\n                        AND instr(t.atom, substr(pr.name, 1, 10)) > 0)\n                    AND NOT EXISTS (\n                      SELECT 1 FROM entity_names n\n                      WHERE length(n.value) > 8 AND instr(t.atom, n.value) > 0)"
+   },
+   "sum": {
+    "queryDurationMs": 775.0896,
+    "rowsRead": 3420972,
+    "rowsWritten": 0
+   }
+  },
+  {
+   "count": 351,
+   "dimensions": {
+    "query": "SELECT v.id, v.ref, v.ordinal, v.devanagari, v.translit, vt.translation, vt.purport\n     FROM verses v\n     JOIN divisions d ON d.id = v.division_id\n     LEFT JOIN verse_texts vt ON vt.verse_id = v.id AND vt.edition_id = ?\n     WHERE v.work_id = ? AND d.number = ?\n     ORDER BY v.ordinal"
+   },
+   "sum": {
+    "queryDurationMs": 1543.6309000000003,
+    "rowsRead": 2787026,
+    "rowsWritten": 0
+   }
+  },
+  {
+   "count": 8,
+   "dimensions": {
+    "query": "SELECT COUNT(*) AS n FROM entity_profiles p, json_tree(p.longform) t\n                  WHERE json_valid(p.longform) AND t.key='ref'\n                    AND (t.path LIKE '%quotes%' OR t.path LIKE '%cite%')\n                    AND t.atom NOT GLOB '*[0-9]*'\n                    AND EXISTS (SELECT 1 FROM json_tree(p.longform) x\n                                WHERE x.path = t.path AND x.key='t' AND x.atom IS NOT NULL)"
+   },
+   "sum": {
+    "queryDurationMs": 681.8384,
+    "rowsRead": 2551576,
     "rowsWritten": 0
    }
   },
@@ -88,9 +132,20 @@
     "query": "INSERT INTO katha_tracks (id,speaker_slug,album_id,identifier,file,title,duration,msg_id,sort) VALUES (?1,?2,?3,?4,?5,?6,?7,?8,?9),(?10,?11,?12,?13,?14,?15,?16,?17,?18) ON CONFLICT(id) DO UPDATE SET title=excluded.title, duration=excluded.duration,\n           sort=excluded.sort, album_id=excluded.album_id"
    },
    "sum": {
-    "queryDurationMs": 745.0011000000002,
+    "queryDurationMs": 745.0011,
     "rowsRead": 2390860,
     "rowsWritten": 1038
+   }
+  },
+  {
+   "count": 24,
+   "dimensions": {
+    "query": "SELECT COUNT(*) AS n FROM entity_profiles p, json_tree(p.longform) t\n                  WHERE json_valid(p.longform) AND t.key='by'\n                    AND t.atom IN ('chaitanya-charitamrita','srimad-bhagavatam','chaitanya-bhagavata')"
+   },
+   "sum": {
+    "queryDurationMs": 655.3032000000001,
+    "rowsRead": 1513560,
+    "rowsWritten": 0
    }
   },
   {
@@ -105,24 +160,123 @@
    }
   },
   {
-   "count": 110,
+   "count": 104,
    "dimensions": {
     "query": "SELECT b.id AS aid, t.file, t.duration FROM katha_tracks t JOIN katha_albums b ON b.id = t.album_id WHERE t.speaker_slug = ?1"
    },
    "sum": {
-    "queryDurationMs": 4288.6351,
-    "rowsRead": 1342110,
+    "queryDurationMs": 4072.1449,
+    "rowsRead": 1268904,
     "rowsWritten": 0
    }
   },
   {
-   "count": 82,
+   "count": 297,
+   "dimensions": {
+    "query": "SELECT t.verse_id, t.term, t.gloss\n     FROM verse_tokens t\n     JOIN verses v ON v.id = t.verse_id\n     JOIN divisions d ON d.id = v.division_id\n     WHERE v.work_id = ? AND d.number = ?\n     ORDER BY t.verse_id, t.ordinal"
+   },
+   "sum": {
+    "queryDurationMs": 480.40459999999996,
+    "rowsRead": 885768,
+    "rowsWritten": 0
+   }
+  },
+  {
+   "count": 439,
+   "dimensions": {
+    "query": "SELECT t.verse_id, t.term, t.gloss FROM verse_tokens t\n         JOIN verses v ON v.id = t.verse_id\n         WHERE v.division_id = ?1 ORDER BY t.verse_id, t.ordinal"
+   },
+   "sum": {
+    "queryDurationMs": 1294.1302999999998,
+    "rowsRead": 681503,
+    "rowsWritten": 0
+   }
+  },
+  {
+   "count": 10,
+   "dimensions": {
+    "query": "SELECT COUNT(*) AS n FROM entity_profiles p, json_tree(p.longform) t\n                  WHERE json_valid(p.longform) AND t.atom IS NOT NULL\n                    AND (t.atom LIKE '%Шри Чайтанья Махапрабху%'\n                      OR t.atom LIKE '%Шри Чайтаньи Махапрабху%'\n                      OR t.atom LIKE '%Шри Чайтанье Махапрабху%'\n                      OR t.atom LIKE '%Шри Чайтаньей Махапрабху%')\n                    AND NOT (t.key IN ('t','translit','verse','sanskrit','word_by_word')\n                             AND (t.path LIKE '%quote%' OR t.path LIKE '%cite%'\n                                  OR t.path LIKE '%verse%'))"
+   },
+   "sum": {
+    "queryDurationMs": 1106.426,
+    "rowsRead": 635280,
+    "rowsWritten": 0
+   }
+  },
+  {
+   "count": 83,
    "dimensions": {
     "query": "SELECT COUNT(*) c FROM katha_tracks"
    },
    "sum": {
-    "queryDurationMs": 215.88299999999998,
-    "rowsRead": 566456,
+    "queryDurationMs": 223.9793,
+    "rowsRead": 573364,
+    "rowsWritten": 0
+   }
+  },
+  {
+   "count": 8,
+   "dimensions": {
+    "query": "SELECT COUNT(*) AS n FROM verse_texts vt JOIN verses v ON v.id = vt.verse_id\n                  WHERE COALESCE(v.translit,'') <> ''\n                    AND length(COALESCE(vt.translation,'')) > 2500"
+   },
+   "sum": {
+    "queryDurationMs": 1391.4776,
+    "rowsRead": 552536,
+    "rowsWritten": 0
+   }
+  },
+  {
+   "count": 2,
+   "dimensions": {
+    "query": "SELECT COUNT(*) AS n\n                  FROM verses v\n                  LEFT JOIN verse_texts t ON t.verse_id = v.id\n                  JOIN book_catalog b ON b.id = v.work_id AND b.readable = 1\n                  WHERE COALESCE(t.translation, '') = ''"
+   },
+   "sum": {
+    "queryDurationMs": 298.9596,
+    "rowsRead": 531850,
+    "rowsWritten": 0
+   }
+  },
+  {
+   "count": 8,
+   "dimensions": {
+    "query": "SELECT COUNT(*) AS n FROM entity_profiles p, json_tree(p.longform) t\n                  WHERE json_valid(p.longform) AND t.key='t'\n                    AND t.path LIKE '%quote%' AND length(t.atom) > 1500"
+   },
+   "sum": {
+    "queryDurationMs": 305.5504,
+    "rowsRead": 504520,
+    "rowsWritten": 0
+   }
+  },
+  {
+   "count": 6,
+   "dimensions": {
+    "query": "SELECT COUNT(*) AS n FROM entity_profiles p, json_tree(p.longform) t\n                  WHERE json_valid(p.longform) AND t.atom IS NOT NULL\n                    AND (t.key IN ('ref','to','h')\n                         AND (instr(t.atom, 'docs/sources/') > 0\n                              OR instr(t.atom, '.txt') > 0))"
+   },
+   "sum": {
+    "queryDurationMs": 154.72500000000002,
+    "rowsRead": 378390,
+    "rowsWritten": 0
+   }
+  },
+  {
+   "count": 5,
+   "dimensions": {
+    "query": "SELECT COUNT(*) AS n FROM entity_profiles p, json_tree(p.longform) t\n                  WHERE json_valid(p.longform) AND t.key='t' AND t.path LIKE '%quote%'\n                    AND length(t.atom) > 80\n                    AND substr(rtrim(t.atom), -1) NOT IN ('.','!','?','»','\"',':',';','…',')',']','”','’')\n                    AND instr(substr(t.atom, -25), char(772)) = 0\n                    AND instr(substr(t.atom, -25), char(803)) = 0\n                    AND instr(substr(t.atom, -25), char(775)) = 0"
+   },
+   "sum": {
+    "queryDurationMs": 208.43699999999998,
+    "rowsRead": 333720,
+    "rowsWritten": 0
+   }
+  },
+  {
+   "count": 5,
+   "dimensions": {
+    "query": "SELECT COUNT(*) AS n FROM entity_profiles p, json_tree(p.longform) t\n                  WHERE json_valid(p.longform) AND t.key='ref'\n                    AND (t.path LIKE '%quotes%' OR t.path LIKE '%cite%')\n                    AND t.atom NOT GLOB '*[А-Яа-я]*'"
+   },
+   "sum": {
+    "queryDurationMs": 111.17850000000001,
+    "rowsRead": 315325,
     "rowsWritten": 0
    }
   },
@@ -158,160 +312,6 @@
     "rowsRead": 136000,
     "rowsWritten": 0
    }
-  },
-  {
-   "count": 20,
-   "dimensions": {
-    "query": "SELECT * FROM \"katha_fts_docsize\" LIMIT ? OFFSET ?"
-   },
-   "sum": {
-    "queryDurationMs": 42.936,
-    "rowsRead": 104000,
-    "rowsWritten": 0
-   }
-  },
-  {
-   "count": 20,
-   "dimensions": {
-    "query": "SELECT * FROM \"katha_fts\" LIMIT ? OFFSET ?"
-   },
-   "sum": {
-    "queryDurationMs": 58,
-    "rowsRead": 101070,
-    "rowsWritten": 0
-   }
-  },
-  {
-   "count": 10,
-   "dimensions": {
-    "query": "SELECT t.album_id, t.file, t.title, t.duration, t.identifier, t.speaker_slug,\n            b.archive AS aarch, b.speaker_slug AS aspk\n       FROM katha_tracks t LEFT JOIN katha_albums b ON b.id = t.album_id\n      WHERE t.album_id = ?1 ORDER BY COALESCE(b.sort, 9999), b.title, t.sort, t.file"
-   },
-   "sum": {
-    "queryDurationMs": 23.098,
-    "rowsRead": 69300,
-    "rowsWritten": 0
-   }
-  },
-  {
-   "count": 10,
-   "dimensions": {
-    "query": "SELECT * FROM \"katha_fts_content\" LIMIT ? OFFSET ?"
-   },
-   "sum": {
-    "queryDurationMs": 33.911,
-    "rowsRead": 56000,
-    "rowsWritten": 0
-   }
-  },
-  {
-   "count": 2,
-   "dimensions": {
-    "query": "SELECT d.id, d.parent_id, d.level, d.number,\n            json_extract(d.title,'$.ru') AS title_ru,\n            COUNT(v.id) AS verses\n     FROM divisions d\n     LEFT JOIN verses v ON v.division_id = d.id\n     WHERE d.work_id = ?\n     GROUP BY d.id\n     ORDER BY d.ordinal"
-   },
-   "sum": {
-    "queryDurationMs": 61.1184,
-    "rowsRead": 54084,
-    "rowsWritten": 0
-   }
-  },
-  {
-   "count": 5,
-   "dimensions": {
-    "query": "SELECT t.album_id, t.file, t.title, t.duration, t.identifier, t.speaker_slug,\n            b.archive AS aarch, b.speaker_slug AS aspk\n       FROM katha_tracks t LEFT JOIN katha_albums b ON b.id = t.album_id\n      WHERE t.speaker_slug = ?1 ORDER BY COALESCE(b.sort, 9999), b.title, t.sort, t.file"
-   },
-   "sum": {
-    "queryDurationMs": 13.435500000000001,
-    "rowsRead": 34940,
-    "rowsWritten": 0
-   }
-  },
-  {
-   "count": 2038,
-   "dimensions": {
-    "query": "INSERT INTO katha_albums (id,speaker_slug,title,archive,year,note,sort) VALUES (?1,?2,?3,?4,?5,?6,?7),(?8,?9,?10,?11,?12,?13,?14),(?15,?16,?17,?18,?19,?20,?21),(?22,?23,?24,?25,?26,?27,?28),(?29,?30,?31,?32,?33,?34,?35),(?36,?37,?38,?39,?40,?41,?42),(?43,?44,?45,?46,?47,?48,?49),(?50,?51,?52,?53,?54,?55,?56),(?57,?58,?59,?60,?61,?62,?63),(?64,?65,?66,?67,?68,?69,?70),(?71,?72,?73,?74,?75,?76,?77),(?78,?79,?80,?81,?82,?83,?84),(?85,?86,?87,?88,?89,?90,?91),(?92,?93,?94,?95,?96,?97,?98) ON CONFLICT(id) DO UPDATE SET title=excluded.title, archive=excluded.archive,\n                year=excluded.year, note=excluded.note, sort=excluded.sort"
-   },
-   "sum": {
-    "queryDurationMs": 784.3086,
-    "rowsRead": 28532,
-    "rowsWritten": 28532
-   }
-  },
-  {
-   "count": 65,
-   "dimensions": {
-    "query": "SELECT COUNT(*) c FROM katha_albums"
-   },
-   "sum": {
-    "queryDurationMs": 41.459700000000005,
-    "rowsRead": 21190,
-    "rowsWritten": 0
-   }
-  },
-  {
-   "count": 1,
-   "dimensions": {
-    "query": "SELECT v.id, v.ref, v.devanagari, v.translit, vt.translation, vt.purport\n         FROM verses v\n         LEFT JOIN verse_texts vt ON vt.verse_id = v.id AND vt.edition_id = ?1\n         WHERE v.work_id = ?2 AND v.division_id = ?3\n         ORDER BY v.ordinal"
-   },
-   "sum": {
-    "queryDurationMs": 293.6286,
-    "rowsRead": 13030,
-    "rowsWritten": 0
-   }
-  },
-  {
-   "count": 2,
-   "dimensions": {
-    "query": "SELECT * FROM \"katha_tracks\" LIMIT ? OFFSET ?"
-   },
-   "sum": {
-    "queryDurationMs": 11.133,
-    "rowsRead": 11200,
-    "rowsWritten": 0
-   }
-  },
-  {
-   "count": 4,
-   "dimensions": {
-    "query": "SELECT * FROM \"centers\" LIMIT ? OFFSET ?"
-   },
-   "sum": {
-    "queryDurationMs": 14.642,
-    "rowsRead": 3836,
-    "rowsWritten": 0
-   }
-  },
-  {
-   "count": 4,
-   "dimensions": {
-    "query": "SELECT t.verse_id, t.term, t.gloss FROM verse_tokens t\n         JOIN verses v ON v.id = t.verse_id\n         WHERE v.division_id = ?1 ORDER BY t.verse_id, t.ordinal"
-   },
-   "sum": {
-    "queryDurationMs": 10.459800000000001,
-    "rowsRead": 3476,
-    "rowsWritten": 0
-   }
-  },
-  {
-   "count": 6,
-   "dimensions": {
-    "query": "SELECT * FROM \"vraja_raw\" LIMIT ? OFFSET ?"
-   },
-   "sum": {
-    "queryDurationMs": 449.86980000000005,
-    "rowsRead": 3468,
-    "rowsWritten": 0
-   }
-  },
-  {
-   "count": 2741,
-   "dimensions": {
-    "query": "INSERT INTO app_config (key, value, updated_at) VALUES (?1, ?2, datetime('now')) ON CONFLICT(key) DO UPDATE SET value = ?2, updated_at = datetime('now')"
-   },
-   "sum": {
-    "queryDurationMs": 531.6531,
-    "rowsRead": 2741,
-    "rowsWritten": 2741
-   }
   }
  ],
  "hourly": [
@@ -320,10 +320,10 @@
     "datetimeHour": "2026-08-25T09:00:00Z"
    },
    "sum": {
-    "readQueries": 16,
-    "rowsRead": 107546874,
-    "rowsWritten": 47282,
-    "writeQueries": 1498
+    "readQueries": 2230,
+    "rowsRead": 255097396,
+    "rowsWritten": 93505,
+    "writeQueries": 2580
    }
   },
   {
@@ -841,17 +841,6 @@
     "rowsRead": 329258189,
     "rowsWritten": 144424,
     "writeQueries": 4566
-   }
-  },
-  {
-   "dimensions": {
-    "datetimeHour": "2026-08-23T09:00:00Z"
-   },
-   "sum": {
-    "readQueries": 24,
-    "rowsRead": 329262880,
-    "rowsWritten": 144176,
-    "writeQueries": 4558
    }
   }
  ]
