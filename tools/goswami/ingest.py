@@ -296,12 +296,28 @@ def register_speakers_albums(p: dict):
         p.get("speaker_origin"), p.get("speaker_bio"), p.get("speaker_mono"),
         1 if p.get("speaker_accent") else 0, p.get("speaker_entity"), int(p.get("speaker_sort") or 0)])
 
+    # Циклы — по тому же правилу, что и дорожки: пишем только изменившееся.
+    # Прежде здесь безусловно переписывались все 326 циклов на каждом прогоне
+    # самоцепочки: 28 532 записанных строки в сутки ни за чем (замер 2026-08-25).
+    want = {al["id"]: (al["title"], al["identifier"], al.get("year"),
+                       al.get("note"), int(al.get("sort") or 0)) for al in p["albums"]}
+    have = {}
+    try:
+        for r in d1("SELECT id, title, archive, year, note, sort FROM katha_albums "
+                    "WHERE speaker_slug = ?1", [sp]):
+            have[r["id"]] = (r["title"], r["archive"], r["year"], r["note"], int(r["sort"] or 0))
+    except Exception as e:                                 # noqa: BLE001
+        print("::warning::снимок циклов недоступен, пишем всё: %s" % str(e)[:120])
+
     rows = [[al["id"], sp, al["title"], al["identifier"], al.get("year"), al.get("note"),
-             int(al.get("sort") or 0)] for al in p["albums"]]
-    d1_batch("INSERT INTO katha_albums (id,speaker_slug,title,archive,year,note,sort)", 7, rows,
-             """ON CONFLICT(id) DO UPDATE SET title=excluded.title, archive=excluded.archive,
-                year=excluded.year, note=excluded.note, sort=excluded.sort""")
-    print("::notice::реестр: рассказчик 1 · циклов %d" % len(rows))
+             int(al.get("sort") or 0)] for al in p["albums"]
+            if have.get(al["id"]) != want[al["id"]]]
+    if rows:
+        d1_batch("INSERT INTO katha_albums (id,speaker_slug,title,archive,year,note,sort)", 7, rows,
+                 """ON CONFLICT(id) DO UPDATE SET title=excluded.title, archive=excluded.archive,
+                    year=excluded.year, note=excluded.note, sort=excluded.sort""")
+    print("::notice::реестр: рассказчик 1 · циклов %d · записано %d"
+          % (len(p["albums"]), len(rows)))
 
 
 # Снимок того, что уже лежит в базе: id → (album_id, title, duration, sort).
