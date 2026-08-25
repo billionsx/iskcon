@@ -37,12 +37,12 @@ jobs:
               if len(parts)>=2 and not re.match(r'(?i)isk?con|исккон', parts[1]): return parts[1], None
               return None, None
 
-          pages={}; off=0
+          pages={}; off=""   # курсор — последний alias (ЗКН-Ф027§А)
           while True:
-              rows=q("SELECT alias, html FROM tilda_pages ORDER BY alias LIMIT 25 OFFSET ?", [off])
+              rows=q("SELECT alias, html FROM tilda_pages WHERE alias > ?1 ORDER BY alias LIMIT 25", [off])
               if not rows: break
               for r in rows: pages[r["alias"]]=r.get("html") or ""
-              off+=25
+              off=rows[-1]["alias"]
           freq=collections.Counter()
           for htmltext in pages.values():
               for s in {clean(BR.sub(' ', m.group(1))) for m in BLOCK.finditer(htmltext)}:

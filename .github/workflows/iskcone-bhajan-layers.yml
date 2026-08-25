@@ -38,12 +38,12 @@ jobs:
               return out
 
           # 1) load ALL pages; frequency of block signatures -> extra boilerplate net
-          pages={}; off=0
+          pages={}; off=""   # курсор — последний alias (ЗКН-Ф027§А)
           while True:
-              rows=q("SELECT alias, html FROM tilda_pages ORDER BY alias LIMIT 25 OFFSET ?", [off])
+              rows=q("SELECT alias, html FROM tilda_pages WHERE alias > ?1 ORDER BY alias LIMIT 25", [off])
               if not rows: break
               for r in rows: pages[r["alias"]]=blocks_of(r.get("html") or "")
-              off+=25
+              off=rows[-1]["alias"]
           n=len(pages); print("pages:", n)
           freq=collections.Counter()
           for blks in pages.values():

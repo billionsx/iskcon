@@ -90,6 +90,8 @@ jobs:
                   return json.loads(r.read().decode())["result"][0]
 
           # Одна страница обоими способами — разница и есть весь спор.
+          # Ф027-исключение: это и есть замер запрещённого способа — без него
+          # нечего сравнивать. Один вызов, отчёт, дальше он нигде не живёт.
           a = raw('SELECT * FROM "verse_tokens" LIMIT 800 OFFSET 300000')
           b = raw('SELECT rowid AS _rid, * FROM "verse_tokens" WHERE rowid > 300000 ORDER BY rowid LIMIT 800')
           print()

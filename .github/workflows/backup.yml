@@ -133,6 +133,9 @@ jobs:
                               last = part[-1]["_rid"]
                               for r in part: r.pop("_rid", None)
                       else:
+                          # Ф027-исключение: у таблицы нет rowid (WITHOUT ROWID),
+                          # листать по ключу нечем. Такие таблицы — на сотни строк,
+                          # и квадрат от сотни ничего не стоит.
                           part = q(f'SELECT * FROM "{name}" LIMIT {PAGE} OFFSET {total}')
                       if not part: break
                       cols = ",".join(f'"{c}"' for c in part[0])

@@ -33,12 +33,12 @@ jobs:
 
           rows=q("SELECT p.slug AS slug, t.html AS html FROM prayers p JOIN tilda_pages t ON '/'||t.alias=p.slug WHERE p.is_section=0")
           # boilerplate net across all pages (by text-block signature frequency)
-          allpages={}; off=0
+          allpages={}; off=""   # курсор — последний alias (ЗКН-Ф027§А)
           while True:
-              b=q("SELECT alias, html FROM tilda_pages ORDER BY alias LIMIT 25 OFFSET ?", [off])
+              b=q("SELECT alias, html FROM tilda_pages WHERE alias > ?1 ORDER BY alias LIMIT 25", [off])
               if not b: break
               for r in b: allpages[r["alias"]]=r.get("html") or ""
-              off+=25
+              off=b[-1]["alias"]
           freq=collections.Counter()
           for h in allpages.values():
               seen={one_line(m.group(2)) for m in FIELD.finditer(h) if m.group(1).lower()=="text"}

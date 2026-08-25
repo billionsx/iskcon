@@ -38,12 +38,12 @@ jobs:
           rows=q("SELECT slug,lang,type,subtype,name,hero_image FROM content_items")["result"][0]["results"]
           for r in rows: meta[r["slug"]]=r
           # 2) load all pages html in batches; build blocks
-          pages={}; off=0
+          pages={}; off=""   # курсор — последний alias (ЗКН-Ф027§А)
           while True:
-              b=q("SELECT alias, html FROM tilda_pages ORDER BY alias LIMIT 25 OFFSET ?", [off])["result"][0]["results"]
+              b=q("SELECT alias, html FROM tilda_pages WHERE alias > ?1 ORDER BY alias LIMIT 25", [off])["result"][0]["results"]
               if not b: break
               for r in b: pages[r["alias"]]=to_blocks(r.get("html") or "")
-              off+=25
+              off=b[-1]["alias"]
           n=len(pages); print("pages:",n)
           # 3) boilerplate = blocks present on >=30% of pages
           from collections import Counter
