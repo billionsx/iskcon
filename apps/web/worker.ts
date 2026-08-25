@@ -1295,7 +1295,15 @@ async function kathaWireRows(env: Env, where = "", binds: unknown[] = [], limit 
  * «Шримад», ответ идёт из индекса, а не сканом). Таблицу ведут ТРИГГЕРЫ на
  * katha_tracks (insert/delete/update of title) — конвейеры заливки о ней не
  * знают и знать не обязаны: REPLACE у них превращается в delete+insert, и оба
- * триггера срабатывают сами. Названия циклов и имена рассказчиков — таблицы
+ * триггера срабатывают сами.
+ * Связь идёт по `rowid`, а не по столбцу `tid`. Так было не всегда: раньше
+ * таблица объявляла `tid UNINDEXED`, и триггер удалял строку перебором всей
+ * таблицы поиска — 6 908 прочитанных строк на КАЖДУЮ записанную. Это стоило
+ * 7,7 млрд прочитанных строк в сутки, 98,7% всего расхода базы (замер
+ * 2026-08-25, docs/d1-quota/). Теперь katha_fts живёт «внешним содержимым»
+ * (content='katha_tracks'), а rowid у FTS5 индексирован всегда — правка одной
+ * строки стоит одной строки. Схема: tools/d1-katha-fts.sql.
+ * Названия циклов и имена рассказчиков — таблицы
  * на сотни строк: их читаем целиком и сводим к спискам id в JS, где
  * toLowerCase честный. */
 async function kathaFindParts(env: Env, q: string): Promise<{ where: string; binds: unknown[] } | null> {
@@ -1311,7 +1319,7 @@ async function kathaFindParts(env: Env, q: string): Promise<{ where: string; bin
   const albumIds = (aRes.results || []).filter((a) => (a.title || "").toLowerCase().includes(needle)).map((a) => a.id);
   const spk = (sRes.results || []).filter((s) => (s.name || "").toLowerCase().includes(needle)).map((s) => s.slug);
   return {
-    where: `WHERE (t.id IN (SELECT tid FROM katha_fts WHERE katha_fts MATCH ?1)
+    where: `WHERE (t.rowid IN (SELECT rowid FROM katha_fts WHERE katha_fts MATCH ?1)
         OR t.album_id IN (SELECT value FROM json_each(?2))
         OR t.speaker_slug IN (SELECT value FROM json_each(?3)))`,
     binds: [match, JSON.stringify(albumIds), JSON.stringify(spk)],

@@ -304,18 +304,64 @@ def register_speakers_albums(p: dict):
     print("::notice::реестр: рассказчик 1 · циклов %d" % len(rows))
 
 
+# Снимок того, что уже лежит в базе: id → (album_id, title, duration, sort).
+# Ровно те четыре поля, которые обновляет ON CONFLICT — сравнивать больше нечего.
+_SNAP: dict = {}
+_SNAP_FOR: str | None = None
+
+
+def snap_tracks(speaker: str) -> None:
+    """Один раз за прогон снимаем состояние дорожек рассказчика.
+
+    Нужен ради сравнения: писать надо только изменившееся. Читает по индексу
+    `katha_tracks_speaker` (см. tools/d1-katha-fts.sql), а не сканом.
+    """
+    global _SNAP_FOR
+    if _SNAP_FOR == speaker:
+        return
+    _SNAP.clear()
+    try:
+        for r in d1("SELECT id, album_id, title, duration, sort FROM katha_tracks "
+                    "WHERE speaker_slug = ?1", [speaker]):
+            _SNAP[r["id"]] = (r["album_id"], r["title"] or "",
+                              int(r["duration"] or 0), int(r["sort"] or 0))
+    except Exception as e:                                 # noqa: BLE001
+        print("::warning::снимок базы недоступен, пишем всё: %s" % str(e)[:120])
+    _SNAP_FOR = speaker
+
+
 def register_tracks(pairs: list):
-    """pairs = [(album, track, duration)] — пишем пачками."""
-    rows = []
+    """pairs = [(album, track, duration)] — пишем пачками ТОЛЬКО изменившееся.
+
+    Раньше здесь безусловно переписывался весь подтверждённый каталог: 6 908
+    дорожек × 103 прогона самоцепочки = 101 389 вызовов в сутки. Каждый такой
+    вызов задевал ON CONFLICT DO UPDATE → триггер FTS → и стоил 76 010
+    прочитанных строк. Это 98,7% всего расхода базы (замер 2026-08-25).
+    Возвращаем, как и раньше, число ПОДТВЕРЖДЁННЫХ дорожек — счётчик в логе
+    означает «столько дорожек на месте», а не «столько строк переписано».
+    """
+    if not pairs:
+        return 0
+    snap_tracks(pairs[0][0]["speaker"])
+    rows, seen = [], 0
     for al, t, dur in pairs:
-        rows.append(["%s/%s" % (al["identifier"], t["file"]), al["speaker"], al["id"],
-                     al["identifier"], t["file"], t["title"], int(dur or 0),
-                     t.get("src_id"), int(t.get("sort") or 0)])
-    return d1_batch(
+        seen += 1
+        tid = "%s/%s" % (al["identifier"], t["file"])
+        cur = (al["id"], t["title"], int(dur or 0), int(t.get("sort") or 0))
+        if _SNAP.get(tid) == cur:
+            continue                                        # в базе уже ровно это
+        rows.append([tid, al["speaker"], al["id"], al["identifier"], t["file"],
+                     t["title"], int(dur or 0), t.get("src_id"), int(t.get("sort") or 0)])
+        _SNAP[tid] = cur
+    if not rows:
+        return seen
+    d1_batch(
         "INSERT INTO katha_tracks (id,speaker_slug,album_id,identifier,file,title,duration,msg_id,sort)",
         9, rows,
         """ON CONFLICT(id) DO UPDATE SET title=excluded.title, duration=excluded.duration,
            sort=excluded.sort, album_id=excluded.album_id""")
+    print("::notice::в базу записано %d из %d дорожек (остальные уже там)" % (len(rows), seen))
+    return seen
 
 
 # ─────────────────────────── run ────────────────────────────
@@ -350,9 +396,14 @@ async def main_run() -> int:
     # «Не узнали» ≠ «пусто». Там, где archive.org промолчал, опираемся на нашу
     # базу — она знает, что мы уже возили. Иначе одно молчание сети стоит
     # повторной перевозки сотен гигабайт.
-    mine = d1_known(p["speaker"])
+    #
+    # Спрашиваем базу ТОЛЬКО когда архив действительно промолчал. Раньше этот
+    # SELECT шёл безусловно: SCAN katha_tracks (6 908 строк) на каждый прогон
+    # самоцепочки — 103 прогона в сутки, 711 тысяч прочитанных строк ни за чем.
+    # Архив отвечает почти всегда, и тогда его ответ и есть истина (ЗКН-Ф021).
     unknown = [i for i, v in have.items() if v is None]
     if unknown:
+        mine = d1_known(p["speaker"])
         by_ident = {a["identifier"]: a["id"] for a in albums}
         for ident in unknown:
             have[ident] = dict(mine.get(by_ident.get(ident, ""), {}))
