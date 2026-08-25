@@ -1,0 +1,122 @@
+name: d1-backup-probe
+
+# Дамп базы — второй по величине пожиратель после katha_fts: 96,5 млн
+# прочитанных строк в сутки ради 600 тысяч строк данных (замер 2026-08-25).
+# Виновата постраничность через OFFSET: `LIMIT 800 OFFSET 300000` не
+# перепрыгивает, а просматривает и выбрасывает 300 000 строк. Обход таблицы
+# выходит квадратичным. Правка — обход по rowid (backup.yml).
+#
+# Но даже линейный обход читает КАЖДУЮ строку базы: около 600 тысяч за дамп.
+# Это больше нашей суточной цели в 500 тысяч. Значит одной правки мало, и надо
+# знать точную цену двух путей:
+#
+#   А) свой потабличный дамп через query API — платим 600 тыс. прочитанных строк;
+#   Б) штатный `wrangler d1 export` — дамп собирает сама площадка.
+#      Раньше он отказывал: «cannot export databases with Virtual Tables (fts5)».
+#      Проверяем, отказывает ли до сих пор и помогает ли отбор таблиц.
+#
+# Эта работа НИЧЕГО не меняет — только выясняет цену. Замер до/после снимает
+# d1-usage.yml.
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: d1-backup-probe
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Путь Б — штатный export
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: d5cbe19470dc38599873eabfe148e6d1
+        run: |
+          set +e
+          DB=6226aded-dd03-4e74-977f-9cd0b509e73d
+          OUT=docs/d1-quota/backup-probe.md
+          mkdir -p docs/d1-quota
+          echo "# Цена дампа базы — $(date -u +%Y-%m-%dT%H)Z" > "$OUT"
+          echo >> "$OUT"
+
+          echo "## Путь Б · wrangler d1 export (вся база)" >> "$OUT"
+          echo '```' >> "$OUT"
+          npx -y wrangler@latest d1 export "$DB" --remote --output=/tmp/full.sql >> "$OUT" 2>&1
+          echo "EXIT=$?" >> "$OUT"
+          ls -l /tmp/full.sql >> "$OUT" 2>&1
+          echo '```' >> "$OUT"
+          echo >> "$OUT"
+
+          echo "## Путь Б · export только схемы" >> "$OUT"
+          echo '```' >> "$OUT"
+          npx -y wrangler@latest d1 export "$DB" --remote --no-data --output=/tmp/schema.sql >> "$OUT" 2>&1
+          echo "EXIT=$?" >> "$OUT"
+          echo '```' >> "$OUT"
+          echo >> "$OUT"
+
+          echo "## Путь Б · export одной таблицы (отбор в обход виртуальных)" >> "$OUT"
+          echo '```' >> "$OUT"
+          npx -y wrangler@latest d1 export "$DB" --remote --table=verse_tokens --output=/tmp/one.sql >> "$OUT" 2>&1
+          echo "EXIT=$?" >> "$OUT"
+          ls -l /tmp/one.sql >> "$OUT" 2>&1
+          echo '```' >> "$OUT"
+          echo >> "$OUT"
+          cat "$OUT"
+
+      - name: Путь А — обход по ключу, точная цена в строках
+        env:
+          CF: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: |
+          python3 - <<'PY' | tee -a docs/d1-quota/backup-probe.md
+          import json, os, urllib.request
+          CF = os.environ["CF"]
+          ACCT = "d5cbe19470dc38599873eabfe148e6d1"
+          DB = "6226aded-dd03-4e74-977f-9cd0b509e73d"
+          URL = f"https://api.cloudflare.com/client/v4/accounts/{ACCT}/d1/database/{DB}/query"
+          H = {"Authorization": f"Bearer {CF}", "Content-Type": "application/json"}
+
+          def raw(sql):
+              rq = urllib.request.Request(URL, data=json.dumps({"sql": sql}).encode(), headers=H)
+              with urllib.request.urlopen(rq, timeout=120) as r:
+                  return json.loads(r.read().decode())["result"][0]
+
+          # Одна страница обоими способами — разница и есть весь спор.
+          a = raw('SELECT * FROM "verse_tokens" LIMIT 800 OFFSET 300000')
+          b = raw('SELECT rowid AS _rid, * FROM "verse_tokens" WHERE rowid > 300000 ORDER BY rowid LIMIT 800')
+          print()
+          print("## Путь А · одна страница в глубине таблицы")
+          print()
+          print("| способ | прочитано строк |")
+          print("|---|---:|")
+          print(f"| `LIMIT 800 OFFSET 300000` | {a['meta']['rows_read']:,} |".replace(",", " "))
+          print(f"| `WHERE rowid > 300000 LIMIT 800` | {b['meta']['rows_read']:,} |".replace(",", " "))
+          print()
+          tot = raw("SELECT SUM(n) s FROM (SELECT COUNT(*) n FROM verse_tokens UNION ALL "
+                    "SELECT COUNT(*) FROM verses UNION ALL SELECT COUNT(*) FROM verse_texts UNION ALL "
+                    "SELECT COUNT(*) FROM tilda_assets)")
+          print(f"Четыре крупнейшие таблицы вместе: {tot['results'][0]['s']:,} строк.".replace(",", " "))
+          print("Столько же и будет стоить линейный обход — по строке на строку.")
+          PY
+
+      - name: Отчёт в репозиторий
+        if: always()
+        run: |
+          git config user.email ceo@billionsx.com
+          git config user.name "Billions X"
+          git add docs/d1-quota || true
+          git diff --cached --quiet && exit 0
+          git commit -m "d1: цена дампа базы — разведка [skip ci]"
+          for i in 1 2 3 4 5 6; do
+            git pull --rebase -q origin main && git push origin HEAD:main && exit 0
+            sleep 5
+          done
+          exit 1

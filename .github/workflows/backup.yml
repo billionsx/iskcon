@@ -76,7 +76,12 @@ jobs:
 
           rows = q("SELECT name, sql FROM sqlite_master WHERE type='table' "
                    "AND name NOT LIKE 'sqlite_%' AND name NOT LIKE '_cf_%' ORDER BY name")
-          skip = lambda n: n.startswith("verse_fts")
+          # Производные индексы не дампим: они строятся заново из исходных
+          # таблиц. verse_fts* — поверх verses/verse_texts, katha_fts* — поверх
+          # katha_tracks (tools/d1-katha-fts.sql). Их теневые таблицы весят
+          # 40 тысяч строк и в дампе бесполезны: восстановленная копия всё равно
+          # пересобирает индекс, а не принимает чужой.
+          skip = lambda n: n.startswith("verse_fts") or n.startswith("katha_fts")
           tabs = [(r["name"], r.get("sql")) for r in rows]
           print(f"таблиц всего: {len(tabs)}; пропускаем FTS: {[n for n,_ in tabs if skip(n)]}", flush=True)
 
@@ -93,14 +98,47 @@ jobs:
                   if skip(name):
                       counts[name] = "skipped:fts"; continue
                   if ddl: w.write(ddl.rstrip(";") + ";\n")
-                  off = total = 0
+                  # ЛИСТАЕМ ПО КЛЮЧУ, А НЕ ЧЕРЕЗ OFFSET.
+                  #
+                  # `LIMIT 800 OFFSET 300000` не «перепрыгивает» — SQLite честно
+                  # просматривает и выбрасывает все 300 000 строк перед нужной
+                  # страницей. Стоимость обхода таблицы получается квадратичной:
+                  # N²/(2·PAGE). На verse_tokens (312 тыс. строк) это 61 млн
+                  # прочитанных строк за один дамп, на tilda_assets — ещё 31 млн.
+                  # Всего дамп стоил 96,5 млн строк в сутки ради 600 тысяч строк
+                  # данных — замер 2026-08-25, docs/d1-quota/.
+                  #
+                  # Обход по rowid читает ровно свою страницу: суммарно N строк
+                  # вместо N²/1600. На verse_tokens — 312 тысяч вместо 61 млн.
+                  #
+                  # Таблицы WITHOUT ROWID (katha_fts_idx, katha_fts_config) rowid
+                  # не имеют — там остаётся OFFSET, но они на сотни строк, и
+                  # квадрат от сотни ничего не стоит.
+                  total = 0
+                  # Есть ли у таблицы rowid — выясняем ОДНИМ дешёвым запросом,
+                  # а не по падению первой страницы: иначе случайный обрыв сети
+                  # молча вернул бы обход в квадрат, и замер снова вырос бы.
+                  try:
+                      q(f'SELECT rowid FROM "{name}" LIMIT 1')
+                      keyed = True
+                  except Exception:
+                      keyed = False
+                      print(f"  {name}: WITHOUT ROWID — обход через OFFSET", flush=True)
+                  last = -1
                   while True:
-                      part = q(f'SELECT * FROM "{name}" LIMIT {PAGE} OFFSET {off}')
+                      if keyed:
+                          part = q(f'SELECT rowid AS _rid, * FROM "{name}" '
+                                   f'WHERE rowid > {last} ORDER BY rowid LIMIT {PAGE}')
+                          if part:
+                              last = part[-1]["_rid"]
+                              for r in part: r.pop("_rid", None)
+                      else:
+                          part = q(f'SELECT * FROM "{name}" LIMIT {PAGE} OFFSET {total}')
                       if not part: break
                       cols = ",".join(f'"{c}"' for c in part[0])
                       for r in part:
                           w.write(f'INSERT INTO "{name}" ({cols}) VALUES ({",".join(lit(v) for v in r.values())});\n')
-                      off += len(part); total += len(part)
+                      total += len(part)
                       if len(part) < PAGE: break
                   counts[name] = total
                   print(f"  {name}: {total}", flush=True)
