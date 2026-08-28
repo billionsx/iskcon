@@ -30,6 +30,7 @@ Cloudflare с 01.09.2026 отбивает запросы к D1 сверх сут
 import json
 import os
 import sys
+import urllib.error
 import urllib.request
 from datetime import datetime, timedelta, timezone
 
@@ -64,8 +65,11 @@ def gql(token, query, variables):
             "Content-Type": "application/json",
         },
     )
-    with urllib.request.urlopen(req, timeout=90) as r:
-        data = json.loads(r.read().decode())
+    try:
+        with urllib.request.urlopen(req, timeout=90) as r:
+            data = json.loads(r.read().decode())
+    except urllib.error.HTTPError as e:  # ЗКН-Ф014: сказать, ЧТО именно ответила аналитика
+        raise SystemExit("GraphQL HTTP %s: %s" % (e.code, e.read()[:500].decode("utf-8", "replace")))
     if data.get("errors"):
         raise SystemExit("GraphQL errors: " + json.dumps(data["errors"], ensure_ascii=False))
     accounts = data["data"]["viewer"]["accounts"]

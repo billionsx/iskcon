@@ -1,0 +1,80 @@
+# КАТХА · ВЫГРУЗКА АРХИВА (голос → zip по циклам → GitHub Release)
+#
+# Основателю нужны все лекции рассказчика одним архивом — офлайн, мимо плеера.
+# Движок — tools/tg-archive/katha_export.py: список записей берёт из витрины
+# `/api/katha` (ЗКН-Ф021: истина — то, что реально играет), байты — с archive.org
+# со сверкой md5, имена и теги делает человеческими. Здесь, а не в песочнице,
+# потому что archive.org и uploads.github.com оттуда закрыты.
+#
+# Релиз — зеркало по ЗКН-Пл023: бесплатно, не раздувает git, ≤2 ГБ на файл —
+# поэтому один zip на цикл. Повторный прогон перезаписывает ассеты (--clobber).
+name: "Катха · выгрузка архива"
+run-name: "katha-export · ${{ inputs.speaker }}"
+
+concurrency:
+  group: katha-export-${{ inputs.speaker }}
+  cancel-in-progress: false
+
+on:
+  workflow_dispatch:
+    inputs:
+      speaker:
+        description: "Рассказчик (slug из katha_speakers)"
+        default: "radha-govinda-goswami"
+      albums:
+        description: "Только эти циклы (id через запятую; пусто = все)"
+        default: ""
+      tag:
+        description: "Тег релиза (пусто = katha-<speaker>)"
+        default: ""
+
+permissions:
+  contents: write                # релиз и его ассеты
+
+jobs:
+  export:
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Зависимости
+        run: pip install mutagen
+
+      - name: Собрать архив
+        id: build
+        working-directory: tools/tg-archive
+        env:
+          SPEAKER: ${{ inputs.speaker }}
+          ALBUMS: ${{ inputs.albums }}
+        run: |
+          python katha_export.py --selftest
+          python katha_export.py --speaker "$SPEAKER" --albums "$ALBUMS" --out "$RUNNER_TEMP/katha-out" --workers 6
+          echo "out=$RUNNER_TEMP/katha-out" >> "$GITHUB_OUTPUT"
+
+      - name: Релиз
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAG: ${{ inputs.tag || format('katha-{0}', inputs.speaker) }}
+          OUT: ${{ steps.build.outputs.out }}
+        run: |
+          cd "$OUT"
+          NAME=$(python3 -c "import json;print(json.load(open('summary.json'))['name'])")
+          TITLE="Катха · $NAME · полный архив"
+          if gh release view "$TAG" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+            gh release edit "$TAG" --repo "$GITHUB_REPOSITORY" --title "$TITLE" --notes-file release-notes.md --latest=false
+          else
+            gh release create "$TAG" --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" --title "$TITLE" --notes-file release-notes.md --latest=false
+          fi
+          gh release upload "$TAG" --repo "$GITHUB_REPOSITORY" --clobber ./*.zip SHA256SUMS.txt
+          URL="https://github.com/$GITHUB_REPOSITORY/releases/tag/$TAG"
+          echo "::notice::релиз готов: $URL · ${{ steps.build.outputs.tracks }} записей · ${{ steps.build.outputs.hours }} · ${{ steps.build.outputs.size }}"
+          {
+            echo "## $TITLE"
+            echo
+            echo "$URL"
+            echo
+            cat release-notes.md
+          } >> "$GITHUB_STEP_SUMMARY"
