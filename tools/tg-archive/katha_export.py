@@ -127,10 +127,29 @@ def track_name(pos: int, album_title: str, title: str) -> str:
     return safe("%02d · %s · %s" % (pos, album_title, title)) + ".mp3"
 
 
-def asset_name(speaker: str, album_id: str) -> str:
-    """Имя zip в релизе — только ASCII: GitHub подменяет прочее точками."""
+def asset_name(speaker: str, album_id: str, part: int = 0, parts: int = 1) -> str:
+    """Имя zip в релизе — только ASCII: GitHub подменяет прочее точками.
+    Цикл, не влезший в потолок хоста, едет частями: «…-2of3.zip»."""
     a = re.sub(r"[^a-z0-9-]+", "-", ("%s-%s" % (speaker, album_id)).lower()).strip("-")
+    if parts > 1:
+        a += "-%dof%d" % (part, parts)
     return a + ".zip"
+
+
+def split_parts(sizes: list, cap: int) -> list:
+    """Режет ряд размеров на части ≤ cap, не меняя порядка (жадно): список
+    списков индексов. Одна запись больше потолка — часть из одной записи, а не
+    молчаливая потеря."""
+    parts, cur, acc = [], [], 0
+    for i, n in enumerate(sizes):
+        if cur and acc + n > cap:
+            parts.append(cur)
+            cur, acc = [], 0
+        cur.append(i)
+        acc += n
+    if cur:
+        parts.append(cur)
+    return parts
 
 
 def order_albums(catalog: dict, speaker: str) -> list:
@@ -171,6 +190,9 @@ def selftest() -> int:
     assert track_name(1, "Гопи-гита", "Часть 1") == "01 · Гопи-гита · Часть 1.mp3"
     assert asset_name("radha-govinda-goswami", "gopi-gita") == "radha-govinda-goswami-gopi-gita.zip"
     assert asset_name("x", "Ы й") == "x.zip"
+    assert asset_name("s", "al", 2, 3) == "s-al-2of3.zip" and asset_name("s", "al", 1, 1) == "s-al.zip"
+    assert split_parts([100, 90, 108, 100, 85, 107, 114, 114, 103, 101], 430) == [[0, 1, 2, 3], [4, 5, 6, 7], [8, 9]]
+    assert split_parts([500, 10], 430) == [[0], [1]] and split_parts([], 430) == [] and split_parts([1, 2], 430) == [[0, 1]]
     cat = {
         "albums": [{"id": "b", "speaker": "s", "title": "Б", "archive": "ia-b"},
                    {"id": "a", "speaker": "s", "title": "А", "archive": "ia-a"},
@@ -326,6 +348,8 @@ def main() -> int:
     ap.add_argument("--out", default="out", help="папка результата")
     ap.add_argument("--albums", default="", help="только эти циклы (id через запятую)")
     ap.add_argument("--workers", type=int, default=6)
+    ap.add_argument("--max-part-mb", type=int, default=1900,
+                    help="потолок одного zip в МиБ (GitHub Releases — 2 ГБ на файл); цикл крупнее едет частями")
     ap.add_argument("--source", choices=("ia", "proxy"), default="ia",
                     help="откуда байты: archive.org (по умолчанию, прокси — запасной) или только прокси приложения")
     ap.add_argument("--selftest", action="store_true")
@@ -430,20 +454,24 @@ def main() -> int:
                 comment=(al.get("note") or "") + (" · " if al.get("note") else "") + "brajs.com · ISKCON ONE LOVE")
             items.append((src, "%s/%s/%s" % (root, atitle, track_name(pos, atitle, t["title"]))))
             rows.append((pos, t["title"], t["duration"], src.stat().st_size))
-        plan.append((al, items, rows, asset_name(a.speaker, al["id"])))
+        cuts = split_parts([r[3] for r in rows], a.max_part_mb * 2 ** 20)
+        for k, idx in enumerate(cuts, 1):
+            plan.append((al, [items[i] for i in idx], [rows[i] for i in idx],
+                         asset_name(a.speaker, al["id"], k, len(cuts)), k, len(cuts)))
 
-    all_secs = sum(r[2] for _, _, rows, _ in plan for r in rows)
-    all_bytes = sum(r[3] for _, _, rows, _ in plan for r in rows)
+    all_secs = sum(r[2] for _, _, rows, _, _, _ in plan for r in rows)
+    all_bytes = sum(r[3] for _, _, rows, _, _, _ in plan for r in rows)
     check = ("байты сверены по md5 с archive.org" if verified == len(jobs)
              else "по md5 с archive.org сверено %d из %d записей" % (verified, len(jobs)))
     head = "# %s · Катха\n\n%s\n\n%s · %s · %s · %s\n\nИсточник — https://brajs.com (Богатства → Катха); %s.\n\n" % (
-        sp["name"], sp.get("bio") or sp.get("role") or "", cycles(len(plan)), records(n_total),
+        sp["name"], sp.get("bio") or sp.get("role") or "", cycles(len(albums)), records(n_total),
         hours_ru(all_secs), human(all_bytes), check)
     body = []
-    for al, _, rows, zname in plan:
-        meta = " · ".join(x for x in (al.get("year") or "", al.get("note") or "") if x)
-        body.append("## %s\n\n%s`%s` · %s · %s\n" % (
-            al["title"], (meta + "\n\n") if meta else "", zname, records(len(rows)), hours_ru(sum(r[2] for r in rows))))
+    for al, _, rows, zname, k, kn in plan:
+        if k == 1:
+            meta = " · ".join(x for x in (al.get("year") or "", al.get("note") or "") if x)
+            body.append("## %s\n\n%s" % (al["title"], (meta + "\n\n") if meta else ""))
+        body.append("`%s` · %s · %s\n" % (zname, records(len(rows)), hours_ru(sum(r[2] for r in rows))))
         body.append("| № | Запись | Длительность | Размер |\n|---|---|---|---|")
         for pos, title, dur, size in rows:
             body.append("| %02d | %s | %s | %s |" % (pos, title, hms(dur), human(size)))
@@ -453,11 +481,12 @@ def main() -> int:
 
     # ── zip по циклам; СОДЕРЖАНИЕ.md лежит в корне каждого ──
     assets = []
-    for al, items, rows, zname in plan:
+    for al, items, rows, zname, k, kn in plan:
         zpath = out / zname
         pack(zpath, items + [(contents, "%s/СОДЕРЖАНИЕ.md" % root)])
         secs = sum(r[2] for r in rows)
-        assets.append({"file": zname, "album": al["title"], "id": al["id"], "n": len(rows), "secs": secs,
+        label = al["title"] if kn == 1 else "%s · %d из %d" % (al["title"], k, kn)
+        assets.append({"file": zname, "album": label, "id": al["id"], "part": k, "parts": kn, "n": len(rows), "secs": secs,
                        "bytes": zpath.stat().st_size, "sha256": sha256(zpath),
                        "year": al.get("year") or "", "note": al.get("note") or ""})
         for src, _ in items:  # место на диске: mp3 цикла больше не нужны
@@ -467,24 +496,25 @@ def main() -> int:
     (out / "SHA256SUMS.txt").write_text("".join("%s  %s\n" % (x["sha256"], x["file"]) for x in assets), encoding="utf-8")
 
     notes = ["**%s** — полный архив катхи: %s · %s · %s · %s.\n" % (
-        sp["name"], cycles(len(assets)), records(n_total), hours_ru(all_secs), human(grand))]
-    notes.append("Один zip на цикл (GitHub держит ≤2 ГБ на файл); все распаковываются в одну папку "
+        sp["name"], cycles(len(albums)), records(n_total), hours_ru(all_secs), human(grand))]
+    notes.append("Один zip на цикл (крупнее %d МиБ — частями); все распаковываются в одну папку "
                  "«%s». Внутри — mp3 с человеческими именами и тегами (артист, альбом, номер, год) "
-                 "и список «СОДЕРЖАНИЕ.md».\n" % root)
+                 "и список «СОДЕРЖАНИЕ.md».\n" % (a.max_part_mb, root))
     notes.append("Источник — те же записи, что играют в приложении: https://brajs.com (Богатства → Катха); %s.\n" % check)
     notes.append("| Цикл | Записей | Длительность | Размер | Файл |\n|---|---|---|---|---|")
     for x in assets:
         notes.append("| %s | %d | %s | %s | `%s` |" % (x["album"], x["n"], hours_ru(x["secs"]), human(x["bytes"]), x["file"]))
     notes.append("\n<details><summary>Все записи</summary>\n")
-    for al, _, rows, _ in plan:
-        notes.append("\n**%s**\n" % al["title"])
+    for al, _, rows, _, k, _ in plan:
+        if k == 1:
+            notes.append("\n**%s**\n" % al["title"])
         for pos, title, dur, _ in rows:
             notes.append("- %02d · %s · %s" % (pos, title, hms(dur)))
     notes.append("\n</details>\n")
     notes.append("Контрольные суммы zip — `SHA256SUMS.txt`.")
     (out / "release-notes.md").write_text("\n".join(notes), encoding="utf-8")
 
-    summary = {"speaker": a.speaker, "name": sp["name"], "albums": len(assets), "tracks": n_total,
+    summary = {"speaker": a.speaker, "name": sp["name"], "albums": len(albums), "tracks": n_total,
                "secs": all_secs, "hours": hours_ru(all_secs), "bytes": grand, "assets": assets}
     (out / "summary.json").write_text(json.dumps(summary, ensure_ascii=False, indent=1), encoding="utf-8")
     gh_out = os.environ.get("GITHUB_OUTPUT")
