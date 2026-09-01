@@ -68,7 +68,12 @@ jobs:
           PY
           done
 
+      # Замер стоимости — СПРАВКА, а не приговор. Приговор выносит шаг выше:
+      # он падает сам, если в плане нет попадания по индексу. Если база в этот
+      # момент отбивает по пределу прочитанных строк (код 7500), справка не
+      # снимется — и это не повод считать правку несделанной.
       - name: "Сколько строк стоит теперь один вызов"
+        continue-on-error: true
         run: |
           npx -y wrangler@latest d1 execute "$DB" --remote --json --command \
             "SELECT COUNT(*) n FROM katha_tracks WHERE speaker_slug = 'radha-govinda-goswami'" \
