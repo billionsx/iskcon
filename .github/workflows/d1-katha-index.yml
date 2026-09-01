@@ -1,0 +1,81 @@
+name: d1-katha-index
+
+# Индексы каталога катхи. ЗКН-Ф027.
+#
+# Замер 2026-09-01T05Z: 6.62 млн прочитанных строк за сутки при пределе 5 млн.
+# 41.7 % этого счёта дают четыре запроса каталога лекций, отбирающие по
+# `speaker_slug` без индекса — то есть проходом всей таблицы.
+#
+# Контур не верит себе на слово: план запроса снимается ДО и ПОСЛЕ правки.
+# `SCAN katha_tracks` обязан смениться на `SEARCH … USING INDEX`, иначе
+# правка не считается сделанной и шаг падает.
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: d1-katha-index
+
+jobs:
+  index:
+    runs-on: ubuntu-latest
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: d5cbe19470dc38599873eabfe148e6d1
+      DB: 6226aded-dd03-4e74-977f-9cd0b509e73d
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: "План ДО правки"
+        run: |
+          npx -y wrangler@latest d1 execute "$DB" --remote --json --command \
+            "EXPLAIN QUERY PLAN SELECT id, album_id, title, duration, sort FROM katha_tracks WHERE speaker_slug = 'prabhupada'" \
+            | tee /tmp/before.json
+          python3 - <<'PY'
+          import json
+          d = json.load(open('/tmp/before.json'))
+          rows = d[0]['results']
+          for r in rows: print("ДО:", r.get('detail'))
+          PY
+
+      - name: "Правка — индексы"
+        run: |
+          npx -y wrangler@latest d1 execute "$DB" --remote --file tools/d1-katha-index.sql
+
+      - name: "План ПОСЛЕ — доказательство, а не надежда"
+        run: |
+          for Q in \
+            "SELECT id, album_id, title, duration, sort FROM katha_tracks WHERE speaker_slug = 'prabhupada'" \
+            "SELECT id, title, archive, year, note, sort FROM katha_albums WHERE speaker_slug = 'prabhupada'" \
+            "SELECT id, title FROM katha_tracks WHERE album_id = 'x'" ; do
+            npx -y wrangler@latest d1 execute "$DB" --remote --json --command \
+              "EXPLAIN QUERY PLAN $Q" | tee /tmp/after.json
+            python3 - <<'PY'
+          import json, sys
+          d = json.load(open('/tmp/after.json'))
+          det = " ".join(str(r.get('detail','')) for r in d[0]['results'])
+          print("ПОСЛЕ:", det)
+          if "USING INDEX" not in det and "USING COVERING INDEX" not in det:
+              print("✗ индекс не подхватился — правка не сделана")
+              sys.exit(1)
+          print("✓ проход таблицы заменён попаданием по индексу")
+          PY
+          done
+
+      - name: "Сколько строк стоит теперь один вызов"
+        run: |
+          npx -y wrangler@latest d1 execute "$DB" --remote --json --command \
+            "SELECT COUNT(*) n FROM katha_tracks WHERE speaker_slug = 'radha-govinda-goswami'" \
+            | tee /tmp/cost.json
+          python3 - <<'PY'
+          import json
+          d = json.load(open('/tmp/cost.json'))
+          m = d[0]['meta']
+          print("строк прочитано на вызов:", m.get('rows_read'))
+          PY
