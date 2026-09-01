@@ -1,0 +1,154 @@
+# D1 · ЗЕРКАЛО СОДЕРЖИМОГО ДЛЯ ЗАМЕРОВ (ЗКН-Ф027 §Г)
+#
+# Зачем: правку запроса судит EXPLAIN QUERY PLAN, а равенство старого и нового
+# обхода доказывается на данных. Пока база отбивает (предел прочитанных строк,
+# код 7500) — и вообще всякий раз, когда замер не должен стоить строк, —
+# опыты идут на ЛОКАЛЬНОЙ КОПИИ. Копия берётся из ночного бэкапа на
+# Internet Archive (backup.yml), а не из живой базы: ноль прочитанных строк.
+#
+# Что кладём: ТОЛЬКО таблицы содержимого (книги, комментарии, статьи, карточки,
+# молитвы, катха) — то, что приложение и так отдаёт всем через /api. Личные
+# таблицы (users, sessions, push_*, sadhana_day, notes …) в зеркало не попадают.
+#
+# Куда: релиз `d1-mirror`, ассет d1-content-<stamp>.sqlite.gz. Релиз-ассеты
+# доступны агенту (release-assets.githubusercontent.com), артефакты — нет.
+name: "D1 · зеркало содержимого"
+run-name: "d1-mirror · ${{ inputs.stamp || 'latest' }}"
+
+on:
+  workflow_dispatch:
+    inputs:
+      stamp:
+        description: "Штамп бэкапа (YYYYMMDD; пусто = из docs/backups/latest.json)"
+        default: ""
+
+permissions:
+  contents: write
+
+concurrency:
+  group: d1-mirror
+  cancel-in-progress: false
+
+jobs:
+  mirror:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Дамп с Internet Archive + сверка sha256 с манифестом
+        id: dl
+        run: |
+          set -e
+          STAMP="${{ inputs.stamp }}"
+          if [ -z "$STAMP" ]; then STAMP=$(python3 -c "import json;print(json.load(open('docs/backups/latest.json'))['stamp'])"); fi
+          echo "stamp=$STAMP" >> "$GITHUB_OUTPUT"
+          F="d1-$STAMP.sql.gz"
+          curl -sSfL --retry 5 --retry-delay 10 -o "$F" "https://archive.org/download/iskcone-backup-$STAMP/$F"
+          ls -l "$F"
+          WANT=$(python3 -c "import json,sys;m=json.load(open('docs/backups/latest.json'));print(m['files'].get('$F',{}).get('sha256',''))")
+          GOT=$(sha256sum "$F" | cut -d' ' -f1)
+          echo "манифест: ${WANT:-<нет записи>}"; echo "файл:     $GOT"
+          if [ -n "$WANT" ] && [ "$WANT" != "$GOT" ]; then echo "::error::sha256 дампа не совпал с манифестом"; exit 1; fi
+          [ -z "$WANT" ] && echo "::warning::штамп $STAMP не в манифесте — sha256 не сверен"
+          echo "file=$F" >> "$GITHUB_OUTPUT"
+
+      - name: Индексы живой базы (sqlite_master; при отказе — из миграций)
+        env:
+          CF: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: |
+          python3 - <<'PY'
+          import json, os, re, urllib.request, urllib.error
+          URL = ("https://api.cloudflare.com/client/v4/accounts/d5cbe19470dc38599873eabfe148e6d1"
+                 "/d1/database/6226aded-dd03-4e74-977f-9cd0b509e73d/query")
+          ddl, src = [], "live"
+          try:
+              rq = urllib.request.Request(URL, data=json.dumps({"sql":
+                   "SELECT sql FROM sqlite_master WHERE type='index' AND sql IS NOT NULL ORDER BY name"}).encode(),
+                   headers={"Authorization": "Bearer " + os.environ["CF"], "Content-Type": "application/json"})
+              with urllib.request.urlopen(rq, timeout=60) as r:
+                  out = json.load(r)
+              ddl = [x["sql"] for x in out["result"][0]["results"]]
+          except urllib.error.HTTPError as e:
+              print("живая база отказала:", e.code, e.read().decode()[:200])
+              src = "migrations"
+          except Exception as e:  # noqa: BLE001
+              print("живая база недоступна:", e)
+              src = "migrations"
+          if src == "migrations":
+              for p in ("apps/api/migrations/0003_perf_indexes.sql", "docs/entity-registry/library_schema.sql"):
+                  for ln in open(p, encoding="utf-8"):
+                      if ln.strip().upper().startswith("CREATE INDEX") or ln.strip().upper().startswith("CREATE UNIQUE INDEX"):
+                          ddl.append(ln.strip().rstrip(";"))
+          ddl = [re.sub(r"^CREATE (UNIQUE )?INDEX (IF NOT EXISTS )?", lambda m: "CREATE %sINDEX IF NOT EXISTS " % (m.group(1) or ""), d, flags=re.I) for d in ddl]
+          open("indexes.sql", "w", encoding="utf-8").write(";\n".join(ddl) + ";\n" if ddl else "")
+          print("источник индексов:", src, "· штук:", len(ddl))
+          PY
+          cat indexes.sql
+
+      - name: Собрать зеркало (только таблицы содержимого)
+        id: build
+        run: |
+          set -e
+          F="${{ steps.dl.outputs.file }}"; STAMP="${{ steps.dl.outputs.stamp }}"
+          # Дамп — обычный SQL (schema + INSERT). FTS в нём нет: пропущены при дампе.
+          zcat "$F" | sqlite3 full.sqlite
+          echo "полная копия:"; sqlite3 full.sqlite "SELECT count(*) FROM sqlite_master WHERE type='table'"
+          python3 - <<'PY'
+          import sqlite3, os
+          KEEP = ["works", "editions", "divisions", "verses", "verse_texts", "verse_tokens",
+                  "content_blocks", "content_items", "entity_profiles", "entities", "entity_names",
+                  "prayers", "prayer_verses", "quotes",
+                  "katha_speakers", "katha_albums", "katha_tracks", "pipeline_state"]
+          src = sqlite3.connect("full.sqlite")
+          have = {r[0] for r in src.execute("SELECT name FROM sqlite_master WHERE type='table'")}
+          out = "d1-content.sqlite"
+          if os.path.exists(out): os.remove(out)
+          dst = sqlite3.connect(out)
+          for t in KEEP:
+              if t not in have:
+                  print("  нет таблицы в дампе:", t); continue
+              ddl = src.execute("SELECT sql FROM sqlite_master WHERE type='table' AND name=?", (t,)).fetchone()[0]
+              dst.execute(ddl)
+              cols = [r[1] for r in src.execute("PRAGMA table_info(%s)" % t)]
+              q = "SELECT rowid, %s FROM %s ORDER BY rowid" % (",".join('"%s"' % c for c in cols), t)
+              ins = "INSERT INTO %s (rowid, %s) VALUES (%s)" % (t, ",".join('"%s"' % c for c in cols), ",".join("?" * (len(cols) + 1)))
+              n = 0
+              cur = src.execute(q)
+              while True:
+                  rows = cur.fetchmany(5000)
+                  if not rows: break
+                  dst.executemany(ins, rows); n += len(rows)
+              print("  %-18s %7d строк (rowid сохранён)" % (t, n))
+          dst.commit()
+          idx = open("indexes.sql", encoding="utf-8").read()
+          ok = bad = 0
+          for st in [s.strip() for s in idx.split(";") if s.strip()]:
+              try:
+                  dst.execute(st); ok += 1
+              except sqlite3.Error as e:
+                  bad += 1; print("  индекс пропущен:", str(e)[:80], "·", st[:70])
+          dst.commit()
+          print("индексов применено: %d, пропущено (чужие таблицы): %d" % (ok, bad))
+          dst.execute("ANALYZE")
+          dst.commit(); dst.execute("VACUUM"); dst.close()
+          PY
+          gzip -9 -f d1-content.sqlite
+          mv d1-content.sqlite.gz "d1-content-$STAMP.sqlite.gz"
+          ls -l "d1-content-$STAMP.sqlite.gz"
+          echo "asset=d1-content-$STAMP.sqlite.gz" >> "$GITHUB_OUTPUT"
+
+      - name: Выложить в релиз d1-mirror
+        env:
+          GH_TOKEN: ${{ github.token }}
+          ASSET: ${{ steps.build.outputs.asset }}
+          STAMP: ${{ steps.dl.outputs.stamp }}
+        run: |
+          set -e
+          if ! gh release view d1-mirror >/dev/null 2>&1; then
+            gh release create d1-mirror --prerelease --title "D1 · зеркало содержимого" \
+              --notes "Локальная копия таблиц СОДЕРЖИМОГО базы для замеров (EXPLAIN QUERY PLAN, сверка обходов) без единой прочитанной строки в D1. Личных таблиц здесь нет. Источник — ночной бэкап на Internet Archive (backup.yml)."
+          fi
+          gh release upload d1-mirror "$ASSET" --clobber
+          gh release view d1-mirror --json assets --jq '.assets[] | "\(.name) \(.size)"'
+          echo "::notice::зеркало: $ASSET (штамп $STAMP)"
