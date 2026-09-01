@@ -108,10 +108,14 @@ def main():
             t_a = base.strftime("%Y-%m-%dT%H:00:00Z")
             t_b = (base + timedelta(hours=1)).strftime("%Y-%m-%dT%H:00:00Z")
             r = gql(token, Q_QUERIES, {"tag": account, "db": db, "t1": t_a, "t2": t_b})
-            if "data" not in r or not r["data"]:
-                print("аналитика не ответила формой:", json.dumps(r)[:600])
+            # gql() уже разворачивает конверт до аккаунта — второй раз лезть
+            # в r["data"] нельзя. Берём оба вида на случай смены обёртки.
+            rows = (r.get("d1QueriesAdaptiveGroups")
+                    or r.get("data", {}).get("viewer", {}).get("accounts", [{}])[0]
+                    .get("d1QueriesAdaptiveGroups") or [])
+            if not rows:
+                print("аналитика вернула пусто:", json.dumps(r)[:400])
                 return 1
-            rows = r["data"]["viewer"]["accounts"][0]["d1QueriesAdaptiveGroups"]
             print("ЧАС %s — верхушка по прочитанным строкам" % h)
             tot = 0
             for x in rows:
