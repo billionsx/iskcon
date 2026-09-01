@@ -1,9 +1,29 @@
 name: Голос — линт ДАННЫХ (ЗКН-Д013)
 
+# ⚠️ ЛИНТ ИДЁТ ПО ЗЕРКАЛУ, А НЕ ПО БОЕВОЙ БАЗЕ (ЗКН-Ф027 §Г) · 01.09.2026
+#
+# Замер 2026-09-01: 6 617 555 прочитанных строк за сутки при пределе
+# 5 000 000 — база превышала САМ ПРЕДЕЛ. Из этого счёта 2 574 409 строк
+# (38.9 %) давал ОДИН этот линт: он сканирует `verse_texts` и
+# `entity_profiles` целиком, ища диакритику. Это работа обслуживания — её
+# не ждёт ни один человек, и платить за неё живыми строками не за что.
+#
+# Теперь он читает ночную копию содержимого (релиз `d1-mirror`, кладётся
+# из бэкапа): тот же SQL, тот же приговор, НОЛЬ прочитанных строк в D1.
+# Копия отстаёт от базы максимум на сутки — для закона о немой шастре это
+# ровно та же точность: правку вчерашнего дня он поймает завтра, а не через
+# час, и никакой разницы для сути нет.
+#
+# Расписание сдвинуто на 07:40 UTC: зеркало кладётся ночным бэкапом, и линт
+# обязан идти ПОСЛЕ него, иначе прочтёт вчерашнюю копию.
+
 on:
   workflow_dispatch:
   schedule:
-    - cron: "17 4 * * *"
+    - cron: "40 7 * * *"
+
+permissions:
+  contents: read
 
 jobs:
   lint:
@@ -12,11 +32,21 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with: { python-version: "3.12" }
-      - name: Прогон закона по КАЖДОЙ строке базы
+
+      - name: Зеркало содержимого — ноль строк из боевой базы
         env:
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          CLOUDFLARE_ACCOUNT_ID: d5cbe19470dc38599873eabfe148e6d1
-          D1_DATABASE_ID: 6226aded-dd03-4e74-977f-9cd0b509e73d
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          ASSET=$(gh release view d1-mirror --json assets             --jq '.assets | sort_by(.updated_at) | last | .name')
+          echo "зеркало: $ASSET"
+          gh release download d1-mirror --pattern "$ASSET" --clobber
+          gunzip -f "$ASSET"
+          mv d1-content-*.sqlite mirror.sqlite
+          python3 -c "import sqlite3;c=sqlite3.connect('mirror.sqlite');print('таблиц в зеркале:',c.execute(\"SELECT COUNT(*) FROM sqlite_master WHERE type='table'\").fetchone()[0])"
+
+      - name: Прогон закона по КАЖДОЙ строке зеркала
+        env:
+          D1_MIRROR: mirror.sqlite
         run: python3 tools/voice-data-lint.py 2>&1 | tee lint.log
       - name: Отчёт
         if: always()

@@ -27,13 +27,59 @@ def _ids():
     return acc, (dbid or DB_DEFAULT)
 
 
+# ══════════════════════════════════════════════════════════════════════════
+# РЕЖИМ ЗЕРКАЛА (ЗКН-Ф027 §Г) · 01.09.2026
+#
+# ЗАЧЕМ. Замер 2026-09-01: 6 617 555 прочитанных строк за сутки при пределе
+# 5 000 000 — база превышает САМ ПРЕДЕЛ. Из этого счёта 2 574 409 строк
+# (38.9 %) даёт ОДИН ночной линт данных: он сканирует `verse_texts` и
+# `entity_profiles` целиком, ища диакритику. Это работа обслуживания — её
+# не ждёт ни один человек, и платить за неё живыми строками не за что.
+#
+# ЧТО ДЕЛАЕМ. Если задан `D1_MIRROR` — путь к локальной копии содержимого
+# (релиз `d1-mirror`, кладётся ночным бэкапом, ноль прочитанных строк), —
+# запросы идут в неё, а не в боевую базу. Ответ той же формы: список
+# словарей. Ни один вызывающий не меняется, достаточно переменной среды.
+#
+# ГРАНИЦА, КОТОРУЮ НЕЛЬЗЯ ПЕРЕЙТИ. В зеркале только СОДЕРЖИМОЕ (книги,
+# карточки, катха) — личных таблиц там нет по построению. Поэтому зеркало
+# годится линтам и замерам и НЕ годится ничему, что читает данные человека.
+# Запись в зеркало запрещена: копия живёт до следующего бэкапа, и правка в
+# ней — это правка, которая исчезнет.
+# ══════════════════════════════════════════════════════════════════════════
+_MIRROR_CONN = None
+
+
+def mirror_path():
+    return os.environ.get("D1_MIRROR") or ""
+
+
+def _mirror():
+    global _MIRROR_CONN
+    if _MIRROR_CONN is None:
+        import sqlite3
+        c = sqlite3.connect("file:%s?mode=ro" % mirror_path(), uri=True)
+        c.row_factory = sqlite3.Row
+        _MIRROR_CONN = c
+    return _MIRROR_CONN
+
+
 def available():
+    if mirror_path():
+        return Path(mirror_path()).exists()
     acc, dbid = _ids()
     return bool(acc and dbid and os.environ.get("CLOUDFLARE_API_TOKEN"))
 
 
 def query(sql, params=None, tries=4):
     """Один запрос. params → bound (?1…?N): без SQL-экранирования (ЗКН-П002)."""
+    if mirror_path():
+        # Зеркало: тот же SQL, та же форма ответа, ноль прочитанных строк в D1.
+        # Писать сюда нельзя — копия исчезнет со следующим бэкапом.
+        if re.match(r"\s*(insert|update|delete|drop|alter|create)\b", sql, re.I):
+            raise RuntimeError("зеркало доступно только на чтение (ЗКН-Ф027 §Г)")
+        cur = _mirror().execute(sql, tuple(params or ()))
+        return [dict(r) for r in cur.fetchall()]
     acc, dbid = _ids()
     tok = os.environ.get("CLOUDFLARE_API_TOKEN")
     if not (acc and tok and dbid):
