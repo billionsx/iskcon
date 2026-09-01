@@ -28,6 +28,33 @@ jobs:
       - name: Канон стран — суд над таблицей (ЗКН-Р010b)
         run: python3 tools/countries.py --selftest
 
+      # ══════════════════════════════════════════════════════════════════
+      # ЗЕРКАЛО СОДЕРЖИМОГО (ЗКН-Ф034) · 01.09.2026 — ПОЧЕМУ ОНО ЗДЕСЬ
+      #
+      # `data-audit.py` держит 54 счётных закона, почти все — полным
+      # проходом таблицы (`json_tree` по 63 065 карточкам, 69 067 стихов).
+      # Один прогон стоил ~8 млн прочитанных строк, а этот контур бежит
+      # НА КАЖДЫЙ ПУШ. 01.09 за один час прошло пять пушей: 43 млн строк
+      # за час, суточный предел D1 (5 млн) вынесло, и база перестала
+      # отвечать ВСЕМ — приложение показало «Не удалось загрузить
+      # оглавление». Библиотеку уронил не пользователь и не рост, а гейт
+      # качества, плативший живыми строками за собственную проверку.
+      #
+      # Теперь аудит читает ночную копию содержимого: тот же SQL, тот же
+      # приговор, ноль прочитанных строк из боевой базы.
+      - name: Зеркало содержимого — аудит не платит живыми строками
+        id: mirror
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -e
+          ASSET=$(gh release view d1-mirror --json assets             --jq '.assets | sort_by(.updated_at) | last | .name')
+          gh release download d1-mirror --pattern "$ASSET" --clobber
+          gunzip -f "$ASSET"
+          mv d1-content-*.sqlite mirror.sqlite
+          echo "зеркало: $ASSET"
+          echo "path=$PWD/mirror.sqlite" >> "$GITHUB_OUTPUT"
+
       - name: Гейт географии — статика на каноне (ЗКН-Р010b)
         run: python3 tools/geo-lint.py
 
@@ -61,9 +88,9 @@ jobs:
       - name: Аудит законов — ДАННЫЕ (D1)
         if: always()
         env:
-          # account_id и database_id берутся из wrangler.toml (это не секреты).
-          # Секрет только токен.
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          # Токена здесь БОЛЬШЕ НЕТ намеренно: аудит читает зеркало, и живая
+          # база для него недоступна физически, а не по договорённости.
+          D1_MIRROR: ${{ steps.mirror.outputs.path }}
         run: python3 tools/data-audit.py
 
       # ЗКН-К: 12 законов карточек. До этого гейта стандарт ВБК/ВСК/ВМК/ПК
@@ -95,7 +122,7 @@ jobs:
       - name: Аудит ПКЛ и реестра (П · Р)
         if: always()
         env:
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          D1_MIRROR: ${{ steps.mirror.outputs.path }}
         run: python3 tools/pkl-audit.py
 
       - name: Аудит адресов (переезды — ЗКН-Н025)

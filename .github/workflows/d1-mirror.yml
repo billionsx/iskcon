@@ -96,10 +96,17 @@ jobs:
           echo "полная копия:"; sqlite3 full.sqlite "SELECT count(*) FROM sqlite_master WHERE type='table'"
           python3 - <<'PY'
           import sqlite3, os
+          # ⚠️ СПИСОК ВЕДЁТ АУДИТ, А НЕ ВКУС. 01.09.2026 аудит данных переведён
+          # на зеркало (ЗКН-Ф034), и выяснилось: без семи таблиц 26 из 54 его
+          # проверок молча превращались в «нет доступа к D1». Зелёный гейт при
+          # половине непроверенных законов хуже красного — он врёт.
+          # Все семь held содержимое, личных данных в них нет.
           KEEP = ["works", "editions", "divisions", "verses", "verse_texts", "verse_tokens",
                   "content_blocks", "content_items", "entity_profiles", "entities", "entity_names",
+                  "entity_relations", "entity_categories",
                   "prayers", "prayer_verses", "quotes",
-                  "katha_speakers", "katha_albums", "katha_tracks", "pipeline_state"]
+                  "katha_speakers", "katha_albums", "katha_tracks", "pipeline_state",
+                  "book_catalog", "sb_audio", "centers", "places", "tirthas"]
           src = sqlite3.connect("full.sqlite")
           have = {r[0] for r in src.execute("SELECT name FROM sqlite_master WHERE type='table'")}
           out = "d1-content.sqlite"
