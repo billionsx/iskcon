@@ -104,8 +104,13 @@ def main():
     for i, a in enumerate(sys.argv):
         if a == "--hour" and i + 1 < len(sys.argv):
             h = sys.argv[i + 1]
-            r = gql(token, Q_QUERIES, {"tag": account, "db": db,
-                                       "t1": h + ":00:00Z", "t2": h + ":00:00Z"})
+            base = datetime.strptime(h, "%Y-%m-%dT%H").replace(tzinfo=timezone.utc)
+            t_a = base.strftime("%Y-%m-%dT%H:00:00Z")
+            t_b = (base + timedelta(hours=1)).strftime("%Y-%m-%dT%H:00:00Z")
+            r = gql(token, Q_QUERIES, {"tag": account, "db": db, "t1": t_a, "t2": t_b})
+            if "data" not in r or not r["data"]:
+                print("аналитика не ответила формой:", json.dumps(r)[:600])
+                return 1
             rows = r["data"]["viewer"]["accounts"][0]["d1QueriesAdaptiveGroups"]
             print("ЧАС %s — верхушка по прочитанным строкам" % h)
             tot = 0
