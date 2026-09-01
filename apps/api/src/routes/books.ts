@@ -71,9 +71,43 @@ function verseLabel(refRaw: string): string {
   return `Текст ${tail}`;
 }
 
+/* ── КРАЕВОЙ КЭШ ОГЛАВЛЕНИЯ (ЗКН-Ф035) · 01.09.2026 ────────────────────────
+   Запрос оглавления считает `COUNT(v.id)` по КАЖДОМУ разделу книги, то есть
+   проходит все стихи работы: 27 042 прочитанных строки НА ВЫЗОВ. У API книг
+   кэша не было вовсе — каждое открытие «Содержания» шло в базу целиком.
+   В час 20:00 01.09 это дало 135 210 строк на пяти открытиях одной страницы.
+
+   Оглавление меняется только при заливке содержимого — то есть почти
+   никогда. Держим ответ на крае сутки: повторное открытие не стоит ничего.
+   Это не заменяет настоящую правку (счётчик стихов обязан лежать в
+   `divisions` готовым числом, а не считаться заново), но снимает цену
+   ПОВТОРНЫХ открытий сегодня же. */
+const TOC_TTL = 86400;
+
+/* Кладём ТОЛЬКО удачный ответ: положить на край пустоту значит раздавать её
+   всем следующие сутки. `waitUntil` — чтобы запись не задерживала читателя. */
+function tocOut(
+  c: { json: (o: unknown) => Response; executionCtx?: { waitUntil(p: Promise<unknown>): void } },
+  cache: Cache | undefined, key: Request, body: unknown,
+): Response {
+  const res = c.json(body);
+  if (!cache) return res;
+  const out = new Response(res.body, res);
+  out.headers.set('Cache-Control', `public, max-age=${TOC_TTL}`);
+  const copy = out.clone();
+  try { c.executionCtx?.waitUntil(cache.put(key, copy)); } catch { /* вне воркера */ }
+  return out;
+}
+
 // GET /v1/books/:work/toc — оглавление с учётом уровней (лила/песнь → глава)
 booksRouter.get('/:work/toc', async (c) => {
   const work = c.req.param('work');
+  const cache = (globalThis as { caches?: CacheStorage }).caches?.default;
+  const key = new Request(new URL(c.req.url).toString(), { method: 'GET' });
+  if (cache) {
+    const hit = await cache.match(key);
+    if (hit) return hit;
+  }
   const { results } = await c.env.DB.prepare(
     `SELECT d.id, d.parent_id, d.level, d.number,
             json_extract(d.title,'$.ru') AS title_ru,
@@ -102,14 +136,14 @@ booksRouter.get('/:work/toc', async (c) => {
         .filter((r) => r.level === 'chapter' && r.parent_id === d.id)
         .map((ch) => ({ id: ch.id, number: String(ch.number), title_ru: ch.title_ru ?? '', verses: Number(ch.verses ?? 0) })),
     }));
-    return c.json({ work, name: WORK_NAMES[work] ?? work, hierarchical: true, divisions });
+    return tocOut(c, cache, key, { work, name: WORK_NAMES[work] ?? work, hierarchical: true, divisions });
   }
 
   // плоская книга (как bg): главы верхнего уровня
   const chapters = rows
     .filter((r) => r.level === 'chapter' || !r.parent_id)
     .map((ch) => ({ id: ch.id, number: String(ch.number), title_ru: ch.title_ru ?? '', verses: Number(ch.verses ?? 0) }));
-  return c.json({ work, name: WORK_NAMES[work] ?? work, hierarchical: false, chapters });
+  return tocOut(c, cache, key, { work, name: WORK_NAMES[work] ?? work, hierarchical: false, chapters });
 });
 
 // GET /v1/books/:work/chapters — оглавление (разделы верхнего уровня книги)
