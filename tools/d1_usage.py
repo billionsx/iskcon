@@ -95,6 +95,27 @@ def main():
     t24 = (now - timedelta(hours=24)).strftime("%Y-%m-%dT%H:00:00Z")
     t48 = (now - timedelta(hours=48)).strftime("%Y-%m-%dT%H:00:00Z")
 
+    # ── РАЗБОР ОДНОГО ЧАСА (--hour YYYY-MM-DDTHH) ────────────────────────
+    # Суточная верхушка отвечает «кто ест вообще», но не «что случилось в
+    # 18:00». Когда расход взрывается в один час, нужен именно тот час:
+    # 01.09 в 18:00 UTC база прочитала 42.9 млн строк при 126 запросах, и
+    # суточный отчёт этого не показывал — 78 % расхода не попало в топ-25,
+    # потому что размазалось по запросам с разным текстом.
+    for i, a in enumerate(sys.argv):
+        if a == "--hour" and i + 1 < len(sys.argv):
+            h = sys.argv[i + 1]
+            r = gql(token, Q_QUERIES, {"tag": account, "db": db,
+                                       "t1": h + ":00:00Z", "t2": h + ":00:00Z"})
+            rows = r["data"]["viewer"]["accounts"][0]["d1QueriesAdaptiveGroups"]
+            print("ЧАС %s — верхушка по прочитанным строкам" % h)
+            tot = 0
+            for x in rows:
+                rr = x["sum"]["rowsRead"]; tot += rr
+                q = " ".join(str(x["dimensions"]["query"]).split())[:150]
+                print("%12d  ×%-5d %s" % (rr, x["count"], q))
+            print("сумма верхушки: %d" % tot)
+            return 0
+
     top = gql(token, Q_QUERIES, {"tag": account, "db": db, "t1": t24, "t2": t2})
     hourly = gql(token, Q_HOURLY, {"tag": account, "db": db, "t1": t48, "t2": t2})
 
