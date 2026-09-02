@@ -48,6 +48,16 @@ query($tag:String!,$db:String!,$t1:Time!,$t2:Time!){viewer{accounts(filter:{acco
  orderBy:[sum_rowsRead_DESC]){dimensions{query} sum{rowsRead rowsWritten queryDurationMs} count}}}}
 """
 
+# Предел ЗАПИСЕЙ (100 000) сорвало 01.09 вместе с пределом чтения — 154 894, —
+# но письмо Cloudflare предупредило только о чтении, и по суточному отчёту,
+# отсортированному по чтению, виновника записей не видно вовсе. Отдельная
+# сортировка: кто пишет.
+Q_WRITES = """
+query($tag:String!,$db:String!,$t1:Time!,$t2:Time!){viewer{accounts(filter:{accountTag:$tag}){
+ d1QueriesAdaptiveGroups(limit:25,filter:{databaseId:$db,datetimeHour_geq:$t1,datetimeHour_leq:$t2},
+ orderBy:[sum_rowsWritten_DESC]){dimensions{query} sum{rowsRead rowsWritten} count}}}}
+"""
+
 Q_HOURLY = """
 query($tag:String!,$db:String!,$t1:Time!,$t2:Time!){viewer{accounts(filter:{accountTag:$tag}){
  d1AnalyticsAdaptiveGroups(limit:300,filter:{databaseId:$db,datetimeHour_geq:$t1,datetimeHour_leq:$t2},
@@ -101,6 +111,26 @@ def main():
     # 01.09 в 18:00 UTC база прочитала 42.9 млн строк при 126 запросах, и
     # суточный отчёт этого не показывал — 78 % расхода не попало в топ-25,
     # потому что размазалось по запросам с разным текстом.
+    # --writes YYYY-MM-DD — кто писал в эти сутки UTC.
+    for i, a in enumerate(sys.argv):
+        if a == "--writes" and i + 1 < len(sys.argv):
+            d0 = sys.argv[i + 1]
+            base = datetime.strptime(d0, "%Y-%m-%d").replace(tzinfo=timezone.utc)
+            r = gql(token, Q_WRITES, {"tag": account, "db": db,
+                                      "t1": base.strftime("%Y-%m-%dT00:00:00Z"),
+                                      "t2": (base + timedelta(days=1)).strftime("%Y-%m-%dT00:00:00Z")})
+            rows = (r.get("d1QueriesAdaptiveGroups")
+                    or r.get("data", {}).get("viewer", {}).get("accounts", [{}])[0]
+                    .get("d1QueriesAdaptiveGroups") or [])
+            print("СУТКИ %s — верхушка по ЗАПИСАННЫМ строкам (предел 100 000)" % d0)
+            for x in rows:
+                w = x["sum"]["rowsWritten"]
+                if not w:
+                    continue
+                q = " ".join(str(x["dimensions"]["query"]).split())[:130]
+                print("%10d  ×%-5d %s" % (w, x["count"], q))
+            return 0
+
     for i, a in enumerate(sys.argv):
         if a == "--hour" and i + 1 < len(sys.argv):
             h = sys.argv[i + 1]

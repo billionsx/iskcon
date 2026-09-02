@@ -12,8 +12,11 @@ on:
   workflow_dispatch:
     inputs:
       hour:
-        description: "Час UTC в виде 2026-09-01T18"
-        required: true
+        description: "Час UTC в виде 2026-09-01T18 (пусто, если задан writes)"
+        default: ""
+      writes:
+        description: "Сутки UTC для разбора ЗАПИСЕЙ, вид 2026-09-01"
+        default: ""
 
 permissions:
   contents: read
@@ -29,5 +32,9 @@ jobs:
           CLOUDFLARE_ACCOUNT_ID: d5cbe19470dc38599873eabfe148e6d1
           D1_DATABASE_ID: 6226aded-dd03-4e74-977f-9cd0b509e73d
         run: |
-          python3 tools/d1_usage.py --hour "${{ inputs.hour }}" 2>&1 | tee hour.log
+          if [ -n "${{ inputs.writes }}" ]; then
+            python3 tools/d1_usage.py --writes "${{ inputs.writes }}" 2>&1 | tee hour.log
+          else
+            python3 tools/d1_usage.py --hour "${{ inputs.hour }}" 2>&1 | tee hour.log
+          fi
           while IFS= read -r l; do echo "::notice::$l"; done < hour.log
