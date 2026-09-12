@@ -1,0 +1,132 @@
+{
+  "mode": "live",
+  "at": "2026-09-12T18:54:42.376Z",
+  "channel": "@iskcone",
+  "db_rows": 163,
+  "progress": [],
+  "items": [
+    {
+      "slug": "mayapur",
+      "kind": "site",
+      "date": "2026-09-09",
+      "temple_name": "ИСККОН Маяпур · Шри Дхама Маяпур",
+      "deities": "Джайа Панча-таттва · Радха-Мадхава и Аштасакхи · Шри Нрисимхадев",
+      "src_channel": "site:mayapur",
+      "src_post_id": "album/676",
+      "src_url": "https://www.mayapur.com/media/album/676",
+      "gallery_name": "Daily Darshan",
+      "photo_count": 10,
+      "albums_planned": 1,
+      "photos": [
+        "https://www.mayapur.com/storage/albums/676/f6b9yU8e_image.jpg",
+        "https://www.mayapur.com/storage/albums/676/qAEIVAVJ_image.jpg",
+        "https://www.mayapur.com/storage/albums/676/2k3mn7o7_image.jpg",
+        "https://www.mayapur.com/storage/albums/676/2pjxkb6K_image.jpg",
+        "https://www.mayapur.com/storage/albums/676/2gr03AFW_image.jpg",
+        "https://www.mayapur.com/storage/albums/676/DjOZqcA5_image.jpg",
+        "https://www.mayapur.com/storage/albums/676/abJ6sDYg_image.jpg",
+        "https://www.mayapur.com/storage/albums/676/e9LSsK98_image.jpg",
+        "https://www.mayapur.com/storage/albums/676/l7AmrMgc_image.jpg",
+        "https://www.mayapur.com/storage/albums/676/ND7ethsA_image.jpg"
+      ],
+      "caption_preview": "<b>Радха-Мадхава и Аштасакхи · Панча-таттва · Прахлада-Нрисимхадев</b>\n\nЕжедневный даршан\n\nИСККОН Маяпур\n\n<a href=\"https://t.me/iskcone\">ISKCON ONE LOVE</a>",
+      "posted": "skip (dedup)"
+    },
+    {
+      "slug": "vrindavan",
+      "date": "2026-09-13",
+      "error": "site gallery empty"
+    },
+    {
+      "slug": "mayapur",
+      "kind": "site",
+      "date": "2026-09-09",
+      "temple_name": "ИСККОН Маяпур · Шри Дхама Маяпур",
+      "deities": "Джайа Панча-таттва · Радха-Мадхава и Аштасакхи · Шри Нрисимхадев",
+      "src_channel": "site:mayapur",
+      "src_post_id": "album/676",
+      "src_url": "https://www.mayapur.com/media/album/676",
+      "gallery_name": "Daily Darshan",
+      "photo_count": 10,
+      "albums_planned": 1,
+      "photos": [
+        "https://www.mayapur.com/storage/albums/676/f6b9yU8e_image.jpg",
+        "https://www.mayapur.com/storage/albums/676/qAEIVAVJ_image.jpg",
+        "https://www.mayapur.com/storage/albums/676/2k3mn7o7_image.jpg",
+        "https://www.mayapur.com/storage/albums/676/2pjxkb6K_image.jpg",
+        "https://www.mayapur.com/storage/albums/676/2gr03AFW_image.jpg",
+        "https://www.mayapur.com/storage/albums/676/DjOZqcA5_image.jpg",
+        "https://www.mayapur.com/storage/albums/676/abJ6sDYg_image.jpg",
+        "https://www.mayapur.com/storage/albums/676/e9LSsK98_image.jpg",
+        "https://www.mayapur.com/storage/albums/676/l7AmrMgc_image.jpg",
+        "https://www.mayapur.com/storage/albums/676/ND7ethsA_image.jpg"
+      ],
+      "caption_preview": "<b>Радха-Мадхава и Аштасакхи · Панча-таттва · Прахлада-Нрисимхадев</b>\n\nЕжедневный даршан\n\nИСККОН Маяпур\n\n<a href=\"https://t.me/iskcone\">ISKCON ONE LOVE</a>",
+      "posted": "skip (dedup)"
+    },
+    {
+      "slug": "vrindavan",
+      "date": "2026-09-12",
+      "error": "site gallery empty"
+    },
+    {
+      "slug": "mayapur",
+      "kind": "site",
+      "date": "2026-09-09",
+      "temple_name": "ИСККОН Маяпур · Шри Дхама Маяпур",
+      "deities": "Джайа Панча-таттва · Радха-Мадхава и Аштасакхи · Шри Нрисимхадев",
+      "src_channel": "site:mayapur",
+      "src_post_id": "album/676",
+      "src_url": "https://www.mayapur.com/media/album/676",
+      "gallery_name": "Daily Darshan",
+      "photo_count": 10,
+      "albums_planned": 1,
+      "photos": [
+        "https://www.mayapur.com/storage/albums/676/f6b9yU8e_image.jpg",
+        "https://www.mayapur.com/storage/albums/676/qAEIVAVJ_image.jpg",
+        "https://www.mayapur.com/storage/albums/676/2k3mn7o7_image.jpg",
+        "https://www.mayapur.com/storage/albums/676/2pjxkb6K_image.jpg",
+        "https://www.mayapur.com/storage/albums/676/2gr03AFW_image.jpg",
+        "https://www.mayapur.com/storage/albums/676/DjOZqcA5_image.jpg",
+        "https://www.mayapur.com/storage/albums/676/abJ6sDYg_image.jpg",
+        "https://www.mayapur.com/storage/albums/676/e9LSsK98_image.jpg",
+        "https://www.mayapur.com/storage/albums/676/l7AmrMgc_image.jpg",
+        "https://www.mayapur.com/storage/albums/676/ND7ethsA_image.jpg"
+      ],
+      "caption_preview": "<b>Радха-Мадхава и Аштасакхи · Панча-таттва · Прахлада-Нрисимхадев</b>\n\nЕжедневный даршан\n\nИСККОН Маяпур\n\n<a href=\"https://t.me/iskcone\">ISKCON ONE LOVE</a>",
+      "posted": "skip (dedup)"
+    },
+    {
+      "slug": "vrindavan",
+      "date": "2026-09-11",
+      "error": "site gallery empty"
+    },
+    {
+      "slug": "mayapur",
+      "kind": "site",
+      "date": "2026-09-09",
+      "temple_name": "ИСККОН Маяпур · Шри Дхама Маяпур",
+      "deities": "Джайа Панча-таттва · Радха-Мадхава и Аштасакхи · Шри Нрисимхадев",
+      "src_channel": "site:mayapur",
+      "src_post_id": "album/676",
+      "src_url": "https://www.mayapur.com/media/album/676",
+      "gallery_name": "Daily Darshan",
+      "photo_count": 10,
+      "albums_planned": 1,
+      "photos": [
+        "https://www.mayapur.com/storage/albums/676/f6b9yU8e_image.jpg",
+        "https://www.mayapur.com/storage/albums/676/qAEIVAVJ_image.jpg",
+        "https://www.mayapur.com/storage/albums/676/2k3mn7o7_image.jpg",
+        "https://www.mayapur.com/storage/albums/676/2pjxkb6K_image.jpg",
+        "https://www.mayapur.com/storage/albums/676/2gr03AFW_image.jpg",
+        "https://www.mayapur.com/storage/albums/676/DjOZqcA5_image.jpg",
+        "https://www.mayapur.com/storage/albums/676/abJ6sDYg_image.jpg",
+        "https://www.mayapur.com/storage/albums/676/e9LSsK98_image.jpg",
+        "https://www.mayapur.com/storage/albums/676/l7AmrMgc_image.jpg",
+        "https://www.mayapur.com/storage/albums/676/ND7ethsA_image.jpg"
+      ],
+      "caption_preview": "<b>Радха-Мадхава и Аштасакхи · Панча-таттва · Прахлада-Нрисимхадев</b>\n\nЕжедневный даршан\n\nИСККОН Маяпур\n\n<a href=\"https://t.me/iskcone\">ISKCON ONE LOVE</a>",
+      "posted": "skip (dedup)"
+    }
+  ]
+}
