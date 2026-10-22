@@ -14,9 +14,9 @@
   collective_vows: 1
   content_blocks: 1470
   content_items: 170
-  darshan: 203
+  darshan: 204
   deities: 4
-  deploy_checks: 3499
+  deploy_checks: 3500
   dhama_clusters: 35
   dhamas: 3
   divisions: 1084
@@ -30,7 +30,7 @@
   entity_relations: 3591
   feed_audio: 15
   feed_media: 20
-  feed_video: 31
+  feed_video: 32
   festivals: 9
   gcal_days: 481
   gcal_meta: 1
@@ -51,6 +51,7 @@
   news_posts: 37
   notes: 0
   oauth_states: 1
+  ! TimeoutError: The read operation timed out
   page_text: 170
   pipeline_state: 1
   places: 956
@@ -69,6 +70,7 @@
   sessions: 2
   shop_groups: 3
   shop_products: 9
+  ! HTTP 504 {"result":null,"success":false,"errors":[{"code":7009,"message":"Upstream service unavailable"}],"messages":[]}
   tilda_assets: 229655
   tilda_pages: 148
   tirtha_persons: 289
@@ -78,11 +80,13 @@
   user_prefs: 0
   user_vows: 0
   users: 2
+  ! TimeoutError: The read operation timed out
+  ! HTTP 504 {"result":null,"success":false,"errors":[{"code":7009,"message":"Upstream service unavailable"}],"messages":[]}
   verse_texts: 68816
   verse_tokens: 316325
   verses: 68816
   vraja_raw: 578
   works: 39
-✓ дамп готов за 437 c; строк всего: 732859
+✓ дамп готов за 1387 c; строк всего: 732862
 rc=0
--rw-r--r-- 1 runner runner 42M Oct 21 07:46 d1.sql.gz
+-rw-r--r-- 1 runner runner 42M Oct 22 07:58 d1.sql.gz
