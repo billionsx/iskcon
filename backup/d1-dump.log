@@ -14,9 +14,9 @@
   collective_vows: 1
   content_blocks: 1470
   content_items: 170
-  darshan: 207
+  darshan: 209
   deities: 4
-  deploy_checks: 3503
+  deploy_checks: 3504
   dhama_clusters: 35
   dhamas: 3
   divisions: 1084
@@ -28,7 +28,7 @@
   entity_names: 2958
   entity_profiles: 886
   entity_relations: 3591
-  feed_audio: 15
+  feed_audio: 16
   feed_media: 20
   feed_video: 32
   festivals: 9
@@ -69,6 +69,7 @@
   sessions: 2
   shop_groups: 3
   shop_products: 9
+  ! HTTP 504 {"result":null,"success":false,"errors":[{"code":7009,"message":"Upstream service unavailable"}],"messages":[]}
   tilda_assets: 229655
   tilda_pages: 148
   tirtha_persons: 289
@@ -79,14 +80,12 @@
   user_vows: 0
   users: 2
   ! HTTP 504 {"result":null,"success":false,"errors":[{"code":7009,"message":"Upstream service unavailable"}],"messages":[]}
-  ! HTTP 504 {"result":null,"success":false,"errors":[{"code":7009,"message":"Upstream service unavailable"}],"messages":[]}
-  ! HTTP 504 {"result":null,"success":false,"errors":[{"code":7009,"message":"Upstream service unavailable"}],"messages":[]}
-  ! HTTP 504 {"result":null,"success":false,"errors":[{"code":7009,"message":"Upstream service unavailable"}],"messages":[]}
   verse_texts: 68816
   verse_tokens: 316325
+  ! HTTP 504 {"result":null,"success":false,"errors":[{"code":7009,"message":"Upstream service unavailable"}],"messages":[]}
   verses: 68816
   vraja_raw: 578
   works: 39
-✓ дамп готов за 1294 c; строк всего: 732868
+✓ дамп готов за 1224 c; строк всего: 732872
 rc=0
--rw-r--r-- 1 runner runner 42M Oct 25 07:56 d1.sql.gz
+-rw-r--r-- 1 runner runner 42M Oct 26 08:08 d1.sql.gz
