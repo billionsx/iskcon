@@ -16,7 +16,7 @@
   content_items: 170
   darshan: 209
   deities: 4
-  deploy_checks: 3504
+  deploy_checks: 3505
   dhama_clusters: 35
   dhamas: 3
   divisions: 1084
@@ -69,7 +69,6 @@
   sessions: 2
   shop_groups: 3
   shop_products: 9
-  ! HTTP 504 {"result":null,"success":false,"errors":[{"code":7009,"message":"Upstream service unavailable"}],"messages":[]}
   tilda_assets: 229655
   tilda_pages: 148
   tirtha_persons: 289
@@ -79,13 +78,11 @@
   user_prefs: 0
   user_vows: 0
   users: 2
-  ! HTTP 504 {"result":null,"success":false,"errors":[{"code":7009,"message":"Upstream service unavailable"}],"messages":[]}
   verse_texts: 68816
   verse_tokens: 316325
-  ! HTTP 504 {"result":null,"success":false,"errors":[{"code":7009,"message":"Upstream service unavailable"}],"messages":[]}
   verses: 68816
   vraja_raw: 578
   works: 39
-✓ дамп готов за 1224 c; строк всего: 732872
+✓ дамп готов за 515 c; строк всего: 732873
 rc=0
--rw-r--r-- 1 runner runner 42M Oct 26 08:08 d1.sql.gz
+-rw-r--r-- 1 runner runner 42M Oct 27 08:00 d1.sql.gz
