@@ -1,14 +1,14 @@
 {
- "stamp": "20261105",
- "utc": "2026-11-05T09:39:02.292982Z",
+ "stamp": "20261106",
+ "utc": "2026-11-06T09:31:00.435584Z",
  "files": {
-  "d1-20261105.sql.gz": {
-   "sha256": "43f0d76c34500c2fd7b72a3ae1578d663f217b7186ba2fe6a97897a72a9c0f1a",
-   "bytes": 43230380
+  "d1-20261106.sql.gz": {
+   "sha256": "302f51f7525007f5322d7f3b9c3c5f329de7ec57a649805445be2953717fbbb4",
+   "bytes": 43230669
   },
-  "repo-20261105.bundle.gz": {
-   "sha256": "c64960d1f57dcd8e1ee9fbb28ca104c38b7382b902723c54fecf1d3c091fc2a9",
-   "bytes": 959722127
+  "repo-20261106.bundle.gz": {
+   "sha256": "c3302bd25f1eac86e01083ff06c8ca0f5ef297b44d7b4aa0e4b5b12ea3c9572a",
+   "bytes": 959734806
   }
  }
 }
