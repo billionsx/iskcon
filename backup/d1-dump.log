@@ -14,9 +14,9 @@
   collective_vows: 1
   content_blocks: 1470
   content_items: 170
-  darshan: 223
+  darshan: 224
   deities: 4
-  deploy_checks: 3515
+  deploy_checks: 3516
   dhama_clusters: 35
   dhamas: 3
   divisions: 1084
@@ -83,6 +83,6 @@
   verses: 68816
   vraja_raw: 578
   works: 39
-✓ дамп готов за 428 c; строк всего: 732903
+✓ дамп готов за 330 c; строк всего: 732905
 rc=0
--rw-r--r-- 1 runner runner 42M Nov  6 09:30 d1.sql.gz
+-rw-r--r-- 1 runner runner 42M Nov  7 08:52 d1.sql.gz
