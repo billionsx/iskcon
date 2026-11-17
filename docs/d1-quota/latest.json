@@ -1,10 +1,10 @@
 {
- "measured_at": "2026-11-16T07Z",
+ "measured_at": "2026-11-17T08Z",
  "window_24h": {
-  "from": "2026-11-15T07:00:00Z",
-  "to": "2026-11-16T07:00:00Z",
-  "rowsRead": 734498,
-  "rowsWritten": 8
+  "from": "2026-11-16T08:00:00Z",
+  "to": "2026-11-17T08:00:00Z",
+  "rowsRead": 1650693,
+  "rowsWritten": 7
  },
  "target": {
   "rowsRead": 500000,
@@ -15,146 +15,69 @@
   "rowsWritten": 100000
  },
  "per_day_utc": {
-  "2026-11-16": {
-   "rowsRead": 152,
-   "rowsWritten": 1,
-   "readQueries": 144,
-   "writeQueries": 1,
-   "hours": 8
+  "2026-11-17": {
+   "rowsRead": 356,
+   "rowsWritten": 0,
+   "readQueries": 174,
+   "writeQueries": 0,
+   "hours": 9
   },
-  "2026-11-15": {
-   "rowsRead": 898094,
-   "rowsWritten": 9,
-   "readQueries": 1663,
-   "writeQueries": 4,
+  "2026-11-16": {
+   "rowsRead": 1732318,
+   "rowsWritten": 8,
+   "readQueries": 1967,
+   "writeQueries": 3,
    "hours": 24
   },
-  "2026-11-14": {
-   "rowsRead": 734420,
-   "rowsWritten": 8,
-   "readQueries": 1503,
-   "writeQueries": 3,
-   "hours": 17
+  "2026-11-15": {
+   "rowsRead": 734346,
+   "rowsWritten": 7,
+   "readQueries": 1415,
+   "writeQueries": 2,
+   "hours": 16
   }
  },
  "top_queries": [
   {
-   "count": 12,
+   "count": 2,
    "dimensions": {
-    "query": "SELECT rowid AS _rid, * FROM \"verse_tokens\" WHERE rowid > 323056 ORDER BY rowid LIMIT ?"
+    "query": "SELECT e.id AS slug,\n            (SELECT n.value FROM entity_names n WHERE n.entity_id = e.id AND n.lang='ru' AND n.kind='canonical' LIMIT ?) AS name,\n            e.tattva AS tattva,\n            e.note AS note,\n            ep.summary AS summary,\n            (SELECT ec.category FROM entity_categories ec WHERE ec.entity_id = e.id AND (ec.category LIKE 'wave-%' OR ec.category LIKE 'rasa:%' OR ec.category LIKE 'bhag-%') LIMIT 1) AS sub,\n            (SELECT ec.category FROM entity_categories ec WHERE ec.entity_id = e.id AND (ec.category LIKE 'w1-%' OR ec.category LIKE 'w2-%' OR ec.category LIKE 'ws-%' OR ec.category LIKE 'wi-%') LIMIT 1) AS grp,\n            (SELECT ec.category FROM entity_categories ec WHERE ec.entity_id = e.id AND ec.category LIKE 'lila-%' LIMIT 1) AS lila,\n            (SELECT ec.category FROM entity_categories ec WHERE ec.entity_id = e.id AND ec.category LIKE 'wave-%' LIMIT 1) AS wave,\n            (SELECT ec.category FROM entity_categories ec WHERE ec.entity_id = e.id AND ec.category LIKE 'rasa:%' LIMIT 1) AS rasa,\n            (SELECT COUNT(*) FROM json_tree(COALESCE(ep.longform, '{}')) WHERE key = 'byId') AS n_quotes\n       FROM entities e\n       LEFT JOIN entity_profiles ep ON ep.entity_id = e.id\n      WHERE e.type = 'personality' AND e.status = 'published'\n      ORDER BY name"
    },
    "sum": {
-    "queryDurationMs": 40.2144,
-    "rowsRead": 9600,
+    "queryDurationMs": 533.599,
+    "rowsRead": 162158,
     "rowsWritten": 0
    }
   },
   {
-   "count": 12,
+   "count": 9,
    "dimensions": {
-    "query": "SELECT rowid AS _rid, * FROM \"verse_tokens\" WHERE rowid > 223056 ORDER BY rowid LIMIT ?"
+    "query": "SELECT v.id, v.ref, v.devanagari, v.translit, vt.translation, vt.purport\n         FROM verses v\n         LEFT JOIN verse_texts vt ON vt.verse_id = v.id AND vt.edition_id = ?1\n         WHERE v.work_id = ?2 AND v.division_id = ?3\n         ORDER BY v.ordinal"
    },
    "sum": {
-    "queryDurationMs": 63.578399999999995,
-    "rowsRead": 9600,
+    "queryDurationMs": 1725.349,
+    "rowsRead": 117326,
     "rowsWritten": 0
    }
   },
   {
-   "count": 12,
+   "count": 10,
    "dimensions": {
-    "query": "SELECT rowid AS _rid, * FROM \"verse_tokens\" WHERE rowid > 157456 ORDER BY rowid LIMIT ?"
+    "query": "SELECT rowid AS _rid, * FROM \"verse_tokens\" WHERE rowid > 315056 ORDER BY rowid LIMIT ?"
    },
    "sum": {
-    "queryDurationMs": 62.4756,
-    "rowsRead": 9600,
+    "queryDurationMs": 34.072,
+    "rowsRead": 8000,
     "rowsWritten": 0
    }
   },
   {
-   "count": 12,
-   "dimensions": {
-    "query": "SELECT rowid AS _rid, * FROM \"verse_tokens\" WHERE rowid > 298256 ORDER BY rowid LIMIT ?"
-   },
-   "sum": {
-    "queryDurationMs": 78.7272,
-    "rowsRead": 9600,
-    "rowsWritten": 0
-   }
-  },
-  {
-   "count": 12,
-   "dimensions": {
-    "query": "SELECT rowid AS _rid, * FROM \"verse_tokens\" WHERE rowid > 216656 ORDER BY rowid LIMIT ?"
-   },
-   "sum": {
-    "queryDurationMs": 56.91,
-    "rowsRead": 9600,
-    "rowsWritten": 0
-   }
-  },
-  {
-   "count": 12,
-   "dimensions": {
-    "query": "SELECT rowid AS _rid, * FROM \"verse_tokens\" WHERE rowid > 308656 ORDER BY rowid LIMIT ?"
-   },
-   "sum": {
-    "queryDurationMs": 34.769999999999996,
-    "rowsRead": 9600,
-    "rowsWritten": 0
-   }
-  },
-  {
-   "count": 12,
+   "count": 10,
    "dimensions": {
     "query": "SELECT rowid AS _rid, * FROM \"verse_tokens\" WHERE rowid > 134256 ORDER BY rowid LIMIT ?"
    },
    "sum": {
-    "queryDurationMs": 42.260400000000004,
-    "rowsRead": 9600,
-    "rowsWritten": 0
-   }
-  },
-  {
-   "count": 12,
-   "dimensions": {
-    "query": "SELECT rowid AS _rid, * FROM \"entity_names\" WHERE rowid > -1 ORDER BY rowid LIMIT ?"
-   },
-   "sum": {
-    "queryDurationMs": 55.9812,
-    "rowsRead": 9600,
-    "rowsWritten": 0
-   }
-  },
-  {
-   "count": 12,
-   "dimensions": {
-    "query": "SELECT rowid AS _rid, * FROM \"verse_tokens\" WHERE rowid > 217456 ORDER BY rowid LIMIT ?"
-   },
-   "sum": {
-    "queryDurationMs": 32.1108,
-    "rowsRead": 9600,
-    "rowsWritten": 0
-   }
-  },
-  {
-   "count": 12,
-   "dimensions": {
-    "query": "SELECT rowid AS _rid, * FROM \"verse_tokens\" WHERE rowid > 145456 ORDER BY rowid LIMIT ?"
-   },
-   "sum": {
-    "queryDurationMs": 46.86,
-    "rowsRead": 9600,
-    "rowsWritten": 0
-   }
-  },
-  {
-   "count": 10,
-   "dimensions": {
-    "query": "SELECT rowid AS _rid, * FROM \"tilda_assets\" WHERE rowid > 456945 ORDER BY rowid LIMIT ?"
-   },
-   "sum": {
-    "queryDurationMs": 49.632,
+    "queryDurationMs": 35.024,
     "rowsRead": 8000,
     "rowsWritten": 0
    }
@@ -162,10 +85,10 @@
   {
    "count": 10,
    "dimensions": {
-    "query": "SELECT rowid AS _rid, * FROM \"verse_tokens\" WHERE rowid > 114256 ORDER BY rowid LIMIT ?"
+    "query": "SELECT rowid AS _rid, * FROM \"verse_tokens\" WHERE rowid > 75856 ORDER BY rowid LIMIT ?"
    },
    "sum": {
-    "queryDurationMs": 42.221000000000004,
+    "queryDurationMs": 53.81700000000001,
     "rowsRead": 8000,
     "rowsWritten": 0
    }
@@ -173,10 +96,10 @@
   {
    "count": 10,
    "dimensions": {
-    "query": "SELECT rowid AS _rid, * FROM \"tilda_assets\" WHERE rowid > 403345 ORDER BY rowid LIMIT ?"
+    "query": "SELECT rowid AS _rid, * FROM \"verse_tokens\" WHERE rowid > 79056 ORDER BY rowid LIMIT ?"
    },
    "sum": {
-    "queryDurationMs": 67.208,
+    "queryDurationMs": 56.039,
     "rowsRead": 8000,
     "rowsWritten": 0
    }
@@ -184,10 +107,10 @@
   {
    "count": 10,
    "dimensions": {
-    "query": "SELECT rowid AS _rid, * FROM \"tilda_assets\" WHERE rowid > 452945 ORDER BY rowid LIMIT ?"
+    "query": "SELECT rowid AS _rid, * FROM \"tilda_assets\" WHERE rowid > 429745 ORDER BY rowid LIMIT ?"
    },
    "sum": {
-    "queryDurationMs": 49.894999999999996,
+    "queryDurationMs": 59.349999999999994,
     "rowsRead": 8000,
     "rowsWritten": 0
    }
@@ -195,10 +118,10 @@
   {
    "count": 10,
    "dimensions": {
-    "query": "SELECT rowid AS _rid, * FROM \"katha_tracks\" WHERE rowid > 3200 ORDER BY rowid LIMIT ?"
+    "query": "SELECT rowid AS _rid, * FROM \"tilda_assets\" WHERE rowid > 432945 ORDER BY rowid LIMIT ?"
    },
    "sum": {
-    "queryDurationMs": 85.33200000000001,
+    "queryDurationMs": 52.153,
     "rowsRead": 8000,
     "rowsWritten": 0
    }
@@ -206,10 +129,10 @@
   {
    "count": 10,
    "dimensions": {
-    "query": "SELECT rowid AS _rid, * FROM \"verse_tokens\" WHERE rowid > 151056 ORDER BY rowid LIMIT ?"
+    "query": "SELECT rowid AS _rid, * FROM \"verse_tokens\" WHERE rowid > 314256 ORDER BY rowid LIMIT ?"
    },
    "sum": {
-    "queryDurationMs": 42.358000000000004,
+    "queryDurationMs": 47.436,
     "rowsRead": 8000,
     "rowsWritten": 0
    }
@@ -217,10 +140,10 @@
   {
    "count": 10,
    "dimensions": {
-    "query": "SELECT rowid AS _rid, * FROM \"verses\" WHERE rowid > 89080 ORDER BY rowid LIMIT ?"
+    "query": "SELECT rowid AS _rid, * FROM \"verse_tokens\" WHERE rowid > 267056 ORDER BY rowid LIMIT ?"
    },
    "sum": {
-    "queryDurationMs": 69.6,
+    "queryDurationMs": 47.113,
     "rowsRead": 8000,
     "rowsWritten": 0
    }
@@ -228,10 +151,10 @@
   {
    "count": 10,
    "dimensions": {
-    "query": "SELECT rowid AS _rid, * FROM \"tilda_assets\" WHERE rowid > 384145 ORDER BY rowid LIMIT ?"
+    "query": "SELECT rowid AS _rid, * FROM \"verse_tokens\" WHERE rowid > 83056 ORDER BY rowid LIMIT ?"
    },
    "sum": {
-    "queryDurationMs": 59.496,
+    "queryDurationMs": 31.854,
     "rowsRead": 8000,
     "rowsWritten": 0
    }
@@ -239,10 +162,21 @@
   {
    "count": 10,
    "dimensions": {
-    "query": "SELECT rowid AS _rid, * FROM \"tilda_assets\" WHERE rowid > 376145 ORDER BY rowid LIMIT ?"
+    "query": "SELECT rowid AS _rid, * FROM \"verses\" WHERE rowid > 48778 ORDER BY rowid LIMIT ?"
    },
    "sum": {
-    "queryDurationMs": 51.525,
+    "queryDurationMs": 45.842,
+    "rowsRead": 8000,
+    "rowsWritten": 0
+   }
+  },
+  {
+   "count": 10,
+   "dimensions": {
+    "query": "SELECT rowid AS _rid, * FROM \"verse_tokens\" WHERE rowid > 214256 ORDER BY rowid LIMIT ?"
+   },
+   "sum": {
+    "queryDurationMs": 26.711999999999996,
     "rowsRead": 8000,
     "rowsWritten": 0
    }
@@ -253,7 +187,7 @@
     "query": "SELECT rowid AS _rid, * FROM \"verse_tokens\" WHERE rowid > 274256 ORDER BY rowid LIMIT ?"
    },
    "sum": {
-    "queryDurationMs": 30.753,
+    "queryDurationMs": 54.949000000000005,
     "rowsRead": 8000,
     "rowsWritten": 0
    }
@@ -261,10 +195,10 @@
   {
    "count": 10,
    "dimensions": {
-    "query": "SELECT rowid AS _rid, * FROM \"tilda_assets\" WHERE rowid > 325745 ORDER BY rowid LIMIT ?"
+    "query": "SELECT rowid AS _rid, * FROM \"verse_tokens\" WHERE rowid > 137456 ORDER BY rowid LIMIT ?"
    },
    "sum": {
-    "queryDurationMs": 43.763,
+    "queryDurationMs": 40.472,
     "rowsRead": 8000,
     "rowsWritten": 0
    }
@@ -272,10 +206,10 @@
   {
    "count": 10,
    "dimensions": {
-    "query": "SELECT rowid AS _rid, * FROM \"tilda_assets\" WHERE rowid > 276945 ORDER BY rowid LIMIT ?"
+    "query": "SELECT rowid AS _rid, * FROM \"verse_tokens\" WHERE rowid > 83856 ORDER BY rowid LIMIT ?"
    },
    "sum": {
-    "queryDurationMs": 49.870000000000005,
+    "queryDurationMs": 36.400999999999996,
     "rowsRead": 8000,
     "rowsWritten": 0
    }
@@ -283,10 +217,10 @@
   {
    "count": 10,
    "dimensions": {
-    "query": "SELECT rowid AS _rid, * FROM \"tilda_assets\" WHERE rowid > 445745 ORDER BY rowid LIMIT ?"
+    "query": "SELECT rowid AS _rid, * FROM \"verses\" WHERE rowid > 41535 ORDER BY rowid LIMIT ?"
    },
    "sum": {
-    "queryDurationMs": 33.105000000000004,
+    "queryDurationMs": 60.266999999999996,
     "rowsRead": 8000,
     "rowsWritten": 0
    }
@@ -294,10 +228,10 @@
   {
    "count": 10,
    "dimensions": {
-    "query": "SELECT rowid AS _rid, * FROM \"verse_tokens\" WHERE rowid > 34256 ORDER BY rowid LIMIT ?"
+    "query": "SELECT rowid AS _rid, * FROM \"verse_tokens\" WHERE rowid > 326256 ORDER BY rowid LIMIT ?"
    },
    "sum": {
-    "queryDurationMs": 27.665000000000003,
+    "queryDurationMs": 42.81399999999999,
     "rowsRead": 8000,
     "rowsWritten": 0
    }
@@ -305,11 +239,77 @@
   {
    "count": 10,
    "dimensions": {
-    "query": "SELECT rowid AS _rid, * FROM \"verse_tokens\" WHERE rowid > 245456 ORDER BY rowid LIMIT ?"
+    "query": "SELECT rowid AS _rid, * FROM \"verse_tokens\" WHERE rowid > 77456 ORDER BY rowid LIMIT ?"
    },
    "sum": {
-    "queryDurationMs": 33.284,
+    "queryDurationMs": 36.367,
     "rowsRead": 8000,
+    "rowsWritten": 0
+   }
+  },
+  {
+   "count": 10,
+   "dimensions": {
+    "query": "SELECT rowid AS _rid, * FROM \"verse_tokens\" WHERE rowid > 112656 ORDER BY rowid LIMIT ?"
+   },
+   "sum": {
+    "queryDurationMs": 40.004,
+    "rowsRead": 8000,
+    "rowsWritten": 0
+   }
+  },
+  {
+   "count": 10,
+   "dimensions": {
+    "query": "SELECT rowid AS _rid, * FROM \"verse_tokens\" WHERE rowid > 218256 ORDER BY rowid LIMIT ?"
+   },
+   "sum": {
+    "queryDurationMs": 36.675,
+    "rowsRead": 8000,
+    "rowsWritten": 0
+   }
+  },
+  {
+   "count": 10,
+   "dimensions": {
+    "query": "SELECT rowid AS _rid, * FROM \"prayer_verses\" WHERE rowid > 800 ORDER BY rowid LIMIT ?"
+   },
+   "sum": {
+    "queryDurationMs": 188.295,
+    "rowsRead": 8000,
+    "rowsWritten": 0
+   }
+  },
+  {
+   "count": 10,
+   "dimensions": {
+    "query": "SELECT rowid AS _rid, * FROM \"verse_tokens\" WHERE rowid > 243056 ORDER BY rowid LIMIT ?"
+   },
+   "sum": {
+    "queryDurationMs": 42.979,
+    "rowsRead": 8000,
+    "rowsWritten": 0
+   }
+  },
+  {
+   "count": 8,
+   "dimensions": {
+    "query": "SELECT rowid AS _rid, * FROM \"tilda_assets\" WHERE rowid > 344145 ORDER BY rowid LIMIT ?"
+   },
+   "sum": {
+    "queryDurationMs": 37.22,
+    "rowsRead": 6400,
+    "rowsWritten": 0
+   }
+  },
+  {
+   "count": 8,
+   "dimensions": {
+    "query": "SELECT rowid AS _rid, * FROM \"tilda_assets\" WHERE rowid > 336145 ORDER BY rowid LIMIT ?"
+   },
+   "sum": {
+    "queryDurationMs": 24.5256,
+    "rowsRead": 6400,
     "rowsWritten": 0
    }
   }
@@ -317,11 +317,286 @@
  "hourly": [
   {
    "dimensions": {
+    "datetimeHour": "2026-11-17T08:00:00Z"
+   },
+   "sum": {
+    "readQueries": 16,
+    "rowsRead": 4,
+    "rowsWritten": 0,
+    "writeQueries": 0
+   }
+  },
+  {
+   "dimensions": {
+    "datetimeHour": "2026-11-17T07:00:00Z"
+   },
+   "sum": {
+    "readQueries": 18,
+    "rowsRead": 8,
+    "rowsWritten": 0,
+    "writeQueries": 0
+   }
+  },
+  {
+   "dimensions": {
+    "datetimeHour": "2026-11-17T06:00:00Z"
+   },
+   "sum": {
+    "readQueries": 18,
+    "rowsRead": 8,
+    "rowsWritten": 0,
+    "writeQueries": 0
+   }
+  },
+  {
+   "dimensions": {
+    "datetimeHour": "2026-11-17T05:00:00Z"
+   },
+   "sum": {
+    "readQueries": 18,
+    "rowsRead": 8,
+    "rowsWritten": 0,
+    "writeQueries": 0
+   }
+  },
+  {
+   "dimensions": {
+    "datetimeHour": "2026-11-17T04:00:00Z"
+   },
+   "sum": {
+    "readQueries": 20,
+    "rowsRead": 9,
+    "rowsWritten": 0,
+    "writeQueries": 0
+   }
+  },
+  {
+   "dimensions": {
+    "datetimeHour": "2026-11-17T03:00:00Z"
+   },
+   "sum": {
+    "readQueries": 18,
+    "rowsRead": 8,
+    "rowsWritten": 0,
+    "writeQueries": 0
+   }
+  },
+  {
+   "dimensions": {
+    "datetimeHour": "2026-11-17T02:00:00Z"
+   },
+   "sum": {
+    "readQueries": 18,
+    "rowsRead": 8,
+    "rowsWritten": 0,
+    "writeQueries": 0
+   }
+  },
+  {
+   "dimensions": {
+    "datetimeHour": "2026-11-17T01:00:00Z"
+   },
+   "sum": {
+    "readQueries": 18,
+    "rowsRead": 8,
+    "rowsWritten": 0,
+    "writeQueries": 0
+   }
+  },
+  {
+   "dimensions": {
+    "datetimeHour": "2026-11-17T00:00:00Z"
+   },
+   "sum": {
+    "readQueries": 30,
+    "rowsRead": 295,
+    "rowsWritten": 0,
+    "writeQueries": 0
+   }
+  },
+  {
+   "dimensions": {
+    "datetimeHour": "2026-11-16T23:00:00Z"
+   },
+   "sum": {
+    "readQueries": 110,
+    "rowsRead": 164555,
+    "rowsWritten": 0,
+    "writeQueries": 0
+   }
+  },
+  {
+   "dimensions": {
+    "datetimeHour": "2026-11-16T22:00:00Z"
+   },
+   "sum": {
+    "readQueries": 26,
+    "rowsRead": 25,
+    "rowsWritten": 0,
+    "writeQueries": 0
+   }
+  },
+  {
+   "dimensions": {
+    "datetimeHour": "2026-11-16T21:00:00Z"
+   },
+   "sum": {
+    "readQueries": 18,
+    "rowsRead": 8,
+    "rowsWritten": 0,
+    "writeQueries": 0
+   }
+  },
+  {
+   "dimensions": {
+    "datetimeHour": "2026-11-16T20:00:00Z"
+   },
+   "sum": {
+    "readQueries": 29,
+    "rowsRead": 249,
+    "rowsWritten": 0,
+    "writeQueries": 0
+   }
+  },
+  {
+   "dimensions": {
+    "datetimeHour": "2026-11-16T19:00:00Z"
+   },
+   "sum": {
+    "readQueries": 115,
+    "rowsRead": 426006,
+    "rowsWritten": 0,
+    "writeQueries": 0
+   }
+  },
+  {
+   "dimensions": {
+    "datetimeHour": "2026-11-16T18:00:00Z"
+   },
+   "sum": {
+    "readQueries": 92,
+    "rowsRead": 162872,
+    "rowsWritten": 0,
+    "writeQueries": 0
+   }
+  },
+  {
+   "dimensions": {
+    "datetimeHour": "2026-11-16T17:00:00Z"
+   },
+   "sum": {
+    "readQueries": 19,
+    "rowsRead": 54,
+    "rowsWritten": 0,
+    "writeQueries": 0
+   }
+  },
+  {
+   "dimensions": {
+    "datetimeHour": "2026-11-16T16:00:00Z"
+   },
+   "sum": {
+    "readQueries": 18,
+    "rowsRead": 8,
+    "rowsWritten": 0,
+    "writeQueries": 0
+   }
+  },
+  {
+   "dimensions": {
+    "datetimeHour": "2026-11-16T15:00:00Z"
+   },
+   "sum": {
+    "readQueries": 92,
+    "rowsRead": 162872,
+    "rowsWritten": 0,
+    "writeQueries": 0
+   }
+  },
+  {
+   "dimensions": {
+    "datetimeHour": "2026-11-16T14:00:00Z"
+   },
+   "sum": {
+    "readQueries": 20,
+    "rowsRead": 9,
+    "rowsWritten": 0,
+    "writeQueries": 0
+   }
+  },
+  {
+   "dimensions": {
+    "datetimeHour": "2026-11-16T13:00:00Z"
+   },
+   "sum": {
+    "readQueries": 30,
+    "rowsRead": 256,
+    "rowsWritten": 5,
+    "writeQueries": 1
+   }
+  },
+  {
+   "dimensions": {
+    "datetimeHour": "2026-11-16T12:00:00Z"
+   },
+   "sum": {
+    "readQueries": 18,
+    "rowsRead": 9,
+    "rowsWritten": 2,
+    "writeQueries": 1
+   }
+  },
+  {
+   "dimensions": {
+    "datetimeHour": "2026-11-16T11:00:00Z"
+   },
+   "sum": {
+    "readQueries": 18,
+    "rowsRead": 8,
+    "rowsWritten": 0,
+    "writeQueries": 0
+   }
+  },
+  {
+   "dimensions": {
+    "datetimeHour": "2026-11-16T10:00:00Z"
+   },
+   "sum": {
+    "readQueries": 18,
+    "rowsRead": 8,
+    "rowsWritten": 0,
+    "writeQueries": 0
+   }
+  },
+  {
+   "dimensions": {
+    "datetimeHour": "2026-11-16T09:00:00Z"
+   },
+   "sum": {
+    "readQueries": 1092,
+    "rowsRead": 733398,
+    "rowsWritten": 0,
+    "writeQueries": 0
+   }
+  },
+  {
+   "dimensions": {
+    "datetimeHour": "2026-11-16T08:00:00Z"
+   },
+   "sum": {
+    "readQueries": 96,
+    "rowsRead": 81808,
+    "rowsWritten": 0,
+    "writeQueries": 0
+   }
+  },
+  {
+   "dimensions": {
     "datetimeHour": "2026-11-16T07:00:00Z"
    },
    "sum": {
-    "readQueries": 15,
-    "rowsRead": 50,
+    "readQueries": 27,
+    "rowsRead": 71,
     "rowsWritten": 1,
     "writeQueries": 1
    }
@@ -575,281 +850,6 @@
    "sum": {
     "readQueries": 18,
     "rowsRead": 8,
-    "rowsWritten": 0,
-    "writeQueries": 0
-   }
-  },
-  {
-   "dimensions": {
-    "datetimeHour": "2026-11-15T07:00:00Z"
-   },
-   "sum": {
-    "readQueries": 26,
-    "rowsRead": 25,
-    "rowsWritten": 0,
-    "writeQueries": 0
-   }
-  },
-  {
-   "dimensions": {
-    "datetimeHour": "2026-11-15T06:00:00Z"
-   },
-   "sum": {
-    "readQueries": 111,
-    "rowsRead": 163629,
-    "rowsWritten": 0,
-    "writeQueries": 0
-   }
-  },
-  {
-   "dimensions": {
-    "datetimeHour": "2026-11-15T05:00:00Z"
-   },
-   "sum": {
-    "readQueries": 18,
-    "rowsRead": 8,
-    "rowsWritten": 0,
-    "writeQueries": 0
-   }
-  },
-  {
-   "dimensions": {
-    "datetimeHour": "2026-11-15T04:00:00Z"
-   },
-   "sum": {
-    "readQueries": 20,
-    "rowsRead": 9,
-    "rowsWritten": 0,
-    "writeQueries": 0
-   }
-  },
-  {
-   "dimensions": {
-    "datetimeHour": "2026-11-15T03:00:00Z"
-   },
-   "sum": {
-    "readQueries": 18,
-    "rowsRead": 8,
-    "rowsWritten": 0,
-    "writeQueries": 0
-   }
-  },
-  {
-   "dimensions": {
-    "datetimeHour": "2026-11-15T02:00:00Z"
-   },
-   "sum": {
-    "readQueries": 18,
-    "rowsRead": 8,
-    "rowsWritten": 0,
-    "writeQueries": 0
-   }
-  },
-  {
-   "dimensions": {
-    "datetimeHour": "2026-11-15T01:00:00Z"
-   },
-   "sum": {
-    "readQueries": 18,
-    "rowsRead": 8,
-    "rowsWritten": 0,
-    "writeQueries": 0
-   }
-  },
-  {
-   "dimensions": {
-    "datetimeHour": "2026-11-15T00:00:00Z"
-   },
-   "sum": {
-    "readQueries": 19,
-    "rowsRead": 53,
-    "rowsWritten": 2,
-    "writeQueries": 2
-   }
-  },
-  {
-   "dimensions": {
-    "datetimeHour": "2026-11-14T23:00:00Z"
-   },
-   "sum": {
-    "readQueries": 18,
-    "rowsRead": 8,
-    "rowsWritten": 0,
-    "writeQueries": 0
-   }
-  },
-  {
-   "dimensions": {
-    "datetimeHour": "2026-11-14T22:00:00Z"
-   },
-   "sum": {
-    "readQueries": 26,
-    "rowsRead": 25,
-    "rowsWritten": 0,
-    "writeQueries": 0
-   }
-  },
-  {
-   "dimensions": {
-    "datetimeHour": "2026-11-14T21:00:00Z"
-   },
-   "sum": {
-    "readQueries": 29,
-    "rowsRead": 246,
-    "rowsWritten": 0,
-    "writeQueries": 0
-   }
-  },
-  {
-   "dimensions": {
-    "datetimeHour": "2026-11-14T20:00:00Z"
-   },
-   "sum": {
-    "readQueries": 19,
-    "rowsRead": 51,
-    "rowsWritten": 0,
-    "writeQueries": 0
-   }
-  },
-  {
-   "dimensions": {
-    "datetimeHour": "2026-11-14T19:00:00Z"
-   },
-   "sum": {
-    "readQueries": 18,
-    "rowsRead": 8,
-    "rowsWritten": 0,
-    "writeQueries": 0
-   }
-  },
-  {
-   "dimensions": {
-    "datetimeHour": "2026-11-14T18:00:00Z"
-   },
-   "sum": {
-    "readQueries": 93,
-    "rowsRead": 25,
-    "rowsWritten": 0,
-    "writeQueries": 0
-   }
-  },
-  {
-   "dimensions": {
-    "datetimeHour": "2026-11-14T17:00:00Z"
-   },
-   "sum": {
-    "readQueries": 18,
-    "rowsRead": 8,
-    "rowsWritten": 0,
-    "writeQueries": 0
-   }
-  },
-  {
-   "dimensions": {
-    "datetimeHour": "2026-11-14T16:00:00Z"
-   },
-   "sum": {
-    "readQueries": 30,
-    "rowsRead": 254,
-    "rowsWritten": 5,
-    "writeQueries": 1
-   }
-  },
-  {
-   "dimensions": {
-    "datetimeHour": "2026-11-14T15:00:00Z"
-   },
-   "sum": {
-    "readQueries": 19,
-    "rowsRead": 51,
-    "rowsWritten": 1,
-    "writeQueries": 1
-   }
-  },
-  {
-   "dimensions": {
-    "datetimeHour": "2026-11-14T14:00:00Z"
-   },
-   "sum": {
-    "readQueries": 20,
-    "rowsRead": 9,
-    "rowsWritten": 0,
-    "writeQueries": 0
-   }
-  },
-  {
-   "dimensions": {
-    "datetimeHour": "2026-11-14T13:00:00Z"
-   },
-   "sum": {
-    "readQueries": 18,
-    "rowsRead": 8,
-    "rowsWritten": 0,
-    "writeQueries": 0
-   }
-  },
-  {
-   "dimensions": {
-    "datetimeHour": "2026-11-14T12:00:00Z"
-   },
-   "sum": {
-    "readQueries": 18,
-    "rowsRead": 8,
-    "rowsWritten": 0,
-    "writeQueries": 0
-   }
-  },
-  {
-   "dimensions": {
-    "datetimeHour": "2026-11-14T11:00:00Z"
-   },
-   "sum": {
-    "readQueries": 29,
-    "rowsRead": 246,
-    "rowsWritten": 2,
-    "writeQueries": 1
-   }
-  },
-  {
-   "dimensions": {
-    "datetimeHour": "2026-11-14T10:00:00Z"
-   },
-   "sum": {
-    "readQueries": 18,
-    "rowsRead": 8,
-    "rowsWritten": 0,
-    "writeQueries": 0
-   }
-  },
-  {
-   "dimensions": {
-    "datetimeHour": "2026-11-14T09:00:00Z"
-   },
-   "sum": {
-    "readQueries": 845,
-    "rowsRead": 640555,
-    "rowsWritten": 0,
-    "writeQueries": 0
-   }
-  },
-  {
-   "dimensions": {
-    "datetimeHour": "2026-11-14T08:00:00Z"
-   },
-   "sum": {
-    "readQueries": 266,
-    "rowsRead": 92885,
-    "rowsWritten": 0,
-    "writeQueries": 0
-   }
-  },
-  {
-   "dimensions": {
-    "datetimeHour": "2026-11-14T07:00:00Z"
-   },
-   "sum": {
-    "readQueries": 19,
-    "rowsRead": 25,
     "rowsWritten": 0,
     "writeQueries": 0
    }
