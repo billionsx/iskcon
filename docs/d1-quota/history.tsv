@@ -91,3 +91,4 @@ day_utc	hours	rowsRead	rowsWritten	readQueries	writeQueries	verdict
 2026-11-22	24	1062119	7	1738	2	OVER
 2026-11-23	24	1473294	7	1879	2	OVER
 2026-11-24	24	735205	2	1571	1	OVER
+2026-11-25	24	734487	7	1562	2	OVER
